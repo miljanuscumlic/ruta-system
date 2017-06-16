@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>rs.ruta</groupId>
+	<artifactId>RutaClient</artifactId>
+	<version>RutaClient-0.0.1</version>
+	<name>RutaClient</name>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/jaxws-maven-plugin -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>2.4.1</version>
+				<!-- <executions> <execution> <id>generate-reports-ws-code</id> <phase>generate-sources</phase> 
+					<goals> <goal>wsimport</goal> </goals> <configuration> -->
+				<!-- This property is used to support having multiple <execution> elements. 
+					The plugin has, from some reason, only one timestamp file per the all executions, 
+					thus if you have two executions, it doesn't know exactly when to recompile 
+					the code. Here we tell it explicitly to have one timestamp file per each 
+					execution -->
+				<!-- <staleFile>${project.build.directory}/jaxws/stale/.staleFlag.reports</staleFile> 
+					<packageName>rs.ruta.client</packageName> <wsdlDirectory>${project.build.directory}/wsdl</wsdlDirectory> 
+					<wsdlFiles> <wsdlFile>CDR.wsdl</wsdlFile> </wsdlFiles> <verbose>true</verbose> 
+					<sourceDestDir>${wsdl.generated.source.files.dir}</sourceDestDir> </configuration> 
+					</execution> </executions> -->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+				<!--  this configuration is not used because maven-jar-plugin will not generate jar -->
+				<configuration>
+					<finalName>${project.artifactId}-no-dependencies</finalName>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix></classpathPrefix>
+							<mainClass>rs.ruta.client.ClientTest</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<finalName>${project.artifactId}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>rs.ruta.client.ClientTest</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

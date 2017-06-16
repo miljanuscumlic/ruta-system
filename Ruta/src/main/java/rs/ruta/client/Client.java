@@ -121,9 +121,11 @@ public class Client implements RutaNode
 				//retrieving Catalogue document
 				CatalogueType catalogue = createCatalogueTypeObject();
 
-				//creating XML document
-				//JAXBElement<CatalogueType> catalogueElement = (new ObjectFactory()).createCatalogue(catalogue);
+				//calling webservice
 
+
+
+				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
 				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
 				try
@@ -150,6 +152,9 @@ public class Client implements RutaNode
 		}
 	}
 
+	/**Generates Catalogue Document from Items in the Product table.
+	 * @return catalogue
+	 */
 	private CatalogueType createCatalogueTypeObject()
 	{
 		//forming Catalogue document
