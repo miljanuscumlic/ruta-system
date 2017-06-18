@@ -31,6 +31,7 @@ public class ClientFrame extends JFrame
 	public ClientFrame(Client client)
 	{
 		this.client = client;
+		this.client.setFrame(this);
 
 		// get position, size, title from preferences
 		int left = prefNode.getInt("left", 0);
@@ -45,7 +46,7 @@ public class ClientFrame extends JFrame
 			@Override
 			public void windowClosing(WindowEvent event)
 			{
-				client.exportMyProducts();
+				client.getMyParty().exportMyProducts();
 //				client.closeDataStreams();
 				savePreferences();
 				client.savePreferences();
@@ -97,8 +98,8 @@ public class ClientFrame extends JFrame
 		JMenuItem myPartyItem = new JMenuItem("My Party");
 		myPartyItem.addActionListener(event ->
 		{
-			PartyType oldParty = client.getMyParty();
-			PartyType newParty = showPartyDialog(oldParty, "My Party");
+			BusinessParty oldParty = client.getMyParty();
+			BusinessParty newParty = (BusinessParty) showPartyDialog(oldParty, "My Party");
 			if(! oldParty.equals(newParty))
 			{
 				client.setMyParty(newParty);
@@ -188,8 +189,8 @@ public class ClientFrame extends JFrame
 
 			break;
 		case 1:
-			client.importMyProducts();
-			AbstractTableModel tableModel = new ProductTableModel(client);
+			client.getMyParty().importMyProducts();
+			AbstractTableModel tableModel = new ProductTableModel(client.getMyParty());
 			JTable table = new JTable(tableModel);
 			table.setFillsViewportHeight(true); // filling the viewport with white background color
 

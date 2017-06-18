@@ -9,14 +9,14 @@ public class ProductTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
 	private ArrayList<ItemType> clientProducts;
-	private Client client;
+	private BusinessParty businessParty ;
 
-	public ProductTableModel(Client client /*PartyType party*/)
+	public ProductTableModel(BusinessParty businessParty /*PartyType party*/)
 	{
-		this.client = client;
-		clientProducts = client.getMyProducts();
-		if(client.getMyProducts() == null)
-			client.importMyProducts();
+		this.businessParty = businessParty;
+		clientProducts = businessParty.getMyProducts();
+		if(businessParty.getMyProducts() == null)
+			businessParty.importMyProducts();
 	}
 
 	@Override
@@ -41,19 +41,19 @@ public class ProductTableModel extends AbstractTableModel
 			case 0:
 				return rowIndex+1;
 			case 1:
-				return client.getProductName(rowIndex);
+				return businessParty.getProductName(rowIndex);
 			case 2:
-				return client.getProductDescription(rowIndex);
+				return businessParty.getProductDescription(rowIndex);
 			case 3:
-				return client.getProductPackSizeNumeric(rowIndex);
+				return businessParty.getProductPackSizeNumeric(rowIndex);
 			case 4:
-				return client.getProductID(rowIndex);
+				return businessParty.getProductID(rowIndex);
 			case 5:
-				return client.getProductBarcode(rowIndex);
+				return businessParty.getProductBarcode(rowIndex);
 			case 6:
-				return client.getProductCommodityCode(rowIndex);
+				return businessParty.getProductCommodityCode(rowIndex);
 			case 7:
-				return client.getProductItemClassificationCode(rowIndex);
+				return businessParty.getProductItemClassificationCode(rowIndex);
 			default:
 				return null;
 			}
@@ -67,32 +67,32 @@ public class ProductTableModel extends AbstractTableModel
 	{
 //		if(! obj.toString().equals("")) // actual change of the cell content
 		{
-			if(client.getProductCount() == rowIndex)
-				client.addNewEmptyProduct();
+			if(businessParty.getProductCount() == rowIndex)
+				businessParty.addNewEmptyProduct();
 			switch(columnIndex)
 			{
 			case 0:
 				break;
 			case 1:
-				client.setProductName(rowIndex, (String) obj);
+				businessParty.setProductName(rowIndex, (String) obj);
 				break;
 			case 2:
-				client.setProductDescription(rowIndex, (String) obj);
+				businessParty.setProductDescription(rowIndex, (String) obj);
 				break;
 			case 3:
-				client.setProductPackSizeNumeric(rowIndex, obj.toString());
+				businessParty.setProductPackSizeNumeric(rowIndex, obj.toString());
 				break;
 			case 4:
-				client.setProductID(rowIndex, obj.toString());
+				businessParty.setProductID(rowIndex, obj.toString());
 				break;
 			case 5:
-				client.setProductBarcode(rowIndex, obj.toString());
+				businessParty.setProductBarcode(rowIndex, obj.toString());
 				break;
 			case 6:
-				client.setProductCommodityCode(rowIndex, obj.toString());
+				businessParty.setProductCommodityCode(rowIndex, obj.toString());
 				break;
 			case 7:
-				client.setProductItemClassificationCode(rowIndex, obj.toString());
+				businessParty.setProductItemClassificationCode(rowIndex, obj.toString());
 			default:
 				;
 			}

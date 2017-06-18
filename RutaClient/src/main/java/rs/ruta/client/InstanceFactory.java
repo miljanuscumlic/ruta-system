@@ -138,7 +138,7 @@ public final class InstanceFactory
 		entity.setRegistrationName(new RegistrationNameType());
 		entity.setCompanyID(new CompanyIDType());
 		entity.setRegistrationDate(new RegistrationDateType());
-		//		entity.getRegistrationDate().setValue(getDate()); // MMM: For TEST purpose setting to now()
+		entity.getRegistrationDate().setValue(getDate()); // MMM: based on xsd it must have some value - for TEST purposes setting to now()
 		entity.setRegistrationAddress(newInstanceAddressType());
 
 		return entity;
@@ -282,6 +282,7 @@ public final class InstanceFactory
 	 * @param object object of type T that is being copied
 	 * @return new instance object of type T
 	 */
+	@SuppressWarnings("restriction")
 	public static <T> T newInstance(T object)
 	{
 		Class<?> cl = object.getClass();
@@ -324,7 +325,12 @@ public final class InstanceFactory
 						}
 						else // set value of the field
 						{
-							Method method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), fieldType);
+							Method method;
+							// field is of XMLGregorianCalendarImpl type, but there is no method that accept this implementation instead of interface XMLGregorianCalendar
+							if(fieldType == com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl.class)
+								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), XMLGregorianCalendar.class);
+							else
+								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), fieldType);
 							if(fieldType.getSuperclass() == Object.class) // field is of String or some primitive type
 								method.invoke(copyObject, fieldValue);
 							else
