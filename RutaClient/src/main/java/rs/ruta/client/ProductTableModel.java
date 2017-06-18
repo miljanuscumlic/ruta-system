@@ -11,7 +11,7 @@ public class ProductTableModel extends AbstractTableModel
 	private ArrayList<ItemType> clientProducts;
 	private Client client;
 
-	public ProductTableModel(Client client)
+	public ProductTableModel(Client client /*PartyType party*/)
 	{
 		this.client = client;
 		clientProducts = client.getMyProducts();

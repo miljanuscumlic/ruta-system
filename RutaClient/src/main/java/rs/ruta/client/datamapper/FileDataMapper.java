@@ -5,9 +5,15 @@ import java.util.*;
 
 public abstract class FileDataMapper<T> implements DataMapper
 {
+	protected String filename;
 	protected Map<Long, T> loadedMap = new HashMap<Long, T>();
 
-	abstract protected String fileName();
+	public FileDataMapper(String filename)
+	{
+		this.filename = filename;
+	}
+
+	protected String getFileName() { return filename; }
 
 //	protected ObjectInputStream input;
 //	protected ObjectOutputStream output;
@@ -46,7 +52,7 @@ public abstract class FileDataMapper<T> implements DataMapper
 	public Long findLong()
 	{
 		Long result = null;
-		String fileName = fileName();
+		String fileName = getFileName();
 
 		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName)))
 		{
@@ -76,10 +82,9 @@ public abstract class FileDataMapper<T> implements DataMapper
 	@Override
 	public ArrayList<?> findAll()
 	{
-		String fileName = fileName();
 		ArrayList<T> result = null;
 
-		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName)))
+		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename)))
 		{
 			input.readObject();//skipping catalogue Id number because it is already read - not so good technique
 			loadedMap.clear();
@@ -94,8 +99,6 @@ public abstract class FileDataMapper<T> implements DataMapper
 			{
 				if(list.size() != 0)
 					result = (ArrayList<T>) loadAll(list);
-				else
-					result = null;
 			}
 		}
 		catch (FileNotFoundException | EOFException e)
@@ -163,7 +166,7 @@ public abstract class FileDataMapper<T> implements DataMapper
 
 	public void insertAll(ArrayList<?> elements) // MMM: not called from anywhere
 	{
-		String fileName = fileName();
+		String fileName = getFileName();
 
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileName)))
 		{

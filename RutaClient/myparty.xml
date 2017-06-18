@@ -1,47 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:Party xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
-    <WebsiteURI>ruta.rs</WebsiteURI>
-    <IndustryClassificationCode>566877</IndustryClassificationCode>
+<ns4:BusinessParty xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns4="urn:rs:ruta:client">
     <ns2:PartyName>
-        <Name>Ruta</Name>
+        <ns3:Name>Ruta</ns3:Name>
     </ns2:PartyName>
     <ns2:PostalAddress>
-        <Floor>4</Floor>
-        <Room>26</Room>
-        <StreetName>Ruzveltova</StreetName>
-        <BuildingNumber>46</BuildingNumber>
-        <CitySubdivisionName>Zvezdara</CitySubdivisionName>
-        <CityName>Beograd</CityName>
-        <PostalZone>11000</PostalZone>
-        <CountrySubentity>grad Beograd</CountrySubentity>
-        <ns2:Country>
-            <Name>Srbija</Name>
-        </ns2:Country>
+        <ns3:Floor>4</ns3:Floor>
+        <ns3:StreetName>Ruzveltova</ns3:StreetName>
     </ns2:PostalAddress>
     <ns2:PartyLegalEntity>
-        <RegistrationName>Ruta sistem d.o.o.</RegistrationName>
-        <CompanyID>566545645</CompanyID>
-        <RegistrationDate>2018-02-01</RegistrationDate>
+        <ns3:RegistrationName>Ruta System</ns3:RegistrationName>
+        <ns3:CompanyID>487596</ns3:CompanyID>
         <ns2:RegistrationAddress>
-            <Floor>4</Floor>
-            <Room>26</Room>
-            <StreetName>Ruzveltova</StreetName>
-            <BuildingName>preko puta Zire</BuildingName>
-            <BuildingNumber>46</BuildingNumber>
-            <CitySubdivisionName>Zvezdara</CitySubdivisionName>
-            <CityName>Beograd</CityName>
-            <PostalZone>11000</PostalZone>
-            <CountrySubentity>grad Beograd</CountrySubentity>
+            <ns3:Floor>4</ns3:Floor>
+            <ns3:Room>26</ns3:Room>
+            <ns3:StreetName>Ruzveltova</ns3:StreetName>
+            <ns3:BuildingNumber>46</ns3:BuildingNumber>
+            <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
             <ns2:Country>
-                <Name>Srbija</Name>
+                <ns3:Name>Srbija</ns3:Name>
             </ns2:Country>
         </ns2:RegistrationAddress>
     </ns2:PartyLegalEntity>
-    <ns2:Contact>
-        <Name>Miljan</Name>
-        <Telephone>3465664</Telephone>
-        <Telefax>5489762</Telefax>
-        <ElectronicMail>office@ruta.rs</ElectronicMail>
-        <Note>одлична фирма</Note>
-    </ns2:Contact>
-</ns2:Party>
+</ns4:BusinessParty>

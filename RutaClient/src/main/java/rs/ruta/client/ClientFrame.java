@@ -9,6 +9,8 @@ import java.util.prefs.*;
 
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyType;
 
@@ -60,11 +62,13 @@ public class ClientFrame extends JFrame
 
 		tabbedPane.addChangeListener(event ->
 		{
-			if(tabbedPane.getSelectedComponent() == null)
+			// check if this tab still has a null component
+			//if(tabbedPane.getSelectedComponent() == null)
+
 				loadTab(tabbedPane.getSelectedIndex());
 		});
 
-		tabbedPane.setSelectedIndex(1);
+		tabbedPane.setSelectedIndex(0);
 		loadTab(0);
 
 		consolePane = new JTextArea(3, 50);
@@ -146,9 +150,41 @@ public class ClientFrame extends JFrame
 		switch(tabIndex)
 		{
 		case 0:
-			component = new JLabel(title);
+			TreeModel treeModel = new PartyTreeModel(new DefaultMutableTreeNode("Following"), client.getMyParty());
+			JTree tree = new JTree(treeModel);
+
+			JScrollPane leftPane = new JScrollPane(tree);
+			leftPane.setPreferredSize(new Dimension(250, 500));
+			JLabel rightPane = new JLabel();
 
 
+/*			client.importMyProducts();
+			AbstractTableModel tableModel = new ProductTableModel(client);
+			JTable table = new JTable(tableModel);
+			table.setFillsViewportHeight(true); // filling the viewport with white background color
+
+			//specifing preferred column sizes
+			int columnIndex = 0;
+			TableColumnModel tableColumnModel = table.getColumnModel();
+			TableColumn tableColumn = tableColumnModel.getColumn(columnIndex);
+			tableColumn.setPreferredWidth(10);
+			tableColumn = tableColumnModel.getColumn(1);
+			tableColumn.setPreferredWidth(200);
+			tableColumn = tableColumnModel.getColumn(2);
+			tableColumn.setPreferredWidth(200);
+			tableColumn = tableColumnModel.getColumn(3);
+			tableColumn.setPreferredWidth(20);
+			//setting cell editor
+			table.setDefaultEditor(Object.class, new ProductTableCellEditor(table));*/
+
+
+
+
+
+
+			JSplitPane treeSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(leftPane), new JScrollPane(rightPane));
+
+			component = treeSplitPane;
 
 			break;
 		case 1:

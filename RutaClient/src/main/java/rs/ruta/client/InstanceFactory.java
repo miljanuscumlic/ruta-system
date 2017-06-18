@@ -243,7 +243,6 @@ public final class InstanceFactory
 
 			if(depth > 0)
 			{
-				//Field[] fields = cl.getFields(); // DOES NOT WORK: does not return any field from the superclasses beacause they are protected not public
 				Field[] fields = cl.getDeclaredFields();
 				AccessibleObject.setAccessible(fields, true); //enables access to private fields to reflaction
 				for(Field field : fields)
@@ -261,8 +260,8 @@ public final class InstanceFactory
 					}
 					else // set value of the field
 					{
-						//Method method = cl.getDeclaredMethod(syntethizeMethodName("set", field.getName()), fieldType);
-						Method method = cl.getMethod(synthesizeMethodName1("set", field.getName()), fieldType); // MMM: alternative to above statement - checking all methods from superclasses
+						//Method method = cl.getMethod(syntethizeMethodName("set", field.getName()), fieldType); // MMM: alternative to above statement - checking all methods from superclasses
+						Method method = cl.getMethod(synthesizeMethodName1("set", field.getName()), fieldType);
 						method.invoke(object, newInstance(fieldType, depth-1));
 					}
 				}
@@ -292,48 +291,64 @@ public final class InstanceFactory
 		{
 			@SuppressWarnings("unchecked")
 			Constructor<T>[] constructor = (Constructor<T>[]) cl.getDeclaredConstructors();
-			Constructor<T> c = constructor[0];	//there is only one default with no args constructor
+			Constructor<T> c = constructor[0];	//there is only one default no arg constructor
 			copyObject = (T) c.newInstance();
 
-			//Field[] fields = cl.getFields(); // MMM: DOES NOT WORK: does not return any field from the superclasses beacause they are protected not public
-			Field[] fields = cl.getDeclaredFields();
-			AccessibleObject.setAccessible(fields, true); //enables access to private fields
-			for(Field field : fields)
+			while(cl.getSuperclass() != null) // we don't want to process Object.class
 			{
-				Object fieldValue = field.get(object);
-				if(fieldValue != null)
+				Field[] fields = cl.getDeclaredFields();
+				AccessibleObject.setAccessible(fields, true); //enables access to private fields
+				for(Field field : fields)
 				{
-					Class<?> fieldType = fieldValue.getClass();
-					if(fieldType == java.util.ArrayList.class) //fieldValue is an ArrayList then copy array
+					Object fieldValue = field.get(object);
+					if(fieldValue != null)
 					{
-						ArrayList<?> list = (java.util.ArrayList<?>)fieldValue;
-						int length = list.size();
-						if(length > 0)
+						Class<?> fieldType = fieldValue.getClass();
+						if(fieldType == java.util.ArrayList.class) //fieldValue is an ArrayList then copy array
 						{
-							//creates empty ArrayList if it is null
-							Method method = cl.getDeclaredMethod(synthesizeMethodName1("get", field.getName()));
-							@SuppressWarnings("unchecked")
-							ArrayList<Object> copyList = (ArrayList<Object>)(method.invoke(copyObject));
-							for(int i = 0; i < length; i++)
+							ArrayList<?> list = (java.util.ArrayList<?>)fieldValue;
+							int length = list.size();
+							if(length > 0)
 							{
-								Object element = list.get(i);
-								Object el = newInstance(element);
-								copyList.add(el);
+								//creates empty ArrayList if it is null
+								Method method = cl.getDeclaredMethod(synthesizeMethodName1("get", field.getName()));
+								@SuppressWarnings("unchecked")
+								ArrayList<Object> copyList = (ArrayList<Object>)(method.invoke(copyObject));
+								for(int i = 0; i < length; i++)
+								{
+									Object element = list.get(i);
+									Object el = newInstance(element);
+									copyList.add(el);
+								}
 							}
 						}
-					}
-					else // set value of the field
-					{
-						//Method method = cl.getDeclaredMethod(syntethizeMethodName("set", field.getName()), fieldType);
-						Method method = cl.getMethod(synthesizeMethodName1("set", field.getName()), fieldType); // MMM: alternative to above statement - checking all methods from superclasses
-						method.invoke(copyObject, newInstance(fieldValue));
+						else // set value of the field
+						{
+							Method method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), fieldType);
+							if(fieldType.getSuperclass() == Object.class) // field is of String or some primitive type
+								method.invoke(copyObject, fieldValue);
+							else
+								method.invoke(copyObject, newInstance(fieldValue));
+						}
 					}
 				}
-			}
+
+				cl = cl.getSuperclass();
+
+			// MMM: THIS COMMENTED CODE BELOW IS DEPRECATED AND SHOULD BE REMOVED
 			// If there are no fields in the class, but there are protected fields in some supperclass.
 			// They cannot be reached by reflection, because they are protected, and this ugly switch case is nedded therefor.
 			// This way field value is copied from one object to the another
-			if(fields.length == 0)
+
+			//MMM: Above statement is not true - below is the code - RETHINK this method
+//			Class<?> current = yourClass;
+//			while(current.getSuperclass()!=null){ // we don't want to process Object.class
+//			    // do something with current's fields
+//			    current = current.getSuperclass();
+//			}
+
+
+			/*if(fields.length == 0)
 			{
 				Method methodSet = null;
 				Method methodGet = null;
@@ -371,10 +386,10 @@ public final class InstanceFactory
 				}
 				else
 					throw new Exception();
-			}
+			}*/
 
 			//	MMM: CHECK if this works when newInstance method is invoked directly
-
+			}
 		}
 		catch (Exception e)
 		{
@@ -386,8 +401,8 @@ public final class InstanceFactory
 
 	/**Copies all properties from old object to the copy object, that are not null in the old object.
 	 * Properties that are already null, if any, are not changed in the copy object.
-	 * @param oldObject object from wich the properties are copied
-	 * @param copyObject object to wich properties are copied
+	 * @param oldObject object from which the properties are copied
+	 * @param copyObject object to which properties are copied
 	 */
 	public static <T> void copyInstance(T oldObject, T copyObject)
 	{
@@ -398,41 +413,42 @@ public final class InstanceFactory
 			if(copyClazz != oldClazz)
 				throw new Exception();
 
-			Field[] copyFields = copyClazz.getDeclaredFields();
-			Field[] oldFields = oldClazz.getDeclaredFields();
-			AccessibleObject.setAccessible(copyFields, true);
-			AccessibleObject.setAccessible(oldFields, true);
-
-			for(Field oldField : oldFields)
+			// loop for reaching properties of the superclasses
+			// loops until Object.class which is not processed
+			while(oldClazz.getSuperclass() != null)
 			{
-				Object copyFieldValue = oldField.get(copyObject);
-				Object oldFieldValue = oldField.get(oldObject);
+				Field[] oldFields = oldClazz.getDeclaredFields();
+				AccessibleObject.setAccessible(oldFields, true);
 
-				if(oldFieldValue != null)
+				for(Field oldField : oldFields)
 				{
-					Class<?> fieldType = oldFieldValue.getClass();
-					if(fieldType == java.util.ArrayList.class)
+					Object oldFieldValue = oldField.get(oldObject);
+
+					if(oldFieldValue != null)
 					{
-						ArrayList<?> oldList = (java.util.ArrayList<?>)oldFieldValue;
-						int length = oldList.size();
-						if(length > 0)
+						Class<?> fieldType = oldFieldValue.getClass();
+						if(fieldType == java.util.ArrayList.class)
 						{
-							Method method = copyClazz.getDeclaredMethod(synthesizeMethodName1("get", oldField.getName())); // temp
-							@SuppressWarnings("unchecked")
-							ArrayList<Object> copyList = (ArrayList<Object>) (method.invoke(copyObject));
-							copyList.clear();
-							for(int i = 0; i< length; i++)
+							ArrayList<?> oldList = (java.util.ArrayList<?>)oldFieldValue;
+							int length = oldList.size();
+							if(length > 0)
 							{
-								copyList.add(newInstance(oldList.get(i)));
+								Method method = oldClazz.getDeclaredMethod(synthesizeMethodName1("get", oldField.getName()));
+								@SuppressWarnings("unchecked")
+								ArrayList<Object> copyList = (ArrayList<Object>) (method.invoke(copyObject));
+								copyList.clear();
+								for(int i = 0; i< length; i++)
+									copyList.add(newInstance(oldList.get(i)));
 							}
 						}
-					}
-					else
-					{
-						Method method = copyClazz.getDeclaredMethod(synthesizeMethodName1("set", oldField.getName()), fieldType);
-						method.invoke(copyObject, newInstance(oldFieldValue));
+						else
+						{
+							Method method = oldClazz.getDeclaredMethod(synthesizeMethodName1("set", oldField.getName()), fieldType);
+							method.invoke(copyObject, newInstance(oldFieldValue));
+						}
 					}
 				}
+				oldClazz = oldClazz.getSuperclass();
 			}
 		}
 		catch (Exception e)
@@ -547,11 +563,6 @@ public final class InstanceFactory
 	 * @param ref list property under check
 	 * @param propClazz class object of the list element
 	 * @return first element of the list
-	 */
-	/**
-	 * @param ref
-	 * @param propClazz
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static <U, T> U checkAndCreateListProperty(T ref, Class<U> propClazz)

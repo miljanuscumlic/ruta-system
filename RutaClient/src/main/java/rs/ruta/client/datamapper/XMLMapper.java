@@ -13,8 +13,8 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
 
 public abstract class XMLMapper<T> implements DataMapper
 {
-	private static String packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2"; // colon separated package list
 	private String filename;
+	protected String packageList; // colon separated package list
 
 	public XMLMapper(String filename)
 	{

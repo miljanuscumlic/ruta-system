@@ -437,7 +437,9 @@ public class PartyTableModel extends AbstractTableModel
 			InstanceFactory.createAndSetLeafProperty(party.getPartyLegalEntity().get(0).getRegistrationAddress().getCountry(),
 					party.getPartyLegalEntity().get(0).getRegistrationAddress().getCountry().getName(), NameType.class, obj, String.class);
 
-			/*			//3 - constructors and setters
+			/*			//3 - constructors and setters - MMM: This version should be used, but this code should be placed in some other
+			 * 			//	class from the Domain Model
+			 *
 			if(party.getPartyLegalEntity().size() == 0)
 			{
 				party.getPartyLegalEntity().add(new PartyLegalEntityType());

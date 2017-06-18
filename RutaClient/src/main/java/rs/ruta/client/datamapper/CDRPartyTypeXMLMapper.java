@@ -12,6 +12,7 @@ public class CDRPartyTypeXMLMapper<T> extends XMLMapper<T>
 	public CDRPartyTypeXMLMapper(Client client, String filename)
 	{
 		super(filename);
+		this.packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2";
 		this.client = client;
 	}
 

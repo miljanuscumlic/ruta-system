@@ -25,31 +25,24 @@ public class Client implements RutaNode
 	private DataMapper itemDataMapper; // MMM: it should be only one data mapper - for the database, and many finders for each database table
 	private long catalogueID;
 	private PartyType myParty;
-	private PartyTypeXMLMapper<PartyType> partyDataMapper;
+	private BusinessPartyXMLMapper<BusinessParty> partyDataMapper;
 	private PartyType CDRParty;
 	private CDRPartyTypeXMLMapper<PartyType> CDRPartyDataMapper;
 	private boolean dirtyCatalogue;
 	private ClientFrame frame;
 	private Preferences prefNode = Preferences.userNodeForPackage(this.getClass());
-	private List<PartyType> businessPartners;
-	private List<PartyType> followingParties;
-	private List<PartyType> followerParties;
 
 	public Client()
 	{
 		myProducts = new ArrayList<ItemType>();
-		myParty = new PartyType();
+		myParty = new BusinessParty();
 		CDRParty = new PartyType();
 		catalogueID = 0;
 		dirtyCatalogue = prefNode.getBoolean("dirtyCatalogue", false);
-		businessPartners = new ArrayList<PartyType>();
-		followingParties = new ArrayList<PartyType>();;
-		followerParties= new ArrayList<PartyType>();;
 
-		itemDataMapper = new ItemTypeFileMapper<ItemType>(this);
-		partyDataMapper = new PartyTypeXMLMapper<PartyType>(Client.this, "myparty.xml");
+		itemDataMapper = new ItemTypeFileMapper<ItemType>(this, "client-products.dat");
+		partyDataMapper = new BusinessPartyXMLMapper<BusinessParty>(Client.this, "myparty.xml");
 		CDRPartyDataMapper = new CDRPartyTypeXMLMapper<PartyType>(Client.this, "cdr.xml");
-
 	}
 
 	/** Initializes fields of Client object from the database.
@@ -60,7 +53,7 @@ public class Client implements RutaNode
 		this.frame = frame;
 
 		// trying to load the party data from the XML file
-		ArrayList<PartyType> parties = (ArrayList<PartyType>) partyDataMapper.findAll();
+		ArrayList<BusinessParty> parties = (ArrayList<BusinessParty>) partyDataMapper.findAll();
 		//		myParty = new PartyType(); // MMM: complete empty PartyType as alternative to next statement - this line is for test purposes
 		//		myParty = InstanceFactory.newInstance(PartyType.class); // Producing StackOverflowException for PartyType.class object
 		//		myParty = InstanceFactory.newInstancePartyType(); // instatiation of new partialy empty PartyType object with not null fields used in this version of the Ruta
@@ -75,11 +68,32 @@ public class Client implements RutaNode
 			//myParty = InstanceFactory.newInstance(parties.get(0));
 			InstanceFactory.copyInstance(parties.get(0), myParty);
 
-		//MMM: this could be lazy called when needed, not at start
+		//MMM: this could/should be lazy called when needed, not at start
 		ArrayList<PartyType> CDRParties = (ArrayList<PartyType>) CDRPartyDataMapper.findAll();
 
 		if(CDRParties.size() != 0)
 			InstanceFactory.copyInstance(CDRParties.get(0), CDRParty);
+
+
+		//*****************
+		//adding Bussines Partners for the test purposes
+		List<PartyType> bp = ((BusinessParty) myParty).getBusinessPartners();
+		List<PartyType> fp = ((BusinessParty) myParty).getFollowingParties();
+		for(int i = 9; i>=0; i--)
+		{
+			PartyType p = InstanceFactory.newInstancePartyType();
+			p.getPartyName().get(0).getName().setValue("Partner #" + i);
+			bp.add(p);
+			fp.add(p);
+		}
+		for(int i = 15; i>=10; i--)
+		{
+			PartyType p = InstanceFactory.newInstancePartyType();
+			p.getPartyName().get(0).getName().setValue("Partner #" + i);
+			fp.add(p);
+		}
+
+		//*****************
 
 	}
 
@@ -435,17 +449,24 @@ public class Client implements RutaNode
 		return myProducts.size();
 	}
 
+	/**
+	 * Reads all Products of my Party from the database.
+	 */
 	@SuppressWarnings("unchecked")
 	public void importMyProducts()
 	{
-		myProducts = (ArrayList<ItemType>) itemDataMapper.findAll();
-		if(myProducts == null)
+		if(myProducts.size() == 0)
+			myProducts = (ArrayList<ItemType>) itemDataMapper.findAll();
+		if(myProducts == null) // nothing found
 		{
 			myProducts = new ArrayList<ItemType>();
 			catalogueID = 0;
 		}
 	}
 
+	/**
+	 * Writes all Products to the database.
+	 */
 	public void exportMyProducts()
 	{
 		itemDataMapper.insertAll();

@@ -12,6 +12,7 @@ public class PartyTypeXMLMapper<T> extends XMLMapper<T>
 	public PartyTypeXMLMapper(Client client, String filename)
 	{
 		super(filename);
+		this.packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2";
 		this.client = client;
 	}
 
@@ -34,4 +35,5 @@ public class PartyTypeXMLMapper<T> extends XMLMapper<T>
 	{
 		return (T) client.getMyParty();
 	}
+
 }

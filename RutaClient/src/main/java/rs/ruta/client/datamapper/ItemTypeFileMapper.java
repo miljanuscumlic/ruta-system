@@ -10,22 +10,16 @@ import rs.ruta.client.*;
 
 public class ItemTypeFileMapper<T> extends FileDataMapper<T>
 {
-	//	public static final String COLUMNS = " id, lastname, firstname, number_of_dependents ";
+//	public static final String COLUMNS = " id, lastname, firstname, number_of_dependents ";
 
-	private static String FILENAME = "client-products.dat";
+//	private static String FILENAME = "client-products.dat";
 
 	private Client client;
 
-	public ItemTypeFileMapper(Client client)
+	public ItemTypeFileMapper(Client client, String filename)
 	{
-//		super(FILENAME);
+		super(filename);
 		this.client = client;
-	}
-
-	@Override
-	protected String fileName()
-	{
-		return FILENAME;
 	}
 
 	@Override
@@ -34,7 +28,7 @@ public class ItemTypeFileMapper<T> extends FileDataMapper<T>
 	{
 		//reading Catalogue ID
 
-		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(FILENAME)))
+		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename)))
 		{
 			long res = findLong();
 			client.setCatalogueID(res);
@@ -58,7 +52,7 @@ public class ItemTypeFileMapper<T> extends FileDataMapper<T>
 	{
 		//insertAll(client.getMyProducts());
 
-		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(FILENAME)))
+		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(filename)))
 		{
 			long catID = client.getCatalogueID(); // Catalogue ID number
 			output.writeObject(catID);
