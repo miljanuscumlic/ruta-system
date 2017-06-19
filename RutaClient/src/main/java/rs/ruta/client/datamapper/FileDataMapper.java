@@ -49,6 +49,9 @@ public abstract class FileDataMapper<T> implements DataMapper
 		}*/
 	}
 
+	/**Reads long number from the store.
+	 * @return read long number
+	 */
 	public Long findLong()
 	{
 		Long result = null;
@@ -142,6 +145,10 @@ public abstract class FileDataMapper<T> implements DataMapper
 		return result;*/
 	}
 
+	/**Searches for the object in the cache map. If not found, the proper domain model object is constructed from it and put in the map.
+	 * @param element input object that should be placed in the cache map
+	 * @return object of the proper domain model type
+	 */
 	protected T load(Object element)
 	{
 		long mapID = getMapID(element);
@@ -154,8 +161,17 @@ public abstract class FileDataMapper<T> implements DataMapper
 
 	abstract protected long getMapID(Object element);
 
+	/**Loads data from the input object to the domain model object.
+	 * @param id id of the object from the cache map of loaded objects
+	 * @param element object to be processed
+	 * @return domain model object
+	 */
 	abstract protected T doLoad(long id, Object element);
 
+	/**Loads objects from the list to the cache map of objects of the proper domain model type.
+	 * @param elements list of objects to be processed
+	 * @return list of domain model objects of the proper domain model type
+	 */
 	protected ArrayList<T> loadAll(ArrayList<Object> elements)
 	{
 		ArrayList<T> result = new ArrayList<T>();

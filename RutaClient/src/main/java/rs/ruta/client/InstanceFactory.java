@@ -450,7 +450,10 @@ public final class InstanceFactory
 						else
 						{
 							Method method = oldClazz.getDeclaredMethod(synthesizeMethodName1("set", oldField.getName()), fieldType);
-							method.invoke(copyObject, newInstance(oldFieldValue));
+							if(fieldType.getSuperclass() == Object.class || fieldType.getSuperclass() == Number.class) // field is of String or some primitive type
+								method.invoke(copyObject, oldFieldValue);
+							else
+								method.invoke(copyObject, newInstance(oldFieldValue));
 						}
 					}
 				}

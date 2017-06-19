@@ -1,28 +1,32 @@
 package rs.ruta.client;
 
-import java.util.*;
 import javax.swing.table.*;
-
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ItemType;
 
 public class ProductTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private ArrayList<ItemType> clientProducts;
 	private BusinessParty businessParty ;
 
-	public ProductTableModel(BusinessParty businessParty /*PartyType party*/)
+	public ProductTableModel(BusinessParty businessParty)
 	{
 		this.businessParty = businessParty;
-		clientProducts = businessParty.getMyProducts();
-		if(businessParty.getMyProducts() == null)
-			businessParty.importMyProducts();
+		businessParty.importMyProducts();
+	}
+
+	public BusinessParty getBusinessParty()
+	{
+		return businessParty;
+	}
+
+	public void setBusinessParty(BusinessParty businessParty)
+	{
+		this.businessParty = businessParty;
 	}
 
 	@Override
 	public int getRowCount()
 	{
-		return clientProducts.size() + 1;
+		return businessParty.getMyProducts().size() + 1;
 	}
 
 	@Override
@@ -34,7 +38,7 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		if(rowIndex < clientProducts.size())
+		if(rowIndex < businessParty.getMyProducts().size())
 		{
 			switch(columnIndex)
 			{
@@ -65,37 +69,34 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public void setValueAt(Object obj, int rowIndex, int columnIndex)
 	{
-//		if(! obj.toString().equals("")) // actual change of the cell content
+		if(businessParty.getProductCount() == rowIndex)
+			businessParty.addNewEmptyProduct();
+		switch(columnIndex)
 		{
-			if(businessParty.getProductCount() == rowIndex)
-				businessParty.addNewEmptyProduct();
-			switch(columnIndex)
-			{
-			case 0:
-				break;
-			case 1:
-				businessParty.setProductName(rowIndex, (String) obj);
-				break;
-			case 2:
-				businessParty.setProductDescription(rowIndex, (String) obj);
-				break;
-			case 3:
-				businessParty.setProductPackSizeNumeric(rowIndex, obj.toString());
-				break;
-			case 4:
-				businessParty.setProductID(rowIndex, obj.toString());
-				break;
-			case 5:
-				businessParty.setProductBarcode(rowIndex, obj.toString());
-				break;
-			case 6:
-				businessParty.setProductCommodityCode(rowIndex, obj.toString());
-				break;
-			case 7:
-				businessParty.setProductItemClassificationCode(rowIndex, obj.toString());
-			default:
-				;
-			}
+		case 0:
+			break;
+		case 1:
+			businessParty.setProductName(rowIndex, (String) obj);
+			break;
+		case 2:
+			businessParty.setProductDescription(rowIndex, (String) obj);
+			break;
+		case 3:
+			businessParty.setProductPackSizeNumeric(rowIndex, obj.toString());
+			break;
+		case 4:
+			businessParty.setProductID(rowIndex, obj.toString());
+			break;
+		case 5:
+			businessParty.setProductBarcode(rowIndex, obj.toString());
+			break;
+		case 6:
+			businessParty.setProductCommodityCode(rowIndex, obj.toString());
+			break;
+		case 7:
+			businessParty.setProductItemClassificationCode(rowIndex, obj.toString());
+		default:
+			;
 		}
 
 //		System.out.println(p);

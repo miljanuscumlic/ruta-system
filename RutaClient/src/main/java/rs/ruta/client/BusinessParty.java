@@ -11,7 +11,8 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
 import rs.ruta.client.datamapper.*;
 
 @XmlRootElement(name = "BusinessParty", namespace = "urn:rs:ruta:client")
-public class BusinessParty extends PartyType implements BusinessPartyInterface
+@XmlAccessorType(XmlAccessType.FIELD)
+public class BusinessParty implements BusinessPartyInterface
 {
 //	@XmlElement(name = "BusinessPartners")
 	@XmlTransient
@@ -25,19 +26,33 @@ public class BusinessParty extends PartyType implements BusinessPartyInterface
 //	@XmlElement(name = "MyProducts")
 	@XmlTransient
 	private ArrayList<ItemType> myProducts; //database alternative - MMM: to be replaced with real database
+
 	@XmlTransient
 	private ItemTypeFileMapper<ItemType> itemDataMapper;
 
 	@XmlElement(name = "CatalogueID")
-	private Long catalogueID;
+	private long catalogueID;
 	@XmlElement(name = "DirtyCatalogue")
-	private Boolean dirtyCatalogue;
+	private boolean dirtyCatalogue; // MMM: this property is also saved as the preference
+	@XmlElement(name = "CoreParty")
+	private PartyType coreParty;
+
+	public PartyType getCoreParty()
+	{
+		if(coreParty == null)
+			coreParty = new PartyType();
+		return coreParty;
+	}
+
+	public void setCoreParty(PartyType coreParty)
+	{
+		this.coreParty = coreParty;
+	}
 
 	public BusinessParty()
 	{
-		myProducts = new ArrayList<ItemType>();
-		itemDataMapper = new ItemTypeFileMapper<ItemType>(this, "client-products.dat");
-		catalogueID = 0L;
+		myProducts = getMyProducts();
+		catalogueID = 0;
 	}
 
 	public List<PartyType> getBusinessPartners()
@@ -76,7 +91,49 @@ public class BusinessParty extends PartyType implements BusinessPartyInterface
 		this.followerParties = followerParties;
 	}
 
-	public ArrayList<ItemType> getMyProducts() { return myProducts; }
+	public ArrayList<ItemType> getMyProducts()
+	{
+		if (myProducts == null)
+			myProducts = new ArrayList<ItemType>();
+		return myProducts;
+	}
+
+	public void setMyProducts(ArrayList<ItemType> myProducts)
+	{
+		this.myProducts = myProducts;
+	}
+
+	public boolean isDirtyCatalogue()
+	{
+		return dirtyCatalogue;
+	}
+
+	public void setDirtyCatalogue(Boolean dirty)
+	{
+		dirtyCatalogue = dirty;
+	}
+
+	public void setItemDataMapper(ItemTypeFileMapper<ItemType> itemDataMapper)
+	{
+		this.itemDataMapper = itemDataMapper;
+	}
+
+	public void setItemDataMapper(String fileStore)
+	{
+		this.itemDataMapper = new ItemTypeFileMapper<ItemType>(this, fileStore);
+	}
+
+	public long getCatalogueID() { return catalogueID; }
+
+	public void setCatalogueID(Long catalogueID)
+	{
+		this.catalogueID = catalogueID;
+	}
+
+	public void setDirtyCatalogue(boolean dirtyCatalogue)
+	{
+		this.dirtyCatalogue = dirtyCatalogue;
+	}
 
 	public String getProductName(int index)
 	{
@@ -304,9 +361,8 @@ public class BusinessParty extends PartyType implements BusinessPartyInterface
 	}
 
 	/**
-	 * Reads all Products of my Party from the database.
+	 * Reads all products of party from the store. If the products are already read, skips the read.
 	 */
-	@SuppressWarnings("unchecked")
 	public void importMyProducts()
 	{
 		if(myProducts.size() == 0)
@@ -335,10 +391,6 @@ public class BusinessParty extends PartyType implements BusinessPartyInterface
 	{
 		return itemDataMapper;
 	}
-
-	public long getCatalogueID() { return catalogueID; }
-
-	public void setCatalogueID(Long ID) { catalogueID = ID; }
 
 	/**Generates Catalogue Document from Items in the Product table.
 	 * @return catalogue
@@ -381,23 +433,5 @@ public class BusinessParty extends PartyType implements BusinessPartyInterface
 		return changed;
 	}
 
-	public Boolean isDirtyCatalogue()
-	{
-		return dirtyCatalogue;
-	}
 
-	public void setDirtyCatalogue(Boolean dirty)
-	{
-		dirtyCatalogue = dirty;
-	}
-
-	public void setMyProducts(ArrayList<ItemType> myProducts)
-	{
-		this.myProducts = myProducts;
-	}
-
-	public void setItemDataMapper(ItemTypeFileMapper<ItemType> itemDataMapper)
-	{
-		this.itemDataMapper = itemDataMapper;
-	}
 }

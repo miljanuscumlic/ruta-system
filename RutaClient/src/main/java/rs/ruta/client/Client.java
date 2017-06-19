@@ -29,9 +29,9 @@ public class Client implements RutaNode
 	public Client()
 	{
 		myParty = new BusinessParty();
+		myParty.setItemDataMapper("client-products.dat");
 		CDRParty = new PartyType();
 		myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
-
 		partyDataMapper = new BusinessPartyXMLMapper<BusinessParty>(Client.this, "myparty.xml");
 		CDRPartyDataMapper = new CDRPartyTypeXMLMapper<PartyType>(Client.this, "cdr.xml");
 	}
@@ -56,7 +56,6 @@ public class Client implements RutaNode
 
 		if(CDRParties.size() != 0)
 			InstanceFactory.copyInstance(CDRParties.get(0), CDRParty);
-
 
 		//*****************
 		//adding Bussines Partners for the test purposes
@@ -87,14 +86,10 @@ public class Client implements RutaNode
 	{
 		// trying to load the party data from the XML file
 		ArrayList<BusinessParty> parties = (ArrayList<BusinessParty>) partyDataMapper.findAll();
-		//		myParty = new PartyType(); // MMM: complete empty PartyType as alternative to next statement - this line is for test purposes
-		//		myParty = InstanceFactory.newInstance(PartyType.class); // Producing StackOverflowException for PartyType.class object
-		//		myParty = InstanceFactory.newInstancePartyType(); // instatiation of new partialy empty PartyType object with not null fields used in this version of the Ruta
-		//		myParty = InstanceFactory.newInstance(PartyType.class, 1);
 
 		if(parties.size() == 0)
 		{
-			myParty = (BusinessParty) frame.showPartyDialog(myParty, "My Party"); //displaying My Party Data dialog
+			myParty.setCoreParty(frame.showPartyDialog(myParty.getCoreParty(), "My Party")); //displaying My Party Data dialog
 			insertMyParty();
 		}
 		else

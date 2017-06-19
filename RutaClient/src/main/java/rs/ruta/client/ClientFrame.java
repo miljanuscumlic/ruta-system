@@ -98,11 +98,11 @@ public class ClientFrame extends JFrame
 		JMenuItem myPartyItem = new JMenuItem("My Party");
 		myPartyItem.addActionListener(event ->
 		{
-			BusinessParty oldParty = client.getMyParty();
-			BusinessParty newParty = (BusinessParty) showPartyDialog(oldParty, "My Party");
-			if(! oldParty.equals(newParty))
+			PartyType oldCoreParty = client.getMyParty().getCoreParty();
+			PartyType newCoreParty = showPartyDialog(oldCoreParty, "My Party");
+			if(! oldCoreParty.equals(newCoreParty))
 			{
-				client.setMyParty(newParty);
+				client.getMyParty().setCoreParty(newCoreParty);
 				client.insertMyParty();
 			}
 		});
@@ -158,9 +158,7 @@ public class ClientFrame extends JFrame
 			leftPane.setPreferredSize(new Dimension(250, 500));
 			JLabel rightPane = new JLabel();
 
-
-/*			client.importMyProducts();
-			AbstractTableModel tableModel = new ProductTableModel(client);
+/*			AbstractTableModel tableModel = new ProductTableModel((BusinessParty) (client.getMyParty().getFollowingParties().get(0)));
 			JTable table = new JTable(tableModel);
 			table.setFillsViewportHeight(true); // filling the viewport with white background color
 
@@ -183,13 +181,12 @@ public class ClientFrame extends JFrame
 
 
 
-			JSplitPane treeSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(leftPane), new JScrollPane(rightPane));
+			JSplitPane treeSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, new JScrollPane(rightPane));
 
 			component = treeSplitPane;
 
 			break;
 		case 1:
-			client.getMyParty().importMyProducts();
 			AbstractTableModel tableModel = new ProductTableModel(client.getMyParty());
 			JTable table = new JTable(tableModel);
 			table.setFillsViewportHeight(true); // filling the viewport with white background color
@@ -217,7 +214,7 @@ public class ClientFrame extends JFrame
 			component = new JLabel(title);
 			break;
 		}
-		tabbedPane.setComponentAt(tabIndex, new JScrollPane(component));
+		tabbedPane.setComponentAt(tabIndex, component);
 	}
 
 	public PartyType showPartyDialog(PartyType party, String title)

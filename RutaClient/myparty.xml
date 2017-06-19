@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:BusinessParty xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns4="urn:rs:ruta:client">
+    <CatalogueID>0</CatalogueID>
+    <DirtyCatalogue>false</DirtyCatalogue>
+    <CoreParty>
+        <ns3:PartyName>
+            <ns2:Name>Ruta</ns2:Name>
+        </ns3:PartyName>
+        <ns3:PartyLegalEntity>
+            <ns2:RegistrationName>Ruta System d.o.o.</ns2:RegistrationName>
+            <ns3:RegistrationAddress>
+                <ns2:StreetName>Ruzveltova</ns2:StreetName>
+            </ns3:RegistrationAddress>
+        </ns3:PartyLegalEntity>
+    </CoreParty>
+</ns4:BusinessParty>

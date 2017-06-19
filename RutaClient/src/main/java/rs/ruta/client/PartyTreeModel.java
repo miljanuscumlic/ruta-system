@@ -12,14 +12,14 @@ public class PartyTreeModel extends DefaultTreeModel
 {
 
 	private static final long serialVersionUID = 4960608964751110674L;
-	private PartyType party;
+	private BusinessParty party;
 
 	public PartyTreeModel(TreeNode root)
 	{
 		super(root);
 	}
 
-	public PartyTreeModel(TreeNode root, PartyType party)
+	public PartyTreeModel(TreeNode root, BusinessParty party)
 	{
 		super(root);
 		this.party = party;
@@ -63,11 +63,11 @@ public class PartyTreeModel extends DefaultTreeModel
 		// all other parties that are followed
 		Set<PartyType> followingOthers = new TreeSet<PartyType>(partyNameComparator);
 
-		followingPartners.addAll(((BusinessParty)party).getBusinessPartners());
-		followingPartners.retainAll(((BusinessParty)party).getFollowingParties());
+		followingPartners.addAll(party.getBusinessPartners());
+		followingPartners.retainAll(party.getFollowingParties());
 
-		followingOthers.addAll(((BusinessParty)party).getFollowingParties());
-		followingOthers.removeAll(((BusinessParty)party).getBusinessPartners());
+		followingOthers.addAll(party.getFollowingParties());
+		followingOthers.removeAll(party.getBusinessPartners());
 
 		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My Party");
 		((DefaultMutableTreeNode) root).add(myPartyNode);
