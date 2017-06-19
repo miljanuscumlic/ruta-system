@@ -19,8 +19,8 @@ public class Client implements RutaNode
 {
 	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_2"; // colon separated package list
 
-	private BusinessParty myParty;
-	private BusinessPartyXMLMapper<BusinessParty> partyDataMapper;// MMM: it should be only one data mapper - for the database, and many finders for each database table
+	private MyParty myParty;
+	private BusinessPartyXMLMapper<MyParty> partyDataMapper;// MMM: it should be only one data mapper - for the database, and many finders for each database table
 	private PartyType CDRParty;
 	private CDRPartyTypeXMLMapper<PartyType> CDRPartyDataMapper;
 	private ClientFrame frame;
@@ -28,11 +28,11 @@ public class Client implements RutaNode
 
 	public Client()
 	{
-		myParty = new BusinessParty();
+		myParty = new MyParty();
 		myParty.setItemDataMapper("client-products.dat");
 		CDRParty = new PartyType();
 		myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
-		partyDataMapper = new BusinessPartyXMLMapper<BusinessParty>(Client.this, "myparty.xml");
+		partyDataMapper = new BusinessPartyXMLMapper<MyParty>(Client.this, "myparty.xml");
 		CDRPartyDataMapper = new CDRPartyTypeXMLMapper<PartyType>(Client.this, "cdr.xml");
 	}
 
@@ -42,7 +42,7 @@ public class Client implements RutaNode
 	public void preInitialize()
 	{
 		// trying to load the party data from the XML file
-		ArrayList<BusinessParty> parties = (ArrayList<BusinessParty>) partyDataMapper.findAll();
+		ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
 		//		myParty = new PartyType(); // MMM: complete empty PartyType as alternative to next statement - this line is for test purposes
 		//		myParty = InstanceFactory.newInstance(PartyType.class); // Producing StackOverflowException for PartyType.class object
 		//		myParty = InstanceFactory.newInstancePartyType(); // instatiation of new partialy empty PartyType object with not null fields used in this version of the Ruta
@@ -59,20 +59,24 @@ public class Client implements RutaNode
 
 		//*****************
 		//adding Bussines Partners for the test purposes
-		List<PartyType> bp = ((BusinessParty) myParty).getBusinessPartners();
-		List<PartyType> fp = ((BusinessParty) myParty).getFollowingParties();
+		List<BusinessParty> bp = myParty.getBusinessPartners();
+		List<BusinessParty> fp = myParty.getFollowingParties();
 		for(int i = 9; i>=0; i--)
 		{
 			PartyType p = InstanceFactory.newInstancePartyType();
 			p.getPartyName().get(0).getName().setValue("Partner #" + i);
-			bp.add(p);
-			fp.add(p);
+			BusinessParty biz = new BusinessParty();
+			biz.setCoreParty(p);
+			bp.add(biz);
+			fp.add(biz);
 		}
 		for(int i = 15; i>=10; i--)
 		{
 			PartyType p = InstanceFactory.newInstancePartyType();
 			p.getPartyName().get(0).getName().setValue("Party #" + i);
-			fp.add(p);
+			BusinessParty biz = new BusinessParty();
+			biz.setCoreParty(p);
+			fp.add(biz);
 		}
 
 		//*****************
@@ -85,7 +89,7 @@ public class Client implements RutaNode
 	public void initialize()
 	{
 		// trying to load the party data from the XML file
-		ArrayList<BusinessParty> parties = (ArrayList<BusinessParty>) partyDataMapper.findAll();
+		ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
 
 		if(parties.size() == 0)
 		{
@@ -220,12 +224,12 @@ public class Client implements RutaNode
 		}
 	}
 
-	public BusinessParty getMyParty()
+	public MyParty getMyParty()
 	{
 		return myParty;
 	}
 
-	public void setMyParty(BusinessParty party)
+	public void setMyParty(MyParty party)
 	{
 		myParty = party;
 	}

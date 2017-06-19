@@ -5,20 +5,20 @@ import javax.swing.table.*;
 public class ProductTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private BusinessParty businessParty ;
+	private MyParty businessParty ;
 
-	public ProductTableModel(BusinessParty businessParty)
+	public ProductTableModel(MyParty businessParty)
 	{
 		this.businessParty = businessParty;
 		businessParty.importMyProducts();
 	}
 
-	public BusinessParty getBusinessParty()
+	public MyParty getBusinessParty()
 	{
 		return businessParty;
 	}
 
-	public void setBusinessParty(BusinessParty businessParty)
+	public void setBusinessParty(MyParty businessParty)
 	{
 		this.businessParty = businessParty;
 	}

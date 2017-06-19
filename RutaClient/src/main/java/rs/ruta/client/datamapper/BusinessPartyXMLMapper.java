@@ -34,7 +34,7 @@ public class BusinessPartyXMLMapper<T> extends XMLMapper<T>
 		{
 			try
 			{
-				JAXBContext jc = JAXBContext.newInstance(BusinessParty.class);
+				JAXBContext jc = JAXBContext.newInstance(MyParty.class);
 
 				// create an Unmarshaller
 				Unmarshaller u = jc.createUnmarshaller();
@@ -65,7 +65,7 @@ public class BusinessPartyXMLMapper<T> extends XMLMapper<T>
 	{
 		try
 		{
-			JAXBContext jc = JAXBContext.newInstance(BusinessParty.class);
+			JAXBContext jc = JAXBContext.newInstance(MyParty.class);
 
 			// create an element for marshalling
 			@SuppressWarnings("unchecked")
@@ -95,8 +95,8 @@ public class BusinessPartyXMLMapper<T> extends XMLMapper<T>
 	@Override
 	protected JAXBElement<?> getJAXBElement()
 	{
-		QName _Party_QNAME = new QName("urn:rs:ruta:client", "BusinessParty");
-		JAXBElement<BusinessParty> partyElement = new JAXBElement<BusinessParty>(_Party_QNAME, BusinessParty.class, (BusinessParty) getObject());
+		QName _Party_QNAME = new QName("urn:rs:ruta:client", "MyParty");
+		JAXBElement<MyParty> partyElement = new JAXBElement<MyParty>(_Party_QNAME, MyParty.class, (MyParty) getObject());
 		return partyElement;
 	}
 

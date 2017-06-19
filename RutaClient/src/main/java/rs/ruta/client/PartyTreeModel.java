@@ -12,14 +12,14 @@ public class PartyTreeModel extends DefaultTreeModel
 {
 
 	private static final long serialVersionUID = 4960608964751110674L;
-	private BusinessParty party;
+	private MyParty party;
 
 	public PartyTreeModel(TreeNode root)
 	{
 		super(root);
 	}
 
-	public PartyTreeModel(TreeNode root, BusinessParty party)
+	public PartyTreeModel(TreeNode root, MyParty party)
 	{
 		super(root);
 		this.party = party;
@@ -45,10 +45,10 @@ public class PartyTreeModel extends DefaultTreeModel
 			}
 		};*/
 
-		Comparator<PartyType> partyNameComparator = (first, second)  ->
+		Comparator<BusinessParty> partyNameComparator = (first, second)  ->
 		{
-			String firstName = InstanceFactory.getPropertyOrNull(first.getPartyName().get(0).getName(), NameType::getValue);
-			String secondName = InstanceFactory.getPropertyOrNull(second.getPartyName().get(0).getName(), NameType::getValue);
+			String firstName = InstanceFactory.getPropertyOrNull(first.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);
+			String secondName = InstanceFactory.getPropertyOrNull(second.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);
 			if(firstName == null)
 				if(secondName == null)
 					return 0;
@@ -59,9 +59,9 @@ public class PartyTreeModel extends DefaultTreeModel
 		};
 
 		// all business partners that are followed
-		Set<PartyType> followingPartners = new TreeSet<PartyType>(partyNameComparator);
+		Set<BusinessParty> followingPartners = new TreeSet<BusinessParty>(partyNameComparator);
 		// all other parties that are followed
-		Set<PartyType> followingOthers = new TreeSet<PartyType>(partyNameComparator);
+		Set<BusinessParty> followingOthers = new TreeSet<BusinessParty>(partyNameComparator);
 
 		followingPartners.addAll(party.getBusinessPartners());
 		followingPartners.retainAll(party.getFollowingParties());
@@ -75,14 +75,14 @@ public class PartyTreeModel extends DefaultTreeModel
 		DefaultMutableTreeNode fPartnersNode = new DefaultMutableTreeNode("Business Partners");
 		((DefaultMutableTreeNode) root).add(fPartnersNode);
 
-		for(PartyType fParty: followingPartners)
-			fPartnersNode.add(new DefaultMutableTreeNode(fParty.getPartyName().get(0).getName().getValue()));
+		for(BusinessParty fParty: followingPartners)
+			fPartnersNode.add(new DefaultMutableTreeNode(fParty.getCoreParty().getPartyName().get(0).getName().getValue()));
 
 		DefaultMutableTreeNode fOthersNode = new DefaultMutableTreeNode("Other Parties");
 		((DefaultMutableTreeNode) root).add(fOthersNode);
 
-		for(PartyType fOther : followingOthers)
-			fOthersNode.add(new DefaultMutableTreeNode(fOther.getPartyName().get(0).getName().getValue()));
+		for(BusinessParty fOther : followingOthers)
+			fOthersNode.add(new DefaultMutableTreeNode(fOther.getCoreParty().getPartyName().get(0).getName().getValue()));
 
 		return root;
 	}

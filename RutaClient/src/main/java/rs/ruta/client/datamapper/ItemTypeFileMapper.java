@@ -29,7 +29,7 @@ public class ItemTypeFileMapper<T> extends FileDataMapper<T>
 	{
 		//reading Catalogue ID
 
-		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename)))
+/*		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename)))
 		{
 			long res = findLong();
 			businessParty.setCatalogueID(res);
@@ -42,7 +42,7 @@ public class ItemTypeFileMapper<T> extends FileDataMapper<T>
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 		//reading myProducts list
 		return (ArrayList<ItemType>) super.findAll();
 	}
@@ -55,8 +55,8 @@ public class ItemTypeFileMapper<T> extends FileDataMapper<T>
 
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(filename)))
 		{
-			long catID = businessParty.getCatalogueID(); // Catalogue ID number
-			output.writeObject(catID);
+/*			long catID = businessParty.getCatalogueID(); // Catalogue ID number
+			output.writeObject(catID);*/
 			ArrayList<ItemType> list = businessParty.getMyProducts();
 			for(int i = 0; i < list.size(); i++ )
 				output.writeObject(new Product(businessParty, i)); // writing data to the file

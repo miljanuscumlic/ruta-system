@@ -89,7 +89,7 @@ public abstract class FileDataMapper<T> implements DataMapper
 
 		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename)))
 		{
-			input.readObject();//skipping catalogue Id number because it is already read - not so good technique
+//			input.readObject();//skipping catalogue Id number because it is already read - not so good technique
 			loadedMap.clear();
 			Object elem = null;
 			ArrayList<Object> list = new ArrayList<Object>();
