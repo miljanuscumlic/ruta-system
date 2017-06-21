@@ -23,15 +23,12 @@ public class MyParty extends BusinessParty
 	@XmlTransient
 	private List<BusinessParty> followerParties;
 
-	@XmlElement(name = "CatalogueID")
-	private long catalogueID;
 	@XmlElement(name = "DirtyCatalogue")
 	private boolean dirtyCatalogue; // MMM: this property is also saved as the preference
 
 	public MyParty()
 	{
 		super();
-		catalogueID = 0;
 		setFollowing(true);
 	}
 
@@ -81,18 +78,14 @@ public class MyParty extends BusinessParty
 		dirtyCatalogue = dirty;
 	}
 
-	public long getCatalogueID() { return catalogueID; }
 
-	public void setCatalogueID(Long catalogueID)
-	{
-		this.catalogueID = catalogueID;
-	}
 
 	public void setDirtyCatalogue(boolean dirtyCatalogue)
 	{
 		this.dirtyCatalogue = dirtyCatalogue;
 	}
 
+	@Override
 	public void setProductName(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -102,6 +95,7 @@ public class MyParty extends BusinessParty
 			item.getName().setValue(value);
 	}
 
+	@Override
 	public void setProductDescription(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -112,6 +106,7 @@ public class MyParty extends BusinessParty
 			descriptions.get(0).setValue(value);
 	}
 
+	@Override
 	public void setProductID(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -123,6 +118,7 @@ public class MyParty extends BusinessParty
 			item.getSellersItemIdentification().getID().setValue(value);
 	}
 
+	@Override
 	public void setProductBarcode(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -135,6 +131,7 @@ public class MyParty extends BusinessParty
 
 	}
 
+	@Override
 	public void setProductPackSizeNumeric(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -144,6 +141,7 @@ public class MyParty extends BusinessParty
 			item.getPackSizeNumeric().setValue(BigDecimal.valueOf(Long.parseLong(value)));
 	}
 
+	@Override
 	public void setProductCommodityCode(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -156,6 +154,7 @@ public class MyParty extends BusinessParty
 			commodities.get(0).getCommodityCode().setValue(value);;
 	}
 
+	@Override
 	public void setProductItemClassificationCode(int index, String value)
 	{
 		ItemType item = getMyProducts().get(index);
@@ -207,6 +206,12 @@ public class MyParty extends BusinessParty
 		boolean changed = ! newOne.equals(oldOne);
 		dirtyCatalogue = dirtyCatalogue || changed;
 		return changed;
+	}
+
+	public void addFollowingParty(BusinessParty party)
+	{
+		if(! followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
+			getFollowingParties().add(party);
 	}
 
 }

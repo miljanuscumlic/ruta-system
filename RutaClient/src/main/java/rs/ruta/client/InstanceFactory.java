@@ -331,7 +331,7 @@ public final class InstanceFactory
 								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), XMLGregorianCalendar.class);
 							else
 								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), fieldType);
-							if(fieldType.getSuperclass() == Object.class) // field is of String or some primitive type
+							if(fieldType.getSuperclass() == Object.class || fieldType.getSuperclass() == Number.class) // field is of String or some primitive type
 								method.invoke(copyObject, fieldValue);
 							else
 								method.invoke(copyObject, newInstance(fieldValue));

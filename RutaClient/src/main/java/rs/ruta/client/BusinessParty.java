@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+import oasis.names.specification.ubl.schema.xsd.catalogue_2.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
 import rs.ruta.client.datamapper.*;
@@ -17,22 +18,28 @@ public class BusinessParty
 	@XmlElement(name = "MyProducts")
 //	@XmlTransient
 	private ArrayList<ItemType> myProducts; //database alternative - MMM: to be replaced with real database
-
 	@XmlTransient
 	private ItemTypeFileMapper<ItemType> itemDataMapper;
-
 	@XmlElement(name = "CoreParty")
 	private PartyType coreParty;
-
 	@XmlElement(name = "Following")
 	private boolean following;
-
 	@XmlElement(name = "Partner")
 	private boolean partner;
+	@XmlElement(name = "CatalogueID")
+	protected long catalogueID;
 
 	public BusinessParty()
 	{
 		myProducts = getMyProducts();
+		catalogueID = 0;
+	}
+
+	public long getCatalogueID() { return catalogueID; }
+
+	public void setCatalogueID(Long catalogueID)
+	{
+		this.catalogueID = catalogueID;
 	}
 
 	public boolean isFollowing()
@@ -77,6 +84,27 @@ public class BusinessParty
 	public void setMyProducts(ArrayList<ItemType> myProducts)
 	{
 		this.myProducts = myProducts;
+	}
+
+	public void setMyProducts(CatalogueType catalogue)
+	{
+		try
+		{
+			String strID = InstanceFactory.getPropertyOrNull(catalogue.getID(), IDType::getValue);
+			catalogueID = Integer.parseInt(strID);
+		}
+		catch(Exception e)
+		{
+			catalogueID = 0;
+		}
+		List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
+		if(catalogueLines.size() != 0)
+		{
+			myProducts.clear();
+			for(CatalogueLineType line : catalogueLines)
+				myProducts.add(line.getItem());
+				//myProducts.add(InstanceFactory.newInstance(line.getItem()));
+		}
 	}
 
 	public void setItemDataMapper(ItemTypeFileMapper<ItemType> itemDataMapper)
@@ -243,11 +271,14 @@ public class BusinessParty
 	 */
 	public void importMyProducts()
 	{
-		if(myProducts.size() == 0)
-			myProducts = (ArrayList<ItemType>) itemDataMapper.findAll();
-		if(myProducts == null) // nothing found
+		if(itemDataMapper != null)
 		{
-			myProducts = new ArrayList<ItemType>();
+			if(myProducts.size() == 0)
+			{
+				myProducts = (ArrayList<ItemType>) itemDataMapper.findAll();
+				if(myProducts == null) // nothing found
+					myProducts = new ArrayList<ItemType>();
+			}
 		}
 	}
 
@@ -268,5 +299,35 @@ public class BusinessParty
 	{
 		return itemDataMapper;
 	}
+
+
+	/**This method do nothing, because this base class is not suppose to change the values of properties
+	 * @param index
+	 * @param value
+	 */
+	public void setProductName(int index, String value) { }
+
+	public void setProductDescription(int index, String value) { }
+
+	public void setProductID(int index, String value) { }
+
+	public void setProductBarcode(int index, String value) { }
+
+	public void setProductPackSizeNumeric(int index, String value) { }
+
+	public void setProductCommodityCode(int index, String value) { }
+
+	public void setProductItemClassificationCode(int index, String value) { }
+
+	/**Returns String representing BussinesParty class.
+	 * @return the name of the coreParty or null if Party is not set
+	 */
+	@Override
+	public String toString()
+	{
+		return InstanceFactory.getPropertyOrNull(coreParty.getPartyName().get(0).getName(), NameType::getValue);
+	}
+
+
 
 }

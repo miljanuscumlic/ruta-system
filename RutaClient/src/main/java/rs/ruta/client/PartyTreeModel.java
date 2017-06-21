@@ -67,22 +67,27 @@ public class PartyTreeModel extends DefaultTreeModel
 		followingPartners.retainAll(party.getFollowingParties());
 
 		followingOthers.addAll(party.getFollowingParties());
+		if(party.getFollowingParties().size() > 0) // removes my Party
+			followingOthers.remove((party.getFollowingParties().get(0)));
 		followingOthers.removeAll(party.getBusinessPartners());
 
-		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My Party");
-		((DefaultMutableTreeNode) root).add(myPartyNode);
+		if(party.getFollowingParties().size() > 0)
+		{
+			DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(party.getFollowingParties().get(0));
+			((DefaultMutableTreeNode) root).add(myPartyNode);
+		}
 
 		DefaultMutableTreeNode fPartnersNode = new DefaultMutableTreeNode("Business Partners");
 		((DefaultMutableTreeNode) root).add(fPartnersNode);
 
 		for(BusinessParty fParty: followingPartners)
-			fPartnersNode.add(new DefaultMutableTreeNode(fParty.getCoreParty().getPartyName().get(0).getName().getValue()));
+			fPartnersNode.add(new DefaultMutableTreeNode(fParty));
 
 		DefaultMutableTreeNode fOthersNode = new DefaultMutableTreeNode("Other Parties");
 		((DefaultMutableTreeNode) root).add(fOthersNode);
 
 		for(BusinessParty fOther : followingOthers)
-			fOthersNode.add(new DefaultMutableTreeNode(fOther.getCoreParty().getPartyName().get(0).getName().getValue()));
+			fOthersNode.add(new DefaultMutableTreeNode(fOther));
 
 		return root;
 	}

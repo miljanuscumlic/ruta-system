@@ -1,0 +1,15 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+	<soap:Body>
+		<ns5:getDocumentResponse
+			xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+			xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+			xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+			xmlns:ns5="http://server.ruta.rs/" xmlns:ns6="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2"
+			xmlns:ns7="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2">
+			<return>
+				<ns2:ID>3</ns2:ID>
+				<ns2:IssueDate>2017-06-20+02:00</ns2:IssueDate>
+			</return>
+		</ns5:getDocumentResponse>
+	</soap:Body>
+</soap:Envelope>

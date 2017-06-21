@@ -5,28 +5,48 @@ import javax.swing.table.*;
 public class ProductTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private MyParty businessParty ;
+	private BusinessParty businessParty ;
+	private boolean editable;
 
-	public ProductTableModel(MyParty businessParty)
+	/**Creates new model for the product table.
+	 * @param businessParty party which products are modeled and shown
+	 * @param editable if true, table cells are editable
+	 */
+	public ProductTableModel(BusinessParty businessParty, boolean editable)
+	{
+		this.businessParty = businessParty;
+		this.editable = editable;
+		businessParty.importMyProducts();
+	}
+
+	/**Creates new model for the product table. Party should be set with the subsequent call to setBusinessParty(BusinessParty businessParty)
+	 * @param editable if true, table cells are editable
+	 * @see ProductTableModel#setBusinessParty
+	 */
+	public ProductTableModel( boolean editable)
+	{
+		this.businessParty = null;
+		this.editable = editable;
+	}
+
+	public BusinessParty getBusinessParty()
+	{
+		return businessParty;
+	}
+
+	/**Sets the Party for the product table model.
+	 * @param businessParty Party that is going to be set
+	 */
+	public void setBusinessParty(BusinessParty businessParty)
 	{
 		this.businessParty = businessParty;
 		businessParty.importMyProducts();
 	}
 
-	public MyParty getBusinessParty()
-	{
-		return businessParty;
-	}
-
-	public void setBusinessParty(MyParty businessParty)
-	{
-		this.businessParty = businessParty;
-	}
-
 	@Override
 	public int getRowCount()
 	{
-		return businessParty.getMyProducts().size() + 1;
+		return businessParty != null ? (editable ? businessParty.getMyProducts().size() + 1 : businessParty.getMyProducts().size()) : 0;
 	}
 
 	@Override
@@ -146,7 +166,7 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public boolean isCellEditable(int row, int column)
 	{
-		return column != 0 ? true : false;
+		return editable ? (column != 0 ? true : false) : false;
 	}
 
 }

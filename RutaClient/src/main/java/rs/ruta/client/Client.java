@@ -5,8 +5,10 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.prefs.Preferences;
 
+import javax.swing.JOptionPane;
 import javax.xml.bind.*;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_2.*;
 import oasis.names.specification.ubl.schema.xsd.catalogue_2.ObjectFactory;
@@ -59,7 +61,7 @@ public class Client implements RutaNode
 
 		//*****************
 		//adding Bussines Partners for the test purposes
-		List<BusinessParty> bp = myParty.getBusinessPartners();
+		/*		List<BusinessParty> bp = myParty.getBusinessPartners();
 		List<BusinessParty> fp = myParty.getFollowingParties();
 		for(int i = 9; i>=0; i--)
 		{
@@ -77,7 +79,7 @@ public class Client implements RutaNode
 			BusinessParty biz = new BusinessParty();
 			biz.setCoreParty(p);
 			fp.add(biz);
-		}
+		}*/
 
 		//*****************
 
@@ -150,12 +152,9 @@ public class Client implements RutaNode
 
 				port.putDocument(catalogue);
 
-				CatalogueType newCat = port.getDocument();
-
-
 				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
-				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(newCat);
+				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
 				try
 				{
 					JAXB.marshal(catalogueElement, System.out );
@@ -172,13 +171,67 @@ public class Client implements RutaNode
 			{
 				e.printStackTrace();
 			}
-			//JOptionPane.showMessageDialog(null, "Synchronising Catalogue with CDR", "Synchronising Catalogue", JOptionPane.PLAIN_MESSAGE);
+			catch (WebServiceException e)
+			{
+				JOptionPane.showMessageDialog(null, "Cannot connect to CDR!\nPlease try again later.", "Synchronising Catalogue", JOptionPane.PLAIN_MESSAGE);
+			}
 		}
 		else
 		{
 			frame.appendToConsole("Catalogue is already synchronized with the CDR.");
 		}
 	}
+
+	/**Pulling my Catalogue from the Central Data Repository
+	 *
+	 */
+	public void pullCatalogue()
+	{
+		if(myParty.getFollowingParties().size() != 0)
+		{
+			try
+			{
+				// MMM: maybe JAXBContext should be private class field, if it is used from multiple class methods
+				JAXBContext jc = JAXBContext.newInstance("oasis.names.specification.ubl.schema.xsd.catalogue_2"); //packageList
+
+				//calling webservice
+				CDRService service = new CDRService();
+				Server port = service.getCDRPort();
+
+				//temporary setting for TCP/IP Monitor in Eclipse
+				((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:7777/Ruta-0.0.1/CDR");
+
+				CatalogueType catalogue = port.getDocument();
+				myParty.getFollowingParties().get(0).setMyProducts(catalogue);
+
+
+				//creating XML document - for test purpose only
+				ObjectFactory objFactory = new ObjectFactory();
+				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
+				try
+				{
+					JAXB.marshal(catalogueElement, System.out );
+					JAXB.marshal(catalogueElement, new FileOutputStream("catalogue-from-CDR.xml"));
+					frame.appendToConsole("Catalogue successfully retrieved from CDR."); //MMM: this should be messaged after the acctual sending of the Catalogue
+				}
+				catch (FileNotFoundException e)
+				{
+					System.out.println("Could not save Catalogue document to the file catalogue-from-CDR.xml");
+				}
+			}
+			catch (JAXBException e)
+			{
+				e.printStackTrace();
+			}
+			catch (WebServiceException e)
+			{
+				JOptionPane.showMessageDialog(null, "Cannot connect to CDR!\nPlease try again later.", "Synchronising Catalogue", JOptionPane.PLAIN_MESSAGE);
+			}
+		}
+		else
+			JOptionPane.showMessageDialog(null, "My Party not set as following party", "Synchronising Catalogue", JOptionPane.INFORMATION_MESSAGE);
+	}
+
 
 	public DataMapper getPartyDataMapper()
 	{
