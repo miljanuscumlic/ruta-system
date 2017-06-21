@@ -24,6 +24,7 @@ public class PartyTreeModel extends DefaultTreeModel
 		super(root);
 		this.party = party;
 		populateTree();
+		setAsksAllowsChildren(true);
 	}
 
 	public TreeNode populateTree()
@@ -71,23 +72,35 @@ public class PartyTreeModel extends DefaultTreeModel
 			followingOthers.remove((party.getFollowingParties().get(0)));
 		followingOthers.removeAll(party.getBusinessPartners());
 
+		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My party");
+		((DefaultMutableTreeNode) root).add(myPartyNode);
+
 		if(party.getFollowingParties().size() > 0)
 		{
-			DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(party.getFollowingParties().get(0));
-			((DefaultMutableTreeNode) root).add(myPartyNode);
+			DefaultMutableTreeNode myParty = new DefaultMutableTreeNode(party.getFollowingParties().get(0));
+			myParty.setAllowsChildren(false);
+			myPartyNode.add(myParty);
 		}
 
 		DefaultMutableTreeNode fPartnersNode = new DefaultMutableTreeNode("Business Partners");
 		((DefaultMutableTreeNode) root).add(fPartnersNode);
 
 		for(BusinessParty fParty: followingPartners)
-			fPartnersNode.add(new DefaultMutableTreeNode(fParty));
+		{
+			DefaultMutableTreeNode partnerNode = new DefaultMutableTreeNode(fParty);
+			partnerNode.setAllowsChildren(false);
+			fPartnersNode.add(partnerNode);
+		}
 
 		DefaultMutableTreeNode fOthersNode = new DefaultMutableTreeNode("Other Parties");
 		((DefaultMutableTreeNode) root).add(fOthersNode);
 
 		for(BusinessParty fOther : followingOthers)
-			fOthersNode.add(new DefaultMutableTreeNode(fOther));
+		{
+			DefaultMutableTreeNode otherNode = new DefaultMutableTreeNode(fOther);
+			otherNode.setAllowsChildren(false);
+			fOthersNode.add(otherNode);
+		}
 
 		return root;
 	}
@@ -102,6 +115,14 @@ public class PartyTreeModel extends DefaultTreeModel
 	{
 		this.root = root;
 	}
+
+// 	This method overriding is the alternative to setAllowsChildren code inserted in the class methods
+//	@Override
+//	public boolean isLeaf(Object node)
+//	{
+//		return ((DefaultMutableTreeNode)node).getUserObject() instanceof String ? false : true;
+//	}
+
 
 	/*	public PartyTreeModel(PartyType root)
 	{
@@ -120,13 +141,6 @@ public class PartyTreeModel extends DefaultTreeModel
 	{
 
 		return 0;
-	}
-
-	@Override
-	public boolean isLeaf(Object node)
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

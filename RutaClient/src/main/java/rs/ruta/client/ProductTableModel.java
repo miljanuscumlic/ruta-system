@@ -52,7 +52,7 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public int getColumnCount()
 	{
-		return 8; // MMM: change to reflect the number of fields in the ItemType class
+		return 8;
 	}
 
 	@Override
