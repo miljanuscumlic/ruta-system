@@ -65,9 +65,11 @@ public class PartyTreeModel extends DefaultTreeModel
 		Set<BusinessParty> followingOthers = new TreeSet<BusinessParty>(partyNameComparator);
 
 		followingPartners.addAll(party.getBusinessPartners());
-		followingPartners.retainAll(party.getFollowingParties());
-
 		followingOthers.addAll(party.getFollowingParties());
+//		followingPartners.retainAll(party.getFollowingParties()); // MMM: Why is this not working?
+		followingPartners.retainAll(followingOthers);
+
+
 		if(party.getFollowingParties().size() > 0) // removes my Party
 			followingOthers.remove((party.getFollowingParties().get(0)));
 		followingOthers.removeAll(party.getBusinessPartners());

@@ -1,53 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns5:MyParty xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns4="urn:rs:ruta:client:businessparty" xmlns:ns5="urn:rs:ruta:client">
-    <MyProducts>
-        <ns3:Description/>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>rec</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID/>
-            <ns3:BarcodeSymbologyID/>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode/>
-            <ns3:ItemClassificationCode/>
-        </ns2:CommodityClassification>
-    </MyProducts>
-    <MyProducts>
-        <ns3:Description/>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>misao</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID/>
-            <ns3:BarcodeSymbologyID/>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode/>
-            <ns3:ItemClassificationCode/>
-        </ns2:CommodityClassification>
-    </MyProducts>
-    <MyProducts>
-        <ns3:Description/>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>svest</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID/>
-            <ns3:BarcodeSymbologyID/>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode/>
-            <ns3:ItemClassificationCode/>
-        </ns2:CommodityClassification>
-    </MyProducts>
     <CoreParty>
+        <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
+        <ns3:IndustryClassificationCode>89898</ns3:IndustryClassificationCode>
         <ns2:PartyName>
             <ns3:Name>Ruta</ns3:Name>
         </ns2:PartyName>
+        <ns2:PostalAddress>
+            <ns3:Floor>4</ns3:Floor>
+            <ns3:Room>26</ns3:Room>
+            <ns3:StreetName>Ruzveltova</ns3:StreetName>
+            <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+            <ns3:BuildingNumber>46</ns3:BuildingNumber>
+            <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+            <ns3:CityName>Beograd</ns3:CityName>
+            <ns3:PostalZone>11000</ns3:PostalZone>
+            <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+            <ns2:Country>
+                <ns3:Name>Srbija BRertrt</ns3:Name>
+            </ns2:Country>
+        </ns2:PostalAddress>
+        <ns2:PartyLegalEntity>
+            <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
+            <ns3:CompanyID>589754564</ns3:CompanyID>
+            <ns3:RegistrationDate>2018-02-01</ns3:RegistrationDate>
+            <ns2:RegistrationAddress>
+                <ns3:Floor>4</ns3:Floor>
+                <ns3:Room>26</ns3:Room>
+                <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                <ns3:CityName>Beograd</ns3:CityName>
+                <ns3:PostalZone>11000</ns3:PostalZone>
+                <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                <ns2:Country>
+                    <ns3:Name>Srbija</ns3:Name>
+                </ns2:Country>
+            </ns2:RegistrationAddress>
+        </ns2:PartyLegalEntity>
+        <ns2:Contact>
+            <ns3:Name>Miljan</ns3:Name>
+            <ns3:Telephone>087.6654598</ns3:Telephone>
+            <ns3:Telefax>087.369544</ns3:Telefax>
+            <ns3:ElectronicMail>miljan@ruta.rs</ns3:ElectronicMail>
+            <ns3:Note>super</ns3:Note>
+        </ns2:Contact>
     </CoreParty>
     <Following>true</Following>
     <Partner>false</Partner>
-    <CatalogueID>1</CatalogueID>
-    <BusinessPartners>
+    <CatalogueID>0</CatalogueID>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -74,7 +77,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -102,8 +105,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -130,7 +133,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -158,8 +161,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -186,7 +189,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -214,8 +217,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -242,7 +245,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -270,8 +273,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -298,7 +301,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -326,8 +329,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -354,7 +357,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -382,8 +385,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -410,7 +413,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -438,8 +441,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -466,7 +469,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -494,8 +497,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -522,7 +525,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -550,8 +553,8 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
-    <BusinessPartners>
+    </BusinessPartner>
+    <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI/>
             <ns3:IndustryClassificationCode/>
@@ -578,7 +581,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName/>
                 <ns3:CompanyID/>
-                <ns3:RegistrationDate>2017-06-20+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor/>
                     <ns3:Room/>
@@ -606,6 +609,954 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
-    </BusinessPartners>
+    </BusinessPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
+            <ns3:IndustryClassificationCode>89898</ns3:IndustryClassificationCode>
+            <ns2:PartyName>
+                <ns3:Name>Ruta</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor>4</ns3:Floor>
+                <ns3:Room>26</ns3:Room>
+                <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                <ns3:CityName>Beograd</ns3:CityName>
+                <ns3:PostalZone>11000</ns3:PostalZone>
+                <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                <ns2:Country>
+                    <ns3:Name>Srbija BRertrt</ns3:Name>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
+                <ns3:CompanyID>589754564</ns3:CompanyID>
+                <ns3:RegistrationDate>2018-02-01</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor>4</ns3:Floor>
+                    <ns3:Room>26</ns3:Room>
+                    <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                    <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                    <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                    <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                    <ns3:CityName>Beograd</ns3:CityName>
+                    <ns3:PostalZone>11000</ns3:PostalZone>
+                    <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                    <ns2:Country>
+                        <ns3:Name>Srbija</ns3:Name>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:Name>Miljan</ns3:Name>
+                <ns3:Telephone>087.6654598</ns3:Telephone>
+                <ns3:Telefax>087.369544</ns3:Telefax>
+                <ns3:ElectronicMail>miljan@ruta.rs</ns3:ElectronicMail>
+                <ns3:Note>super</ns3:Note>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #9</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #8</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #7</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #6</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #5</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #4</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #3</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #2</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #1</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Partner #0</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Party #15</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Party #14</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Party #13</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Party #12</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Party #11</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI/>
+            <ns3:IndustryClassificationCode/>
+            <ns2:PartyIdentification>
+                <ns3:ID/>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Party #10</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor/>
+                <ns3:Room/>
+                <ns3:StreetName/>
+                <ns3:BuildingName/>
+                <ns3:BuildingNumber/>
+                <ns3:CitySubdivisionName/>
+                <ns3:CityName/>
+                <ns3:PostalZone/>
+                <ns3:CountrySubentity/>
+                <ns2:Country>
+                    <ns3:Name/>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName/>
+                <ns3:CompanyID/>
+                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor/>
+                    <ns3:Room/>
+                    <ns3:StreetName/>
+                    <ns3:BuildingName/>
+                    <ns3:BuildingNumber/>
+                    <ns3:CitySubdivisionName/>
+                    <ns3:CityName/>
+                    <ns3:PostalZone/>
+                    <ns3:CountrySubentity/>
+                    <ns2:Country>
+                        <ns3:Name/>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:ID/>
+                <ns3:Name/>
+                <ns3:Telephone/>
+                <ns3:Telefax/>
+                <ns3:ElectronicMail/>
+                <ns3:Note/>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+        <CatalogueID>0</CatalogueID>
+    </FollowingPartner>
     <DirtyCatalogue>false</DirtyCatalogue>
 </ns5:MyParty>

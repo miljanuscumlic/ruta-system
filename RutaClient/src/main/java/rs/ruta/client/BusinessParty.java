@@ -21,7 +21,7 @@ public class BusinessParty
 	@XmlTransient
 	private ItemTypeFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
-	private PartyType coreParty;
+	private Party coreParty;
 	@XmlElement(name = "Following")
 	private boolean following;
 	@XmlElement(name = "Partner")
@@ -33,6 +33,7 @@ public class BusinessParty
 	{
 		myProducts = getMyProducts();
 		catalogueID = 0;
+		coreParty = null;
 	}
 
 	public long getCatalogueID() { return catalogueID; }
@@ -62,16 +63,21 @@ public class BusinessParty
 		this.partner = partner;
 	}
 
-	public PartyType getCoreParty()
+	public Party getCoreParty()
 	{
 		if(coreParty == null)
-			coreParty = new PartyType();
+			coreParty = new Party();
 		return coreParty;
 	}
 
-	public void setCoreParty(PartyType coreParty)
+	public void setCoreParty(Party coreParty)
 	{
 		this.coreParty = coreParty;
+	}
+
+	public boolean hasCoreParty()
+	{
+		return coreParty == null ? false : true;
 	}
 
 	public ArrayList<ItemType> getMyProducts()

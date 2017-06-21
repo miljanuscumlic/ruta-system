@@ -1,6 +1,7 @@
 package rs.ruta.client.datamapper;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
 import rs.ruta.client.*;
@@ -25,8 +26,14 @@ public class CDRPartyTypeXMLMapper<T> extends XMLMapper<T>
 	@Override
 	protected JAXBElement<?> getJAXBElement()
 	{
-		JAXBElement<PartyType> partyElement = (new ObjectFactory()).createParty((PartyType) getObject());
+/*		JAXBElement<PartyType> partyElement = (new ObjectFactory()).createParty((PartyType) getObject());
+		return partyElement;*/
+
+		QName _Party_QNAME = new QName("urn:rs:ruta:client", "CDRParty");
+		JAXBElement<Party> partyElement = new JAXBElement<Party>(_Party_QNAME, Party.class, (Party) getObject());
 		return partyElement;
+
+
 	}
 
 	@SuppressWarnings("unchecked")

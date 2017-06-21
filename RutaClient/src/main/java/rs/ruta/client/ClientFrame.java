@@ -110,8 +110,8 @@ public class ClientFrame extends JFrame
 		JMenuItem myPartyItem = new JMenuItem("My Party");
 		myPartyItem.addActionListener(event ->
 		{
-			PartyType oldCoreParty = client.getMyParty().getCoreParty();
-			PartyType newCoreParty = showPartyDialog(oldCoreParty, "My Party");
+			Party oldCoreParty = client.getMyParty().getCoreParty();
+			Party newCoreParty = showPartyDialog(oldCoreParty, "My Party");
 			if(! oldCoreParty.equals(newCoreParty))
 			{
 				client.getMyParty().setCoreParty(newCoreParty);
@@ -120,18 +120,18 @@ public class ClientFrame extends JFrame
 		});
 		partyMenu.add(myPartyItem);
 
-		JMenuItem CDRPartyItem = new JMenuItem("CDR Party");
+/*		JMenuItem CDRPartyItem = new JMenuItem("CDR Party");
 		CDRPartyItem.addActionListener(event ->
 		{
-			PartyType oldCDRParty = client.getCDRParty();
-			PartyType newCDRParty = showPartyDialog(oldCDRParty, "CDR Party");
+			Party oldCDRParty = client.getCDRParty();
+			Party newCDRParty = showPartyDialog(oldCDRParty, "CDR Party");
 			if(! oldCDRParty.equals(newCDRParty))
 			{
 				client.setCDRParty(newCDRParty);
 				client.insertCDRParty();
 			}
 		});
-		partyMenu.add(CDRPartyItem);
+		partyMenu.add(CDRPartyItem);*/
 
 
 		JMenuItem FollowPartyItem = new JMenuItem("Follow Party");
@@ -141,7 +141,7 @@ public class ClientFrame extends JFrame
 
 			//This implementaion is for the test purpose only  - adding myParty without products as following party
 			BusinessParty tempParty = new BusinessParty();
-			PartyType tempCoreParty = InstanceFactory.newInstance(client.getMyParty().getCoreParty());
+			Party tempCoreParty = InstanceFactory.newInstance(client.getMyParty().getCoreParty());
 			tempParty.setCoreParty(tempCoreParty);
 			client.getMyParty().addFollowingParty(tempParty);
 			//*****************
@@ -150,7 +150,7 @@ public class ClientFrame extends JFrame
 			List<BusinessParty> fp = client.getMyParty().getFollowingParties();
 			for(int i = 9; i>=0; i--)
 			{
-				PartyType p = InstanceFactory.newInstancePartyType();
+				Party p = InstanceFactory.newInstanceParty();
 				p.getPartyName().get(0).getName().setValue("Partner #" + i);
 				BusinessParty biz = new BusinessParty();
 				biz.setCoreParty(p);
@@ -159,7 +159,7 @@ public class ClientFrame extends JFrame
 			}
 			for(int i = 15; i>=10; i--)
 			{
-				PartyType p = InstanceFactory.newInstancePartyType();
+				Party p = InstanceFactory.newInstanceParty();
 				p.getPartyName().get(0).getName().setValue("Party #" + i);
 				BusinessParty biz = new BusinessParty();
 				biz.setCoreParty(p);
@@ -279,9 +279,9 @@ public class ClientFrame extends JFrame
 		tabbedPane.setComponentAt(tabIndex, component);
 	}
 
-	public PartyType showPartyDialog(PartyType party, String title)
+	public Party showPartyDialog(Party party, String title)
 	{
-		PartyType partyCopy = InstanceFactory.<PartyType>newInstance(party);
+		Party partyCopy = InstanceFactory.<Party>newInstance(party);
 
 		if(partyDialog == null)
 			partyDialog = new PartyDialog(ClientFrame.this);

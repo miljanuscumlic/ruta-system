@@ -13,11 +13,11 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MyParty extends BusinessParty
 {
-	@XmlElement(name = "BusinessPartners")
+	@XmlElement(name = "BusinessPartner")
 //	@XmlTransient
 	private List<BusinessParty> businessPartners;
-//	@XmlElement(name = "FollowingPartners")
-	@XmlTransient
+	@XmlElement(name = "FollowingPartner")
+//	@XmlTransient
 	private List<BusinessParty> followingParties;
 //	@XmlElement(name = "FollowerPartners")
 	@XmlTransient

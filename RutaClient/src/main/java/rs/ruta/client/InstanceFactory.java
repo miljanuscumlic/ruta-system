@@ -111,6 +111,33 @@ public final class InstanceFactory
 		return party;
 	}
 
+
+	public static Party newInstanceParty()
+	{
+		Party party = new Party();
+		party.setWebsiteURI(new WebsiteURIType());
+		party.setIndustryClassificationCode(new IndustryClassificationCodeType());
+		PartyIdentificationType partyID = new PartyIdentificationType();
+		IDType IDValue = new IDType();
+		partyID.setID(IDValue);
+		party.getPartyIdentification().add(partyID);
+		PartyNameType partyName = new PartyNameType();
+		NameType pName = new NameType();
+		partyName.setName(pName);
+		party.getPartyName().add(partyName);
+
+		AddressType postalAddress = newInstanceAddressType();
+		party.setPostalAddress(postalAddress);
+
+		PartyLegalEntityType legalEntity = newInstancePartyLegalEntity();
+		party.getPartyLegalEntity().add(legalEntity);
+
+		ContactType contact = newInstanceContactType();
+		party.setContact(contact);
+
+		return party;
+	}
+
 	/**Instatiate new instance object of the ContactType, setting all properties used in the Ruta application on not null.
 	 * Properties not used in the Ruta remain null.
 	 * @return new object of type ContactType
@@ -331,7 +358,9 @@ public final class InstanceFactory
 								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), XMLGregorianCalendar.class);
 							else
 								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), fieldType);
-							if(fieldType.getSuperclass() == Object.class || fieldType.getSuperclass() == Number.class) // field is of String or some primitive type
+							if(fieldType.getSuperclass() == Object.class ||
+									fieldType.getSuperclass() == Number.class ||
+									fieldType.getSuperclass() == XMLGregorianCalendar.class) // field is of String, some primitive type, wrapper class or XMLGregorianCalendarImpl
 								method.invoke(copyObject, fieldValue);
 							else
 								method.invoke(copyObject, newInstance(fieldValue));

@@ -10,7 +10,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
 public class PartyDialog extends JDialog
 {
 	private static final long serialVersionUID = 8652433075065940074L;
-	private PartyType party;
+	private Party party;
 	private boolean changed;
 	private AbstractTableModel partyModel;
 
@@ -64,13 +64,13 @@ public class PartyDialog extends JDialog
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	public void setParty(PartyType party)
+	public void setParty(Party party)
 	{
 		this.party = party;
 		((PartyTableModel)partyModel).setParty(party);
 	}
 
-	public PartyType getParty()
+	public Party getParty()
 	{
 		return party;
 	}

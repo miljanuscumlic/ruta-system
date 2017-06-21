@@ -23,19 +23,19 @@ public class Client implements RutaNode
 
 	private MyParty myParty;
 	private BusinessPartyXMLMapper<MyParty> partyDataMapper;// MMM: it should be only one data mapper - for the database, and many finders for each database table
-	private PartyType CDRParty;
-	private CDRPartyTypeXMLMapper<PartyType> CDRPartyDataMapper;
+	private Party CDRParty;
+	private CDRPartyTypeXMLMapper<Party> CDRPartyDataMapper;
 	private ClientFrame frame;
 	private Preferences prefNode = Preferences.userNodeForPackage(this.getClass());
 
 	public Client()
 	{
 		myParty = new MyParty();
-		myParty.setItemDataMapper("client-products.dat");
-		CDRParty = new PartyType();
-		myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
+/*		myParty.setItemDataMapper("client-products.dat");
+		myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));*/
+		CDRParty = new Party();
 		partyDataMapper = new BusinessPartyXMLMapper<MyParty>(Client.this, "myparty.xml");
-		CDRPartyDataMapper = new CDRPartyTypeXMLMapper<PartyType>(Client.this, "cdr.xml");
+		CDRPartyDataMapper = new CDRPartyTypeXMLMapper<Party>(Client.this, "cdr.xml");
 	}
 
 	/** Initializes fields of Client object from the database.
@@ -51,38 +51,18 @@ public class Client implements RutaNode
 		//		myParty = InstanceFactory.newInstance(PartyType.class, 1);
 
 		if(parties.size() != 0)
-			InstanceFactory.copyInstance(parties.get(0), myParty); // MMM: check why I am coping the party into the new object
+		{
+			//InstanceFactory.copyInstance(parties.get(0), myParty); // MMM: check why I am coping the party into the new object
+			myParty = parties.get(0);
+			myParty.setItemDataMapper("client-products.dat");
+			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
+		}
 
 		//MMM: this could/should be lazy called when needed, not at start
-		ArrayList<PartyType> CDRParties = (ArrayList<PartyType>) CDRPartyDataMapper.findAll();
+/*		ArrayList<Party> CDRParties = (ArrayList<Party>) CDRPartyDataMapper.findAll();
 
 		if(CDRParties.size() != 0)
-			InstanceFactory.copyInstance(CDRParties.get(0), CDRParty);
-
-		//*****************
-		//adding Bussines Partners for the test purposes
-		/*		List<BusinessParty> bp = myParty.getBusinessPartners();
-		List<BusinessParty> fp = myParty.getFollowingParties();
-		for(int i = 9; i>=0; i--)
-		{
-			PartyType p = InstanceFactory.newInstancePartyType();
-			p.getPartyName().get(0).getName().setValue("Partner #" + i);
-			BusinessParty biz = new BusinessParty();
-			biz.setCoreParty(p);
-			bp.add(biz);
-			fp.add(biz);
-		}
-		for(int i = 15; i>=10; i--)
-		{
-			PartyType p = InstanceFactory.newInstancePartyType();
-			p.getPartyName().get(0).getName().setValue("Party #" + i);
-			BusinessParty biz = new BusinessParty();
-			biz.setCoreParty(p);
-			fp.add(biz);
-		}*/
-
-		//*****************
-
+			InstanceFactory.copyInstance(CDRParties.get(0), CDRParty);*/
 	}
 
 	/** Initializes the Party field of Client object from the database, if not already initialized in the initialize method.
@@ -90,16 +70,25 @@ public class Client implements RutaNode
 	 */
 	public void initialize()
 	{
-		// trying to load the party data from the XML file
-		ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
-
-		if(parties.size() == 0)
+		if(! myParty.hasCoreParty())
+//		if(parties.size() == 0)
 		{
+			myParty = new MyParty();
+			myParty.setItemDataMapper("client-products.dat");
+			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
 			myParty.setCoreParty(frame.showPartyDialog(myParty.getCoreParty(), "My Party")); //displaying My Party Data dialog
 			insertMyParty();
 		}
-		else
-			InstanceFactory.copyInstance(parties.get(0), myParty); // MMM: check why I am coping the party into the new object
+/*		else
+		{
+			// trying to load the party data from the XML file
+						ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
+
+			//InstanceFactory.copyInstance(parties.get(0), myParty); // MMM: check why I am coping the party into the new object
+			myParty = parties.get(0);
+			myParty.setItemDataMapper("client-products.dat");
+			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
+		}*/
 	}
 
 	/**
@@ -287,12 +276,12 @@ public class Client implements RutaNode
 		myParty = party;
 	}
 
-	public PartyType getCDRParty()
+	public Party getCDRParty()
 	{
 		return CDRParty;
 	}
 
-	public void setCDRParty(PartyType party)
+	public void setCDRParty(Party party)
 	{
 		CDRParty = party;
 	}
