@@ -1,5 +1,5 @@
 
-package rs.ruta.server;
+package rs.ruta.services;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -25,7 +25,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_2.CatalogueType;
     oasis.names.specification.ubl.schema.xsd.commonextensioncomponents_2.ObjectFactory.class,
     oasis.names.specification.ubl.schema.xsd.signaturebasiccomponents_2.ObjectFactory.class,
     oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.ObjectFactory.class,
-    rs.ruta.server.ObjectFactory.class,
+    rs.ruta.services.ObjectFactory.class,
     un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.ObjectFactory.class
 })
 public interface Server {

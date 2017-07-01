@@ -15,7 +15,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_2.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
 import rs.ruta.*;
 import rs.ruta.client.datamapper.*;
-import rs.ruta.server.*;
+import rs.ruta.services.*;
 
 public class Client implements RutaNode
 {

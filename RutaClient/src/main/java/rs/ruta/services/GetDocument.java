@@ -1,5 +1,5 @@
 
-package rs.ruta.server;
+package rs.ruta.services;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

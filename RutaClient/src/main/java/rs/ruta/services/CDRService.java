@@ -1,5 +1,5 @@
 
-package rs.ruta.server;
+package rs.ruta.services;
 
 import java.net.MalformedURLException;
 import java.net.URL;

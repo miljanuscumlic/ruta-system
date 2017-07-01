@@ -1,5 +1,5 @@
 
-package rs.ruta.server;
+package rs.ruta.services;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;

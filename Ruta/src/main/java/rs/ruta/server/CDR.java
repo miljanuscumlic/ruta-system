@@ -37,7 +37,7 @@ public class CDR implements Server
 	private void init()
 	{
 		if (wsCtx == null)
-			throw new RuntimeException("DI failed on wsCtx!");
+			throw new RuntimeException("DI failed on wsCtx!"); // MMM: ? DI Dependancy Injection
 		if (sCtx == null) // ServletContext not yet set?
 		{
 			MessageContext mCtx = wsCtx.getMessageContext();
