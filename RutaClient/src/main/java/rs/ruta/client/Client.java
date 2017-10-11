@@ -1,6 +1,8 @@
 package rs.ruta.client;
 
+import java.awt.Color;
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.file.*;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -10,35 +12,45 @@ import javax.xml.bind.*;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 
-import oasis.names.specification.ubl.schema.xsd.catalogue_2.*;
-import oasis.names.specification.ubl.schema.xsd.catalogue_2.ObjectFactory;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
+import com.helger.commons.state.ESuccess;
+import com.helger.ubl21.UBL21Writer;
+
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.ObjectFactory;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.MonetaryTotalType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.*;
 import rs.ruta.client.datamapper.*;
 import rs.ruta.services.*;
 
 public class Client implements RutaNode
 {
-	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_2"; // colon separated package list
-
+	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_21"; // colon separated package list
+	private static String eclipseMonitorEndPoint = "http://localhost:7777/ruta-server-0.0.1/CDR";
 	private MyParty myParty;
-	private BusinessPartyXMLMapper<MyParty> partyDataMapper;// MMM: it should be only one data mapper - for the database, and many finders for each database table
+	private BusinessPartyXMLFileMapper<MyParty> partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
 	private Party CDRParty;
-	private CDRPartyTypeXMLMapper<Party> CDRPartyDataMapper;
+	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper;
 	private ClientFrame frame;
 	private Preferences prefNode = Preferences.userNodeForPackage(this.getClass());
 
 	public Client()
 	{
 		myParty = new MyParty();
-/*		myParty.setItemDataMapper("client-products.dat");
+		/*		myParty.setItemDataMapper("client-products.dat");
 		myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));*/
-		CDRParty = new Party();
-		partyDataMapper = new BusinessPartyXMLMapper<MyParty>(Client.this, "myparty.xml");
-		CDRPartyDataMapper = new CDRPartyTypeXMLMapper<Party>(Client.this, "cdr.xml");
+		CDRParty = getCDRParty();
+		partyDataMapper = new BusinessPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
+		CDRPartyDataMapper = new CDRPartyTypeXMLFileMapper<Party>(Client.this, "cdr.xml");
 	}
 
-	/** Initializes fields of Client object from the database.
+	/** Initializes fields of Client object from local database.
 	 *
 	 */
 	public void preInitialize()
@@ -59,27 +71,28 @@ public class Client implements RutaNode
 		}
 
 		//MMM: this could/should be lazy called when needed, not at start
-/*		ArrayList<Party> CDRParties = (ArrayList<Party>) CDRPartyDataMapper.findAll();
+		/*		ArrayList<Party> CDRParties = (ArrayList<Party>) CDRPartyDataMapper.findAll();
 
 		if(CDRParties.size() != 0)
 			InstanceFactory.copyInstance(CDRParties.get(0), CDRParty);*/
 	}
 
-	/** Initializes the Party field of Client object from the database, if not already initialized in the initialize method.
+	/** Initializes the Party field of Client object from the database, if not already initialized in the preInitialize method.
 	 *
 	 */
 	public void initialize()
 	{
 		if(! myParty.hasCoreParty())
-//		if(parties.size() == 0)
+			//		if(parties.size() == 0)
 		{
 			myParty = new MyParty();
 			myParty.setItemDataMapper("client-products.dat");
 			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
 			myParty.setCoreParty(frame.showPartyDialog(myParty.getCoreParty(), "My Party")); //displaying My Party Data dialog
-			insertMyParty();
+			//			insertMyParty();
 		}
-/*		else
+		frame.setTitle("Ruta Client - " + myParty.getCoreParty().getSimpleName());
+		/*		else
 		{
 			// trying to load the party data from the XML file
 						ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
@@ -100,134 +113,571 @@ public class Client implements RutaNode
 	}
 
 	/**
-	 * Inserts My Party data to the database
+	 * Inserts My Party data to the local data store.
 	 */
 	public void insertMyParty()
 	{
 		getPartyDataMapper().insertAll();
-
+		//MMM: inserting in embedded exist database - not working at the moment
+		//MapperRegistry.getMapper(MyParty.class);
 	}
 
 	/**
-	 * Inserts CDR Party data to the database
+	 * Inserts CDR Party data to the data store
 	 */
+	@Deprecated
 	public void insertCDRParty()
 	{
 		getCDRPartyDataMapper().insertAll();
-
 	}
 
-	public void synchroniseCatalogue()
+	/**Sends request for registration to the Central Data Repository.
+	 * @param party Party object that should be registered
+	 * @param username username of the party
+	 * @param password password of the party
+	 */
+	public void cdrRegisterMyParty(PartyType party, String username, String password)
 	{
-		if(myParty.isDirtyCatalogue())
+		try
 		{
-			try
+			Server port = getCDRPort();
+			port.registerUserAsync(username, password, futureUser ->
 			{
-				// MMM: maybe JAXBContext should be private class field, if it is used from multiple class methods
-				JAXBContext jc = JAXBContext.newInstance("oasis.names.specification.ubl.schema.xsd.catalogue_2"); //packageList
-
-				Marshaller m = jc.createMarshaller();
-				m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-				//retrieving Catalogue document
-				CatalogueType catalogue = myParty.createCatalogueTypeObject();
-
-				//calling webservice
-				CDRService service = new CDRService();
-				Server port = service.getCDRPort();
-
-				//temporary setting for TCP/IP Monitor in Eclipse
-				((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:7777/Ruta-0.0.1/CDR");
-
-				port.putDocument(catalogue);
-
-				//creating XML document - for test purpose only
-				ObjectFactory objFactory = new ObjectFactory();
-				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
+				StringBuilder msg = new StringBuilder("There has been a problem. My Party has not been registered with the CDR service! ");
 				try
 				{
-					JAXB.marshal(catalogueElement, System.out );
-					JAXB.marshal(catalogueElement, new FileOutputStream("catalogue.xml"));
-					frame.appendToConsole("Catalogue successfully sent to CDR."); //MMM: this should be messaged after the acctual sending of the Catalogue
-					myParty.setDirtyCatalogue(false);
+					RegisterUserResponse response = futureUser.get();
+					String key = response.getReturn();
+					myParty.setUsername(username);
+					myParty.setPassword(password);
+					myParty.setSecretKey(key);
+					frame.appendToConsole("Party has been successfully registered with the CDR service."
+							+ " Please synchronised My Party with the CDR service to be able to use it.", Color.GREEN);
+/*					port.insertPartyAsync(username, party, futureParty ->
+					{
+						StringBuilder msg1 = new StringBuilder("There has been a problem. My Party has not been registered with the CDR service! ");
+						try
+						{
+							InsertPartyResponse res = futureParty.get();
+							String partyID = res.getReturn();
+							frame.appendToConsole("Party has been successfully registered with the CDR service.", Color.GREEN);
+							myParty.getCoreParty().setPartyID(partyID);
+							myParty.setDirtyMyParty(false);
+						}
+						catch (Exception e)
+						{
+														//delete set properties after registerUserAsync call
+							myParty.setUsername(null);
+							myParty.setPassword(null);
+							myParty.setSecretKey(null);
+
+							msg1.append("Server responds: ");
+							Throwable cause = e.getCause();
+							if(cause instanceof RutaException)
+								msg1.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+							else
+								msg1.append(trimSOAPFaultMessage(cause.getMessage()));
+							frame.appendToConsole(msg1.toString(), Color.RED);
+						}
+					});*/
 				}
-				catch (FileNotFoundException e)
+				catch (Exception e)
 				{
-					System.out.println("Could not save Catalogue document to the file catalogue.xml");
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(cause.getMessage());
+					frame.appendToConsole(msg.toString(), Color.RED);
 				}
-			}
-			catch (JAXBException e)
-			{
-				e.printStackTrace();
-			}
-			catch (WebServiceException e)
-			{
-				JOptionPane.showMessageDialog(null, "Cannot connect to CDR!\nPlease try again later.", "Synchronising Catalogue", JOptionPane.PLAIN_MESSAGE);
-			}
+			});
+			frame.appendToConsole("Request for the registration of My Party has been sent to the CDR service.", Color.BLACK);
 		}
-		else
+		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("Catalogue is already synchronized with the CDR.");
+			frame.appendToConsole("There has been a problem. My Party has not been registered with the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
 
-	/**Pulling my Catalogue from the Central Data Repository
+	/**Synchronise My Party data with the CDR service. Method sends the data
+	 * if they have been changed since the last synchronisation.
 	 *
 	 */
-	public void pullCatalogue()
+	public void cdrSynchroniseMyParty()
 	{
-		if(myParty.getFollowingParties().size() != 0)
-		{
-			try
-			{
-				// MMM: maybe JAXBContext should be private class field, if it is used from multiple class methods
-				JAXBContext jc = JAXBContext.newInstance("oasis.names.specification.ubl.schema.xsd.catalogue_2"); //packageList
-
-				//calling webservice
-				CDRService service = new CDRService();
-				Server port = service.getCDRPort();
-
-				//temporary setting for TCP/IP Monitor in Eclipse
-				((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:7777/Ruta-0.0.1/CDR");
-
-				CatalogueType catalogue = port.getDocument();
-				myParty.getFollowingParties().get(0).setMyProducts(catalogue);
-
-
-				//creating XML document - for test purpose only
-				ObjectFactory objFactory = new ObjectFactory();
-				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
-				try
-				{
-					JAXB.marshal(catalogueElement, System.out );
-					JAXB.marshal(catalogueElement, new FileOutputStream("catalogue-from-CDR.xml"));
-					frame.appendToConsole("Catalogue successfully retrieved from CDR."); //MMM: this should be messaged after the acctual sending of the Catalogue
-				}
-				catch (FileNotFoundException e)
-				{
-					System.out.println("Could not save Catalogue document to the file catalogue-from-CDR.xml");
-				}
-			}
-			catch (JAXBException e)
-			{
-				e.printStackTrace();
-			}
-			catch (WebServiceException e)
-			{
-				JOptionPane.showMessageDialog(null, "Cannot connect to CDR!\nPlease try again later.", "Synchronising Catalogue", JOptionPane.PLAIN_MESSAGE);
-			}
-		}
-		else
-			JOptionPane.showMessageDialog(null, "My Party not set as following party", "Synchronising Catalogue", JOptionPane.INFORMATION_MESSAGE);
+		if(myParty.isRegisteredWithCDR()) // update
+			cdrUpdateMyParty();
+		else // first time input
+			cdrInsertMyParty();
 	}
 
+	/**Inserts My Party data to the CDR service. This method is called only ones, after registration of
+	 * My Party with the CDR service.
+	 */
+	private void cdrInsertMyParty()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.insertPartyAsync(myParty.getUsername(), myParty.getCoreParty(), futureParty ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. My Party has not been registered with the CDR service! ");
+				try
+				{
+					InsertPartyResponse res = futureParty.get();
+					String partyID = res.getReturn();
+					frame.appendToConsole("My Party has been successfully synchronised with the CDR service.", Color.GREEN);
+					myParty.getCoreParty().setPartyID(partyID);
+					myParty.setDirtyMyParty(false);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Request for the synchronisation of My Party has been sent to the CDR service.", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. My Party has not been synchronised with the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
 
-	public DataMapper getPartyDataMapper()
+	/**Update My Party data with the CDR service.
+	 *
+	 */
+	private void cdrUpdateMyParty()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.updatePartyAsync(myParty.getUsername(), myParty.getCoreParty(), future ->
+			{
+				String msg = "There has been a problem. My Party has not been synchronised with the CDR service! ";
+				try
+				{
+					UpdatePartyResponse response = future.get();
+					myParty.setDirtyMyParty(false);
+					frame.appendToConsole("My Party has been successfully updated with the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg += "Server responds: ";
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg += cause.getMessage() + " " + ((RutaException) cause).getFaultInfo().getDetail();
+					else
+						msg += trimSOAPFaultMessage(cause.getMessage());
+					frame.appendToConsole(msg, Color.RED);
+				}
+			});
+			frame.appendToConsole("Request for the synchronisation of My Party has been sent to the CDR service.", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. My Party has not been synchronised with the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Deregister My Party from the CDR service. All documents corresponding to the My Party deposited in the CDR database
+	 * are deleted from the CDR service.
+	 */
+	public void cdrDeregisterMyParty()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.deleteUserAsync(myParty.getUsername(), future ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. My Party has not been deleted from the CDR service! ");
+				try
+				{
+					DeleteUserResponse response = future.get();
+					myParty.setDirtyMyParty(true);
+					myParty.setDirtyCatalogue(true);
+					myParty.setSecretKey(null);
+					myParty.setUsername(null);
+					myParty.setPassword(null);
+					myParty.getCoreParty().setPartyID(null);
+					frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Request for deregistration of My Party has been sent to the CDR service.", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. My Party has not been deregistered from the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Synchronise Catalogue with the CDR service. If catalogue is empty calls deleteCatalogue method.
+	 * Method sends the catalogue if it is nonempty and has been changed since the last synchronisation
+	 * with the CDR service.
+	 */
+	public void cdrSynchroniseMyCatalogue()
+	{
+		if(myParty.getProductCount() == 0) // delete My Catalogue from CDR
+			cdrDeleteMyCatalogue();
+		else
+		{
+			if(myParty.isInsertMyCatalogue() == true)
+				cdrInsertMyCatalogue();
+			else
+				cdrUpdateMyCatalogue();
+		}
+	}
+
+	/**Inserts My Catalogue for the first time in the CDR service. Updates are done with the
+	 * <code>cdrUpdateMyCatalogue</code> method.
+	 * @see Client#cdrUpdateMyCatalogue <code>cdrUpdateMyCatalogue</code>
+	 */
+	private void cdrInsertMyCatalogue()
+	{
+		try
+		{
+			// MMM: maybe JAXBContext should be private class field, if it is used from multiple class methods
+			JAXBContext jc = JAXBContext.newInstance("oasis.names.specification.ubl.schema.xsd.catalogue_21"); //packageList
+
+			Marshaller m = jc.createMarshaller();
+			//m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+			//creating Catalogue document
+			CatalogueType catalogue = myParty.createCatalogue(CDRParty);
+
+			Server port = getCDRPort();
+			String username = myParty.getUsername();
+			//port.putDocument(catalogue);
+			port.insertCatalogueAsync(username, catalogue, future ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. My Catalogue has not been deposited to the CDR service! ");
+				try
+				{
+					InsertCatalogueResponse response =  future.get();
+					frame.appendToConsole("My Catalogue has been successfully deposited to the CDR service.", Color.GREEN);
+					myParty.setDirtyCatalogue(false);
+					myParty.setInsertMyCatalogue(false);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("My Catalogue has been sent to the CDR service.", Color.BLACK);
+
+			//creating XML document - for test purpose only
+			ObjectFactory objFactory = new ObjectFactory();
+			JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
+			try
+			{
+				JAXB.marshal(catalogueElement, System.out );
+				JAXB.marshal(catalogueElement, new FileOutputStream("catalogue.xml"));
+			}
+			catch (FileNotFoundException e)
+			{
+				System.out.println("Could not save Catalogue document to the file catalogue.xml");
+			}
+		}
+		catch (JAXBException e)
+		{
+			e.printStackTrace();
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. My Catalogue has not been deposited to the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Updates My Catalogue in the CDR service.
+	 *
+	 */
+	private void cdrUpdateMyCatalogue()
+	{
+		try
+		{
+			// MMM: maybe JAXBContext should be private class field, if it is used from multiple class methods
+			JAXBContext jc = JAXBContext.newInstance("oasis.names.specification.ubl.schema.xsd.catalogue_21"); //packageList
+
+			Marshaller m = jc.createMarshaller();
+			//m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+			//creating Catalogue document
+			CatalogueType catalogue = myParty.createCatalogue(CDRParty);
+
+			Server port = getCDRPort();
+			String username = myParty.getUsername();
+			//port.putDocument(catalogue);
+			port.updateCatalogueAsync(username, catalogue, future ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. My Catalogue has not been updated by the CDR service! ");
+				try
+				{
+					UpdateCatalogueResponse response =  future.get();
+					frame.appendToConsole("My Catalogue has been successfully updated by the CDR service.", Color.GREEN);
+					myParty.setDirtyCatalogue(false);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("My Catalogue has been sent to the CDR service.", Color.BLACK);
+
+			//creating XML document - for test purpose only
+			ObjectFactory objFactory = new ObjectFactory();
+			JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
+			try
+			{
+				JAXB.marshal(catalogueElement, System.out );
+				JAXB.marshal(catalogueElement, new FileOutputStream("catalogue.xml"));
+			}
+			catch (FileNotFoundException e)
+			{
+				System.out.println("Could not save Catalogue document to the file catalogue.xml");
+			}
+		}
+		catch (JAXBException e)
+		{
+			e.printStackTrace();
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. My Catalogue has not been updated by the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Pulls my Catalogue from the Central Data Repository.
+	 *
+	 */
+	public void cdrPullMyCatalogue()
+	{
+		try
+		{
+			// MMM: maybe JAXBContext should be private class field, if it is used from multiple class methods
+			JAXBContext jc = JAXBContext.newInstance("oasis.names.specification.ubl.schema.xsd.catalogue_21"); //packageList
+
+			Server port = getCDRPort();
+
+			//CatalogueType catalogue = port.getDocument();
+			port.findCatalogueAsync(myParty.getCoreParty().getPartyID(), future ->
+			{
+				try
+				{
+					FindCatalogueResponse response = future.get();
+					CatalogueType catalogue = response.getReturn();
+					if(catalogue != null)
+					{
+						frame.appendToConsole("Catalogue has been successfully retrieved from the CDR service.", Color.GREEN);
+						myParty.getFollowingParties().get(0).setMyProducts(catalogue);
+
+						//creating XML document - for test purpose only
+						ObjectFactory objFactory = new ObjectFactory();
+						JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
+						try
+						{
+							JAXB.marshal(catalogueElement, System.out );
+							JAXB.marshal(catalogueElement, new FileOutputStream("catalogue-from-CDR.xml"));
+						}
+						catch (FileNotFoundException e)
+						{
+							System.out.println("Could not save Catalogue document to the file catalogue-from-CDR.xml");
+						}
+					}
+					else
+						frame.appendToConsole("Could not retrieve the catalogue from the CDR service!. Catalogue does not exist.", Color.RED);
+				}
+				catch (Exception e)
+				{
+					StringBuilder msg = new StringBuilder("There has been a problem. Catalogue could not be retrieved from the CDR service! Server responds:");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Request for catalogue has been sent to the CDR service.", Color.BLACK);
+		}
+		catch (JAXBException e)
+		{
+			e.printStackTrace();
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. My Party has not been synchronised with the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+		/*catch (WebServiceException e)
+			{
+				JOptionPane.showMessageDialog(null, "Cannot connect to CDR!\nPlease try again later.", "Synchronising Catalogue", JOptionPane.PLAIN_MESSAGE);
+			}*/
+	}
+
+	/**Sends request for deletion of the Catalogue from the CDR service.
+	 *
+	 */
+	public void cdrDeleteMyCatalogue()
+	{
+		try
+		{
+			CatalogueDeletionType catalogueDeletion = myParty.createCatalogueDeletion(CDRParty);
+
+			Server port = getCDRPort();
+			String username = myParty.getUsername();
+			port.deleteCatalogueAsync(username, catalogueDeletion, future ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. Catalogue has not been deleted from the CDR service! ");
+				try
+				{
+					DeleteCatalogueResponse response = future.get();
+					myParty.setDirtyCatalogue(true);
+					myParty.setInsertMyCatalogue(true);
+					frame.appendToConsole("Catalogue has been successfully deleted from the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Request for the Catalogue deletion has been sent to the CDR service.", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("There has been a problem. Catalogue has not been deleted from the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Removes automatically prepended and appended portion of the SOAPFault detail string.
+	 * @param message string to be processed
+	 * @return trimmed string
+	 */
+	private String trimSOAPFaultMessage(String message)
+	{
+		return message.replaceFirst("Client received SOAP Fault from server: (.+) "
+				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$1");
+	}
+
+	/**Testing of storing two parties to the CDR database.
+	 *
+	 */
+	public void testParty()
+	{
+		/*		Server port = getCDRPort();
+		frame.appendToConsole("TEST: Request for the storing of the two parties has been sent to the CDR service.", Color.MAGENTA);
+		port.testPartyAsync(myParty.getUsername(), "amanas", myParty.getCoreParty(), future ->
+		{
+			String msg = "TEST has failed! ";
+			try
+			{
+				future.get();
+				msg = "TEST has succeded.";
+				frame.appendToConsole(msg, Color.MAGENTA);
+			}
+			catch (Exception e)
+			{
+				msg += "Server responds: ";
+				if(e.getCause() instanceof RutaException)
+					frame.appendToConsole(msg + e.getCause().getMessage() + " " +
+							((RutaException)e.getCause()).getFaultInfo().getDetail(), Color.MAGENTA);
+				else
+					frame.appendToConsole(msg + e.getCause().getMessage(), Color.MAGENTA);
+				e.printStackTrace();
+			}
+		});*/
+	}
+
+	public void testPhax()
+	{
+		final String sCurrency = "EUR";
+
+		// Create domain object
+		final InvoiceType aInvoice = new InvoiceType ();
+
+		// Fill it
+		aInvoice.setID ("Dummy Invoice number");
+		aInvoice.setIssueDate(InstanceFactory.getDate());
+
+		final SupplierPartyType aSupplier = new SupplierPartyType ();
+		aInvoice.setAccountingSupplierParty (aSupplier);
+
+		final CustomerPartyType aCustomer = new CustomerPartyType ();
+		aInvoice.setAccountingCustomerParty (aCustomer);
+
+		final MonetaryTotalType aMT = new MonetaryTotalType ();
+		aMT.setPayableAmount (BigDecimal.TEN).setCurrencyID (sCurrency);
+		aInvoice.setLegalMonetaryTotal (aMT);
+
+		final InvoiceLineType aLine = new InvoiceLineType ();
+		aLine.setID ("1");
+
+		final ItemType aItem = new ItemType ();
+		aLine.setItem (aItem);
+
+		aLine.setLineExtensionAmount (BigDecimal.TEN).setCurrencyID (sCurrency);
+
+		aInvoice.addInvoiceLine (aLine);
+
+		// Write to disk
+		final ESuccess eSuccess = UBL21Writer.invoice ().write (aInvoice, new File ("target/dummy-invoice.xml"));
+	}
+
+	/**Temporary setting of the endpoint address property for TCP/IP Monitor in Eclipse.
+	 * @param port port of the service on which the endpoint address property is set
+	 */
+	private static void setEndPoint(Server port)
+	{
+		((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, eclipseMonitorEndPoint);
+	}
+
+	public OLDDataMapper getPartyDataMapper()
 	{
 		return partyDataMapper;
 	}
 
-	public DataMapper getCDRPartyDataMapper()
+	@Deprecated
+	public OLDDataMapper getCDRPartyDataMapper()
 	{
 		return CDRPartyDataMapper;
 	}
@@ -278,6 +728,11 @@ public class Client implements RutaNode
 
 	public Party getCDRParty()
 	{
+		if (CDRParty == null)
+		{
+			CDRParty = new Party();
+			CDRParty.setSimpleName("CDR");
+		}
 		return CDRParty;
 	}
 
@@ -291,5 +746,18 @@ public class Client implements RutaNode
 		frame = clientFrame;
 	}
 
+	/**Gets the CDR web service port.
+	 * @return web service port
+	 */
+	private Server getCDRPort()
+	{
+		//getting webservice port
+		CDRService service = new CDRService();
+		service.setHandlerResolver(new ClientHandlerResolver(myParty));
+		Server port = service.getCDRPort();
+		//temporary setting for TCP/IP Monitor in Eclipse
+		setEndPoint(port);
+		return port;
+	}
 
 }

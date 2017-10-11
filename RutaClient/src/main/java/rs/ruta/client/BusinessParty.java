@@ -4,43 +4,107 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
-import oasis.names.specification.ubl.schema.xsd.catalogue_2.CatalogueType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 import rs.ruta.client.datamapper.*;
 
-@XmlRootElement(name = "BussinesParty", namespace = "urn:rs:ruta:client:businessparty")
+//@XmlRootElement(name = "BussinesParty", namespace = "urn:rs:ruta:client:businessparty") //commented because it is not root xml element anymore, MyParty is instead
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BusinessParty
 {
-
-	@XmlElement(name = "MyProducts")
+//	@XmlElement(name = "MyProducts")
 //	@XmlTransient
+	@XmlElement(name = "MyProduct")
 	private ArrayList<ItemType> myProducts; //database alternative - MMM: to be replaced with real database
 	@XmlTransient
-	private ItemTypeFileMapper<ItemType> itemDataMapper;
+	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
+//	@XmlTransient
 	private Party coreParty;
 	@XmlElement(name = "Following")
+//	@XmlTransient
 	private boolean following;
 	@XmlElement(name = "Partner")
+//	@XmlTransient
 	private boolean partner;
 	@XmlElement(name = "CatalogueID")
+//	@XmlTransient
 	protected long catalogueID;
+	@XmlElement(name = "CatalogueDeletionID")
+	protected long catalogueDeletionID;
+
+	protected XMLGregorianCalendar catalogueIssueDate;
+
 
 	public BusinessParty()
 	{
 		myProducts = getMyProducts();
 		catalogueID = 0;
+		catalogueDeletionID = 0;
+		catalogueIssueDate = null;
 		coreParty = null;
 	}
 
-	public long getCatalogueID() { return catalogueID; }
+	/**Returns ID of the latest created Catalogue Document.
+	 * @return catalogue ID
+	 */
+	public long getCatalogueID()
+	{
+		return catalogueID;
+	}
 
 	public void setCatalogueID(Long catalogueID)
 	{
 		this.catalogueID = catalogueID;
+	}
+
+	/**Returns next ID for the newly created Catalogue Document.
+	 * @return next catalogue ID
+	 */
+	public long nextCatalogueID()
+	{
+		return ++catalogueID;
+	}
+
+	/**Returns ID of the latest created Catalogue Deletion Document.
+	 * @return catalogue deletion ID
+	 */
+	public long getCatalogueDeletionID()
+	{
+		return catalogueDeletionID;
+	}
+
+	public void setCatalogueDeletionID(Long catalogueDeletionID)
+	{
+		this.catalogueDeletionID = catalogueDeletionID;
+	}
+
+	/**Gets issue date of the latest catalogue
+	 * @return catalogue issue date
+	 */
+	public XMLGregorianCalendar getCatalogueIssueDate()
+	{
+		return catalogueIssueDate;
+	}
+
+	/**Sets catalogue issue date to current date
+	 * @return set catalogue issue date
+	 */
+	public XMLGregorianCalendar setCatalogueIssueDate()
+	{
+		this.catalogueIssueDate = InstanceFactory.getDate();
+		return catalogueIssueDate;
+	}
+
+	/**Returns next ID for the newly created CatalogueDeletion Document.
+	 * @return next catalogue deletion ID
+	 */
+	public long nextCatalogueDeletionID()
+	{
+		return ++catalogueDeletionID;
 	}
 
 	public boolean isFollowing()
@@ -113,14 +177,14 @@ public class BusinessParty
 		}
 	}
 
-	public void setItemDataMapper(ItemTypeFileMapper<ItemType> itemDataMapper)
+	public void setItemDataMapper(ItemTypeBinaryFileMapper<ItemType> itemDataMapper)
 	{
 		this.itemDataMapper = itemDataMapper;
 	}
 
 	public void setItemDataMapper(String fileStore)
 	{
-		this.itemDataMapper = new ItemTypeFileMapper<ItemType>(this, fileStore);
+		this.itemDataMapper = new ItemTypeBinaryFileMapper<ItemType>(this, fileStore);
 	}
 
 
@@ -230,7 +294,6 @@ public class BusinessParty
 		}
 		return null;*/
 
-
 		try
 		{
 			return InstanceFactory.getPropertyOrNull(item.getCommodityClassification().get(0).getCommodityCode(), CommodityCodeType::getValue);
@@ -267,13 +330,16 @@ public class BusinessParty
 		myProducts.add(new ItemType());
 	}
 
+	/**Returns the number of party's products.
+	 * @return number of products
+	 */
 	public int getProductCount()
 	{
 		return myProducts.size();
 	}
 
 	/**
-	 * Reads all products of party from the store. If the products are already read, skips the read.
+	 * Reads all products of party from the data store. If the products are already read, skips the read.
 	 */
 	public void importMyProducts()
 	{
@@ -289,7 +355,7 @@ public class BusinessParty
 	}
 
 	/**
-	 * Writes all Products to the database.
+	 * Writes all Products to the data store.
 	 */
 	public void exportMyProducts()
 	{
@@ -301,13 +367,27 @@ public class BusinessParty
 		itemDataMapper.closeConnection();
 	}
 
-	public DataMapper getItemDataMapper()
+	public OLDDataMapper getItemDataMapper()
 	{
 		return itemDataMapper;
 	}
 
+	public void setFollowing(boolean following)
+	{
+		this.following = following;
+	}
 
-	/**This method do nothing, because this base class is not suppose to change the values of properties
+	public void setPartner(boolean partner)
+	{
+		this.partner = partner;
+	}
+
+	public void setCatalogueID(long catalogueID)
+	{
+		this.catalogueID = catalogueID;
+	}
+
+	/**This methods do nothing, because this base class is not suppose to change the values of properties
 	 * @param index
 	 * @param value
 	 */
@@ -319,21 +399,19 @@ public class BusinessParty
 
 	public void setProductBarcode(int index, String value) { }
 
-	public void setProductPackSizeNumeric(int index, String value) { }
+	public void setProductPackSizeNumeric(int index, BigDecimal value) { }
 
 	public void setProductCommodityCode(int index, String value) { }
 
 	public void setProductItemClassificationCode(int index, String value) { }
 
 	/**Returns String representing BussinesParty class.
-	 * @return the name of the coreParty or null if Party is not set
+	 * @return the name of the core Party or null if core Party is not set
 	 */
 	@Override
 	public String toString()
 	{
 		return InstanceFactory.getPropertyOrNull(coreParty.getPartyName().get(0).getName(), NameType::getValue);
 	}
-
-
 
 }

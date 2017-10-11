@@ -1,16 +1,134 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns5:MyParty xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns4="urn:rs:ruta:client:businessparty" xmlns:ns5="urn:rs:ruta:client">
-    <MyProducts>
-        <ns3:Name>misao</ns3:Name>
-    </MyProducts>
-    <MyProducts>
-        <ns3:Name>svet</ns3:Name>
-    </MyProducts>
+<ns4:MyParty xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns4="urn:rs:ruta:client">
+    <MyProduct>
+        <ns3:Description>kako biti veseo</ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name>Veselje</ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID>458</ns3:ID>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+        <ns2:CommodityClassification>
+            <ns3:CommodityCode></ns3:CommodityCode>
+            <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+        </ns2:CommodityClassification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description>kako biti radostan</ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name>Radost</ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID>98</ns3:ID>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+        <ns2:CommodityClassification>
+            <ns3:CommodityCode></ns3:CommodityCode>
+            <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+        </ns2:CommodityClassification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description>kako biti ushićen :)</ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name>Ushićenje</ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID>7854</ns3:ID>
+        </ns2:SellersItemIdentification>
+        <ns2:CommodityClassification>
+            <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+        </ns2:CommodityClassification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description>marljivo</ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name>Marljivost</ns3:Name>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description>kako biti radans</ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name>Radnost</ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:Name></ns3:Name>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:PackSizeNumeric/>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+        <ns2:CommodityClassification>
+            <ns3:CommodityCode></ns3:CommodityCode>
+            <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
+        </ns2:CommodityClassification>
+    </MyProduct>
+    <MyProduct>
+        <ns3:Description></ns3:Description>
+        <ns3:Name></ns3:Name>
+        <ns2:SellersItemIdentification>
+            <ns3:ID></ns3:ID>
+            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+        </ns2:SellersItemIdentification>
+    </MyProduct>
     <CoreParty>
         <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
         <ns3:IndustryClassificationCode>89898</ns3:IndustryClassificationCode>
+        <ns2:PartyIdentification>
+            <ns3:ID>9d917fc0</ns3:ID>
+        </ns2:PartyIdentification>
         <ns2:PartyName>
-            <ns3:Name>Ruta</ns3:Name>
+            <ns3:Name>Rutaaaedfe</ns3:Name>
         </ns2:PartyName>
         <ns2:PostalAddress>
             <ns3:Floor>4</ns3:Floor>
@@ -23,12 +141,12 @@
             <ns3:PostalZone>11000</ns3:PostalZone>
             <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
             <ns2:Country>
-                <ns3:Name>Srbija BRertrt</ns3:Name>
+                <ns3:Name>Srbija</ns3:Name>
             </ns2:Country>
         </ns2:PostalAddress>
         <ns2:PartyLegalEntity>
             <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
-            <ns3:CompanyID>589754564</ns3:CompanyID>
+            <ns3:CompanyID>5897545646</ns3:CompanyID>
             <ns3:RegistrationDate>2018-02-01</ns3:RegistrationDate>
             <ns2:RegistrationAddress>
                 <ns3:Floor>4</ns3:Floor>
@@ -55,7 +173,12 @@
     </CoreParty>
     <Following>true</Following>
     <Partner>false</Partner>
-    <CatalogueID>0</CatalogueID>
+    <CatalogueID>111</CatalogueID>
+    <CatalogueDeletionID>13</CatalogueDeletionID>
+    <catalogueIssueDate>2017-10-10T08:50:35.781+02:00</catalogueIssueDate>
+    <Password>ruta</Password>
+    <Username>ruta</Username>
+    <SecretKey>c0eb3b65</SecretKey>
     <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI></ns3:WebsiteURI>
@@ -83,7 +206,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -111,6 +234,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -139,7 +263,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -167,6 +291,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -195,7 +320,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -223,6 +348,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -251,7 +377,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -279,6 +405,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -307,7 +434,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -335,6 +462,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -363,7 +491,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -391,6 +519,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -419,7 +548,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -447,6 +576,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -475,7 +605,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -503,6 +633,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -531,7 +662,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -559,6 +690,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <BusinessPartner>
         <CoreParty>
@@ -587,7 +719,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -615,11 +747,117 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <FollowingPartner>
+        <MyProduct>
+            <ns3:Description>kako biti vesel</ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name>Veselje</ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID>458</ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode></ns3:CommodityCode>
+                <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>kako biti radostan</ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name>Radost</ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID>98</ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode></ns3:CommodityCode>
+                <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>kako biti ushićen :)</ns3:Description>
+            <ns3:Name>Ushićenje</ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID>7854</ns3:ID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name>Marljivost</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>kako biti radan</ns3:Description>
+            <ns3:Name>Radnost</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name></ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name></ns3:Name>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode></ns3:CommodityCode>
+                <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
         <CoreParty>
             <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
             <ns3:IndustryClassificationCode>89898</ns3:IndustryClassificationCode>
+            <ns2:PartyIdentification>
+                <ns3:ID>22ba4e28</ns3:ID>
+            </ns2:PartyIdentification>
             <ns2:PartyName>
                 <ns3:Name>Ruta</ns3:Name>
             </ns2:PartyName>
@@ -634,12 +872,12 @@
                 <ns3:PostalZone>11000</ns3:PostalZone>
                 <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
                 <ns2:Country>
-                    <ns3:Name>Srbija BRertrt</ns3:Name>
+                    <ns3:Name>Srbija</ns3:Name>
                 </ns2:Country>
             </ns2:PostalAddress>
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
-                <ns3:CompanyID>589754564</ns3:CompanyID>
+                <ns3:CompanyID>5897545646</ns3:CompanyID>
                 <ns3:RegistrationDate>2018-02-01</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor>4</ns3:Floor>
@@ -666,7 +904,8 @@
         </CoreParty>
         <Following>false</Following>
         <Partner>false</Partner>
-        <CatalogueID>0</CatalogueID>
+        <CatalogueID>36</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -695,7 +934,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -723,6 +962,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -751,7 +991,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -779,6 +1019,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -807,7 +1048,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -835,6 +1076,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -863,7 +1105,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -891,6 +1133,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -919,7 +1162,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -947,6 +1190,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -975,7 +1219,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1003,6 +1247,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1031,7 +1276,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1059,6 +1304,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1087,7 +1333,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1115,6 +1361,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1143,7 +1390,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1171,6 +1418,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1199,7 +1447,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1227,6 +1475,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1255,7 +1504,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1283,6 +1532,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1311,7 +1561,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1339,6 +1589,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1367,7 +1618,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1395,6 +1646,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1423,7 +1675,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1451,6 +1703,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1479,7 +1732,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1507,6 +1760,7 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>
         <CoreParty>
@@ -1535,7 +1789,7 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName></ns3:RegistrationName>
                 <ns3:CompanyID></ns3:CompanyID>
-                <ns3:RegistrationDate>2017-06-21+02:00</ns3:RegistrationDate>
+                <ns3:RegistrationDate>2017-08-23+02:00</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor></ns3:Floor>
                     <ns3:Room></ns3:Room>
@@ -1563,6 +1817,9 @@
         <Following>false</Following>
         <Partner>false</Partner>
         <CatalogueID>0</CatalogueID>
+        <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
-    <DirtyCatalogue>true</DirtyCatalogue>
-</ns5:MyParty>
+    <DirtyCatalogue>false</DirtyCatalogue>
+    <DirtyMyParty>false</DirtyMyParty>
+    <InsertMyCatalogue>false</InsertMyCatalogue>
+</ns4:MyParty>

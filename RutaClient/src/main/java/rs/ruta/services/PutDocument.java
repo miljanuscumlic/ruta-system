@@ -4,16 +4,16 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.catalogue_2.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 
 
 /**
- * <p>Java class for putDocument complex type.
+ * <p>Java class for PutDocument complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="putDocument">
+ * &lt;complexType name="PutDocument">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -27,7 +27,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_2.CatalogueType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "putDocument", propOrder = {
+@XmlType(name = "PutDocument", propOrder = {
     "arg0"
 })
 public class PutDocument {

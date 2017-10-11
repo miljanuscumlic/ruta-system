@@ -8,8 +8,8 @@ import java.util.function.Function;
 
 import javax.xml.datatype.*;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 
 public final class InstanceFactory
 {
@@ -306,9 +306,11 @@ public final class InstanceFactory
 	 * Creates new instance object of type T as a deep copy of passed object,
 	 * copying all properties that are set in the passed object.
 	 * Properties that are null or false in the passed object, are not set in the new object.
+	 * @param <T> class of the object to be instatiated
 	 * @param object object of type T that is being copied
 	 * @return new instance object of type T
 	 */
+	@Deprecated
 	@SuppressWarnings("restriction")
 	public static <T> T newInstance(T object)
 	{
@@ -354,13 +356,16 @@ public final class InstanceFactory
 						{
 							Method method;
 							// field is of XMLGregorianCalendarImpl type, but there is no method that accept this implementation instead of interface XMLGregorianCalendar
-							if(fieldType == com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl.class)
+							if(//fieldType == com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl.class ||
+									//fieldType == org.apache.xerces.jaxp.datatype.XMLGregorianCalendarImpl.class ||
+									fieldType.getName().contains("XMLGregorianCalendarImpl"))
 								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), XMLGregorianCalendar.class);
 							else
 								method = cl.getDeclaredMethod(synthesizeMethodName1("set", field.getName()), fieldType);
-							if(fieldType.getSuperclass() == Object.class ||
-									fieldType.getSuperclass() == Number.class ||
-									fieldType.getSuperclass() == XMLGregorianCalendar.class) // field is of String, some primitive type, wrapper class or XMLGregorianCalendarImpl
+							Class<?> fieldSuperclazz = fieldType.getSuperclass();
+							if(fieldSuperclazz == Object.class ||
+									fieldSuperclazz == Number.class ||
+									fieldSuperclazz == XMLGregorianCalendar.class) // field is of String, some primitive type, wrapper class or XMLGregorianCalendarImpl
 								method.invoke(copyObject, fieldValue);
 							else
 								method.invoke(copyObject, newInstance(fieldValue));
@@ -389,24 +394,24 @@ public final class InstanceFactory
 				Method methodGet = null;
 				Class<?> valueClazz = null;
 
-				if(object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.AmountType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.MeasureType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.NumericType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.QuantityType)
+				if(object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.AmountType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.MeasureType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.NumericType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.QuantityType)
 					valueClazz = BigDecimal.class;
-				else if(object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.BinaryObjectType)
+				else if(object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.BinaryObjectType)
 					valueClazz = byte[].class;
-				else if(object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.CodeType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.DateTimeType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.IdentifierType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.IndicatorType ||
-						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.TextType )
+				else if(object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.CodeType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.DateTimeType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.IdentifierType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.IndicatorType ||
+						object instanceof un.unece.uncefact.data.specification.corecomponenttypeschemamodule._21.TextType )
 					valueClazz = String.class;
-				else if(object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.DateTimeType ||
-						object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.DateType ||
-						object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.TimeType)
+				else if(object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_21.DateTimeType ||
+						object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_21.DateType ||
+						object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_21.TimeType)
 					valueClazz = XMLGregorianCalendar.class;
-				else if(object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_2.IndicatorType)
+				else if(object instanceof oasis.names.specification.ubl.schema.xsd.unqualifieddatatypes_21.IndicatorType)
 					valueClazz = boolean.class;
 
 				if(valueClazz != null)

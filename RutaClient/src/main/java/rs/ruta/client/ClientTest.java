@@ -19,7 +19,6 @@ public class ClientTest
 		EventQueue.invokeLater(() ->
 		{
 			JFrame frame = new ClientFrame(client);
-			frame.setTitle("Ruta Client");
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setVisible(true);
 			client.initialize();

@@ -5,14 +5,21 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
-import oasis.names.specification.ubl.schema.xsd.catalogue_2.*;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.*;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 
 @XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MyParty extends BusinessParty
 {
+	@XmlElement(name = "Password")
+	private String password;
+	@XmlElement(name = "Username")
+	private String username;
+	@XmlElement(name = "SecretKey")
+	private String secretKey; // for SOAP message digest encryption
 	@XmlElement(name = "BusinessPartner")
 //	@XmlTransient
 	private List<BusinessParty> businessPartners;
@@ -22,14 +29,21 @@ public class MyParty extends BusinessParty
 //	@XmlElement(name = "FollowerPartners")
 	@XmlTransient
 	private List<BusinessParty> followerParties;
-
 	@XmlElement(name = "DirtyCatalogue")
 	private boolean dirtyCatalogue; // MMM: this property is also saved as the preference
+	@XmlElement(name = "DirtyMyParty")
+	private boolean dirtyMyParty;
+	@XmlElement(name = "InsertMyCatalogue")
+	private boolean insertMyCatalogue;
+
 
 	public MyParty()
 	{
 		super();
 		setFollowing(true);
+		dirtyCatalogue = false; //when first created My Catalogue is empty and therefore as nonexisting it is syncronized with the CDR service
+		dirtyMyParty = insertMyCatalogue = true;
+		username = password = secretKey = null;
 	}
 
 	public List<BusinessParty> getBusinessPartners()
@@ -68,6 +82,15 @@ public class MyParty extends BusinessParty
 		this.followerParties = followerParties;
 	}
 
+	/**Checks if the party is registered with the CDR, i.e. if party has assigned unique Party ID.
+	 * @return true if party is registered with the CDR service, otherwise false
+	 */
+	public boolean isRegisteredWithCDR()
+	{
+		//return secretKey != null ? true : false;
+		return getCoreParty().getPartyID() == null ? false : true;
+	}
+
 	public boolean isDirtyCatalogue()
 	{
 		return dirtyCatalogue;
@@ -78,8 +101,7 @@ public class MyParty extends BusinessParty
 		dirtyCatalogue = dirty;
 	}
 
-
-
+	//MMM: maybe this method is not neccessery, because of the above one which might be mandatory because of the JAXB serialization
 	public void setDirtyCatalogue(boolean dirtyCatalogue)
 	{
 		this.dirtyCatalogue = dirtyCatalogue;
@@ -132,13 +154,17 @@ public class MyParty extends BusinessParty
 	}
 
 	@Override
-	public void setProductPackSizeNumeric(int index, String value)
+	public void setProductPackSizeNumeric(int index, BigDecimal value)
 	{
 		ItemType item = getMyProducts().get(index);
 		if(item.getPackSizeNumeric() == null)
 			item.setPackSizeNumeric(new PackSizeNumericType());
-		if(hasCellValueChanged(item.getPackSizeNumeric().getValue().toString(), value))
-			item.getPackSizeNumeric().setValue(BigDecimal.valueOf(Long.parseLong(value)));
+		if(hasCellValueChanged(item.getPackSizeNumeric().getValue(), value))
+		{
+			if(value.doubleValue() == 0)
+				value = null;
+			item.getPackSizeNumeric().setValue(value);
+		}
 	}
 
 	@Override
@@ -168,20 +194,27 @@ public class MyParty extends BusinessParty
 	}
 
 	/**Generates Catalogue Document from Items in the Product table.
+	 * @param receiverParty receiver Party of the Catalogue
 	 * @return catalogue
 	 */
-	public CatalogueType createCatalogueTypeObject()
+	public CatalogueType createCatalogue(Party receiverParty)
 	{
 		//forming Catalogue document
 		CatalogueType catalogue = new CatalogueType();
 		IDType catID = new IDType();
-		catID.setValue(String.valueOf(catalogueID++));
+		String strID = String.valueOf(nextCatalogueID());
+		catID.setValue(strID);
 		catalogue.setID(catID);
+		UUIDType catUUID = new UUIDType();
+		catUUID.setValue(getCatalogueUUID());
+		catalogue.setUUID(catUUID);
 		IssueDateType date = new IssueDateType();
-		date.setValue(InstanceFactory.getDate());
+		date.setValue(setCatalogueIssueDate());
 		catalogue.setIssueDate(date);
 
-		// MMM: insert here Provider Party and Receiver Party
+		catalogue.setProviderParty((PartyType) getCoreParty());
+		catalogue.setReceiverParty((PartyType) receiverParty);
+		// MMM: insert here Receiver Party (CDR)
 
 		int cnt = 0;
 		for(ItemType prod : getMyProducts())
@@ -196,14 +229,68 @@ public class MyParty extends BusinessParty
 		return catalogue;
 	}
 
-	/**Checks if the cell value has changed. If it has changed dirtyCatalogue field is set to true
+	/**Generates Catalogue Deletion Document.
+	 * @return catalogue deletion object
+	 */
+	public CatalogueDeletionType createCatalogueDeletion(Party CDRParty)
+	{
+		//creating Catalogue Deletion document
+		CatalogueDeletionType catalogueDeletion = new CatalogueDeletionType();
+		String strID = String.valueOf(nextCatalogueDeletionID());
+		IDType catDelID = new IDType(strID);
+		catalogueDeletion.setID(catDelID);
+		UUIDType catDelUUID = new UUIDType(getCatalogueDeletionUUID());
+		catalogueDeletion.setUUID(catDelUUID);
+		catalogueDeletion.setIssueDate(InstanceFactory.getDate());
+		catalogueDeletion.setDeletedCatalogueReference(getCatalogueReference());
+		catalogueDeletion.setProviderParty((PartyType) getCoreParty());
+		catalogueDeletion.setReceiverParty((PartyType) CDRParty);
+		return catalogueDeletion;
+	}
+
+	/**Creates object representing reference to the latest created Catalogue Document.
+	 * @return object representing reference to the lateset catalogue document
+	 */
+	private CatalogueReferenceType getCatalogueReference()
+	{
+		CatalogueReferenceType catRef = new CatalogueReferenceType();
+		catRef.setID(String.valueOf(getCatalogueID()));
+		catRef.setUUID(getCatalogueUUID());
+		catRef.setIssueDate(getCatalogueIssueDate());
+		return catRef;
+	}
+
+	/**Gets String representing UUID of the lastly created Catalogue Document.
+	 * @return UUID of lastly created Catalogue as String
+	 */
+	private String getCatalogueUUID()
+	{
+		return getCoreParty().getPartyID()+ "CAT" + getCatalogueID();
+	}
+
+	/**Gets String representing UUID of the lastly created CatalogueDeletion Document.
+	 * @return UUID of lastly created CatalogueDeletion as String
+	 */
+	private String getCatalogueDeletionUUID()
+	{
+		return getCoreParty().getPartyID()+ "CDL" + getCatalogueDeletionID();
+	}
+
+
+	/**Checks if the cell value has changed. If it has changed dirtyCatalogue field is set to true.
 	 * @param oldOne old value of the cell
 	 * @param newOne new value of the cell
 	 * @return true if the values differs, false otherwise
 	 */
 	private <T> boolean hasCellValueChanged(T oldOne, T newOne)
 	{
-		boolean changed = ! newOne.equals(oldOne);
+		boolean changed = false;
+		if(newOne != null)
+		{
+			if(newOne instanceof String && newOne.toString().equals("") && oldOne == null)
+				changed = false;
+			changed = ! newOne.equals(oldOne);
+		}
 		dirtyCatalogue = dirtyCatalogue || changed;
 		return changed;
 	}
@@ -212,6 +299,74 @@ public class MyParty extends BusinessParty
 	{
 		if(! followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
 			getFollowingParties().add(party);
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	/**
+	 * @return the dirtyMyParty
+	 */
+	public boolean isDirtyMyParty()
+	{
+		return dirtyMyParty;
+	}
+
+	/**Sets the value of the boolean flag designating whether the Party object has been changed recently.
+	 * @param dirtyMyParty boolean value to be set
+	 */
+	public void setDirtyMyParty(boolean dirtyMyParty)
+	{
+		this.dirtyMyParty = dirtyMyParty;
+	}
+
+	/**Returns secret key used for the SOAP message digest.
+	 * @return the sekretKey or <code>null</code> if it is not defined.
+	 */
+	public String getSecretKey()
+	{
+		return "".equals(secretKey) ? null : secretKey;
+	}
+
+	/**Sets the value of the Party's secret key used for the SOAP message digest encryption and decryption.
+	 * @param secretKey boolean value
+	 */
+	public void setSecretKey(String secretKey)
+	{
+		this.secretKey = secretKey;
+	}
+
+	/**
+	 * @return the insertMyCatalogue
+	 */
+	public boolean isInsertMyCatalogue()
+	{
+		return insertMyCatalogue;
+	}
+
+	/**
+	 * @param insertMyCatalogue the insertMyCatalogue to set
+	 */
+	public void setInsertMyCatalogue(boolean insertMyCatalogue)
+	{
+		this.insertMyCatalogue = insertMyCatalogue;
 	}
 
 }

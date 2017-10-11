@@ -1,5 +1,7 @@
 package rs.ruta.client;
 
+import java.math.BigDecimal;
+
 import javax.swing.table.*;
 
 public class ProductTableModel extends AbstractTableModel
@@ -19,7 +21,8 @@ public class ProductTableModel extends AbstractTableModel
 		businessParty.importMyProducts();
 	}
 
-	/**Creates new model for the product table. Party should be set with the subsequent call to setBusinessParty(BusinessParty businessParty)
+	/**Creates new model for the product table. Party should be set with the subsequent call to
+	 * setBusinessParty(BusinessParty businessParty)
 	 * @param editable if true, table cells are editable
 	 * @see ProductTableModel#setBusinessParty
 	 */
@@ -89,8 +92,12 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public void setValueAt(Object obj, int rowIndex, int columnIndex)
 	{
+		//add new product to the list if the cell value not empty
 		if(businessParty.getProductCount() == rowIndex)
-			businessParty.addNewEmptyProduct();
+			if(((String) obj).equals("")) // do nothing
+				return;
+			else
+				businessParty.addNewEmptyProduct();
 		switch(columnIndex)
 		{
 		case 0:
@@ -102,7 +109,7 @@ public class ProductTableModel extends AbstractTableModel
 			businessParty.setProductDescription(rowIndex, (String) obj);
 			break;
 		case 3:
-			businessParty.setProductPackSizeNumeric(rowIndex, obj.toString());
+			businessParty.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
 			break;
 		case 4:
 			businessParty.setProductID(rowIndex, obj.toString());
@@ -118,7 +125,6 @@ public class ProductTableModel extends AbstractTableModel
 		default:
 			;
 		}
-
 //		System.out.println(p);
 //		System.out.println(clientProducts);
 	}
@@ -128,10 +134,8 @@ public class ProductTableModel extends AbstractTableModel
 	{
 		switch(columnIndex)
 		{
-		case 0:
-			return String.class;
-		case 1:
-			return String.class;
+		case 3:
+			return BigDecimal.class;
 		default:
 			return String.class;
 		}

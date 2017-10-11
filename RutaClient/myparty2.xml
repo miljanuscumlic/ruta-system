@@ -17,7 +17,7 @@
             <ns3:PostalZone>11000</ns3:PostalZone>
             <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
             <ns2:Country>
-                <ns3:Name>Srbija BRertrt</ns3:Name>
+                <ns3:Name>Srbija</ns3:Name>
             </ns2:Country>
         </ns2:PostalAddress>
         <ns2:PartyLegalEntity>

@@ -1,14 +1,8 @@
 package rs.ruta.client;
 
-import java.time.*;
-import java.time.format.*;
 import java.util.function.*;
 
 import javax.swing.table.*;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
 
 @SuppressWarnings("serial")
 public class PartyTableModel extends AbstractTableModel
@@ -23,10 +17,22 @@ public class PartyTableModel extends AbstractTableModel
 		};
 
 	private Party party;
+	private boolean tableEditable;
 
 	public PartyTableModel()
 	{
-		this.party = null;
+		party = null;
+		tableEditable = true;
+	}
+
+	public boolean isTableEditable()
+	{
+		return tableEditable;
+	}
+
+	public void setTableEditable(boolean tableEditable)
+	{
+		this.tableEditable = tableEditable;
 	}
 
 	public void setParty(Party party)
@@ -60,27 +66,9 @@ public class PartyTableModel extends AbstractTableModel
 			{
 			case 0:
 				return party.getSimpleName();
-/*				try
-				{
-					return party.getPartyName().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyName().get(0).getName(), NameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 1:
 				return party.getRegistrationName();
-/*				try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationName(), RegistrationNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 2:
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getCompanyID(), CompanyIDType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 				return party.getCompanyID();
 			case 3:
 				return party.getRegistrationDate();
@@ -97,224 +85,62 @@ public class PartyTableModel extends AbstractTableModel
 				return null;
 			case 5:
 				return party.getRegistrationStreetName();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getStreetName(), StreetNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 6:
 				return party.getRegistrationBuildingNumber();
-/*				try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getBuildingNumber(), BuildingNumberType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 7:
 				return party.getRegistrationFloor();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getFloor(), FloorType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 8:
 				return party.getRegistrationRoom();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getRoom(), RoomType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 9:
 				return party.getRegistrationBuildingName();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getBuildingName(), BuildingNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 10:
 				return party.getRegistrationCitySubdivision();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getCitySubdivisionName(), CitySubdivisionNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 11:
 				return party.getRegistrationCityName();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getCityName(), CityNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 12:
 				return party.getRegistrationPostalZone();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getPostalZone(), PostalZoneType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 13:
 				return party.getRegistrationCountrySubentity();
-				/*try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getCountrySubentity(), CountrySubentityType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 14:
 				return party.getRegistrationCountry();
-/*				try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationAddress().getCountry().getName(), NameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 15:
 				return party.getClassificationCode();
-/*				try
-				{
-					return party.getPartyLegalEntity().size() == 0 ? null :
-						InstanceFactory.getPropertyOrNull(party.getIndustryClassificationCode(), IndustryClassificationCodeType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 16:
 				return null;
 			case 17:
 				return party.getPostalStreetName();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getStreetName(), StreetNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 18:
 				return party.getPostalBuildingNumber();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getBuildingNumber(), BuildingNumberType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 19:
 				return party.getPostalFloor();
-/*				try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getFloor(), FloorType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 20:
 				return party.getPostalRoom();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getRoom(), RoomType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 21:
 				return party.getPostalBuildingName();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getBuildingName(), BuildingNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 22:
 				return party.getPostalCitySubdivision();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getCitySubdivisionName(), CitySubdivisionNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 23:
 				return party.getPostalCityName();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getCityName(), CityNameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 24:
 				return party.getPostalPostalZone();
-/*				try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getPostalZone(), PostalZoneType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 25:
 				return party.getPostalCountrySubentity();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getCountrySubentity(), CountrySubentityType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 26:
 				return party.getPostalCountry();
-				/*try
-				{
-					return party.getPostalAddress() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getPostalAddress().getCountry().getName(), NameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 27:
 				return null;
 			case 28:
 				return party.getContactName();
-				/*try
-				{
-					return party.getContact() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getContact().getName(), NameType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 29:
 				return party.getContactTelephone();
-				/*try
-				{
-					return party.getContact() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getContact().getTelephone(), TelephoneType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 30:
 				return party.getContactTelefax();
-				/*try
-				{
-					return party.getContact() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getContact().getTelefax(), TelefaxType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 31:
 				return party.getContactEmail();
-				/*try
-				{
-					return party.getContact() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getContact().getElectronicMail(), ElectronicMailType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 32:
 				return party.getContactNote();
-				/*try
-				{
-					return party.getContact() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getContact().getNote().get(0), NoteType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			case 33:
 				return party.getWebsite();
-				/*try
-				{
-					return party.getContact() == null ? null :
-						InstanceFactory.getPropertyOrNull(party.getWebsiteURI(), WebsiteURIType::getValue);
-				}
-				catch(Exception e) { return null; }*/
 			default:
 				return null;
 			}
@@ -352,9 +178,9 @@ public class PartyTableModel extends AbstractTableModel
 		case 2:
 			//			party.getPartyLegalEntity().get(0).getCompanyID().setValue(obj.toString());
 
-			InstanceFactory.checkAndCreateListProperty(party.getPartyLegalEntity(), PartyLegalEntityType.class);
+/*			InstanceFactory.checkAndCreateListProperty(party.getPartyLegalEntity(), PartyLegalEntityType.class);
 			InstanceFactory.createAndSetLeafProperty(party.getPartyLegalEntity().get(0), party.getPartyLegalEntity().get(0).getCompanyID(),
-					CompanyIDType.class, obj, String.class);
+					CompanyIDType.class, obj, String.class);*/
 			party.setCompanyID(obj.toString());
 			break;
 		case 3:
@@ -666,7 +492,7 @@ public class PartyTableModel extends AbstractTableModel
 	@Override
 	public boolean isCellEditable(int row, int column)
 	{
-		return (column == 0 || row == 4 || row == 16 || row == 27) ? false : true;
+		return (!tableEditable) || (column == 0 || row == 4 || row == 16 || row == 27) ? false : true;
 	}
 
 
@@ -715,10 +541,10 @@ public class PartyTableModel extends AbstractTableModel
 	/**Functional version of the setter method
 	 * @param party
 	 */
-	public static void test(PartyType party)
+/*	public static void test(PartyType party)
 	{
 		bindToMethodWithSupplier(PartyType::setIndustryClassificationCode, IndustryClassificationCodeType::new).accept(party);
 		bindToMethodWithArgument(IndustryClassificationCodeType::setValue, "123456").accept(party.getIndustryClassificationCode());
-	}
+	}*/
 
 }

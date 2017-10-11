@@ -5,13 +5,21 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Party")
 public class Party extends PartyType
 {
+	public Party() { super(); }
+
 	public String getSimpleName()
 	{
 		try
@@ -655,11 +663,40 @@ public class Party extends PartyType
 
 	public void setWebsite(String value)
 	{
-
 		if(getWebsiteURI() == null)
 			setWebsiteURI(new WebsiteURIType());
 		getWebsiteURI().setValue(value);;
 	}
 
+	public void setPartyID(String id)
+	{
+		 List<PartyIdentificationType> identifications = getPartyIdentification();
+		 if(identifications.size() == 0)
+			 identifications.add(new PartyIdentificationType());
+		 if(identifications.get(0).getID() == null)
+			 identifications.get(0).setID(new IDType());
+		 identifications.get(0).getID().setValue(id);
+	}
+
+	/**Returns Party's ID or <code>null</code> if ID is not set.
+	 * @return ID or <code>null</code> if ID is  not set
+	 */
+	public String getPartyID()
+	{
+		try
+		{
+			String ID = InstanceFactory.getPropertyOrNull(super.getPartyIdentification().get(0).getID(), IDType::getValue);
+			return ID.equals("") ? null : ID;
+		}
+		catch(Exception e) { return null; }
+	}
+
+	@Override
+	public Party clone()
+	{
+		Party ret = new Party();
+	    super.cloneTo((PartyType) ret);
+	    return ret;
+	}
 
 }

@@ -1,36 +1,20 @@
 Hi,
 
-
 I’m creating a proxy for webservices with wsimport and JAXWS.
-
-
 Everything seems to work fine but when I add @SchemaValidation to the webservice class, deployment on Glassfish and Weblogic goes wrong with the error message:
-
-
 cos-st-restricts.1.1: The type 'DateContentType' is atomic, so its {base type definition}, 'xs:anySimpleType', must be an atomic simple type definition or a built-in primitive datatype
-
 
 Does anybody know what this means?
 
-
 Is this a problem with the XSD’s or with SchemaValidation?
 
-
 Does anyone know a fix or workaround? The XSD’s are given so I can’t change them.
-
 ---------------
-
 Apparently wsimport used XMLGregorianCalender java attributes which caused the SchemaValidation problem.
-
- 
 
 I solved it using a jaxb binding file so Calender java objects are used instead.
 
- 
-
 binding file "bindings.xml":
-
- 
 
 <?xml version="1.0" encoding="UTF-8" ?>
 
@@ -70,10 +54,8 @@ printMethod="javax.xml.bind.DatatypeConverter.printDate"/>
 
  
 and added "-b bindings.xml" to the wsimport command:
-
  
 wsimport -keep -Xnocompile -b bindings.xml some.wsdl
-
  
 Extra adapter.java files are generated for the conversion, don't forget to use them in your java project.
 

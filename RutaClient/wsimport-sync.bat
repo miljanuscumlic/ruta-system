@@ -1,0 +1,1 @@
+cmd /k wsimport -s "C:/temp/src" -d "C:/temp/classes" -keep http://localhost:8080/ruta-server-0.0.1/CDR?wsdl -extension

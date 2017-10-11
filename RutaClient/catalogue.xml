@@ -1,47 +1,207 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns4:Catalogue xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2">
-    <ID>8</ID>
-    <IssueDate>2017-06-20+02:00</IssueDate>
+    <ID>111</ID>
+    <UUID>9d917fc0CAT111</UUID>
+    <IssueDate>2017-10-10+02:00</IssueDate>
+    <ns3:ProviderParty>
+        <WebsiteURI>ruta.rs</WebsiteURI>
+        <IndustryClassificationCode>89898</IndustryClassificationCode>
+        <ns3:PartyIdentification>
+            <ID>9d917fc0</ID>
+        </ns3:PartyIdentification>
+        <ns3:PartyName>
+            <Name>Rutaaaedfe</Name>
+        </ns3:PartyName>
+        <ns3:PostalAddress>
+            <Floor>4</Floor>
+            <Room>26</Room>
+            <StreetName>Ruzveltova</StreetName>
+            <BuildingName>preko puta Zire</BuildingName>
+            <BuildingNumber>46</BuildingNumber>
+            <CitySubdivisionName>Zvezdara</CitySubdivisionName>
+            <CityName>Beograd</CityName>
+            <PostalZone>11000</PostalZone>
+            <CountrySubentity>grad Beograd</CountrySubentity>
+            <ns3:Country>
+                <Name>Srbija</Name>
+            </ns3:Country>
+        </ns3:PostalAddress>
+        <ns3:PartyLegalEntity>
+            <RegistrationName>Ruta System d.o.o</RegistrationName>
+            <CompanyID>5897545646</CompanyID>
+            <RegistrationDate>2018-02-01</RegistrationDate>
+            <ns3:RegistrationAddress>
+                <Floor>4</Floor>
+                <Room>26</Room>
+                <StreetName>Ruzveltova</StreetName>
+                <BuildingName>preko puta Zire</BuildingName>
+                <BuildingNumber>46</BuildingNumber>
+                <CitySubdivisionName>Zvezdara</CitySubdivisionName>
+                <CityName>Beograd</CityName>
+                <PostalZone>11000</PostalZone>
+                <CountrySubentity>grad Beograd</CountrySubentity>
+                <ns3:Country>
+                    <Name>Srbija</Name>
+                </ns3:Country>
+            </ns3:RegistrationAddress>
+        </ns3:PartyLegalEntity>
+        <ns3:Contact>
+            <Name>Miljan</Name>
+            <Telephone>087.6654598</Telephone>
+            <Telefax>087.369544</Telefax>
+            <ElectronicMail>miljan@ruta.rs</ElectronicMail>
+            <Note>super</Note>
+        </ns3:Contact>
+    </ns3:ProviderParty>
+    <ns3:ReceiverParty>
+        <ns3:PartyName>
+            <Name>CDR</Name>
+        </ns3:PartyName>
+    </ns3:ReceiverParty>
     <ns3:CatalogueLine>
-        <ID>8-0</ID>
+        <ID>111-0</ID>
         <ns3:Item>
-            <Description>uio</Description>
+            <Description>kako biti veseo</Description>
             <PackSizeNumeric/>
-            <Name>rec i radost</Name>
+            <Name>Veselje</Name>
             <ns3:SellersItemIdentification>
-                <ID></ID>
+                <ID>458</ID>
                 <BarcodeSymbologyID></BarcodeSymbologyID>
             </ns3:SellersItemIdentification>
             <ns3:CommodityClassification>
                 <CommodityCode></CommodityCode>
-                <ItemClassificationCode></ItemClassificationCode>
+                <ItemClassificationCode>78</ItemClassificationCode>
             </ns3:CommodityClassification>
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>8-1</ID>
+        <ID>111-1</ID>
+        <ns3:Item>
+            <Description>kako biti radostan</Description>
+            <PackSizeNumeric/>
+            <Name>Radost</Name>
+            <ns3:SellersItemIdentification>
+                <ID>98</ID>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
+            <ns3:CommodityClassification>
+                <CommodityCode></CommodityCode>
+                <ItemClassificationCode>78</ItemClassificationCode>
+            </ns3:CommodityClassification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-2</ID>
+        <ns3:Item>
+            <Description>kako biti ushićen :)</Description>
+            <PackSizeNumeric/>
+            <Name>Ushićenje</Name>
+            <ns3:SellersItemIdentification>
+                <ID>7854</ID>
+            </ns3:SellersItemIdentification>
+            <ns3:CommodityClassification>
+                <ItemClassificationCode>78</ItemClassificationCode>
+            </ns3:CommodityClassification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-3</ID>
+        <ns3:Item>
+            <Description>marljivo</Description>
+            <PackSizeNumeric/>
+            <Name>Marljivost</Name>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-4</ID>
+        <ns3:Item>
+            <Description>kako biti radans</Description>
+            <PackSizeNumeric/>
+            <Name>Radnost</Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-5</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
-            <Name>misao</Name>
+            <Name></Name>
             <ns3:SellersItemIdentification>
                 <ID></ID>
-                <BarcodeSymbologyID></BarcodeSymbologyID>
             </ns3:SellersItemIdentification>
-            <ns3:CommodityClassification>
-                <CommodityCode></CommodityCode>
-                <ItemClassificationCode></ItemClassificationCode>
-            </ns3:CommodityClassification>
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>8-2</ID>
+        <ID>111-6</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-7</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
-            <Name>svest</Name>
+            <Name></Name>
             <ns3:SellersItemIdentification>
                 <ID></ID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-8</ID>
+        <ns3:Item>
+            <Description></Description>
+            <PackSizeNumeric/>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-9</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-10</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-11</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>111-12</ID>
+        <ns3:Item>
+            <Description></Description>
+            <PackSizeNumeric/>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
                 <BarcodeSymbologyID></BarcodeSymbologyID>
             </ns3:SellersItemIdentification>
             <ns3:CommodityClassification>
@@ -51,27 +211,14 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>8-3</ID>
+        <ID>111-13</ID>
         <ns3:Item>
-            <Name>svetlost</Name>
-        </ns3:Item>
-    </ns3:CatalogueLine>
-    <ns3:CatalogueLine>
-        <ID>8-4</ID>
-        <ns3:Item>
-            <Name>rasveta</Name>
-        </ns3:Item>
-    </ns3:CatalogueLine>
-    <ns3:CatalogueLine>
-        <ID>8-5</ID>
-        <ns3:Item>
-            <Name>sistem</Name>
-        </ns3:Item>
-    </ns3:CatalogueLine>
-    <ns3:CatalogueLine>
-        <ID>8-6</ID>
-        <ns3:Item>
-            <Name>radoznalost</Name>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
         </ns3:Item>
     </ns3:CatalogueLine>
 </ns4:Catalogue>

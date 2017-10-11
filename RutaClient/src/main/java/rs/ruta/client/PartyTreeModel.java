@@ -5,8 +5,7 @@ import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
 
 public class PartyTreeModel extends DefaultTreeModel
 {

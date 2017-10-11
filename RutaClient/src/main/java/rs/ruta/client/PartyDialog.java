@@ -5,13 +5,11 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
-
 public class PartyDialog extends JDialog
 {
 	private static final long serialVersionUID = 8652433075065940074L;
 	private Party party;
-	private boolean changed;
+	private boolean changed; // table content has changed
 	private AbstractTableModel partyModel;
 
 	public PartyDialog(ClientFrame owner)
@@ -72,6 +70,8 @@ public class PartyDialog extends JDialog
 
 	public Party getParty()
 	{
+/*		if(party.getPartyID() == null) //ensuring that party object always has a nonempty identification field
+			party.setPartyID("");*/
 		return party;
 	}
 

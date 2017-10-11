@@ -1,49 +1,135 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns4:Catalogue xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2">
-    <ID>8</ID>
-    <IssueDate>2017-06-20+02:00</IssueDate>
+    <ID>36</ID>
+    <UUID>7cbe2da7-36</UUID>
+    <IssueDate>2017-09-13+02:00</IssueDate>
     <ns3:CatalogueLine>
-        <ID>8-0</ID>
+        <ID>36-0</ID>
         <ns3:Item>
-            <Description>uio</Description>
+            <Description>kako biti vesel</Description>
             <PackSizeNumeric/>
-            <Name>rec i radost</Name>
+            <Name>Veselje</Name>
             <ns3:SellersItemIdentification>
-                <ID></ID>
+                <ID>458</ID>
                 <BarcodeSymbologyID></BarcodeSymbologyID>
             </ns3:SellersItemIdentification>
             <ns3:CommodityClassification>
                 <CommodityCode></CommodityCode>
-                <ItemClassificationCode></ItemClassificationCode>
+                <ItemClassificationCode>78</ItemClassificationCode>
             </ns3:CommodityClassification>
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>8-1</ID>
+        <ID>36-1</ID>
+        <ns3:Item>
+            <Description>kako biti radostan</Description>
+            <PackSizeNumeric/>
+            <Name>Radost</Name>
+            <ns3:SellersItemIdentification>
+                <ID>98</ID>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
+            <ns3:CommodityClassification>
+                <CommodityCode></CommodityCode>
+                <ItemClassificationCode>78</ItemClassificationCode>
+            </ns3:CommodityClassification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-2</ID>
+        <ns3:Item>
+            <Description>kako biti ushićen :)</Description>
+            <Name>Ushićenje</Name>
+            <ns3:SellersItemIdentification>
+                <ID>7854</ID>
+            </ns3:SellersItemIdentification>
+            <ns3:CommodityClassification>
+                <ItemClassificationCode>78</ItemClassificationCode>
+            </ns3:CommodityClassification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-3</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name>Marljivost</Name>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-4</ID>
+        <ns3:Item>
+            <Description>kako biti radan</Description>
+            <Name>Radnost</Name>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-5</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
-            <Name>misao</Name>
-            <ns3:SellersItemIdentification>
-                <ID></ID>
-                <BarcodeSymbologyID></BarcodeSymbologyID>
-            </ns3:SellersItemIdentification>
-            <ns3:CommodityClassification>
-                <CommodityCode></CommodityCode>
-                <ItemClassificationCode></ItemClassificationCode>
-            </ns3:CommodityClassification>
+            <Name></Name>
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>8-2</ID>
+        <ID>36-6</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-7</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-8</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
-            <Name>svest</Name>
+            <Name></Name>
             <ns3:SellersItemIdentification>
                 <ID></ID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-9</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-10</ID>
+        <ns3:Item>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+            </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-11</ID>
+        <ns3:Item>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
                 <BarcodeSymbologyID></BarcodeSymbologyID>
             </ns3:SellersItemIdentification>
+        </ns3:Item>
+    </ns3:CatalogueLine>
+    <ns3:CatalogueLine>
+        <ID>36-12</ID>
+        <ns3:Item>
+            <Description></Description>
+            <PackSizeNumeric/>
+            <Name></Name>
             <ns3:CommodityClassification>
                 <CommodityCode></CommodityCode>
                 <ItemClassificationCode></ItemClassificationCode>
@@ -51,27 +137,14 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>8-3</ID>
+        <ID>36-13</ID>
         <ns3:Item>
-            <Name>svetlost</Name>
-        </ns3:Item>
-    </ns3:CatalogueLine>
-    <ns3:CatalogueLine>
-        <ID>8-4</ID>
-        <ns3:Item>
-            <Name>rasveta</Name>
-        </ns3:Item>
-    </ns3:CatalogueLine>
-    <ns3:CatalogueLine>
-        <ID>8-5</ID>
-        <ns3:Item>
-            <Name>sistem</Name>
-        </ns3:Item>
-    </ns3:CatalogueLine>
-    <ns3:CatalogueLine>
-        <ID>8-6</ID>
-        <ns3:Item>
-            <Name>radoznalost</Name>
+            <Description></Description>
+            <Name></Name>
+            <ns3:SellersItemIdentification>
+                <ID></ID>
+                <BarcodeSymbologyID></BarcodeSymbologyID>
+            </ns3:SellersItemIdentification>
         </ns3:Item>
     </ns3:CatalogueLine>
 </ns4:Catalogue>

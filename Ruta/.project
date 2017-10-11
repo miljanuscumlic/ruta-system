@@ -26,8 +26,13 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.jboss.tools.ws.jaxrs.metamodelBuilder</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
 			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.jboss.tools.ws.jaxrs.metamodelBuilder (2).launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
