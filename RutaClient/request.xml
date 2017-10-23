@@ -1,16 +1,70 @@
-<?xml version="1.0" ?>
-<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope"
+	xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+	<env:Header>
+		<Credentials xmlns="http://ruta.rs/credentials">
+			<Username xmlns="">ruta</Username>
+			<Timestamp xmlns="">11-10-2017T14:41:45Z</Timestamp>
+			<Signature xmlns="">PZrH+yKrVYLox/uOvkcaH3/MUZrhDUFp7IaJyL00QQw=</Signature>
+		</Credentials>
+	</env:Header>
 	<S:Body>
-		<ns7:putDocument xmlns:ns7="http://server.ruta.rs/"
-			xmlns:ns6="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2"
-			xmlns:ns5="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2"
-			xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+		<ns5:UpdateParty
+			xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
 			xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-			xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
-			<arg0>
-				<ns4:ID>3</ns4:ID>
-				<ns4:IssueDate>2017-06-20+02:00</ns4:IssueDate>
-			</arg0>
-		</ns7:putDocument>
+			xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+			xmlns:ns5="http://ruta.rs/services">
+			<arg0>ruta</arg0>
+			<arg1>
+				<ns2:WebsiteURI>ruta.rs</ns2:WebsiteURI>
+				<ns2:IndustryClassificationCode>89898</ns2:IndustryClassificationCode>
+				<ns3:PartyIdentification>
+					<ns2:ID>9d917fc0</ns2:ID>
+				</ns3:PartyIdentification>
+				<ns3:PartyName>
+					<ns2:Name>Rutaaaedf</ns2:Name>
+				</ns3:PartyName>
+				<ns3:PostalAddress>
+					<ns2:Floor>4</ns2:Floor>
+					<ns2:Room>26</ns2:Room>
+					<ns2:StreetName>Ruzveltova</ns2:StreetName>
+					<ns2:BuildingName>preko puta Zire</ns2:BuildingName>
+					<ns2:BuildingNumber>46</ns2:BuildingNumber>
+					<ns2:CitySubdivisionName>Zvezdara</ns2:CitySubdivisionName>
+					<ns2:CityName>Beograd</ns2:CityName>
+					<ns2:PostalZone>11000</ns2:PostalZone>
+					<ns2:CountrySubentity>grad Beograd</ns2:CountrySubentity>
+					<ns3:Country>
+						<ns2:Name>Srbija</ns2:Name>
+					</ns3:Country>
+				</ns3:PostalAddress>
+				<ns3:PartyLegalEntity>
+					<ns2:RegistrationName>Ruta System d.o.o</ns2:RegistrationName>
+					<ns2:CompanyID>5897545646</ns2:CompanyID>
+					<ns2:RegistrationDate>2018-02-01</ns2:RegistrationDate>
+					<ns3:RegistrationAddress>
+						<ns2:Floor>4</ns2:Floor>
+						<ns2:Room>26</ns2:Room>
+						<ns2:StreetName>Ruzveltova</ns2:StreetName>
+						<ns2:BuildingName>preko puta Zire</ns2:BuildingName>
+						<ns2:BuildingNumber>46</ns2:BuildingNumber>
+						<ns2:CitySubdivisionName>Zvezdara</ns2:CitySubdivisionName>
+						<ns2:CityName>Beograd</ns2:CityName>
+						<ns2:PostalZone>11000</ns2:PostalZone>
+						<ns2:CountrySubentity>grad Beograd</ns2:CountrySubentity>
+						<ns3:Country>
+							<ns2:Name>Srbija</ns2:Name>
+						</ns3:Country>
+					</ns3:RegistrationAddress>
+				</ns3:PartyLegalEntity>
+				<ns3:Contact>
+					<ns2:Name>Miljan</ns2:Name>
+					<ns2:Telephone>087.6654598</ns2:Telephone>
+					<ns2:Telefax>087.369544</ns2:Telefax>
+					<ns2:ElectronicMail>miljan@ruta.rs</ns2:ElectronicMail>
+					<ns2:Note>super</ns2:Note>
+				</ns3:Contact>
+			</arg1>
+		</ns5:UpdateParty>
 	</S:Body>
 </S:Envelope>

@@ -1,7 +1,9 @@
 package rs.ruta.server.datamapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DetailException;
 
 /**DataMapper interface declares methods for mapping between objects from the domain model
@@ -19,13 +21,14 @@ public interface DataMapper
 	/**Searches for the object in the data store.
 	 * @param object object which is searched for in the data store
 	 * @return object wich type depends on the data store against which this method is called
+	 * @throws DetailException if object could not be retrieved
 	 */
-	public Object find(Object object) throws Exception;
+	public Object find(Object object) throws DetailException;
 
 	/**Retrieves all objects from the data store. Objects that are already read will be discarded,
 	 * and read again from the data store.
 	 * @return list of all the objects, or null if no objects are found
-	 * @throws DetailException thrown if object could not be retrieved
+	 * @throws DetailException if object could not be retrieved
 	 */
 	public ArrayList<?> findAll() throws DetailException;
 
@@ -60,7 +63,7 @@ public interface DataMapper
 /*	/**Updates the object in the data store.
 	 * @param username user's username
 	 * @param object object to be updated
-	 * @throws Exception thrown if object cannot be updated
+	 * @throws Exception if object cannot be updated
 	 *//*
 	default public void update(String username, Object object) throws Exception { };*/
 
@@ -68,21 +71,21 @@ public interface DataMapper
 	 * @param object object to be updated
 	 * @param id object's id
 	 * @param transaction data store transaction which update is part of
-	 * @throws Exception thrown if object could not be updated
+	 * @throws Exception if object could not be updated
 	 */
 	public <T extends DSTransaction>void update(Object object, Object id, T transaction) throws DetailException;
 
 	/**Retrieves object's id from the data store.
 	 * @param object object which id is requested
 	 * @return object's id
-	 * @throws Exception thrown if the object cannot be found in the data store
+	 * @throws Exception if the object cannot be found in the data store
 	 */
 	public Object getID(Object object) throws DetailException;
 
 	/**Deletes object with passed id from the data store.
 	 * @param id id of the object that should be deleted
 	 * @param transaction data store transaction which deletion is part of
-	 * @throws Exception thrown if object cannot be deleted
+	 * @throws Exception if object cannot be deleted
 	 */
 	public <T extends DSTransaction> void delete(Object id, T transaction) throws DetailException;
 
@@ -90,7 +93,7 @@ public interface DataMapper
 	 * @param id id of the object that should be deleted
 	 * @param transaction data store transaction which user deletion is part of
 	 * @param user' username
-	 * @throws Exception thrown if user cannot be deleted
+	 * @throws Exception if user cannot be deleted
 	 */
 	default public <T extends DSTransaction> void deleteUser(String username, Object id, T transaction) throws DetailException {}
 
@@ -107,8 +110,25 @@ public interface DataMapper
 	/**Gets user's secret key from the data store.
 	 * @param username user's username
 	 * @return secret key or <code>null</code> if secret key is not stored for a given username
-	 * @throws Exception thrown if there is a problem with the data store connectivity
+	 * @throws Exception if there is a problem with the data store connectivity
 	 */
 	default public Object findSecretKey(String username) throws DetailException { return null; }
+
+
+	/**Retrieves the list of objects as a result of the search query based on the passed search criterion.
+	 * @param criterion search criterion
+	 * @return list of objects conforming to the criterion od <code>null</code>
+	 * @throws DetailException if search query could not be processed
+	 */
+	default public List<Object> search(SearchCriterion criterion) throws DetailException { return null; }
+
+	/**Temporary method for searching parties by name
+	 * @param name search criterion
+	 * @return search result
+	 * @throws DetailException
+	 */
+	public Object search(String name) throws DetailException;
+
+	default public <T> void searchGeneric(List<T> searchResult, SearchCriterion criterion) throws DetailException { }
 
 }

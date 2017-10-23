@@ -5,6 +5,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
+import rs.ruta.client.Episode;
+import rs.ruta.common.SearchCriterion;
 
 
 /**
@@ -24,27 +26,41 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
-    private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
+    private final static QName _SearchParty_QNAME = new QName("http://ruta.rs/services", "SearchParty");
+    private final static QName _QueryPartyResponse_QNAME = new QName("http://ruta.rs/services", "QueryPartyResponse");
     private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
+    private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
     private final static QName _GetDocument_QNAME = new QName("http://ruta.rs/services", "GetDocument");
-    private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
+    private final static QName _TestEpisode_QNAME = new QName("http://ruta.rs/services", "TestEpisode");
+    private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _DeleteUserResponse_QNAME = new QName("http://ruta.rs/services", "DeleteUserResponse");
+    private final static QName _GetDocumentResponse_QNAME = new QName("http://ruta.rs/services", "GetDocumentResponse");
+    private final static QName _SearchPartyResponse_QNAME = new QName("http://ruta.rs/services", "SearchPartyResponse");
+    private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
+    private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
+    private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "SearchCatalogueResponse");
+    private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
+    private final static QName _DeleteUser_QNAME = new QName("http://ruta.rs/services", "DeleteUser");
+    private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
+    private final static QName _TestEpisodeResponse_QNAME = new QName("http://ruta.rs/services", "TestEpisodeResponse");
+    private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
+    private final static QName _Episode_QNAME = new QName("http://ruta.rs/services", "Episode");
+    private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
     private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
+    private final static QName _SearchCriterion_QNAME = new QName("urn:rs:ruta:client", "SearchCriterion");
     private final static QName _PutDocumentResponse_QNAME = new QName("http://ruta.rs/services", "PutDocumentResponse");
+    private final static QName _QueryPartyName_QNAME = new QName("http://ruta.rs/services", "QueryPartyName");
+    private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
     private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
-    private final static QName _GetDocumentResponse_QNAME = new QName("http://ruta.rs/services", "GetDocumentResponse");
-    private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
-    private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
+    private final static QName _QueryParty_QNAME = new QName("http://ruta.rs/services", "QueryParty");
     private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
+    private final static QName _QueryPartyNameResponse_QNAME = new QName("http://ruta.rs/services", "QueryPartyNameResponse");
     private final static QName _PutDocument_QNAME = new QName("http://ruta.rs/services", "PutDocument");
-    private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
-    private final static QName _DeleteUser_QNAME = new QName("http://ruta.rs/services", "DeleteUser");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: rs.ruta.services
@@ -62,22 +78,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link UpdateParty }
-     * 
-     */
-    public UpdateParty createUpdateParty() {
-        return new UpdateParty();
-    }
-
-    /**
-     * Create an instance of {@link UpdatePartyResponse }
-     * 
-     */
-    public UpdatePartyResponse createUpdatePartyResponse() {
-        return new UpdatePartyResponse();
-    }
-
-    /**
      * Create an instance of {@link GetDocumentResponse }
      * 
      */
@@ -86,27 +86,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DeleteCatalogue }
+     * Create an instance of {@link SearchPartyResponse }
      * 
      */
-    public DeleteCatalogue createDeleteCatalogue() {
-        return new DeleteCatalogue();
-    }
-
-    /**
-     * Create an instance of {@link PutDocumentResponse }
-     * 
-     */
-    public PutDocumentResponse createPutDocumentResponse() {
-        return new PutDocumentResponse();
-    }
-
-    /**
-     * Create an instance of {@link PutDocument }
-     * 
-     */
-    public PutDocument createPutDocument() {
-        return new PutDocument();
+    public SearchPartyResponse createSearchPartyResponse() {
+        return new SearchPartyResponse();
     }
 
     /**
@@ -126,11 +110,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InsertParty }
+     * Create an instance of {@link SearchCatalogueResponse }
      * 
      */
-    public InsertParty createInsertParty() {
-        return new InsertParty();
+    public SearchCatalogueResponse createSearchCatalogueResponse() {
+        return new SearchCatalogueResponse();
     }
 
     /**
@@ -142,19 +126,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RegisterUser }
-     * 
-     */
-    public RegisterUser createRegisterUser() {
-        return new RegisterUser();
-    }
-
-    /**
      * Create an instance of {@link UpdateCatalogueResponse }
      * 
      */
     public UpdateCatalogueResponse createUpdateCatalogueResponse() {
         return new UpdateCatalogueResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindAllPartiesResponse }
+     * 
+     */
+    public FindAllPartiesResponse createFindAllPartiesResponse() {
+        return new FindAllPartiesResponse();
     }
 
     /**
@@ -166,11 +150,147 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link QueryPartyResponse }
+     * 
+     */
+    public QueryPartyResponse createQueryPartyResponse() {
+        return new QueryPartyResponse();
+    }
+
+    /**
+     * Create an instance of {@link SearchParty }
+     * 
+     */
+    public SearchParty createSearchParty() {
+        return new SearchParty();
+    }
+
+    /**
+     * Create an instance of {@link FindAllParties }
+     * 
+     */
+    public FindAllParties createFindAllParties() {
+        return new FindAllParties();
+    }
+
+    /**
+     * Create an instance of {@link DeleteUserResponse }
+     * 
+     */
+    public DeleteUserResponse createDeleteUserResponse() {
+        return new DeleteUserResponse();
+    }
+
+    /**
+     * Create an instance of {@link TestEpisode }
+     * 
+     */
+    public TestEpisode createTestEpisode() {
+        return new TestEpisode();
+    }
+
+    /**
+     * Create an instance of {@link UpdateParty }
+     * 
+     */
+    public UpdateParty createUpdateParty() {
+        return new UpdateParty();
+    }
+
+    /**
+     * Create an instance of {@link UpdatePartyResponse }
+     * 
+     */
+    public UpdatePartyResponse createUpdatePartyResponse() {
+        return new UpdatePartyResponse();
+    }
+
+    /**
+     * Create an instance of {@link DeleteCatalogue }
+     * 
+     */
+    public DeleteCatalogue createDeleteCatalogue() {
+        return new DeleteCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link PutDocumentResponse }
+     * 
+     */
+    public PutDocumentResponse createPutDocumentResponse() {
+        return new PutDocumentResponse();
+    }
+
+    /**
+     * Create an instance of {@link QueryPartyName }
+     * 
+     */
+    public QueryPartyName createQueryPartyName() {
+        return new QueryPartyName();
+    }
+
+    /**
+     * Create an instance of {@link SearchCatalogue }
+     * 
+     */
+    public SearchCatalogue createSearchCatalogue() {
+        return new SearchCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link PutDocument }
+     * 
+     */
+    public PutDocument createPutDocument() {
+        return new PutDocument();
+    }
+
+    /**
+     * Create an instance of {@link InsertParty }
+     * 
+     */
+    public InsertParty createInsertParty() {
+        return new InsertParty();
+    }
+
+    /**
+     * Create an instance of {@link QueryPartyNameResponse }
+     * 
+     */
+    public QueryPartyNameResponse createQueryPartyNameResponse() {
+        return new QueryPartyNameResponse();
+    }
+
+    /**
+     * Create an instance of {@link QueryParty }
+     * 
+     */
+    public QueryParty createQueryParty() {
+        return new QueryParty();
+    }
+
+    /**
+     * Create an instance of {@link RegisterUser }
+     * 
+     */
+    public RegisterUser createRegisterUser() {
+        return new RegisterUser();
+    }
+
+    /**
      * Create an instance of {@link InsertPartyResponse }
      * 
      */
     public InsertPartyResponse createInsertPartyResponse() {
         return new InsertPartyResponse();
+    }
+
+    /**
+     * Create an instance of {@link TestEpisodeResponse }
+     * 
+     */
+    public TestEpisodeResponse createTestEpisodeResponse() {
+        return new TestEpisodeResponse();
     }
 
     /**
@@ -214,29 +334,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DeleteUserResponse }
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchParty }{@code >}}
      * 
      */
-    public DeleteUserResponse createDeleteUserResponse() {
-        return new DeleteUserResponse();
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchParty")
+    public JAXBElement<SearchParty> createSearchParty(SearchParty value) {
+        return new JAXBElement<SearchParty>(_SearchParty_QNAME, SearchParty.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertCatalogueResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link QueryPartyResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogueResponse")
-    public JAXBElement<InsertCatalogueResponse> createInsertCatalogueResponse(InsertCatalogueResponse value) {
-        return new JAXBElement<InsertCatalogueResponse>(_InsertCatalogueResponse_QNAME, InsertCatalogueResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
-    public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
-        return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryPartyResponse")
+    public JAXBElement<QueryPartyResponse> createQueryPartyResponse(QueryPartyResponse value) {
+        return new JAXBElement<QueryPartyResponse>(_QueryPartyResponse_QNAME, QueryPartyResponse.class, null, value);
     }
 
     /**
@@ -249,6 +361,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllPartiesResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllPartiesResponse")
+    public JAXBElement<FindAllPartiesResponse> createFindAllPartiesResponse(FindAllPartiesResponse value) {
+        return new JAXBElement<FindAllPartiesResponse>(_FindAllPartiesResponse_QNAME, FindAllPartiesResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetDocument }{@code >}}
      * 
      */
@@ -258,12 +379,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertPartyResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link TestEpisode }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertPartyResponse")
-    public JAXBElement<InsertPartyResponse> createInsertPartyResponse(InsertPartyResponse value) {
-        return new JAXBElement<InsertPartyResponse>(_InsertPartyResponse_QNAME, InsertPartyResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TestEpisode")
+    public JAXBElement<TestEpisode> createTestEpisode(TestEpisode value) {
+        return new JAXBElement<TestEpisode>(_TestEpisode_QNAME, TestEpisode.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllParties }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllParties")
+    public JAXBElement<FindAllParties> createFindAllParties(FindAllParties value) {
+        return new JAXBElement<FindAllParties>(_FindAllParties_QNAME, FindAllParties.class, null, value);
     }
 
     /**
@@ -273,6 +403,114 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteUserResponse")
     public JAXBElement<DeleteUserResponse> createDeleteUserResponse(DeleteUserResponse value) {
         return new JAXBElement<DeleteUserResponse>(_DeleteUserResponse_QNAME, DeleteUserResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetDocumentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "GetDocumentResponse")
+    public JAXBElement<GetDocumentResponse> createGetDocumentResponse(GetDocumentResponse value) {
+        return new JAXBElement<GetDocumentResponse>(_GetDocumentResponse_QNAME, GetDocumentResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchPartyResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchPartyResponse")
+    public JAXBElement<SearchPartyResponse> createSearchPartyResponse(SearchPartyResponse value) {
+        return new JAXBElement<SearchPartyResponse>(_SearchPartyResponse_QNAME, SearchPartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FaultInfo }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RutaException")
+    public JAXBElement<FaultInfo> createRutaException(FaultInfo value) {
+        return new JAXBElement<FaultInfo>(_RutaException_QNAME, FaultInfo.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogue }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindCatalogue")
+    public JAXBElement<FindCatalogue> createFindCatalogue(FindCatalogue value) {
+        return new JAXBElement<FindCatalogue>(_FindCatalogue_QNAME, FindCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogueResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchCatalogueResponse")
+    public JAXBElement<SearchCatalogueResponse> createSearchCatalogueResponse(SearchCatalogueResponse value) {
+        return new JAXBElement<SearchCatalogueResponse>(_SearchCatalogueResponse_QNAME, SearchCatalogueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueResponse")
+    public JAXBElement<DeleteCatalogueResponse> createDeleteCatalogueResponse(DeleteCatalogueResponse value) {
+        return new JAXBElement<DeleteCatalogueResponse>(_DeleteCatalogueResponse_QNAME, DeleteCatalogueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteUser }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteUser")
+    public JAXBElement<DeleteUser> createDeleteUser(DeleteUser value) {
+        return new JAXBElement<DeleteUser>(_DeleteUser_QNAME, DeleteUser.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertCatalogueResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogueResponse")
+    public JAXBElement<InsertCatalogueResponse> createInsertCatalogueResponse(InsertCatalogueResponse value) {
+        return new JAXBElement<InsertCatalogueResponse>(_InsertCatalogueResponse_QNAME, InsertCatalogueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TestEpisodeResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TestEpisodeResponse")
+    public JAXBElement<TestEpisodeResponse> createTestEpisodeResponse(TestEpisodeResponse value) {
+        return new JAXBElement<TestEpisodeResponse>(_TestEpisodeResponse_QNAME, TestEpisodeResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
+    public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
+        return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Episode }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "Episode")
+    public JAXBElement<Episode> createEpisode(Episode value) {
+        return new JAXBElement<Episode>(_Episode_QNAME, Episode.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertPartyResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertPartyResponse")
+    public JAXBElement<InsertPartyResponse> createInsertPartyResponse(InsertPartyResponse value) {
+        return new JAXBElement<InsertPartyResponse>(_InsertPartyResponse_QNAME, InsertPartyResponse.class, null, value);
     }
 
     /**
@@ -303,12 +541,39 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCriterion }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:client", name = "SearchCriterion")
+    public JAXBElement<SearchCriterion> createSearchCriterion(SearchCriterion value) {
+        return new JAXBElement<SearchCriterion>(_SearchCriterion_QNAME, SearchCriterion.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PutDocumentResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "PutDocumentResponse")
     public JAXBElement<PutDocumentResponse> createPutDocumentResponse(PutDocumentResponse value) {
         return new JAXBElement<PutDocumentResponse>(_PutDocumentResponse_QNAME, PutDocumentResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link QueryPartyName }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryPartyName")
+    public JAXBElement<QueryPartyName> createQueryPartyName(QueryPartyName value) {
+        return new JAXBElement<QueryPartyName>(_QueryPartyName_QNAME, QueryPartyName.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogue }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchCatalogue")
+    public JAXBElement<SearchCatalogue> createSearchCatalogue(SearchCatalogue value) {
+        return new JAXBElement<SearchCatalogue>(_SearchCatalogue_QNAME, SearchCatalogue.class, null, value);
     }
 
     /**
@@ -339,30 +604,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetDocumentResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link QueryParty }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "GetDocumentResponse")
-    public JAXBElement<GetDocumentResponse> createGetDocumentResponse(GetDocumentResponse value) {
-        return new JAXBElement<GetDocumentResponse>(_GetDocumentResponse_QNAME, GetDocumentResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FaultInfo }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RutaException")
-    public JAXBElement<FaultInfo> createRutaException(FaultInfo value) {
-        return new JAXBElement<FaultInfo>(_RutaException_QNAME, FaultInfo.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogue }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindCatalogue")
-    public JAXBElement<FindCatalogue> createFindCatalogue(FindCatalogue value) {
-        return new JAXBElement<FindCatalogue>(_FindCatalogue_QNAME, FindCatalogue.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryParty")
+    public JAXBElement<QueryParty> createQueryParty(QueryParty value) {
+        return new JAXBElement<QueryParty>(_QueryParty_QNAME, QueryParty.class, null, value);
     }
 
     /**
@@ -384,30 +631,21 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link QueryPartyNameResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryPartyNameResponse")
+    public JAXBElement<QueryPartyNameResponse> createQueryPartyNameResponse(QueryPartyNameResponse value) {
+        return new JAXBElement<QueryPartyNameResponse>(_QueryPartyNameResponse_QNAME, QueryPartyNameResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link PutDocument }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "PutDocument")
     public JAXBElement<PutDocument> createPutDocument(PutDocument value) {
         return new JAXBElement<PutDocument>(_PutDocument_QNAME, PutDocument.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueResponse")
-    public JAXBElement<DeleteCatalogueResponse> createDeleteCatalogueResponse(DeleteCatalogueResponse value) {
-        return new JAXBElement<DeleteCatalogueResponse>(_DeleteCatalogueResponse_QNAME, DeleteCatalogueResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteUser }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteUser")
-    public JAXBElement<DeleteUser> createDeleteUser(DeleteUser value) {
-        return new JAXBElement<DeleteUser>(_DeleteUser_QNAME, DeleteUser.class, null, value);
     }
 
 }

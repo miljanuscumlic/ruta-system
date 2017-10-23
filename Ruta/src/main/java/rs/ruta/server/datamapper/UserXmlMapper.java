@@ -29,6 +29,7 @@ public class UserXmlMapper extends XmlMapper
 	final private static String deletedCollectionPath = "/ruta/deleted/keys";
 	final private static SchemaType SECRET_KEY = AXSchemaType.EMAIL;
 	final private static SchemaType UNIQUE_ID = AXSchemaType.ALIAS_USERNAME;
+	final private static String objectPackageName = null;
 
 	public UserXmlMapper() throws DatabaseException
 	{
@@ -43,7 +44,7 @@ public class UserXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public Object find(Object object)
+	public Object find(Object object) throws DetailException
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -101,7 +102,7 @@ public class UserXmlMapper extends XmlMapper
 	 * @param username user's account username
 	 * @param transaction <code>DSTransaction</code> object responsible for keeping track of transaction operations.
 	 * Could be <code>null</code> if no transaction is needed during deletion of the user's account from eXist database.
-	 * @throws DetailException thrown if user account could not be deleted
+	 * @throws DetailException if user account could not be deleted
 	 */
 	public <T extends DSTransaction> void deleteExistAccount(String username/*, T transaction*/) throws DetailException
 	{
@@ -177,7 +178,7 @@ public class UserXmlMapper extends XmlMapper
 	 * @param username user's username
 	 * @param password user's password
 	 * @param transaction
-	 * @throws DetailException thrown if database collection or some information from it could not be retrieved
+	 * @throws DetailException if database collection or some information from it could not be retrieved
 	 */
 	private void insertUser(String username, String password, ExistTransaction transaction) throws DetailException
 	{
@@ -230,7 +231,7 @@ public class UserXmlMapper extends XmlMapper
 	 * @param password user's password
 	 * @param sekretKey user's secret key
 	 * @return user's id
-	 * @throws UserException thrown if user has wrong credentials or the probles due database connection
+	 * @throws UserException if user has wrong credentials or the probles due database connection
 	 */
 	public String checkUser(String username, String password, String secretKey) throws UserException
 	{
@@ -306,7 +307,7 @@ public class UserXmlMapper extends XmlMapper
 	 * @param username user which metadata is get
 	 * @param schemaType type of the metadata
 	 * @return metadata value
-	 * @throws UserException thrown if user is not registered or metadata cannot be retrieved
+	 * @throws UserException if user is not registered or metadata cannot be retrieved
 	 */
 	public String findMetaData(String username, SchemaType schemaType) throws UserException
 	{
@@ -351,9 +352,11 @@ public class UserXmlMapper extends XmlMapper
 	public String getCollectionPath() { return collectionPath; }
 	@Override
 	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
-
 	@Override
 	public String getDocumentPrefix() { return docPrefix; }
+
+	@Override
+	public String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	protected JAXBElement<PartyType> getJAXBElement(Object object)

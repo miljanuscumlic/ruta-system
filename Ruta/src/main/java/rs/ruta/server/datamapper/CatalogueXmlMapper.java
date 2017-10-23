@@ -15,6 +15,7 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
@@ -23,6 +24,7 @@ public class CatalogueXmlMapper extends XmlMapper
 	final private static String docPrefix = ""; //"catalogue";
 	final private static String collectionPath = "/ruta/catalogues";
 	final private static String deletedCollectionPath = "/ruta/deleted/catalogues";
+	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21";
 	//MMM: This map should be some kind of most recently used collection
 	private Map<Object, CatalogueType> loadedCatalogues;
 
@@ -38,6 +40,8 @@ public class CatalogueXmlMapper extends XmlMapper
 	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
+	@Override
+	public String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public CatalogueType find(String id) throws DetailException
@@ -114,6 +118,7 @@ public class CatalogueXmlMapper extends XmlMapper
 	public <T extends DSTransaction> void update(Object object, Object id, T transaction) throws DetailException
 	{
 		insert(object, id, transaction);
+		loadedCatalogues.put(id, (CatalogueType) object);
 	}
 
 	/* (non-Javadoc)
@@ -126,10 +131,26 @@ public class CatalogueXmlMapper extends XmlMapper
 		ArrayList<CatalogueType> catalogues;
 		catalogues = (ArrayList<CatalogueType>) super.findAll();
 		if (catalogues != null)
-			for(CatalogueType t : catalogues)
-				loadedCatalogues.put(getID(t), t);
+			for(CatalogueType c : catalogues)
+				loadedCatalogues.put(getID(c), c);
 		return catalogues;
 	}
+
+	@Override
+	public List<Object> search(SearchCriterion criterion) throws DetailException
+	{
+		List<Object> searchResult = new ArrayList<>();
+
+		return searchResult;
+	}
+
+	@Override
+	public String getSearchQueryName()
+	{
+		return queryNameSearchCatalogue;
+	}
+
+
 
 }
 

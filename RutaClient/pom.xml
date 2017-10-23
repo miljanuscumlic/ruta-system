@@ -6,12 +6,13 @@
 	<version>0.0.1</version>
 	<name>RutaClient</name>
 	<packaging>jar</packaging>
-
+ 
 	<properties>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target</ruta.common.path>
 	</properties>
 	<!-- temporary repository for exist -->
 	<!-- <repositories> <repository> <id>exist</id> <url>https://raw.github.com/eXist-db/mvn-repo/master/</url>
@@ -49,6 +50,15 @@
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.2.10</version>
+		</dependency>
+		<!-- MMM: Temporary working solution before installing it in nexus repository-->
+		<dependency>
+			<groupId>rs.ruta</groupId>
+			<artifactId>ruta-common</artifactId>
+			<version>0.0.1</version>
+<!-- 			<scope>system</scope>
+			 <systemPath>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target/ruta-common-0.0.1.jar</systemPath>
+			<systemPath>${ruta.common.path}/ruta-common-0.0.1.jar</systemPath> -->
 		</dependency>
 	</dependencies>
 
@@ -101,6 +111,8 @@
 								<xjcArg>'${basedir}/src/main/resources/jaxb/ph-xsds-ccts-cct-schemamodule.episode'</xjcArg>
 								<xjcArg>-b</xjcArg>
 								<xjcArg>'${basedir}/src/main/resources/jaxb/ph-ubl21.episode'</xjcArg>
+								<xjcArg>-b</xjcArg>
+								<xjcArg>'${basedir}/src/main/resources/jaxb/rs-ruta-common.episode'</xjcArg>
 							</xjcArgs>
 						</configuration>
 					</plugin>

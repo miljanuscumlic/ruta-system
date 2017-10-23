@@ -7,6 +7,9 @@
         <dependent-module archiveName="ph-ubl21-5.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ph-ubl21/ph-ubl21">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="ruta-common-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/RutaCommon/RutaCommon">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/Ruta/target/classes"/>
         <property name="context-root" value="ruta-server"/>
     </wb-module>

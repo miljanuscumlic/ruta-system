@@ -27,6 +27,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Sup
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.*;
 import rs.ruta.client.datamapper.*;
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.services.*;
 
 public class Client implements RutaNode
@@ -203,7 +204,6 @@ public class Client implements RutaNode
 
 	/**Synchronise My Party data with the CDR service. Method sends the data
 	 * if they have been changed since the last synchronisation.
-	 *
 	 */
 	public void cdrSynchroniseMyParty()
 	{
@@ -758,6 +758,150 @@ public class Client implements RutaNode
 		//temporary setting for TCP/IP Monitor in Eclipse
 		setEndPoint(port);
 		return port;
+	}
+
+	public void cdrSearchParty(String name)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.queryPartyNameAsync(myParty.getUsername(), name, futureResult ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+				try
+				{
+					QueryPartyNameResponse res = futureResult.get();
+					frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("There has been a problem. The search has not been conducted!" +
+		"Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	public void cdrSearch(SearchCriterion criterion)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			/*** BEGIN TEST****/
+/*			port.testEpisodeAsync(new Episode(), futureResult ->
+			{
+				StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+				try
+				{
+					TestEpisodeResponse res = futureResult.get();
+
+					frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);*/
+			/*** END TEST****/
+
+			if(criterion.isCatalogueSearched())
+			{
+				port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
+				{
+					StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+					try
+					{
+						SearchCatalogueResponse res = futureResult.get();
+						//handle the Catalogue list
+						frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
+					}
+					catch (Exception e)
+					{
+						msg.append("Server responds: ");
+						Throwable cause = e.getCause();
+						if(cause instanceof RutaException)
+							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+						else
+							msg.append(trimSOAPFaultMessage(cause.getMessage()));
+						frame.appendToConsole(msg.toString(), Color.RED);
+					}
+				});
+				frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
+			}
+			else
+			{
+				port.searchPartyAsync(myParty.getUsername(), criterion, futureResult ->
+				{
+					StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+					try
+					{
+						SearchPartyResponse res = futureResult.get();
+						//handle the Party list
+						frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
+					}
+					catch (Exception e)
+					{
+						msg.append("Server responds: ");
+						Throwable cause = e.getCause();
+						if(cause instanceof RutaException)
+							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+						else
+							msg.append(trimSOAPFaultMessage(cause.getMessage()));
+						frame.appendToConsole(msg.toString(), Color.RED);
+					}
+				});
+				frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
+			}
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("There has been a problem. The search has not been conducted!" +
+		"Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	public void findAllParties()
+	{
+		Server port = getCDRPort();
+		port.findAllPartiesAsync(futureResult ->
+		{
+			StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+			try
+			{
+				FindAllPartiesResponse res = futureResult.get();
+				//handle the Catalogue list
+				frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
+			}
+			catch (Exception e)
+			{
+				msg.append("Server responds: ");
+				Throwable cause = e.getCause();
+				if(cause instanceof RutaException)
+					msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+				else
+					msg.append(trimSOAPFaultMessage(cause.getMessage()));
+				frame.appendToConsole(msg.toString(), Color.RED);
+			}
+		});
+		frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
 	}
 
 }

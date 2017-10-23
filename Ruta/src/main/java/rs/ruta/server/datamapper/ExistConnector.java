@@ -29,7 +29,10 @@ public class ExistConnector implements DatastoreConnector
 	private static String dbJarPath = "C:\\Programs\\exist-db\\start.jar"; // path to the database jar archive
 	private static String docSufix = ".xml";
 	private static String transactionPath = "/ruta/system/transactions";
+	private static String queryPath ="/ruta/system/queries";
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
+	protected static final String queryNameSearchCatalogue = "search-catalogue.xq";
+	protected static final String queryNameSearchParty = "search-party.xq";
 
 	/**Constructs eXist database instance and registers it at the <code>DatabaseManager</code>, enabling
 	 * the application to communicate with it.
@@ -50,8 +53,8 @@ public class ExistConnector implements DatastoreConnector
 		}
 	}
 
-	/**Starts the eXist database application in its own jetty server.
-	 * @throws Exception thrown if eXist could not be started
+	/**Starts the eXist database application in its own jetty server on this machine.
+	 * @throws Exception if eXist could not be started
 	 */
 	public static void startDatabase() throws Exception
 	{
@@ -94,7 +97,7 @@ public class ExistConnector implements DatastoreConnector
 	/**Sends <code>Inpustream</code> text to the console window.
 	 * @param type type of the message
 	 * @param ins <code>Inpustream</code> that would be sent to the console window
-	 * @throws Exception thrown if there is the error in starting the database or reading the input stream
+	 * @throws Exception if there is the error in starting the database or reading the input stream
 	 */
 	private static void printLines(String type, InputStream ins) throws Exception
 	{
@@ -114,7 +117,7 @@ public class ExistConnector implements DatastoreConnector
 	}
 
 	/**Shuts down the eXist database, its application program and jetty server as its container.
-	 * @throws Exception thrown if database could not be stopped
+	 * @throws Exception if database could not be stopped
 	 */
 	public static void shutdownDatabase() throws Exception
 	{
@@ -133,7 +136,7 @@ public class ExistConnector implements DatastoreConnector
 	}
 
 	/**Restarts the eXist database and its jetty container.
-	 * @throws Exception thrown if eXist cannot be restarted
+	 * @throws Exception if eXist cannot be restarted
 	 */
 	public static void restartDatabase() throws Exception
 	{
@@ -218,7 +221,7 @@ public class ExistConnector implements DatastoreConnector
 
 	/**Gets the root collection of the database as database admin.
 	 * @return root collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public static Collection getRootCollection() throws XMLDBException
 	{
@@ -228,7 +231,7 @@ public class ExistConnector implements DatastoreConnector
 	/**Gets the root collection from the database as a specified user. Collection that is retrieved
 	 * is defined in the subclasses of the XmlMapper.
 	 * @return requested collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public Collection getRootCollection(String username, String password) throws XMLDBException
 	{
@@ -285,7 +288,7 @@ public class ExistConnector implements DatastoreConnector
 	 * @param collectionPath relative collection path
 	 * @param username user's username
 	 * @param password user's password
-	 * @throws XMLDBException thrown if collection cannot be created or retrieved
+	 * @throws XMLDBException if collection cannot be created or retrieved
 	 */
 	protected static void checkCollection(String collectionPath, String username, String password) throws XMLDBException
 	{
@@ -294,7 +297,7 @@ public class ExistConnector implements DatastoreConnector
 
 	/**Checks if the collection exist. If not, method creates the collection and asigns database admin as an owner of the collection.
 	 * @param collectionPath relative collection path
-	 * @throws XMLDBException thrown if collection cannot be created or retrieved
+	 * @throws XMLDBException if collection cannot be created or retrieved
 	 * @throws DatabaseException
 	 */
 	protected static void checkCollection(String collectionPath) throws DatabaseException
@@ -323,6 +326,16 @@ public class ExistConnector implements DatastoreConnector
 	public static void setDbJarPath(String dbJarPath)
 	{
 		ExistConnector.dbJarPath = dbJarPath;
+	}
+
+	public static String getQueryPath()
+	{
+		return queryPath;
+	}
+
+	public static void setQueryPath(String queryPath)
+	{
+		ExistConnector.queryPath = queryPath;
 	}
 
 }

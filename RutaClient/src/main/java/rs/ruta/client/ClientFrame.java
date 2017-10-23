@@ -42,6 +42,7 @@ public class ClientFrame extends JFrame
 	private AboutDialog aboutDialog;
 	private PartyDialog partyDialog;
 	private RegisterDialog registerDialog;
+	private SearchDialog searchDialog;
 
 	public ClientFrame(Client client)
 	{
@@ -119,29 +120,19 @@ public class ClientFrame extends JFrame
 		JMenuItem cdrDeleteCatalogueItem = new JMenuItem("Delete My Catalogue");
 		cdrMenu.add(cdrDeleteCatalogueItem);
 		cdrMenu.addSeparator();
-		JMenuItem cdrTest = new JMenuItem("Test WebMethod");
+/*		JMenuItem cdrTest = new JMenuItem("Test WebMethod");
 		cdrMenu.add(cdrTest);
 		JMenuItem cdrTestPhax = new JMenuItem("Test Phax");
-		cdrMenu.add(cdrTestPhax);
-		JMenuItem testItem = new JMenuItem("Test");
-		cdrMenu.add(testItem);
-
-		testItem.addActionListener(event ->
-		{
-			try
-			{
-				startDatabase();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		cdrMenu.add(cdrTestPhax);*/
+		JMenuItem queryPartyItem = new JMenuItem("Search");
+		cdrMenu.add(queryPartyItem);
+		JMenuItem findAllPartiesItem = new JMenuItem("Find All Parties");
+		cdrMenu.add(findAllPartiesItem);
 
 		cdrRegisterPartyItem.addActionListener(event ->
 		{
 			MyParty party = client.getMyParty();
-			if(party.isRegisteredWithCDR())
+			if(party.hasSecretKey())
 			{
 				appendToConsole("My Party is already registered with the CDR service!", Color.BLUE);
 				//JOptionPane.showMessageDialog(null, "Party is already registered with the CDR!", "Sign Up to CDR", JOptionPane.ERROR_MESSAGE);
@@ -211,7 +202,7 @@ public class ClientFrame extends JFrame
 						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 
-		cdrTest.addActionListener( event ->
+/*		cdrTest.addActionListener( event ->
 		{
 			MyParty party = client.getMyParty();
 			client.testParty();
@@ -220,6 +211,11 @@ public class ClientFrame extends JFrame
 		cdrTestPhax.addActionListener(event ->
 		{
 			client.testPhax();
+		});*/
+
+		findAllPartiesItem.addActionListener( event ->
+		{
+			client.findAllParties();
 		});
 
 		cdrSynchCatalogueItem.addActionListener(event ->
@@ -314,6 +310,25 @@ public class ClientFrame extends JFrame
 						+ " My Party should be synchronised with the CDR service first!", Color.RED);
 		});
 
+		queryPartyItem.addActionListener(event ->
+		{
+			MyParty party = client.getMyParty();
+			if(party.isRegisteredWithCDR())
+			{
+				queryPartyItem.setEnabled(false);
+				new Thread(() ->
+				{
+					showSearchDialog(party, "Search CDR");
+					EventQueue.invokeLater(() ->
+						queryPartyItem.setEnabled(true)
+					);
+				}).start();
+			}
+			else
+				appendToConsole("Search request has not been sent to the CDR service."
+						+ " My Party should be both registered and synchronized with the CDR service first!", Color.RED);
+		});
+
 		JMenu partyMenu = new JMenu("Party");
 		JMenuItem myPartyItem = new JMenuItem("My Party");
 		myPartyItem.addActionListener(event ->
@@ -392,6 +407,8 @@ public class ClientFrame extends JFrame
 		helpMenu.add(aboutItem);
 		menuBar.add(helpMenu);
 	}
+
+
 
 	private void savePreferences()
 	{
@@ -521,7 +538,7 @@ public class ClientFrame extends JFrame
 	{
 		boolean registerPressed = false;
 		//		Party corePartyCopy = InstanceFactory.<Party>newInstance(party.getCoreParty());
-		Party corePartyCopy = party.getCoreParty().clone();
+		//		Party corePartyCopy = party.getCoreParty().clone();
 		//		signUpDialog = new RegisterWithPartyDialog(ClientFrame.this, corePartyCopy);
 		registerDialog = new RegisterDialog(ClientFrame.this);
 		registerDialog.setTitle(title);
@@ -531,6 +548,18 @@ public class ClientFrame extends JFrame
 		if(registerPressed)
 			client.cdrRegisterMyParty(client.getMyParty().getCoreParty(), registerDialog.getUsername(), registerDialog.getPassword());
 		return registerPressed;
+	}
+
+	private void showSearchDialog(MyParty party, String title)
+	{
+		searchDialog = new SearchDialog(ClientFrame.this);
+		searchDialog.setTitle(title);
+		searchDialog.setVisible(true);
+		if(searchDialog.isSearchPressed())
+		{
+			searchDialog.setSearchPressed(false);
+			client.cdrSearch(searchDialog.getCriterion().nullEmptyFields());
+		}
 	}
 
 	public Client getClient()

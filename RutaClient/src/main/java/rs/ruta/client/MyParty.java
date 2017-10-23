@@ -82,13 +82,21 @@ public class MyParty extends BusinessParty
 		this.followerParties = followerParties;
 	}
 
-	/**Checks if the party is registered with the CDR, i.e. if party has assigned unique Party ID.
-	 * @return true if party is registered with the CDR service, otherwise false
+	/**Checks if the party is completely registered with the CDR, i.e. if party has assigned unique Party ID.
+	 * @return true if party is completely registered with the CDR service, otherwise false
 	 */
 	public boolean isRegisteredWithCDR()
 	{
 		//return secretKey != null ? true : false;
 		return getCoreParty().getPartyID() == null ? false : true;
+	}
+
+	/**Checks if the party has secret key.
+	 * @return true if party has secret key, otherwise false
+	 */
+	public boolean hasSecretKey()
+	{
+		return secretKey != null ? true : false;
 	}
 
 	public boolean isDirtyCatalogue()

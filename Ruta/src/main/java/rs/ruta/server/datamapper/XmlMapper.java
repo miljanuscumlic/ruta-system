@@ -2,11 +2,16 @@ package rs.ruta.server.datamapper;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -15,15 +20,21 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.exist.xmldb.EXistResource;
+import org.exist.xmldb.XQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
+import org.xmldb.api.base.CompiledExpression;
 import org.xmldb.api.base.Database;
 import org.xmldb.api.base.Resource;
+import org.xmldb.api.base.ResourceIterator;
+import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
+import org.xmldb.api.modules.XPathQueryService;
 
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DataManipulationException;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
@@ -40,13 +51,14 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	public XmlMapper() throws DatabaseException
 	{
 		init();
-		checkCollection(getCollectionPath());
-		checkCollection(getDeletedBaseCollectionPath());
 	}
 
-	private void init()
+	private void init() throws DatabaseException
 	{
 		connectDatabase();
+		checkCollection(getCollectionPath());
+		checkCollection(getDeletedBaseCollectionPath());
+		checkCollection(getQueryPath());
 		/*try
 		{
 			@SuppressWarnings("unchecked")
@@ -79,7 +91,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 			{
 				//				saveDocumentAsFile(resource, document);
 				result = resource.getContent();
-				object = unmarshallFromXML(/*resource.getContent().toString()*/ result.toString());
+				object = unmarshalFromXML(/*resource.getContent().toString()*/ result.toString());
 				logger.info("Document " + document + " retrieved.");
 			}
 			else
@@ -130,7 +142,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 				{
 					//saveDocumentAsFile(resource, document);
 					result = resource.getContent();
-					object = unmarshallFromXML(result.toString());
+					object = unmarshalFromXML(result.toString());
 					objects.add(object);
 					logger.info("Document " + col + "/" + document + " retrieved.");
 				}
@@ -160,7 +172,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	}
 
 	@Override
-	public Object find(Object object)
+	public Object find(Object object) throws DetailException
 	{
 		return null;
 	}
@@ -170,21 +182,27 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * @return unmarshalled object
 	 * @throws DataManipulationException thrown when object could not be unmarshalled from the xml
 	 */
-	private Object unmarshallFromXML(String xml) throws DataManipulationException
+	private Object unmarshalFromXML(String xml) throws DataManipulationException
 	{
-		JAXBElement<?> jaxbElement = null;
 		Object result = null;
 		try
 		{
-			JAXBContext jc = JAXBContext.newInstance(getObjectClass());
+			JAXBContext jc = getJAXBContext();
+//			JAXBContext jc = JAXBContext.newInstance(getObjectClass());
+			//JAXBContext jc = JAXBContext.newInstance(getObjectPackageName());
 			Unmarshaller u = jc.createUnmarshaller();
+			System.out.println("*****\n" + xml + "\n*****");
+			//logger.info("*****\n" + xml + "\n*****");
 
-			//jaxbElement = (JAXBElement<?>) u.unmarshal(new StringReader(xml));
-			result = u.unmarshal(new StringReader(xml));
+			//JAXBElement<?> jaxbElement = (JAXBElement<?>) u.unmarshal(new StringReader(xml));
+			Object jaxbResult = u.unmarshal(new StringReader(xml));
+			if(jaxbResult instanceof JAXBElement)
+				result = ((JAXBElement<?>)jaxbResult).getValue();
+			else
+				result = jaxbResult;
 		}
 		catch(JAXBException e)
 		{
-			logger.error("Exception is: ", e);
 			logger.error("Exception is: ", e);
 			throw new DataManipulationException("The object could not be unmarshalled from the XML document.", e);
 		}
@@ -194,6 +212,8 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	}
 
 	abstract public Class<?> getObjectClass();
+
+	abstract public String getObjectPackageName();
 
 	@Override
 	public <T extends DSTransaction> Object insert(Object object, T transaction) throws DetailException
@@ -267,7 +287,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 		try
 		{
 			documentName = getDocumentPrefix() + id + getDocumentSufix();
-			xmlResult = marshallToXML(object);
+			xmlResult = marshalToXML(object);
 			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
 			resource = collection.getResource(documentName);
 			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
@@ -321,7 +341,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * is passed as a argument.
 	 * @param collectionPath relative path to the collection
 	 * @return requested collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public Collection getCollection(String collectionPath) throws XMLDBException
 	{
@@ -331,7 +351,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	/**Gets the collection from the database as a database admin. Retrieved collection
 	 * is defined in the subclass of the XmlMapper.
 	 * @return requested collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public Collection getCollection() throws XMLDBException
 	{
@@ -341,7 +361,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	/**Gets the collection from the database as a specified user. Collection that is retrieved
 	 * is defined in the subclasses of the XmlMapper.
 	 * @return requested collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public Collection getCollection(String username, String password) throws XMLDBException
 	{
@@ -351,7 +371,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	/**Gets the base collection where are placed deleted documents from the database as a database admin.
 	 * Retrieved base collection is defined in the subclass of the XmlMapper.
 	 * @return requested collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public Collection getDeletedBaseCollection() throws XMLDBException
 	{
@@ -363,7 +383,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * defines subcollection of it.
 	 * @param subcollection path to be appended on the base deleted collection path
 	 * @return requested collection object
-	 * @throws XMLDBException thrown if the collection cannot be retrieved
+	 * @throws XMLDBException if the collection cannot be retrieved
 	 */
 	public Collection getDeletedCollection(String subPath) throws XMLDBException
 	{
@@ -416,7 +436,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 
 	/**Copies resource representing original xml document to the pertinent subcollection of /deleted collection.
 	 * @param resource resource representing the original document to be copied
-	 * @throws DatabaseException thrown if resource cannot be copied due to database connection issues.
+	 * @throws DatabaseException if resource cannot be copied due to database connection issues.
 	 */
 	private void copyResourceToDeleted(Resource resource, ExistTransaction transaction, String operation) throws DetailException
 	{
@@ -471,12 +491,66 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 		}
 	}
 
+	/**Opens document from the database collection which path is passed as the argument.
+	 * @param collectionPath path of the collection in which the document resides
+	 * @param documentName document name
+	 * @return <code>String</code> representing the contents of the document or <code>null</code>
+	 * if the document could not be located
+	 * @throws DatabaseException
+	 */
+	public String openDocument(String collectionPath, String documentName) throws DatabaseException
+	{
+		String result = null;
+		Collection collection = null;
+		Resource resource = null;
+		try
+		{
+			collection = getCollection(collectionPath);
+			resource = collection.getResource(documentName);
+			if(resource != null)
+			{
+				Object content = resource.getContent();
+				if("XMLResource".equals(resource.getResourceType()))
+					result = content.toString();
+				else
+				{
+					content.getClass();
+					result = new String((byte[])content, "ASCII");
+				}
+			}
+		}
+		catch(XMLDBException | UnsupportedEncodingException e)
+		{
+			logger.error("The document " + collectionPath + "/" + documentName + " could not be opened.");
+			logger.error("Exception is: ", e);
+			throw new DatabaseException("The document " + collectionPath + "/" + documentName + " could not be opened.");
+		}
+		finally
+		{
+			try
+			{
+				if(resource != null)
+				{
+					((EXistResource)resource).freeResources();
+					logger.info("The document " + collectionPath + "/" + documentName + " is opened.");
+				}
+				if(collection != null)
+					collection.close();
+			}
+			catch(XMLDBException e)
+			{
+				logger.error("Exception is: ", e);
+			}
+		}
+		return result;
+	}
+
 	/**Moves the document from one collection to the other.
 	 * @param destinationCollectionPath relative path of the destionation collection
 	 * @param destinationDocumentName name of the destionation document
 	 * @param sourceCollectionPath relative path of the source collection
 	 * @param sourceDocumentName name of the source document
-	 * @throws DatabaseException thrown if document could not be moved to a new location
+	 * @throws DatabaseException if document could not be moved to a new location
 	 */
 	public void moveDocument(String destinationCollectionPath, String destinationDocumentName, String sourceCollectionPath,
 			String sourceDocumentName) throws DatabaseException
@@ -490,23 +564,25 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * @param destinationDocumentName name of the destionation document
 	 * @param sourceCollectionPath relative path of the source collection
 	 * @param sourceDocumentName name of the source document
-	 * @throws DatabaseException thrown if source document does not exist or could not be moved to a new location
+	 * @throws DatabaseException if source document does not exist or could not be moved to a new location
 	 */
 	public void copyDocument(String destinationCollectionPath, String destinationDocumentName, String sourceCollectionPath,
 			String sourceDocumentName) throws DatabaseException
 	{
 		Collection sourceCollection = null;
 		Collection destinationCollection = null;
+		Resource sourceResource = null;
+		Resource destinationResource = null;
 		try
 		{
 			sourceCollection = getCollection(sourceCollectionPath);
-			Resource sourceResource = sourceCollection.getResource(sourceDocumentName);
+			sourceResource = sourceCollection.getResource(sourceDocumentName);
 			if(sourceResource == null)
 				throw new DatabaseException("Source document does not exist!");
 			logger.info("Start copying of the document " + sourceCollectionPath + "/" + sourceDocumentName + " to " +
 					destinationCollectionPath + "/" + destinationDocumentName);
 			destinationCollection = getCollection(destinationCollectionPath);
-			Resource destinationResource = destinationCollection.getResource(destinationDocumentName);
+			destinationResource = destinationCollection.getResource(destinationDocumentName);
 			if(destinationResource == null)
 				destinationResource = destinationCollection.createResource(destinationDocumentName, "XMLResource");
 			destinationResource.setContent(sourceResource.getContent());
@@ -525,6 +601,17 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 		{
 			try
 			{
+				if(sourceResource != null)
+					((EXistResource)sourceResource).freeResources();
+				if(destinationResource != null)
+					((EXistResource)destinationResource).freeResources();
+			}
+			catch(XMLDBException e)
+			{
+				logger.error("Exception is: ", e);
+			}
+			try
+			{
 				if(destinationCollection != null)
 					destinationCollection.close();
 				if(sourceCollection != null)
@@ -540,17 +627,17 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * if the document can be deleted, or the document did not exist prior to the method invocation.
 	 * @param collectionPath relative path of the document's collection
 	 * @param documentName name of the document to be deleted
-	 * @throws DatabaseException thrown if document could not be deleted
+	 * @throws DatabaseException if document could not be deleted
 	 */
 	public void deleteDocument(String collectionPath, String documentName) throws DatabaseException
 	{
 		Collection collection = null;
-
+		Resource resource = null;
 		try
 		{
 			logger.info("Start deletion of the document " + collectionPath + "/" + documentName);
 			collection = getCollection(collectionPath);
-			Resource resource = collection.getResource(documentName);
+			resource = collection.getResource(documentName);
 			if(resource != null) // document exist, not previously deleted
 			{
 				collection.removeResource(resource);
@@ -568,11 +655,14 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 		{
 			try
 			{
+				if (resource != null)
+					((EXistResource)resource).freeResources();
 				if(collection != null)
 					collection.close();
-			} catch (XMLDBException e)
+			}
+			catch(XMLDBException e)
 			{
-				logger.error("Exception is: ", e);
+				logger.error("Exception is: ", e);;
 			}
 		}
 	}
@@ -625,7 +715,7 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * with the same ID are placed in the subcollection that has a name as the object's ID.
 	 * @param id collection's name that represents id in check
 	 * @return true if id was used earlier, otherwise false
-	 * @throws XMLDBException thrown if collection cannot be retrieved from the database
+	 * @throws XMLDBException if collection cannot be retrieved from the database
 	 */
 	private boolean isIDPresentInDeleted(String id) throws XMLDBException
 	{
@@ -656,11 +746,12 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	 * @return XML as string
 	 * @throws JAXBException
 	 */
-	protected String marshallToXML(Object object) throws DataManipulationException
+	protected String marshalToXML(Object object) throws DataManipulationException
 	{
 		StringWriter sw = null;
 		try
 		{
+//			JAXBContext jc = getJAXBContext();
 			JAXBContext jc = JAXBContext.newInstance(object.getClass());
 			JAXBElement<?> element = (JAXBElement<?>) getJAXBElement(object);
 			Marshaller m = jc.createMarshaller();
@@ -752,6 +843,22 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 
 	protected abstract JAXBElement<?> getJAXBElement(Object object);
 
+	/**Gets <code>JAXBContext</code> object for particular subclass. For classes from the ph-ubl
+	 * library <code>JAXBContext</code> is instatiated on the base of the class's package name.
+	 * This is the default behavior of the method.<br />
+	 * For classes from packages in Ruta the project <code>JAXBContext</code> is instatiated on the base
+	 * of class's <code>Class</code> object. This should be implemented in cubclass's overriding methods.
+	 * <code>JAXBContext</code> from these classes could not be instatiated with the package name because
+	 * these classes do not have generated ObjectFactory class
+	 * MMM: maybe I should try to implement it!!!!!
+	 * @return <code>JAXBContext</code> object
+	 * @throws JAXBException if <code>JAXBContext</code> object could not be instatiated
+	 */
+	protected JAXBContext getJAXBContext() throws JAXBException
+	{
+		return JAXBContext.newInstance(getObjectPackageName());
+	}
+
 	/*Gets the ID of the object i.e. metadata UNIQUE_ID of the user. Object is represented with user's username.
 	 */
 	@Override
@@ -765,6 +872,266 @@ public abstract class XmlMapper extends ExistConnector implements DataMapper
 	{
 		insert(object, id, transaction);
 	}
+
+	@Override
+	public Object search(String name) throws DetailException
+	{
+		Object result = null;
+		Collection coll = null;
+		try {
+			//get the collection
+			final String uri = getUri();
+			coll = getCollection();
+
+			final XPathQueryService queryService = (XPathQueryService)coll.getService("XPathQueryService", "1.0");
+
+			logger.info("Starting Query of {}...", uri);
+
+			final ResourceSet results;
+			final File queryFile = null;
+			String query = null; //MMM: should be formed with the passed argument name
+
+			query =
+					"declare namespace ns2 = 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'; " +
+							"declare namespace d = 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2'; " +
+							"let $col := '/db/ruta/parties' " +
+							"return " +
+							"collection($col)/ns2:Party[ns2:PartyName/d:Name='" + name + "']";
+			if(queryFile == null)
+			{
+				//execute the XQuery
+				results = queryService.query(query);
+			}
+			else
+			{
+				//execute the XQuery from a file
+				//MMM: query file should be read from the database
+				final StringBuilder queryBuilder = new StringBuilder();
+				fileContents(queryFile, queryBuilder);
+				results = queryService.query(queryBuilder.toString());
+			}
+
+			//iterate through the results
+			if(results != null)
+			{
+				final ResourceIterator iterator = results.getIterator();
+				while(iterator.hasMoreResources())
+				{
+					Resource res = null;
+					try
+					{
+						res = iterator.nextResource();
+						//print the result on the console
+						//MMM: object should be placed in resul variable
+						System.out.println(res.getContent());
+					}
+					finally {
+						//cleanup resource
+						if(res != null)
+							((EXistResource)res).freeResources();
+					}
+				}
+				logger.info("Finished Query OK.");
+			}
+		}
+		catch (XMLDBException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(coll != null)
+			{
+				try
+				{
+					coll.close();
+				}
+				catch (XMLDBException e)
+				{
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<Object> search(SearchCriterion criterion) throws DetailException
+	{
+		List<Object> searchResult = new ArrayList<>();
+		Collection coll = null;
+		try
+		{
+			coll = getCollection();
+			final String uri = getUri();
+			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
+			logger.info("Start of the query of the " + uri);
+			queryService.setProperty("indent", "yes");
+			String queryName = getSearchQueryName();
+			String query = null; // search query
+			//loading the .xq query file from the database
+			if (queryName != null)
+				query = openDocument(getQueryPath(), getSearchQueryName());
+
+			//MMM: prepare query String adding criteria for the search from SearchCriterion
+//			final File queryFile = null;
+			if(/*queryFile != null ||*/ query != null)
+			{
+/*				final StringBuilder queryBuilder = new StringBuilder();
+				fileContents(queryFile, queryBuilder);
+				CompiledExpression compiled = queryService.compile(queryBuilder.toString());*/
+				CompiledExpression compiled = queryService.compile(query);
+				final ResourceSet results = queryService.execute(compiled);
+				final ResourceIterator iterator = results.getIterator();
+				while(iterator.hasMoreResources())
+				{
+					Resource resource = null;
+					try
+					{
+						resource = iterator.nextResource(); // this is a String
+						Object o = unmarshalFromXML(resource.toString());
+						searchResult.add(o);
+					}
+					finally
+					{
+						if(resource != null)
+							((EXistResource)resource).freeResources();
+					}
+				}
+				logger.info("Finished query of the " + uri);
+			}
+			else
+				throw new DatabaseException("Could not to process the query. Query file could not be opened.");
+		}
+		catch(XMLDBException e)
+		{
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException("Could not to process the query. There is an error in the process of the exceution.", e);
+		}
+		finally
+		{
+			if(coll != null)
+			{
+				try
+				{
+					coll.close();
+				}
+				catch(XMLDBException e)
+				{
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}
+		return searchResult.size() != 0 ? searchResult : null;
+	}
+
+	@Override
+	public <T> void searchGeneric(List<T> searchResult, SearchCriterion criterion) throws DetailException
+	{
+		Collection coll = null;
+		try
+		{
+			coll = getCollection();
+			final String uri = getUri();
+			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
+			logger.info("Start of the query of the " + uri);
+			queryService.setProperty("indent", "yes");
+			String queryName = getSearchQueryName();
+			String query = null; // search query
+			//loading the .xq query file from the database
+			if (queryName != null)
+				query = openDocument(getQueryPath(), getSearchQueryName());
+
+			//MMM: prepare query String adding criteria for the search from SearchCriterion
+//			final File queryFile = null;
+			if(/*queryFile != null ||*/ query != null)
+			{
+/*				final StringBuilder queryBuilder = new StringBuilder();
+				fileContents(queryFile, queryBuilder);
+				CompiledExpression compiled = queryService.compile(queryBuilder.toString());*/
+				CompiledExpression compiled = queryService.compile(query);
+				final ResourceSet results = queryService.execute(compiled);
+				final ResourceIterator iterator = results.getIterator();
+				while(iterator.hasMoreResources())
+				{
+					Resource resource = null;
+					try
+					{
+						resource = iterator.nextResource();
+						System.out.println((String) resource.getContent());
+						@SuppressWarnings("unchecked")
+						T res = (T) unmarshalFromXML((String) resource.getContent());
+						searchResult.add(res);
+					}
+					finally
+					{
+						if(resource != null)
+							((EXistResource)resource).freeResources();
+					}
+				}
+				logger.info("Finished query of the " + uri);
+			}
+			else
+				throw new DatabaseException("Could not to process the query. Query file could not be opened.");
+		}
+		catch(XMLDBException e)
+		{
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException("Could not to process the query. There is an error in the process of the exceution.", e);
+		}
+		finally
+		{
+			if(coll != null)
+			{
+				try
+				{
+					coll.close();
+				}
+				catch(XMLDBException e)
+				{
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+
+	public String getSearchQueryName() { return null; };
+
+	/**Appends the content of a text file to the String Builder.
+	 * @param f The file to read the contents of
+	 * @param builder The <code>StringBuilder</code> to append the file contents to
+	 */
+	private static void fileContents(final File f, final StringBuilder builder)
+	{//MM: should be implemented with the Scanner
+		Reader reader = null;
+		try
+		{
+			reader = new FileReader(f);
+			final char buf[] = new char[1024];
+			int read = -1;
+			while((read = reader.read(buf)) != -1)
+				builder.append(buf, 0, read);
+		}
+		catch(final IOException ioe)
+		{
+			logger.error(ioe.getMessage(), ioe);
+		}
+		finally
+		{
+			if(reader != null)
+			{
+				try
+				{
+					reader.close();
+				}
+				catch(final IOException ioe)
+				{
+					logger.warn(ioe.getMessage(), ioe);
+				}
+			}
+		}
+	}
+
 
 	/*	@Override
 	public void update(String username, Object object) throws Exception

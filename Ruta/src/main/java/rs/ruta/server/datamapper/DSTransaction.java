@@ -6,18 +6,18 @@ package rs.ruta.server.datamapper;
 public interface DSTransaction extends AutoCloseable
 {
 	/**Opens a transaction for operations withwith the data store.
-	 * @throws TransactionException thrown if transaction could not be opened
+	 * @throws TransactionException if transaction could not be opened
 	 */
 	public void open() throws TransactionException;
 
 	/**Closes a transaction.
-	 * @throws TransactionException thrown if transaction could not be closed
+	 * @throws TransactionException if transaction could not be closed
 	 */
 	@Override
 	public void close() throws TransactionException;
 
 	/**Reverts the state of the documents involved in this transaction to the state before this transaction has been started.
-	 * @throws TransactionException thrown if the rollback could not be done
+	 * @throws TransactionException if the rollback could not be done
 	 */
 	public void rollback() throws TransactionException;
 

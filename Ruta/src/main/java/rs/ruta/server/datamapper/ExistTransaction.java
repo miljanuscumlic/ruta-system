@@ -66,7 +66,7 @@ public class ExistTransaction implements DSTransaction
 	}
 
 	/**Opens a transaction by creating a journal document that records every interaction with the database.
-	 * @throws TransactionException thrown if journal document could not be saved to the database
+	 * @throws TransactionException if journal document could not be saved to the database
 	 * @see rs.ruta.server.datamapper.DSTransaction#open()
 	 */
 	@Override
@@ -85,7 +85,7 @@ public class ExistTransaction implements DSTransaction
 	}
 
 	/**Closes a transaction by deleting the journal document that records every interaction with the database.
-	 * @throws TransactionException thrown if journal document could not be deleted from the database
+	 * @throws TransactionException if journal document could not be deleted from the database
 	 * @see rs.ruta.server.datamapper.DSTransaction#close()
 	 */
 	@Override
@@ -163,7 +163,7 @@ public class ExistTransaction implements DSTransaction
 	 * @param backupDocumentName name of the backup document
 	 * @param username username of the user who is initiating the transaction. This parameter is not used
 	 * (i.e. its value should be <code>null</code>) except when creating a new user.
-	 * @throws DetailException thrown if transaction object could not be saved to the database
+	 * @throws DetailException if transaction object could not be saved to the database
 	 */
 	public void appendOperation(String originalCollectionPath, String originalDocumentName, String operation,
 			String backupCollectionPath, String backupDocumentName, String username) throws DetailException
@@ -240,7 +240,7 @@ public class ExistTransaction implements DSTransaction
 		}
 
 		/**Rolls back previously executed operation.
-		 * @throws DetailException thrown if the operation could not be rolled back
+		 * @throws DetailException if the operation could not be rolled back
 		 */
 		public void rollback() throws DetailException
 		{

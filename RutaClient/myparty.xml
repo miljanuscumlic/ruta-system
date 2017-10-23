@@ -9,8 +9,8 @@
             <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
         </ns2:SellersItemIdentification>
         <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-            <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+            <ns3:CommodityCode>78</ns3:CommodityCode>
+            <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
         </ns2:CommodityClassification>
     </MyProduct>
     <MyProduct>
@@ -22,8 +22,8 @@
             <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
         </ns2:SellersItemIdentification>
         <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-            <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+            <ns3:CommodityCode>78</ns3:CommodityCode>
+            <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
         </ns2:CommodityClassification>
     </MyProduct>
     <MyProduct>
@@ -34,7 +34,8 @@
             <ns3:ID>7854</ns3:ID>
         </ns2:SellersItemIdentification>
         <ns2:CommodityClassification>
-            <ns3:ItemClassificationCode>78</ns3:ItemClassificationCode>
+            <ns3:CommodityCode>78</ns3:CommodityCode>
+            <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
         </ns2:CommodityClassification>
     </MyProduct>
     <MyProduct>
@@ -125,10 +126,10 @@
         <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
         <ns3:IndustryClassificationCode>89898</ns3:IndustryClassificationCode>
         <ns2:PartyIdentification>
-            <ns3:ID>9d917fc0</ns3:ID>
+            <ns3:ID>d655d1ea</ns3:ID>
         </ns2:PartyIdentification>
         <ns2:PartyName>
-            <ns3:Name>Rutaaaedfe</ns3:Name>
+            <ns3:Name>Rutadr</ns3:Name>
         </ns2:PartyName>
         <ns2:PostalAddress>
             <ns3:Floor>4</ns3:Floor>
@@ -173,12 +174,12 @@
     </CoreParty>
     <Following>true</Following>
     <Partner>false</Partner>
-    <CatalogueID>111</CatalogueID>
+    <CatalogueID>114</CatalogueID>
     <CatalogueDeletionID>13</CatalogueDeletionID>
-    <catalogueIssueDate>2017-10-10T08:50:35.781+02:00</catalogueIssueDate>
+    <catalogueIssueDate>2017-10-15T10:42:35.953+02:00</catalogueIssueDate>
     <Password>ruta</Password>
     <Username>ruta</Username>
-    <SecretKey>c0eb3b65</SecretKey>
+    <SecretKey>f8f79bc6</SecretKey>
     <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI></ns3:WebsiteURI>
@@ -751,7 +752,7 @@
     </BusinessPartner>
     <FollowingPartner>
         <MyProduct>
-            <ns3:Description>kako biti vesel</ns3:Description>
+            <ns3:Description>kako biti veseo</ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>Veselje</ns3:Name>
             <ns2:SellersItemIdentification>
@@ -778,6 +779,7 @@
         </MyProduct>
         <MyProduct>
             <ns3:Description>kako biti ushićen :)</ns3:Description>
+            <ns3:PackSizeNumeric/>
             <ns3:Name>Ushićenje</ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:ID>7854</ns3:ID>
@@ -787,25 +789,14 @@
             </ns2:CommodityClassification>
         </MyProduct>
         <MyProduct>
-            <ns3:Description></ns3:Description>
+            <ns3:Description>marljivo</ns3:Description>
+            <ns3:PackSizeNumeric/>
             <ns3:Name>Marljivost</ns3:Name>
         </MyProduct>
         <MyProduct>
-            <ns3:Description>kako biti radan</ns3:Description>
+            <ns3:Description>kako biti radans</ns3:Description>
+            <ns3:PackSizeNumeric/>
             <ns3:Name>Radnost</ns3:Name>
-        </MyProduct>
-        <MyProduct>
-            <ns3:Description></ns3:Description>
-            <ns3:PackSizeNumeric/>
-            <ns3:Name></ns3:Name>
-        </MyProduct>
-        <MyProduct>
-            <ns3:Description></ns3:Description>
-            <ns3:Name></ns3:Name>
-        </MyProduct>
-        <MyProduct>
-            <ns3:Description></ns3:Description>
-            <ns3:Name></ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:ID></ns3:ID>
             </ns2:SellersItemIdentification>
@@ -821,15 +812,41 @@
         <MyProduct>
             <ns3:Description></ns3:Description>
             <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+            </ns2:SellersItemIdentification>
         </MyProduct>
         <MyProduct>
             <ns3:Description></ns3:Description>
+            <ns3:PackSizeNumeric/>
             <ns3:Name></ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:ID></ns3:ID>
             </ns2:SellersItemIdentification>
         </MyProduct>
         <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
             <ns3:Name></ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -839,6 +856,9 @@
             <ns3:Description></ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name></ns3:Name>
+            <ns2:SellersItemIdentification>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
             <ns2:CommodityClassification>
                 <ns3:CommodityCode></ns3:CommodityCode>
                 <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
@@ -904,7 +924,7 @@
         </CoreParty>
         <Following>false</Following>
         <Partner>false</Partner>
-        <CatalogueID>36</CatalogueID>
+        <CatalogueID>112</CatalogueID>
         <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>

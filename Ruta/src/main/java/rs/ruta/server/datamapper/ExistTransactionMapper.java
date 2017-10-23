@@ -6,15 +6,14 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
-import org.exist.xmldb.EXistResource;
 import org.xmldb.api.base.Collection;
-import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
 
-import rs.ruta.server.DataManipulationException;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
@@ -23,6 +22,7 @@ public class ExistTransactionMapper extends XmlMapper
 	final private static String docPrefix = ""; // "txn";
 	final private static String collectionPath = "/ruta/system/transactions";
 	final private static String deletedCollectionPath = "/ruta/deleted/system/transactions";
+	final private static String objectPackageName = "rs.ruta.server.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<Object, ExistTransaction> loadedTransactions;
 
@@ -45,6 +45,8 @@ public class ExistTransactionMapper extends XmlMapper
 	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
+	@Override
+	public String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public ExistTransaction find(String id) throws DetailException
@@ -59,9 +61,6 @@ public class ExistTransactionMapper extends XmlMapper
 		return txn;
 	}
 
-	/* (non-Javadoc)
-	 * @see rs.ruta.server.datamapper.XmlMapper#findAll()
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<?> findAll() throws DetailException
@@ -85,88 +84,11 @@ public class ExistTransactionMapper extends XmlMapper
 		return transactions;
 	}
 
-/*	@Override
-	public <T extends DSTransaction> String insert(Object object, T transaction) throws DetailException
-	{
-		Collection collection = null;
-		String id = null;
-		try
-		{
-			collection = getCollection();
-			id = createID(collection);
-			insert(collection, object, (String)id);
-		}
-		catch(XMLDBException e)
-		{
-			throw new DatabaseException("The collection could not be retrieved or unique ID created.", e);
-		}
-		finally
-		{
-			try
-			{
-				if(collection != null)
-					collection.close();
-			} catch (XMLDBException e)
-			{
-				logger.error("Exception is: ", e);
-			}
-		}
-		return id;
-	}*/
-
 	@Override
 	public <T extends DSTransaction> void insert(Object txn, Object id, T transaction) throws DetailException
 	{
 		super.insert(txn, id, transaction);
 		loadedTransactions.put(id, (ExistTransaction) txn);
-	}
-
-	/**Inserts object in the collection.
-	 * @param collection collection in which the object is to be stored
-	 * @param object object to be stored
-	 * @return id of the object, unique in the scope of the collection
-	 * @throws DetailException
-	 */
-	private void insert(Collection collection, Object object, String id) throws DetailException
-	{
-		Resource resource = null;
-		String resourceType = "XMLResource";
-		String colPath = getCollectionPath();
-		String xmlResult = null; //Storing object in the String
-		String documentName = "";
-		try
-		{
-			documentName = getDocumentPrefix() + id + getDocumentSufix();
-			xmlResult = marshallToXML(object);
-			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
-			resource = collection.createResource(documentName, resourceType);
-			resource.setContent(xmlResult);
-			collection.storeResource(resource);
-			logger.info("Finished storing of the document " + documentName + " to the location " + colPath);
-		}
-		catch(XMLDBException e)
-		{
-			logger.error("Could not save the document " + documentName + " to the location " + colPath);
-			logger.error("Exception is: ", e);;
-			throw new DatabaseException("The document could not be saved to the database.", e);
-		}
-		catch(DataManipulationException e)
-		{
-			logger.error("Could not save the document " + documentName + " to the location " + colPath);
-			throw e;
-		}
-		finally
-		{
-			try
-			{
-				if (resource != null)
-					((EXistResource)resource).freeResources();
-			}
-			catch(XMLDBException e)
-			{
-				logger.error("Exception is: ", e);;
-			}
-		}
 	}
 
 	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
@@ -199,6 +121,12 @@ public class ExistTransactionMapper extends XmlMapper
 	}
 
 	@Override
+	protected JAXBContext getJAXBContext() throws JAXBException
+	{
+		return JAXBContext.newInstance(getObjectClass());
+	}
+
+	@Override
 	public Class<?> getObjectClass()
 	{
 		return ExistTransaction.class;
@@ -209,4 +137,6 @@ public class ExistTransactionMapper extends XmlMapper
 	{
 		return ((ExistTransaction)object).getTransactionID();
 	}
+
+
 }

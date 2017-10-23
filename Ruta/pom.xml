@@ -2,12 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>rs.ruta</groupId>
 	<artifactId>ruta-server</artifactId>
 	<version>0.0.1</version>
-	<packaging>war</packaging>
 	<name>Ruta</name>
+	<packaging>war</packaging>
 
 	<properties>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -15,6 +14,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<cxf.version>3.1.12</cxf.version>
+		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target</ruta.common.path>
 	</properties>
 
 	<!-- temporary repository for exist -->
@@ -49,6 +49,15 @@
 			<groupId>com.helger</groupId>
 			<artifactId>ph-ubl21</artifactId>
 			<!-- <version>5.1.0</version> -->
+		</dependency>
+		<!-- MMM: Temporary working solution before installing it in nexus repository-->
+		<dependency>
+			<groupId>rs.ruta</groupId>
+			<artifactId>ruta-common</artifactId>
+			<version>0.0.1</version>
+<!-- 			<scope>system</scope>
+			  <systemPath>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target/ruta-common-0.0.1.jar</systemPath>
+			<systemPath>${ruta.common.path}/ruta-common-0.0.1.jar</systemPath> -->
 		</dependency>
 	</dependencies>
 

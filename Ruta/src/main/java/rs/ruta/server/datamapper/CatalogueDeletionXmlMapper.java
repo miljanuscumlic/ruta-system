@@ -20,6 +20,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper
 	final private static String docPrefix = "";
 	final private static String collectionPath = "/ruta/catalogue-deletions";
 	final private static String deletedCollectionPath = "/ruta/deleted/catalogue-deletions";
+	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21";
 	//MMM: This map should be some kind of most recently used collection
 	private Map<Object, CatalogueDeletionType> loadedCatalogueDeletions;
 
@@ -35,6 +36,8 @@ public class CatalogueDeletionXmlMapper extends XmlMapper
 	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
+	@Override
+	public String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public CatalogueDeletionType find(String id) throws DetailException

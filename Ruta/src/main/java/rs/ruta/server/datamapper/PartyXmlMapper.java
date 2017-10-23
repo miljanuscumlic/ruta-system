@@ -13,6 +13,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Obj
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
@@ -21,6 +22,7 @@ public class PartyXmlMapper extends XmlMapper
 	final private static String docPrefix = ""; // "party";
 	final private static String collectionPath = "/ruta/parties";
 	final private static String deletedCollectionPath = "/ruta/deleted/parties";
+	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<Object, PartyType> loadedParties;
 
@@ -36,6 +38,8 @@ public class PartyXmlMapper extends XmlMapper
 	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
+	@Override
+	public String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public PartyType find(String id) throws DetailException
@@ -53,6 +57,7 @@ public class PartyXmlMapper extends XmlMapper
 	@Override
 	public <T extends DSTransaction> void insert(Object party, Object id, T transaction) throws DetailException
 	{
+		setPartyID((PartyType) party, (String) id);
 		super.insert(party, id, transaction);
 		loadedParties.put(id, (PartyType) party);
 	}
@@ -66,7 +71,6 @@ public class PartyXmlMapper extends XmlMapper
 		{
 			collection = getCollection();
 			id = createID(collection);
-			setPartyID((PartyType) party, id);
 			insert(party, id, transaction);
 		}
 		catch(XMLDBException e)
@@ -128,9 +132,6 @@ public class PartyXmlMapper extends XmlMapper
 		return property != null ? extractor.apply(property) : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see rs.ruta.server.datamapper.XmlMapper#findAll()
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<?> findAll() throws DetailException
@@ -143,4 +144,35 @@ public class PartyXmlMapper extends XmlMapper
 		return parties;
 	}
 
+	@Override
+	public <T extends DSTransaction> void update(Object party, Object id, T transaction) throws DetailException
+	{
+		super.update(party, id, transaction);
+		loadedParties.put(id, (PartyType) party);
+	}
+
+	@Override
+	public String getSearchQueryName()
+	{
+		return queryNameSearchParty;
+	}
+
+	/**Sends search request to the super class and converts search result represented as
+	 * list of <code>Object</code>s to list of <code>PartyType</code>s
+	 * @param criterion search criterion
+	 * @return search result as list of <code>PartyType</code>s
+	 * @throws DetailException if search query could not be processed
+	 */
+	public List<PartyType> searchParty(SearchCriterion criterion) throws DetailException
+	{
+		List<PartyType> partyResult = null;
+		List<Object> objectResult = super.search(criterion);
+		if (objectResult != null)
+		{
+			partyResult = new ArrayList<>();
+			for(Object object : objectResult)
+				partyResult.add((PartyType) object);
+		}
+		return partyResult;
+	}
 }
