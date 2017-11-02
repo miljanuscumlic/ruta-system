@@ -56,7 +56,7 @@ public class BusinessParty
 		return catalogueID;
 	}
 
-	public void setCatalogueID(Long catalogueID)
+	public void setCatalogueID(long catalogueID)
 	{
 		this.catalogueID = catalogueID;
 	}
@@ -77,7 +77,7 @@ public class BusinessParty
 		return catalogueDeletionID;
 	}
 
-	public void setCatalogueDeletionID(Long catalogueDeletionID)
+	public void setCatalogueDeletionID(long catalogueDeletionID)
 	{
 		this.catalogueDeletionID = catalogueDeletionID;
 	}
@@ -380,11 +380,6 @@ public class BusinessParty
 	public void setPartner(boolean partner)
 	{
 		this.partner = partner;
-	}
-
-	public void setCatalogueID(long catalogueID)
-	{
-		this.catalogueID = catalogueID;
 	}
 
 	/**This methods do nothing, because this base class is not suppose to change the values of properties

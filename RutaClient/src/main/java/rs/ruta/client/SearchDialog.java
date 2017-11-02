@@ -19,8 +19,8 @@ public class SearchDialog extends JDialog
 	private String partyCountry;
 
 	private JTextField pNameField;
-	private JTextField pClassCodeField;
-	private JTextField pCompanyField;
+	private JTextField pIndustryClassCodeField;
+	private JTextField pCompanyIDField;
 	private JTextField pCityField;
 	private JTextField pCountryField;
 	private JRadioButton pAll;
@@ -51,8 +51,8 @@ public class SearchDialog extends JDialog
 
 		int width = 20;
 		pNameField = new JTextField(width);
-		pClassCodeField = new JTextField(width);
-		pCompanyField = new JTextField(width);
+		pCompanyIDField = new JTextField(width);
+		pIndustryClassCodeField = new JTextField(width);
 		pCityField = new JTextField(width);
 		pCountryField = new JTextField(width);
 
@@ -71,10 +71,10 @@ public class SearchDialog extends JDialog
 		{
 			searchPressed = true;
 			criterion.setPartyName(pNameField.getText());
-			criterion.setPartyClassCode(pClassCodeField.getText());
-			criterion.setPartyCompanyID(pCompanyField.getText());
-			criterion.setPartyCountry(pCountryField.getText());
+			criterion.setPartyCompanyID(pCompanyIDField.getText());
+			criterion.setPartyClassCode(pIndustryClassCodeField.getText());
 			criterion.setPartyCity(pCityField.getText());
+			criterion.setPartyCountry(pCountryField.getText());
 			criterion.setPartyAll(pAll.isSelected());
 
 			criterion.setItemName(iNameField.getText());
@@ -113,9 +113,9 @@ public class SearchDialog extends JDialog
 		putGridCell(partyPanel, 1, 0, 1, 1, new JLabel("Name: ", SwingConstants.LEFT));
 		putGridCell(partyPanel, 1, 1, 1, 1, pNameField);
 		putGridCell(partyPanel, 2, 0, 1, 1, new JLabel("Company ID: ", SwingConstants.LEFT));
-		putGridCell(partyPanel, 2, 1, 1, 1, pClassCodeField);
+		putGridCell(partyPanel, 2, 1, 1, 1, pCompanyIDField);
 		putGridCell(partyPanel, 3, 0, 1, 1, new JLabel("Industry Classification Code: ", SwingConstants.LEFT));
-		putGridCell(partyPanel, 3, 1, 1, 1, pCompanyField);
+		putGridCell(partyPanel, 3, 1, 1, 1, pIndustryClassCodeField);
 		putGridCell(partyPanel, 4, 0, 1, 1, new JLabel("City: ", SwingConstants.LEFT));
 		putGridCell(partyPanel, 4, 1, 1, 1, pCityField);
 		putGridCell(partyPanel, 5, 0, 1, 1, new JLabel("Country: ", SwingConstants.LEFT));

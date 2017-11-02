@@ -1,36 +1,56 @@
 package rs.ruta.server.datamapper;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DetailException;
 
-/**DataMapper interface declares methods for mapping between objects from the domain model
+/**DataMapper interface declares methods responsible for mapping between objects from the domain model
  * and persistance interpretation of that data in the data store. To be able to connect to
- * some particular database one should implement DataMapper interface are its methods.
+ * some particular database one should implement DataMapper interface and its methods.
  */
-public interface DataMapper
+public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the id in the database
 {
-	/**Retrieves object from the data store with passed id or <code>null</code> if object doesn't exist.
+	/**Retrieves object from the data store with passed id.
 	 * @param id id of the object to be retrieved
 	 * @return found object or <code>null</code> if object doesn't exist
 	 */
-	public Object find(String id) throws Exception; // MMM: should be (Object id)
+	public T find(ID id) throws Exception;
 
-	/**Searches for the object in the data store.
-	 * @param object object which is searched for in the data store
-	 * @return object wich type depends on the data store against which this method is called
-	 * @throws DetailException if object could not be retrieved
-	 */
-	public Object find(Object object) throws DetailException;
-
-	/**Retrieves all objects from the data store. Objects that are already read will be discarded,
-	 * and read again from the data store.
+	/**Retrieves all objects from the data store or <code>null</code> if no object exists.
 	 * @return list of all the objects, or null if no objects are found
 	 * @throws DetailException if object could not be retrieved
 	 */
-	public ArrayList<?> findAll() throws DetailException;
+	default public List<T> findAll() throws DetailException { return null; }
+
+	/**Queries the data store based on the search criterion.
+	 * Result is a list of objects that are of type {@code<T>} which is a type parameter of the appropriate
+	 * subclass instance of {@code DataMapper<T>} interface.
+	 * @param criterion search criterion
+	 * @return list of objects of type {@code<T>}
+	 * @throws DetailException if search request could not be processed
+	 */
+	default public List<T> findMany(SearchCriterion criterion) throws DetailException {return null; }
+
+	/**Queries the data store based on the search criterion. Uses xQuery that returns sequence of resource's ids
+	 * that conform to the queried criterion. Result is a list of objects that are of type {@code<T>}
+	 * which is a type parameter of the appropriate subcalss instance of {@code DataMapper<T>} interface.
+	 * @param criterion search criterion
+	 * @return list of objects of type {@code<T>}
+	 * @throws DetailException if search request could not be processed
+	 */
+	default public List<T> findManyID(SearchCriterion criterion) throws DetailException { return null; }
+
+	/**Queries the data store based on the search criterion. Result is a list of objects that are of type {@code<U>}
+	 * which is a type parameter of the method.
+	 * @param searchResult list of object conforming to the search criterion
+	 * @param criterion search criterion
+	 * @param <U> type og the object in the result list
+	 * @throws DetailException if search request could not be processed
+	 */
+	default public <U> List<U> findGeneric(SearchCriterion criterion) throws DetailException { return null; }
 
 	/** Writes all objects to the data store.
 	 */
@@ -40,95 +60,90 @@ public interface DataMapper
 	 * @param object object to be stored
 	 * @param id id of the object
 	 * @param transaction data store transaction which insert is part of
+	 * @throws DetailException if object cannot be insert in the store
 	 * @param <T> transaction class that is subclass of <code>DSTransaction</code>
 	 */
-	public <T extends DSTransaction> void insert(Object object, Object id, T transaction) throws DetailException;
+	public void insert(T object, ID id, DSTransaction transaction) throws DetailException;
 
 	/**Inserts object to the data store. If necessary unique id of the object may be created.
+	 * @param username username of the user whose object is to be stored in the datastore
 	 * @param object object to be stored
 	 * @param transaction data store transaction which insert is part of
 	 * @return object's id
-	 * @throws Exception exception is thrown if object cannot be insert in the store
+	 * @throws DetailException if object cannot be insert in the store
 	 */
-	public <T extends DSTransaction> Object insert(Object object, T transaction) throws DetailException;
-
-	/**Updates user data in the data store.
-	 * @param user user object to be updated
-	 * @param transaction data store transaction which user update is part of
-	 * @result user's id
-	 * @throws DetailException TODO
-	 */
-	default public <T extends DSTransaction> Object updateUser(Object user, T transaction) throws DetailException { return null; }
-
-/*	/**Updates the object in the data store.
-	 * @param username user's username
-	 * @param object object to be updated
-	 * @throws Exception if object cannot be updated
-	 *//*
-	default public void update(String username, Object object) throws Exception { };*/
+	public ID insert(String username, T object, DSTransaction transaction) throws DetailException;
 
 	/**Updates object with passed id.
 	 * @param object object to be updated
-	 * @param id object's id
-	 * @param transaction data store transaction which update is part of
-	 * @throws Exception if object could not be updated
+	 * @param id id of the object
+	 * @param transaction data store transaction which insert is part of
+	 * @throws DetailException if object cannot be updated
+	 * @param <T> transaction class that is subclass of <code>DSTransaction</code>
 	 */
-	public <T extends DSTransaction>void update(Object object, Object id, T transaction) throws DetailException;
+	default public void update(T object, ID id, DSTransaction transaction) throws DetailException { }
 
-	/**Retrieves object's id from the data store.
+	/**Updates the object in the data store.
+	 * @param username user's username
+	 * @param object object to be updated
+	 * @param transaction data store transaction which update is part of
+	 * @return object's ID
+	 * @throws DetailException if object could not be updated
+	 */
+	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
+
+	/**Retrieves object's id from the data store. ID is the result of the querying the data store
+	 * based on the contents of the passed argument.
 	 * @param object object which id is requested
 	 * @return object's id
-	 * @throws Exception if the object cannot be found in the data store
+	 * @throws DetailException if the object cannot be found in the data store
 	 */
-	public Object getID(Object object) throws DetailException;
+	default public ID getID(T object) throws DetailException { return null; }
+
+	//MMM: maybe this method should always return String, because insert WebMethod returns String
+	/**Retrieves unique ID of the user of the CDR service.
+	 * @param username user's username
+	 * @return user's unique ID
+	 * @throws DetailException if user ID could not be retrieved
+	 */
+	public ID getUserID(String username) throws DetailException;
 
 	/**Deletes object with passed id from the data store.
 	 * @param id id of the object that should be deleted
 	 * @param transaction data store transaction which deletion is part of
-	 * @throws Exception if object cannot be deleted
+	 * @throws DetailException if object cannot be deleted
 	 */
-	public <T extends DSTransaction> void delete(Object id, T transaction) throws DetailException;
+	public void delete(ID id, DSTransaction transaction) throws DetailException;
 
 	/**Deletes user from the data store.
-	 * @param id id of the object that should be deleted
 	 * @param transaction data store transaction which user deletion is part of
 	 * @param user' username
-	 * @throws Exception if user cannot be deleted
+	 * @throws DetailException if user cannot be deleted
 	 */
-	default public <T extends DSTransaction> void deleteUser(String username, Object id, T transaction) throws DetailException {}
+	default public void deleteUser(String username, DSTransaction transaction) throws DetailException {}
 
 	/**Registers new user with the data store.
 	 * @param username user's username
 	 * @param password user's password
 	 * @param transaction data store transaction which registration of the user is part of
 	 * @return user's identification object
-	 * @throws DetailException TODO
+	 * @throws DetailException if user could not be registered
 	 */
-	default public <T extends DSTransaction> Object registerUser(String username, String password, T transaction)
+	default public ID registerUser(String username, String password, DSTransaction transaction)
 			throws DetailException { return null; }
 
 	/**Gets user's secret key from the data store.
 	 * @param username user's username
 	 * @return secret key or <code>null</code> if secret key is not stored for a given username
-	 * @throws Exception if there is a problem with the data store connectivity
+	 * @throws DetailException if there is a problem with the data store connectivity or user is not registered
 	 */
 	default public Object findSecretKey(String username) throws DetailException { return null; }
 
-
-	/**Retrieves the list of objects as a result of the search query based on the passed search criterion.
-	 * @param criterion search criterion
-	 * @return list of objects conforming to the criterion od <code>null</code>
-	 * @throws DetailException if search query could not be processed
+	//MMM: should be checked if this method could be put in some subclass
+	/**Creates unique ID for an object.
+	 * @param <S> type of the id object
+	 * @return ID
 	 */
-	default public List<Object> search(SearchCriterion criterion) throws DetailException { return null; }
-
-	/**Temporary method for searching parties by name
-	 * @param name search criterion
-	 * @return search result
-	 * @throws DetailException
-	 */
-	public Object search(String name) throws DetailException;
-
-	default public <T> void searchGeneric(List<T> searchResult, SearchCriterion criterion) throws DetailException { }
+	public ID createID() throws XMLDBException;
 
 }

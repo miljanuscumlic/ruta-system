@@ -19,11 +19,11 @@ import rs.ruta.server.DetailException;
 public final class MapperRegistry
 {
 	private static MapperRegistry registry = new MapperRegistry();
-	private ConcurrentMap<Class<?>, DataMapper> mapRegistry;
+	private ConcurrentMap<Class<?>, DataMapper<?, String>> mapRegistry;
 
 	private MapperRegistry()
 	{
-		mapRegistry = new ConcurrentHashMap<Class<?>, DataMapper>();
+		mapRegistry = new ConcurrentHashMap<Class<?>, DataMapper<?, String>>();
 	}
 
 	/**Gets the singleton mapper registry object.
@@ -49,21 +49,24 @@ public final class MapperRegistry
 	 * @throws DetailException if mapper could not be created and added to the registry
 	 * due to database connetivity issues
 	 */
-	public static DataMapper getMapper(Class<?> clazz) throws DetailException
+	@SuppressWarnings("unchecked")
+	public static <S> DataMapper<S, String> getMapper(Class<S> clazz) throws DetailException
 	{
-		DataMapper dataMapper = getInstance().mapRegistry.get(clazz);
+		DataMapper<S, String> dataMapper = (DataMapper<S, String>) getInstance().mapRegistry.get(clazz);
 		if(dataMapper == null)
 		{
 			if(clazz == CatalogueType.class)
-				dataMapper = new CatalogueXmlMapper();
+				dataMapper = (DataMapper<S, String>) new CatalogueXmlMapper();
 			else if(clazz == CatalogueDeletionType.class)
-				dataMapper = new CatalogueDeletionXmlMapper();
+				dataMapper = (DataMapper<S, String>) new CatalogueDeletionXmlMapper();
 			else if(clazz == PartyType.class)
-				dataMapper = new PartyXmlMapper();
+				dataMapper = (DataMapper<S, String>) new PartyXmlMapper();
 			else if(clazz == User.class)
-				dataMapper = new UserXmlMapper();
+				dataMapper = (DataMapper<S, String>) new UserXmlMapper();
 			else if(clazz == DSTransaction.class)
-				dataMapper = new ExistTransactionMapper();
+				dataMapper = (DataMapper<S, String>) new ExistTransactionMapper();
+			else if(clazz == PartyID.class)
+				dataMapper = (DataMapper<S, String>) new PartyIDXmlMapper();
 			getInstance().mapRegistry.put(clazz, dataMapper);
 		}
 		if(dataMapper == null)

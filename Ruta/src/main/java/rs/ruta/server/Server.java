@@ -88,26 +88,11 @@ public interface Server
 	@WebMethod(operationName = "UpdateParty")
 	public void updateParty(String username, PartyType party) throws RutaException;
 
-	/**Query the parties in database with the search criterion.
-	 * @param username username of the party requesting the results
-	 * @param criterion search criterion
-	 * @return list of <code>PartyType</code>s conforming to the search criterion
-	 * @throws RutaException if search could not be conducted
-	 */
-	@WebMethod(operationName = "QueryParty")
-	public List<PartyType> queryParty(String username, PartyType criterion) throws RutaException;
-
-	@WebMethod(operationName = "QueryPartyName")
-	public PartyType queryPartyName(String username, String partyName)throws RutaException;
-
 	@WebMethod(operationName = "SearchParty")
 	public List<PartyType> searchParty(String username, SearchCriterion criterion) throws RutaException;
 
 	@WebMethod(operationName = "SearchCatalogue")
 	public List<CatalogueType> searchCatalogue(String username, SearchCriterion criterion) throws RutaException;
-
-	@WebMethod(operationName = "TestEpisode")
-	public void testEpisode(Episode e);
 
 	/**Temporary web method for testing the jaxb.
 	 * @return

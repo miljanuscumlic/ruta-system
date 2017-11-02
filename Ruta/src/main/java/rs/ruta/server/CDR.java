@@ -46,26 +46,35 @@ public class CDR implements Server
 	private final static Documents documents = new Documents();
 	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.server");
 	private DSTransactionFactory transactionFactory;
-	//MMM: when transactionFailure==true system should be stoped, database restarted
-	//MMM: and rollbackTransactions method should be called after restart???
 	private boolean transactionFailure; //database transaction failed
 
 	public CDR()
 	{
-		transactionFailure = false;
+		transactionFailure = true;
 		transactionFactory = MapperRegistry.getTransactionFactory();
-		rollbackTransactions();
+		try
+		{
+			rollbackTransactions();
+		}
+		catch (DetailException e)
+		{
+			if (e.getCause().getMessage().contains("connect"))
+				logger.warn("Cound not connect to the database! The database might not be started. Details: " + e.getMessage() +
+						" " + e.getCause().getMessage());
+				logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable"
+						+ " and all SOAP requests will be rejected.");
+		}
 	}
 
 	@Override
 	@WebMethod
 	public void putDocument(CatalogueType d)
 	{
-		init();
+		//init();
 		documents.addDocument(d);
 	}
 
-	private void init()
+	private void init() throws DetailException
 	{
 		if(wsCtx == null)
 			throw new RuntimeException("Dependancy Injection failed on Web Service Context!");
@@ -83,7 +92,7 @@ public class CDR implements Server
 	@WebMethod
 	public CatalogueType getDocument()
 	{
-		init();
+		//init();
 		return documents.removeDocument();
 	}
 
@@ -91,32 +100,17 @@ public class CDR implements Server
 	@WebMethod
 	public void insertCatalogue(String username, CatalogueType cat) throws RutaException
 	{
-		init();
-		String id = null;
+		String exceptionMsg = "Catalogue could not be deposited to the CDR service!";
 		DSTransaction transaction = null;
 		try
 		{
+			init();
 			transaction = transactionFactory.openTransaction();
-			id = (String) MapperRegistry.getMapper(User.class).getID(username);
-			MapperRegistry.getMapper(CatalogueType.class).insert(cat, id, transaction);
+			MapperRegistry.getMapper(CatalogueType.class).insert(username, cat, transaction);
 		}
-		/*		catch (DetailException e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			throw new RutaException("Catalogue could not be deposited to the CDR service!", ((DetailException)e).getFaultInfo());
-		}*/
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (transaction != null)
 			{
 				try
@@ -129,9 +123,9 @@ public class CDR implements Server
 				}
 			}
 			if (e instanceof DetailException)
-				throw new RutaException("Catalogue could not be deposited to the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Catalogue could not be deposited to the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		finally
 		{
@@ -144,7 +138,7 @@ public class CDR implements Server
 				catch (TransactionException e)
 				{
 					transactionFailure = true;
-					logger.error("Exception is: ", e);;
+					logger.error("Exception is ", e);;
 					throw new RutaException("Catalogue could not be deposited to the CDR service!",
 							((DetailException) e.getCause()).getFaultInfo());
 				}
@@ -156,32 +150,17 @@ public class CDR implements Server
 	@WebMethod
 	public void updateCatalogue(String username, CatalogueType cat) throws RutaException
 	{
-		init();
-		String id = null;
+		String exceptionMsg = "Catalogue could not be updated to the CDR service!";
 		DSTransaction transaction = null;
 		try
 		{
+			init();
 			transaction = transactionFactory.openTransaction();
-			id = (String) MapperRegistry.getMapper(User.class).getID(username);
-			MapperRegistry.getMapper(CatalogueType.class).update(cat, id, transaction);
-		}
-		catch (DetailException e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			throw new RutaException("Catalogue could not be updated to the CDR service!", ((DetailException)e).getFaultInfo());
+			MapperRegistry.getMapper(CatalogueType.class).update(username, cat, transaction);
 		}
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (transaction != null)
 			{
 				try
@@ -193,7 +172,10 @@ public class CDR implements Server
 					transactionFailure = true;
 				}
 			}
-			throw new RutaException("Catalogue could not be updated to the CDR service!", e.getMessage());
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		finally
 		{
@@ -206,7 +188,7 @@ public class CDR implements Server
 				catch (TransactionException e)
 				{
 					transactionFailure = true;
-					logger.error("Exception is: ", e);;
+					logger.error("Exception is ", e);;
 					throw new RutaException("Catalogue could not be updated to the CDR service!",
 							((DetailException) e.getCause()).getFaultInfo());
 				}
@@ -218,15 +200,20 @@ public class CDR implements Server
 	@WebMethod
 	public CatalogueType findCatalogue(String id) throws RutaException
 	{
-		init();
+		String exceptionMsg = "Catalogue could not be retrieved from the CDR service!";
 		CatalogueType cat = null;
 		try
 		{
-			cat = (CatalogueType) MapperRegistry.getMapper(CatalogueType.class).find(id);
+			init();
+			cat = MapperRegistry.getMapper(CatalogueType.class).find(id);
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			throw new RutaException("Catalogue could not be retrieved from the CDR service!", ((DetailException)e).getFaultInfo());
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		return cat;
 	}
@@ -235,32 +222,18 @@ public class CDR implements Server
 	@WebMethod
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException
 	{
-		init();
+		String exceptionMsg = "Catalogue could not be deleted from the CDR service!";
 		DSTransaction transaction = null;
 		try
 		{
+			init();
 			transaction = transactionFactory.openTransaction();
-			String id = (String) MapperRegistry.getMapper(User.class).getID(username);
-			MapperRegistry.getMapper(CatalogueDeletionType.class).insert(catDeletion, id, transaction);
+			MapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catDeletion, transaction);
 			//			MapperRegistry.getMapper(CatalogueType.class).delete(id); //deprecated: when CatalogueDeletion is not used
 		}
-		/*		catch(DetailException e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			throw new RutaException("Catalogue could not be deleted from the CDR service!", e.getFaultInfo());
-		}*/
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (transaction != null)
 			{
 				try
@@ -273,9 +246,9 @@ public class CDR implements Server
 				}
 			}
 			if (e instanceof DetailException)
-				throw new RutaException("Catalogue could not be deleted from the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Catalogue could not be deleted from the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		finally
 		{
@@ -288,7 +261,7 @@ public class CDR implements Server
 				catch (TransactionException e)
 				{
 					transactionFailure = true;
-					logger.error("Exception is: ", e);;
+					logger.error("Exception is ", e);;
 					throw new RutaException("Catalogue could not be deleted from the CDR service!",
 							((DetailException) e.getCause()).getFaultInfo());
 				}
@@ -300,31 +273,18 @@ public class CDR implements Server
 	@WebMethod
 	public String registerUser(String username, String password) throws RutaException
 	{
-		init();
+		String exceptionMsg = "Party could not be registered with the CDR service!";
 		String secretKey = null;
 		DSTransaction transaction = null;
 		try
 		{
+			init();
 			transaction = transactionFactory.openTransaction();
 			secretKey = (String) MapperRegistry.getMapper(User.class).registerUser(username, password, transaction);
 		}
-		/*		catch (DetailException e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			throw new RutaException("Party could not be registered with the CDR service!", ((DetailException)e).getFaultInfo());
-		}*/
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (transaction != null)
 			{
 				try
@@ -337,9 +297,9 @@ public class CDR implements Server
 				}
 			}
 			if (e instanceof DetailException)
-				throw new RutaException("Party could not be registered with the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Party could not be registered with the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		finally
 		{
@@ -352,7 +312,7 @@ public class CDR implements Server
 				catch (TransactionException e)
 				{
 					transactionFailure = true;
-					logger.error("Exception is: ", e);;
+					logger.error("Exception is ", e);;
 					throw new RutaException("Party could not be registered with the CDR service!",
 							((DetailException) e.getCause()).getFaultInfo());
 				}
@@ -365,17 +325,19 @@ public class CDR implements Server
 	@WebMethod
 	public String insertParty(String username, PartyType party) throws RutaException
 	{
-		init();
+		String exceptionMsg = "Party could not be registered with the CDR service!";
 		DSTransaction transaction = null;
 		String id = null;
 		try
 		{
+			init();
 			transaction = transactionFactory.openTransaction();
-			id = (String) MapperRegistry.getMapper(User.class).getID(username);
-			MapperRegistry.getMapper(PartyType.class).insert(party, id, transaction);
+			MapperRegistry.getMapper(PartyType.class).insert(username, party, transaction);
+			id = MapperRegistry.getMapper(User.class).getUserID(username);
 		}
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (transaction != null)
 			{
 				try
@@ -388,89 +350,9 @@ public class CDR implements Server
 				}
 			}
 			if (e instanceof DetailException)
-				throw new RutaException("Party could not be registered with the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Party could not be registered with the CDR service!", e.getMessage());
-		}
-		return id;
-	}
-
-	@Override
-	@WebMethod
-	public void updateParty(String username, PartyType party) throws RutaException
-	{
-		init();
-		DSTransaction transaction = null;
-		try
-		{
-			transaction = transactionFactory.openTransaction();
-			String id = (String) MapperRegistry.getMapper(User.class).getID(username);
-			MapperRegistry.getMapper(PartyType.class).update(party, id, transaction);
-		}
-		catch(Exception e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			if (e instanceof DetailException)
-				throw new RutaException("Party could not be updated in the CDR service!", ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException("Party could not be updated in the CDR service!", e.getMessage());
-		}
-	}
-
-	@Override
-	@WebMethod
-	public void deleteUser(String username) throws RutaException
-	{
-		init();
-		DSTransaction transaction = null;
-		try
-		{
-			transaction = transactionFactory.openTransaction();
-			String id = (String) MapperRegistry.getMapper(User.class).getID(username);
-			MapperRegistry.getMapper(User.class).deleteUser(username, id, transaction);
-		}
-		/*		catch(DetailException e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			throw new RutaException("Party could not be deleted from the CDR service!", ((DetailException)e).getFaultInfo());
-		}*/
-		catch(Exception e)
-		{
-			if (transaction != null)
-			{
-				try
-				{
-					transaction.rollback();
-				}
-				catch(TransactionException ex)
-				{
-					transactionFailure = true;
-				}
-			}
-			if (e instanceof DetailException)
-				throw new RutaException("Party could not be deleted from the CDR service!", ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException("Party could not be deleted from the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		finally
 		{
@@ -483,7 +365,108 @@ public class CDR implements Server
 				catch (TransactionException e)
 				{
 					transactionFailure = true;
-					logger.error("Exception is: ", e);;
+					logger.error("Exception is ", e);;
+					throw new RutaException("Party could not be registered with the CDR service!",
+							((DetailException) e.getCause()).getFaultInfo());
+				}
+			}
+		}
+		return id;
+	}
+
+	@Override
+	@WebMethod
+	public void updateParty(String username, PartyType party) throws RutaException
+	{
+		String exceptionMsg = "Party could not be updated in the CDR service!";
+		DSTransaction transaction = null;
+		try
+		{
+			init();
+			transaction = transactionFactory.openTransaction();
+			MapperRegistry.getMapper(PartyType.class).update(username, party, transaction);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (transaction != null)
+			{
+				try
+				{
+					transaction.rollback();
+				}
+				catch(TransactionException ex)
+				{
+					transactionFailure = true;
+				}
+			}
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+		finally
+		{
+			if (transaction != null && !transactionFailure)
+			{
+				try
+				{
+					transaction.close();
+				}
+				catch (TransactionException e)
+				{
+					transactionFailure = true;
+					logger.error("Exception is ", e);;
+					throw new RutaException("Party could not be updated in the CDR service!",
+							((DetailException) e.getCause()).getFaultInfo());
+				}
+			}
+		}
+	}
+
+	@Override
+	@WebMethod
+	public void deleteUser(String username) throws RutaException
+	{
+		String exceptionMsg = "Party could not be deleted from the CDR service!";
+		DSTransaction transaction = null;
+		try
+		{
+			init();
+			transaction = transactionFactory.openTransaction();
+			MapperRegistry.getMapper(User.class).deleteUser(username, transaction);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (transaction != null)
+			{
+				try
+				{
+					transaction.rollback();
+				}
+				catch(TransactionException ex)
+				{
+					transactionFailure = true;
+				}
+			}
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+		finally
+		{
+			if (transaction != null && !transactionFailure)
+			{
+				try
+				{
+					transaction.close();
+				}
+				catch (TransactionException e)
+				{
+					transactionFailure = true;
+					logger.error("Exception is ", e);;
 					throw new RutaException("Party could not be deleted from the CDR service!",
 							((DetailException) e.getCause()).getFaultInfo());
 				}
@@ -491,75 +474,100 @@ public class CDR implements Server
 		}
 	}
 
-	private void rollbackTransactions()
+	/**Roll backs all transactions saved in the journals if there ia any.
+	 * @throws DetailException if could not connect to the database or could not to roll back the transactions
+	 */
+	private void rollbackTransactions() throws DetailException
 	{
-		try
-		{
-			/*			@SuppressWarnings("unchecked")
-			List<DSTransaction> transactions = (List<DSTransaction>) MapperRegistry.getMapper(DSTransaction.class).findAll();
-			if(transactions != null)
-				for(DSTransaction t: transactions)
-					t.rollback();*/
-			((ExistTransactionMapper)MapperRegistry.getMapper(DSTransaction.class)).rollbackAllTransactions();
-			transactionFailure = false;
-		}
-		catch (DetailException e)
-		{
-			logger.error("Exception is: ", e);;
-		}
+		DSTransaction.rollbackAll();
+		transactionFailure = false;
 	}
 
-	@Override
+/*	@Override
 	public List<PartyType> queryParty(String username, PartyType criterion) throws RutaException
 	{
+		String exceptionMsg = "Query could not be processed by CDR service!";
 		try
 		{
+			init();
 			List<PartyType> results = new ArrayList<>();
 			MapperRegistry.getMapper(PartyType.class).find(criterion);
 			return results;
 		}
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (e instanceof DetailException)
-				throw new RutaException("Query could not be processed with the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Query could not be processed with the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
-	}
+	}*/
 
-	@Override
-	public PartyType queryPartyName(String username, String partyName)throws RutaException
-	{
-		try
-		{
-			PartyType result = null;
-			MapperRegistry.getMapper(PartyType.class).search(partyName);
-			return result;
-		}
-		catch(Exception e)
-		{
-			if (e instanceof DetailException)
-				throw new RutaException("Query could not be processed with the CDR service!", ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException("Query could not be processed with the CDR service!", e.getMessage());
-		}
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<PartyType> searchParty(String username, SearchCriterion criterion) throws RutaException
 	{
+		String exceptionMsg = "Query could not be processed by CDR service!";
 		logger.info(criterion.getPartyName());
 		List<PartyType> searchResult = new ArrayList<>();
 		try
 		{
-			MapperRegistry.getMapper(PartyType.class).searchGeneric(searchResult, criterion);
+			init();
+			searchResult =  MapperRegistry.getMapper(PartyType.class).findMany(criterion);
+
+/*			logger.info("*****************************************************************");
+			long fm1avg = 0, fm2avg = 0, fm3avg = 0;
+			int num = 5;
+			for(int i=0; i<num; i++)
+			{
+				((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearInMemoryObjects();
+				long fc1 = System.currentTimeMillis();
+				searchResult = (List<PartyType>) (MapperRegistry.getMapper(PartyType.class)).findMany(criterion);
+				long fc2 = System.currentTimeMillis();
+				fm2avg += fc2 - fc1;
+			}
+			for(int i=0; i<num; i++)
+			{
+				((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearInMemoryObjects();
+				long fc1 = System.currentTimeMillis();
+				searchResult = (List<PartyType>) (MapperRegistry.getMapper(PartyType.class)).findManyID(criterion);
+				long fc2 = System.currentTimeMillis();
+				fm3avg += fc2 - fc1;
+			}
+			logger.info("Empty in memory");
+			logger.info("findMany: " + fm2avg / num);
+			logger.info("findManyID: " + fm3avg / num);
+			logger.info("*****************************************************************");
+			fm1avg = 0; fm2avg = 0; fm3avg = 0;
+			for(int i=0; i<num; i++)
+			{
+				((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearInMemoryObjects();
+				long fc1 = System.currentTimeMillis();
+				searchResult = (List<PartyType>) (MapperRegistry.getMapper(PartyType.class)).findMany(criterion);
+				long fc2 = System.currentTimeMillis();
+				fm2avg += fc2 - fc1;
+			}
+			for(int i=0; i<num; i++)
+			{
+				((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearInMemoryObjects();
+				long fc1 = System.currentTimeMillis();
+				searchResult = (List<PartyType>) (MapperRegistry.getMapper(PartyType.class)).findManyID(criterion);
+				long fc2 = System.currentTimeMillis();
+				fm3avg += fc2 - fc1;
+			}
+			logger.info("Full in memory");
+			logger.info("findMany: " + fm2avg / num);
+			logger.info("findManyID: " + fm3avg / num);
+			logger.info("*****************************************************************");*/
 		}
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (e instanceof DetailException)
-				throw new RutaException("Query could not be processed with the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Query could not be processed with the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 		return searchResult.size() != 0 ? searchResult : null;
 	}
@@ -567,35 +575,33 @@ public class CDR implements Server
 	@Override
 	public List<CatalogueType> searchCatalogue(String username, SearchCriterion criterion) throws RutaException
 	{
+		//init();
 		logger.info(criterion.getItemName());
 		return null;
 	}
 
-	@Override
-	public void testEpisode(Episode e)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<PartyType> findAllParties() throws RutaException
 	{
+		String exceptionMsg = "Could not retrieve all parties from the CDR service!";
 		logger.info("Start finding all parties");
 		List<PartyType> searchResult = new ArrayList<>();
 		try
 		{
-			MapperRegistry.getMapper(PartyType.class).findAll();
+			init();
+			searchResult = MapperRegistry.getMapper(PartyType.class).findAll();
+			logger.info("Finished finding all parties");
+			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
 		{
+			logger.error("Exception is ", e);
 			if (e instanceof DetailException)
-				throw new RutaException("Could not retrieve all parties from the CDR service!", ((DetailException)e).getFaultInfo());
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
 			else
-				throw new RutaException("Could not retrieve all parties from the CDR service!", e.getMessage());
+				throw new RutaException(exceptionMsg, e.getMessage());
 		}
-		return searchResult.size() != 0 ? searchResult : null;
-
 	}
 
 }

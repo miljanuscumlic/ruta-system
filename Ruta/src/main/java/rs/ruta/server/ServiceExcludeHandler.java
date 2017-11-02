@@ -30,7 +30,12 @@ public class ServiceExcludeHandler implements SOAPHandler<SOAPMessageContext>
 				Node node = body.getFirstChild();
 				String webMethod  = node.getNodeName();
 				if(webMethod.contains("RegisterUser"))
+				{
 					mCtx.put("RegisterUser", true); // put key/value pair in MessageContext map
+					Node arg0 = node.getFirstChild(); // first argument
+					if(arg0 != null)
+						mCtx.put("Username", arg0.getTextContent());
+				}
 			}
 			catch (SOAPException e)
 			{
@@ -43,22 +48,17 @@ public class ServiceExcludeHandler implements SOAPHandler<SOAPMessageContext>
 	@Override
 	public boolean handleFault(SOAPMessageContext context)
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void close(MessageContext context)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public Set<QName> getHeaders()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

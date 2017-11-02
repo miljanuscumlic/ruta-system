@@ -177,13 +177,14 @@ public class ClientFrame extends JFrame
 			}
 			else
 				appendToConsole("Request for the synchronisation of My Party has not been sent to the CDR service."
-						+ " My Party should be registered with the CDR service first!", Color.RED);
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 
 		cdrDeregisterPartyItem.addActionListener(event ->
 		{
 			MyParty party = client.getMyParty();
-			if(party.isRegisteredWithCDR())
+			//if(party.isRegisteredWithCDR())
+			if(party.hasSecretKey())
 			{
 				cdrSynchPartyItem.setEnabled(false);
 				cdrDeregisterPartyItem.setEnabled(false);
@@ -199,7 +200,7 @@ public class ClientFrame extends JFrame
 			}
 			else
 				appendToConsole("Request for the deregistration of My Party has not been sent to the CDR service."
-						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
+						+ " My Party should be registered with the CDR service first!", Color.RED);
 		});
 
 /*		cdrTest.addActionListener( event ->
@@ -238,8 +239,7 @@ public class ClientFrame extends JFrame
 							cdrPullCatalogueItem.setEnabled(true);
 							cdrSynchCatalogueItem.setEnabled(true);
 							cdrDeleteCatalogueItem.setEnabled(true);
-						}
-								);
+						});
 					}).start();
 				}
 				else
@@ -249,7 +249,7 @@ public class ClientFrame extends JFrame
 			}
 			else
 				appendToConsole("Request for the update of My Catalogue has not been sent to the CDR service."
-						+ " My Party should be synchronised with the CDR service first!", Color.RED);
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 
 		cdrPullCatalogueItem.addActionListener(event ->
@@ -283,7 +283,7 @@ public class ClientFrame extends JFrame
 			}
 			else
 				appendToConsole("Request for the pull of My Catalogue has not been sent to the CDR service."
-						+ " My Party should be synchronised with the CDR service first!", Color.RED);
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 
 		cdrDeleteCatalogueItem.addActionListener(event ->
@@ -307,7 +307,7 @@ public class ClientFrame extends JFrame
 			}
 			else
 				appendToConsole("Request for the deletion of My Catalogue has not been sent to the CDR service."
-						+ " My Party should be synchronised with the CDR service first!", Color.RED);
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 
 		queryPartyItem.addActionListener(event ->

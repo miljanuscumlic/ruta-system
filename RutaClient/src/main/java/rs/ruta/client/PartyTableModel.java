@@ -9,11 +9,13 @@ public class PartyTableModel extends AbstractTableModel
 {
 	private String[] rowNames =
 		{
-				"Party name", "Registration name", "Company ID", "Registration date", "Registration address", " - Street name",
-				" - Building number", " - Floor", " - Room", " - Building name", " - City subdivision", " - City name", " - Postal zone",
-				" - Country subentity", " - Country", "Classification code", "Postal address", " - Street name",
-				" - Building number", " - Floor", " - Room", " - Building name", " - City subdivision", " - City name", " - Postal zone",
-				" - Country subentity", " - Country", "Contact", " - Name", " - Telephone", " - Telefax", " - Email", " - Note", "Website"
+				"Party name", "Registration name", "Company ID", "Registration date", "Registration address",
+				" - Street name", " - Building number", " - Floor", " - Room", " - Building name", " - City subdivision",
+				" - City name", " - Postal zone", " - Country subentity", " - Country", "Classification code",
+				"Postal address", " - Street name", " - Building number", " - Floor", " - Room", " - Building name",
+				" - City subdivision", " - City name", " - Postal zone", " - Country subentity", " - Country",
+				"Contact", " - Name", " - Telephone", " - Telefax", " - Email", " - Note", "Website",
+				"Industry Classification Code"
 		};
 
 	private Party party;
@@ -141,6 +143,8 @@ public class PartyTableModel extends AbstractTableModel
 				return party.getContactNote();
 			case 33:
 				return party.getWebsite();
+			case 34:
+				return party.getIndustryClassificationCodeValue();
 			default:
 				return null;
 			}
@@ -469,6 +473,9 @@ public class PartyTableModel extends AbstractTableModel
 
 //			InstanceFactory.createAndSetLeafProperty(party, party.getWebsiteURI(), WebsiteURIType.class, obj, String.class);
 			party.setWebsite(obj.toString());
+			break;
+		case 34:
+			party.setIndustryClassificationCode(obj.toString());
 			break;
 		default:
 			;

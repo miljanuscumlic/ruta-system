@@ -34,7 +34,7 @@ public class MyParty extends BusinessParty
 	@XmlElement(name = "DirtyMyParty")
 	private boolean dirtyMyParty;
 	@XmlElement(name = "InsertMyCatalogue")
-	private boolean insertMyCatalogue;
+	private boolean insertMyCatalogue; // true when catalogue should be inserted in the CDR i.e. deposit first time
 
 
 	public MyParty()
@@ -361,16 +361,18 @@ public class MyParty extends BusinessParty
 		this.secretKey = secretKey;
 	}
 
-	/**
-	 * @return the insertMyCatalogue
+	/**Gets the boolean value that tells if the Catalogue should be inserted in or updated with the CDR service.
+	 * @return true if Catalogue should be deposited in the CDR service for the first time i.e inserted,
+	 *  false otherwise i.e. updated
 	 */
 	public boolean isInsertMyCatalogue()
 	{
 		return insertMyCatalogue;
 	}
 
-	/**
-	 * @param insertMyCatalogue the insertMyCatalogue to set
+	/**Sets the value of the field that tells if the Catalogue should be inserted in or updated with the CDR service.
+	 * @param insertMyCatalogue true if Catalogue should be deposited in the CDR service for the first time i.e inserted,
+	 *  false otherwise i.e. updated
 	 */
 	public void setInsertMyCatalogue(boolean insertMyCatalogue)
 	{

@@ -7,37 +7,39 @@ import java.util.function.Function;
 import javax.xml.bind.JAXBElement;
 
 import org.xmldb.api.base.Collection;
+import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
+import org.xmldb.api.modules.XMLResource;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.SearchCriterion;
+import rs.ruta.server.DataManipulationException;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
-public class PartyXmlMapper extends XmlMapper
+public class PartyXmlMapper extends XmlMapper<PartyType>
 {
 	final private static String docPrefix = ""; // "party";
-	final private static String collectionPath = "/ruta/parties";
-	final private static String deletedCollectionPath = "/ruta/deleted/parties";
+	final private static String collectionPath = "/party";
 	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";
+	protected static final String queryNameSearchParty = "search-party.xq";
 	//MMM: This map should be some kind of most recently used collection bounded in size
-	private Map<Object, PartyType> loadedParties;
+	private Map<String, PartyType> loadedParties;
 
 	public PartyXmlMapper() throws DatabaseException
 	{
 		super();
-		loadedParties = new ConcurrentHashMap<Object, PartyType>();
+		loadedParties = new ConcurrentHashMap<String, PartyType>();
 	}
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
 	@Override
 	public String getDocumentPrefix() { return docPrefix; }
-	@Override
-	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 
@@ -47,31 +49,87 @@ public class PartyXmlMapper extends XmlMapper
 		PartyType party = loadedParties.get(id);
 		if(party == null)
 		{
-			party = (PartyType) super.find(id);
+			party =  super.find(id);
 			if(party != null)
-				loadedParties.put(id, (PartyType) party);
+				loadedParties.put((String) id,  party);
 		}
 		return party;
 	}
 
 	@Override
-	public <T extends DSTransaction> void insert(Object party, Object id, T transaction) throws DetailException
+	public ArrayList<PartyType> findAll() throws DetailException
 	{
-		setPartyID((PartyType) party, (String) id);
-		super.insert(party, id, transaction);
-		loadedParties.put(id, (PartyType) party);
+		ArrayList<PartyType> parties = new ArrayList<>();
+		String ids[] = listAllDocumentIDs();
+		for(String id : ids)
+		{
+			final PartyType party = find(trimID(id));
+			if(party != null)
+				parties.add(party);
+		}
+		return parties.size() > 0 ? parties : null;
+
+/*		ArrayList<PartyType> parties;
+		parties = (ArrayList<PartyType>) super.findAll(username);
+		if (parties != null)
+			for(PartyType t : parties)
+				loadedParties.put(getID(t), t);
+		return parties;*/
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <U> List<U> findGeneric(SearchCriterion criterion) throws DetailException
+	{
+		ArrayList<U> searchResult;
+		searchResult = (ArrayList<U>) super.findGeneric(criterion);
+/*		if (searchResult != null)
+			for(U t : searchResult)
+				loadedParties.put(getID(t),  t);*/
+		return searchResult;
 	}
 
 	@Override
-	public <T extends DSTransaction> String insert(Object party, T transaction) throws DetailException
+	protected void clearLoadedObjects()
+	{
+		loadedParties.clear();
+	}
+
+	@Override
+	public PartyType getLoadedObject(String id)
+	{
+		return loadedParties.get(id);
+	}
+
+	@Override
+	public void putLoadedObject(String id, PartyType object)
+	{
+		loadedParties.put(id,  object);
+	}
+
+	@Override
+	public String insert(String username, PartyType party, DSTransaction transaction) throws DetailException
 	{
 		Collection collection = null;
 		String id = null;
 		try
-		{
-			collection = getCollection();
-			id = createID(collection);
+		{	//object that should be stored doesn't have an ID and User has no Document ID metadata set
+			if(getPartyID(party) == null && getID(username) == null)
+			{
+				collection = getCollection();
+				if(collection == null)
+					throw new DatabaseException("Could not retrieve the collection.");
+				id = createID(collection);
+			}
+			else
+			{
+				id = getID(username);
+				String uuid = (String) getUserID(username);
+				setPartyID(party, uuid);
+			}
 			insert(party, id, transaction);
+			loadedParties.put(id, party);
+			return id;
 		}
 		catch(XMLDBException e)
 		{
@@ -86,14 +144,13 @@ public class PartyXmlMapper extends XmlMapper
 			}
 			catch(XMLDBException e)
 			{
-				logger.error("Exception is: ", e);;
+				logger.error("Exception is ", e);;
 			}
 		}
-		return id;
 	}
 
 	@Override
-	public <T extends DSTransaction> void delete(Object id, T transaction) throws DetailException
+	public void delete(String id, DSTransaction transaction) throws DetailException
 	{
 		super.delete(id, transaction);
 		loadedParties.remove(id);
@@ -113,11 +170,26 @@ public class PartyXmlMapper extends XmlMapper
 		identifications.get(0).getID().setValue(id);
 	}
 
-	@Override
-	protected JAXBElement<PartyType> getJAXBElement(Object object)
+
+	/**Gets the unique ID number for the party.
+	 * @param party
+	 * @return
+	 */
+	private String getPartyID(PartyType party)
 	{
-		JAXBElement<PartyType> partyElement = (new ObjectFactory()).createParty((PartyType) object);
-		return partyElement;
+		try
+		{
+			String ID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
+			return ID.equals("") ? null : ID;
+		}
+		catch(Exception e) { return null; }
+	}
+
+	@Override
+	protected JAXBElement<PartyType> getJAXBElement(PartyType object)
+	{
+		JAXBElement<PartyType> jaxbElement = new ObjectFactory().createParty(object);
+		return jaxbElement;
 	}
 
 	@Override
@@ -126,29 +198,13 @@ public class PartyXmlMapper extends XmlMapper
 		return PartyType.class;
 	}
 
-	//MMM: This is temporary here. It should be part of the client-common.jar
-	public static <T, U> U getPropertyOrNull(T property, Function<? super T, ? extends U> extractor)
-	{
-		return property != null ? extractor.apply(property) : null;
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
-	public ArrayList<?> findAll() throws DetailException
+	public String update(String username, PartyType party, DSTransaction transaction) throws DetailException
 	{
-		ArrayList<PartyType> parties;
-		parties = (ArrayList<PartyType>) super.findAll();
-		if (parties != null)
-			for(PartyType t : parties)
-				loadedParties.put(getID(t), t);
-		return parties;
-	}
-
-	@Override
-	public <T extends DSTransaction> void update(Object party, Object id, T transaction) throws DetailException
-	{
-		super.update(party, id, transaction);
-		loadedParties.put(id, (PartyType) party);
+		//update not going through the insert method because Party object has its unique ID, and insert method creates new one
+		String id = (String) super.update(username, party, transaction);
+		loadedParties.put(id, party);
+		return id;
 	}
 
 	@Override
@@ -157,22 +213,77 @@ public class PartyXmlMapper extends XmlMapper
 		return queryNameSearchParty;
 	}
 
-	/**Sends search request to the super class and converts search result represented as
-	 * list of <code>Object</code>s to list of <code>PartyType</code>s
-	 * @param criterion search criterion
-	 * @return search result as list of <code>PartyType</code>s
-	 * @throws DetailException if search query could not be processed
-	 */
-	public List<PartyType> searchParty(SearchCriterion criterion) throws DetailException
+	@Override
+	public String prepareQuery(SearchCriterion criterion) throws DatabaseException
 	{
-		List<PartyType> partyResult = null;
-		List<Object> objectResult = super.search(criterion);
-		if (objectResult != null)
-		{
-			partyResult = new ArrayList<>();
-			for(Object object : objectResult)
-				partyResult.add((PartyType) object);
-		}
-		return partyResult;
+		String query = openDocument(getQueryPath(), queryNameSearchParty);
+		if(query == null)
+			return query;
+		//MMM: substitute strings "declare variable $name external := '';" with...
+
+		String partyName = criterion.getPartyName();
+		String partyCompanyID = criterion.getPartyCompanyID();
+		String partyClassCode = criterion.getPartyClassCode();
+		String partyCity = criterion.getPartyCity();
+		String partyCountry = criterion.getPartyCountry();
+		boolean partyAll = criterion.isPartyAll();
+
+		String itemName = criterion.getItemName();
+		String itemBarcode = criterion.getItemBarcode();
+		String itemCommCode = criterion.getItemCommCode();
+		boolean itemAll = criterion.isItemAll();
+
+/*		String preparedQuery = query.replaceFirst("declare variable party-name external := ''",
+				"declare variable party-name external := " + partyName);*/
+
+		String preparedQuery = query;
+		if(partyName != null)
+			preparedQuery = preparedQuery.replaceFirst("party-name( )+external( )*:=( )*[(][)]",
+					(new StringBuilder("party-name := '").append(partyName).append("'")).toString());
+		if(partyCompanyID != null)
+			preparedQuery = preparedQuery.replaceFirst("party-company-id( )+external( )*:=( )*[(][)]",
+					(new StringBuilder("party-company-id := '").append(partyCompanyID).append("'")).toString());
+		if(partyClassCode != null)
+			preparedQuery = preparedQuery.replaceFirst("party-class-code( )+external( )*:=( )*[(][)]",
+					(new StringBuilder("party-class-code := '").append(partyClassCode).append("'")).toString());
+		if(partyCity != null)
+			preparedQuery = preparedQuery.replaceFirst("party-city( )+external( )*:=( )*[(][)]",
+					(new StringBuilder("party-city := '").append(partyCity).append("'")).toString());
+		if(partyCountry != null)
+			preparedQuery = preparedQuery.replaceFirst("party-country( )+external( )*:=( )*[(][)]",
+					(new StringBuilder("party-country := '").append(partyCountry).append("'")).toString());
+		if(!partyAll)
+			preparedQuery = preparedQuery.replaceFirst("party-all( )+external( )*:=( )*true",
+					(new StringBuilder("party-all := false")).toString());
+
+		return preparedQuery;
 	}
+
+	@Override
+	public String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException
+	{
+		String query = openDocument(getQueryPath(), queryName);
+		if(query == null)
+			return query;
+		//MMM: substitute strings "declare variable $name external := '';" with...
+
+		String partyName = criterion.getPartyName();
+		String partyCompanyID = criterion.getPartyCompanyID();
+		String partyClassCode = criterion.getPartyClassCode();
+		String partyCity = criterion.getPartyCity();
+		String partyCountry = criterion.getPartyCountry();
+		boolean partyAll = criterion.isPartyAll();
+
+		String itemName = criterion.getItemName();
+		String itemBarcode = criterion.getItemBarcode();
+		String itemCommCode = criterion.getItemCommCode();
+		boolean itemAll = criterion.isItemAll();
+
+/*		String preparedQuery = query.replaceFirst("declare variable party-name external := ''",
+				"declare variable party-name external := " + partyName);*/
+
+		String preparedQuery = query.replaceFirst("([$]party-name external := ')'", "$1" + partyName + "'");
+		return preparedQuery;
+	}
+
 }

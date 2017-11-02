@@ -6,13 +6,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmldb.api.base.XMLDBException;
-
-import javax.xml.bind.annotation.XmlAccessType;
 
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
@@ -44,27 +43,6 @@ public class ExistTransaction implements DSTransaction
 		timestamp = System.currentTimeMillis();
 	}
 
-	/**Reads from the database all transactions that have to be rolled back, and rolls back each of them.
-	 */
-	public static void rollbackAll()
-	{
-		try
-		{
-			@SuppressWarnings("unchecked")
-			List<ExistTransaction> transactions  = (List<ExistTransaction>) MapperRegistry.getMapper(DSTransaction.class).findAll();
-			if(transactions != null)
-				for(ExistTransaction t: transactions)
-				{
-					t.rollback();
-					t.close();
-				}
-		}
-		catch (DetailException e)
-		{
-			logger.error("Exception is: ", e);
-		}
-	}
-
 	/**Opens a transaction by creating a journal document that records every interaction with the database.
 	 * @throws TransactionException if journal document could not be saved to the database
 	 * @see rs.ruta.server.datamapper.DSTransaction#open()
@@ -74,12 +52,12 @@ public class ExistTransaction implements DSTransaction
 	{
 		try
 		{
-			transactionID = (String) ((ExistTransactionMapper)(MapperRegistry.getMapper(DSTransaction.class))).createID();
+			transactionID = MapperRegistry.getMapper(DSTransaction.class).createID();
 			MapperRegistry.getMapper(DSTransaction.class).insert(this, transactionID, null);
 		}
 		catch (DetailException | XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new TransactionException("Transaction could not be opened.", e);
 		}
 	}
@@ -98,7 +76,7 @@ public class ExistTransaction implements DSTransaction
 		catch (DetailException e)
 		{
 			logger.error("Could not delete transaction journal " + transactionID + " from the database.");
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new TransactionException("Transaction could not be closed.", e);
 		}
 	}
@@ -129,7 +107,7 @@ public class ExistTransaction implements DSTransaction
 		catch (DetailException e)
 		{
 			logger.error("Could not delete transaction journal " + transactionID + " from the database.");
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 		}*/
 	}
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns4:Catalogue xmlns="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2">
-    <ID>114</ID>
-    <UUID>d655d1eaCAT114</UUID>
-    <IssueDate>2017-10-15+02:00</IssueDate>
+    <ID>2</ID>
+    <UUID>a751f59eCAT2</UUID>
+    <IssueDate>2017-11-03+01:00</IssueDate>
     <ns3:ProviderParty>
         <WebsiteURI>ruta.rs</WebsiteURI>
-        <IndustryClassificationCode>89898</IndustryClassificationCode>
+        <IndustryClassificationCode>4.589.569</IndustryClassificationCode>
         <ns3:PartyIdentification>
-            <ID>d655d1ea</ID>
+            <ID>a751f59e</ID>
         </ns3:PartyIdentification>
         <ns3:PartyName>
-            <Name>Rutaaae</Name>
+            <Name>Rutaa</Name>
         </ns3:PartyName>
         <ns3:PostalAddress>
             <Floor>4</Floor>
@@ -59,7 +59,7 @@
         </ns3:PartyName>
     </ns3:ReceiverParty>
     <ns3:CatalogueLine>
-        <ID>114-0</ID>
+        <ID>2-0</ID>
         <ns3:Item>
             <Description>kako biti veseo</Description>
             <PackSizeNumeric/>
@@ -75,7 +75,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-1</ID>
+        <ID>2-1</ID>
         <ns3:Item>
             <Description>kako biti radostan</Description>
             <PackSizeNumeric/>
@@ -91,7 +91,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-2</ID>
+        <ID>2-2</ID>
         <ns3:Item>
             <Description>kako biti ushićen :)</Description>
             <PackSizeNumeric/>
@@ -106,17 +106,17 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-3</ID>
+        <ID>2-3</ID>
         <ns3:Item>
-            <Description>marljivo</Description>
+            <Description>marljiv sam  </Description>
             <PackSizeNumeric/>
             <Name>Marljivost</Name>
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-4</ID>
+        <ID>2-4</ID>
         <ns3:Item>
-            <Description>kako biti radans</Description>
+            <Description>kako biti radostan</Description>
             <PackSizeNumeric/>
             <Name>Radnost</Name>
             <ns3:SellersItemIdentification>
@@ -125,7 +125,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-5</ID>
+        <ID>2-5</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
@@ -136,7 +136,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-6</ID>
+        <ID>2-6</ID>
         <ns3:Item>
             <Description></Description>
             <Name></Name>
@@ -146,7 +146,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-7</ID>
+        <ID>2-7</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
@@ -157,7 +157,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-8</ID>
+        <ID>2-8</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
@@ -169,14 +169,14 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-9</ID>
+        <ID>2-9</ID>
         <ns3:Item>
             <Description></Description>
             <Name></Name>
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-10</ID>
+        <ID>2-10</ID>
         <ns3:Item>
             <Description></Description>
             <Name></Name>
@@ -187,7 +187,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-11</ID>
+        <ID>2-11</ID>
         <ns3:Item>
             <Description></Description>
             <Name></Name>
@@ -197,7 +197,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-12</ID>
+        <ID>2-12</ID>
         <ns3:Item>
             <Description></Description>
             <PackSizeNumeric/>
@@ -212,7 +212,7 @@
         </ns3:Item>
     </ns3:CatalogueLine>
     <ns3:CatalogueLine>
-        <ID>114-13</ID>
+        <ID>2-13</ID>
         <ns3:Item>
             <Description></Description>
             <Name></Name>

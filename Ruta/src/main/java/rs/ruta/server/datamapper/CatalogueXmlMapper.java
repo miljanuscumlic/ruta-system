@@ -14,32 +14,27 @@ import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.ObjectFactory;
-import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
-import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
-public class CatalogueXmlMapper extends XmlMapper
+public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 {
 	final private static String docPrefix = ""; //"catalogue";
-	final private static String collectionPath = "/ruta/catalogues";
-	final private static String deletedCollectionPath = "/ruta/deleted/catalogues";
-	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21";
+	final private static String collectionPath = "/catalogue";
+	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.catalogue_21";
 	//MMM: This map should be some kind of most recently used collection
-	private Map<Object, CatalogueType> loadedCatalogues;
+	private Map<String, CatalogueType> loadedCatalogues;
 
 	public CatalogueXmlMapper() throws DatabaseException
 	{
 		super();
-		loadedCatalogues = new ConcurrentHashMap<Object, CatalogueType>();
+		loadedCatalogues = new ConcurrentHashMap<String, CatalogueType>();
 	}
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
 	@Override
 	public String getDocumentPrefix() { return docPrefix; }
-	@Override
-	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 
@@ -49,7 +44,7 @@ public class CatalogueXmlMapper extends XmlMapper
 		CatalogueType catalogue = loadedCatalogues.get(id);
 		if(catalogue == null)
 		{
-			catalogue = (CatalogueType) super.find(id);
+			catalogue =  super.find(id);
 
 /*			try
 			{
@@ -63,7 +58,7 @@ public class CatalogueXmlMapper extends XmlMapper
 			}
 			catch (JAXBException e)
 			{
-				logger.error("Exception is: ", e);;
+				logger.error("Exception is ", e);;
 			}*/
 			if(catalogue != null)
 				loadedCatalogues.put(id, catalogue);
@@ -72,16 +67,22 @@ public class CatalogueXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void insert(Object catalogue, Object id, T transaction) throws DetailException
+	public void insert(CatalogueType catalogue, String id, DSTransaction transaction) throws DetailException
 	{
-		//MMM: should be used this ID instead of id passed a paramater
-		//String ID = ((CatalogueType)catalogue).getUUID().getValue();
 		super.insert(catalogue, id, transaction);
-		loadedCatalogues.put(id, (CatalogueType) catalogue);
+		loadedCatalogues.put(id, catalogue);
 	}
 
 	@Override
-	public <T extends DSTransaction> void delete(Object id, T transaction) throws DetailException
+	public String insert(String username, CatalogueType object, DSTransaction transaction) throws DetailException
+	{
+		String id = getID(username);
+		insert(object, id, transaction);
+		return id;
+	}
+
+	@Override
+	public void delete(String id, DSTransaction transaction) throws DetailException
 	{
 		super.delete(id, transaction);
 		loadedCatalogues.remove(id);
@@ -102,10 +103,10 @@ public class CatalogueXmlMapper extends XmlMapper
 	}*/
 
 	@Override
-	protected JAXBElement<CatalogueType> getJAXBElement(Object object)
+	protected JAXBElement<CatalogueType> getJAXBElement(CatalogueType object)
 	{
-		JAXBElement<CatalogueType> partyElement = (new ObjectFactory()).createCatalogue((CatalogueType) object);
-		return partyElement;
+		JAXBElement<CatalogueType> jaxbElement = new ObjectFactory().createCatalogue(object);
+		return jaxbElement;
 	}
 
 	@Override
@@ -115,33 +116,41 @@ public class CatalogueXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void update(Object object, Object id, T transaction) throws DetailException
+	public CatalogueType getLoadedObject(String id)
 	{
-		insert(object, id, transaction);
-		loadedCatalogues.put(id, (CatalogueType) object);
+		return loadedCatalogues.get(id);
 	}
 
-	/* (non-Javadoc)
-	 * @see rs.ruta.server.datamapper.XmlMapper#findAll()
-	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public ArrayList<?> findAll() throws DetailException
+	public String update(String username, CatalogueType catalogue, DSTransaction transaction) throws DetailException
 	{
-		ArrayList<CatalogueType> catalogues;
+//		insert(username, catalogue, transaction);
+		String id = (String) super.update(username, catalogue, transaction);
+		loadedCatalogues.put(id, catalogue);
+		return id;
+	}
+
+	@Override
+	public ArrayList<CatalogueType> findAll() throws DetailException
+	{
+
+		ArrayList<CatalogueType> catalogues = new ArrayList<>();
+		String ids[] = listAllDocumentIDs();
+		for(String id : ids)
+		{
+			final CatalogueType catalogue = find(trimID(id));
+			if(catalogue != null)
+				catalogues.add(catalogue);
+		}
+		return catalogues.size() > 0 ? catalogues : null;
+
+
+/*		ArrayList<CatalogueType> catalogues;
 		catalogues = (ArrayList<CatalogueType>) super.findAll();
 		if (catalogues != null)
 			for(CatalogueType c : catalogues)
 				loadedCatalogues.put(getID(c), c);
-		return catalogues;
-	}
-
-	@Override
-	public List<Object> search(SearchCriterion criterion) throws DetailException
-	{
-		List<Object> searchResult = new ArrayList<>();
-
-		return searchResult;
+		return catalogues;*/
 	}
 
 	@Override
@@ -150,7 +159,10 @@ public class CatalogueXmlMapper extends XmlMapper
 		return queryNameSearchCatalogue;
 	}
 
-
+	@Override
+	protected void clearLoadedObjects()
+	{
+		loadedCatalogues.clear();
+	}
 
 }
-

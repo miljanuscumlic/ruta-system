@@ -22,17 +22,18 @@ import rs.ruta.server.DatabaseException;
 public class ExistConnector implements DatastoreConnector
 {
 	private static String uriPrefix = "xmldb:exist://";
-	private static String uriSufix = "/exist/xmlrpc/db";
+	private static String rutaCollectionPath = "/db/ruta"; // path of the application's base collection
+	private static String uriSufix = "/exist/xmlrpc";
 	private static String server = "localhost";
 	private static String port = "8888";
-	private static String uri = uriPrefix + server + ":" + port + uriSufix;
+	private static String baseUri = uriPrefix + server + ":" + port + uriSufix;
 	private static String dbJarPath = "C:\\Programs\\exist-db\\start.jar"; // path to the database jar archive
 	private static String docSufix = ".xml";
-	private static String transactionPath = "/ruta/system/transactions";
-	private static String queryPath ="/ruta/system/queries";
+	private static String deletedPath = "/deleted";
+	private static String queryPath = "/system/query";
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
 	protected static final String queryNameSearchCatalogue = "search-catalogue.xq";
-	protected static final String queryNameSearchParty = "search-party.xq";
+
 
 	/**Constructs eXist database instance and registers it at the <code>DatabaseManager</code>, enabling
 	 * the application to communicate with it.
@@ -49,7 +50,7 @@ public class ExistConnector implements DatastoreConnector
 		}
 		catch(Exception e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 		}
 	}
 
@@ -88,7 +89,7 @@ public class ExistConnector implements DatastoreConnector
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is " , e);
 				//throw e;
 			}
 		}).start();
@@ -130,7 +131,7 @@ public class ExistConnector implements DatastoreConnector
 		}
 		catch (XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw e;
 		}
 	}
@@ -207,64 +208,78 @@ public class ExistConnector implements DatastoreConnector
 		ExistConnector.port = port;
 	}
 
-	/**Returns URI of the eXist database
+	/**Returns base part of the URI of the eXist database.
 	 * @return the uri of the eXist database
 	 */
-	public static String getUri()
+	public static String getBaseUri()
 	{
-		return uri;
+		return baseUri;
 	}
 
-	public String getDocumentSufix() { return docSufix; }
+	public static String getDocumentSufix() { return docSufix; }
 
-	public void setDocumentSufix(String docSufix) { ExistConnector.docSufix = docSufix; }
+	public static void setDocumentSufix(String docSufix) { ExistConnector.docSufix = docSufix; }
 
 	/**Gets the root collection of the database as database admin.
-	 * @return root collection object
-	 * @throws XMLDBException if the collection cannot be retrieved
+	 * @return root Collection instance or <code>null</code> if the collection could not be found.
+	 * @throws XMLDBException if there was an database connectivity issue
 	 */
 	public static Collection getRootCollection() throws XMLDBException
 	{
-		return DatabaseManager.getCollection(uri, DatabaseAdmin.getUsername(), DatabaseAdmin.getPassword());
+		return DatabaseManager.getCollection(baseUri + rutaCollectionPath, DatabaseAdmin.getUsername(), DatabaseAdmin.getPassword());
 	}
 
 	/**Gets the root collection from the database as a specified user. Collection that is retrieved
 	 * is defined in the subclasses of the XmlMapper.
-	 * @return requested collection object
-	 * @throws XMLDBException if the collection cannot be retrieved
+	 * @return root Collection instance or <code>null</code> if the collection could not be found.
+	 * @throws XMLDBException if there was an database connectivity issue
 	 */
-	public Collection getRootCollection(String username, String password) throws XMLDBException
+	public static Collection getRootCollection(String username, String password) throws XMLDBException
 	{
-		return DatabaseManager.getCollection(uri, username, password);
-	}
-	/**Gets the path of the collection in which are stored transaction related documents.
-	 * @return the transactionPath collection path to the /transactions collection
-	 */
-	public static String getTransactionPath()
-	{
-		return transactionPath;
-	}
-	/**Sets the path of the collection in which are stored transaction related documents.
-	 * @param transactionPath the transactionPath to set
-	 */
-	public static void setTransactionPath(String transactionPath)
-	{
-		ExistConnector.transactionPath = transactionPath;
+		return DatabaseManager.getCollection(baseUri + rutaCollectionPath, username, password);
 	}
 
+	/**Gets the collection from the database as a database admin. If collection does not exist, method creates it.
+	 * @param collectionPath relative path to the collection
+	 * @return a <code>Collection</code> instance for the requested collection
+	 * @throws XMLDBException if the collection could not be retrieved or created
+	 */
+	public static Collection getOrCreateCollection(String collectionPath) throws XMLDBException
+	{
+		return getOrCreateCollection(getBaseUri(), getRelativeRutaCollectionPath() + collectionPath,
+				DatabaseAdmin.getUsername(), DatabaseAdmin.getPassword());
+	}
+
+	/**Gets the collection from the database. If collection does not exist, method creates it. The user
+	 * credentials on whose behalf collection is retrieved are passed as parameters.
+	 * @param uri absolute URI defining the base collection on which the subcollection relative path is appended
+	 * @param collectionUri relative path of the subcollection that is acctualy retrived
+	 * @param username user's username of whose befalf collection is retrieved
+	 * @param password user's password
+	 * @return a <code>Collection</code> instance for the requested collection
+	 * @throws XMLDBException if collection could not be retrieved or created
+	 */
 	protected static Collection getOrCreateCollection(final String uri, final String collectionUri,
 			final String username, final String password) throws XMLDBException
 	{
+		//forming the queue of path segments that represent each collection on the path
 		final Queue<String> segments = new ArrayDeque<String>();
 		for(final String pathSegment : collectionUri.split("/"))
 			if(!pathSegment.isEmpty())
 				segments.add(pathSegment);
+		//if missing creates all collections on the path
 		Collection current = DatabaseManager.getCollection(uri + "/" + segments.poll(), username, password);
 		if(current == null) // root collection (/db) does not exist and can not be created
 			throw new XMLDBException();
 		return getOrCreateCollection(current, segments);
 	}
 
+	/**Creates all subcollections of the passed <code>Collection</code> argument.
+	 * @param current <code>Collection</code> which subcollections are created
+	 * @param descendants all subcollections that should be created or traversed on the path
+	 * @return a <code>Collection</code> instance for the passed collection
+	 * @throws XMLDBException if collection could not be retrieved or created
+	 */
 	private static Collection getOrCreateCollection(final Collection current, final Queue<String> descendants) throws XMLDBException
 	{
 		if(descendants.isEmpty())
@@ -273,13 +288,14 @@ public class ExistConnector implements DatastoreConnector
 		{
 			final String childName = descendants.poll();
 			Collection child = current.getChildCollection(childName);
-			if(child == null)
+			if(child == null) // collection does not exist -> create it
 			{
 				final CollectionManagementService mgmt =
 						(CollectionManagementService) current.getService("CollectionManagementService", "1.0");
 				child = mgmt.createCollection(childName);
 				current.close(); //close the current collection, child will remain open
 			}
+			//recursively creates all other subcollection on the path i.e. in the queue
 			return getOrCreateCollection(child, descendants);
 		}
 	}
@@ -288,27 +304,26 @@ public class ExistConnector implements DatastoreConnector
 	 * @param collectionPath relative collection path
 	 * @param username user's username
 	 * @param password user's password
-	 * @throws XMLDBException if collection cannot be created or retrieved
+	 * @throws XMLDBException if collection could not be created or retrieved
 	 */
 	protected static void checkCollection(String collectionPath, String username, String password) throws XMLDBException
 	{
-		getOrCreateCollection(getUri(), collectionPath, username, password);
+		getOrCreateCollection(getBaseUri(), getRelativeRutaCollectionPath() + collectionPath, username, password);
 	}
 
 	/**Checks if the collection exist. If not, method creates the collection and asigns database admin as an owner of the collection.
 	 * @param collectionPath relative collection path
-	 * @throws XMLDBException if collection cannot be created or retrieved
-	 * @throws DatabaseException
+	 * @throws DatabaseException if collection could not be retrieved or created
 	 */
 	protected static void checkCollection(String collectionPath) throws DatabaseException
 	{
 		try
 		{
-			getOrCreateCollection(getUri(), collectionPath, DatabaseAdmin.getUsername(), DatabaseAdmin.getPassword());
+			getOrCreateCollection(getBaseUri(), getRelativeRutaCollectionPath() + collectionPath, DatabaseAdmin.getUsername(), DatabaseAdmin.getPassword());
 		}
 		catch (XMLDBException e)
 		{
-			throw new DatabaseException("Database connectivity problem. The collection could not be created or retrieved.");
+			throw new DatabaseException("Database connectivity problem. The collection could not be created or retrieved."/*e.getMessage()*/ , e);
 		}
 	}
 
@@ -336,6 +351,34 @@ public class ExistConnector implements DatastoreConnector
 	public static void setQueryPath(String queryPath)
 	{
 		ExistConnector.queryPath = queryPath;
+	}
+
+	/**Gets the name of the collection that stores deleted documents. The name is prepended with "/".
+	 * @return the name of the collection that stores deleted documents prepended with "/".
+	 */
+	public static String getDeletedPath()
+	{
+		return deletedPath;
+	}
+
+	public static void setDeletedPath(String deletedPath)
+	{
+		ExistConnector.deletedPath = deletedPath;
+	}
+
+	public static String getRelativeRutaCollectionPath()
+	{
+		return rutaCollectionPath;
+	}
+
+	public static void setRelativeRutaPath(String basePath)
+	{
+		ExistConnector.rutaCollectionPath = basePath;
+	}
+
+	public static String getAbsoluteRutaCollectionPath()
+	{
+		return baseUri + rutaCollectionPath;
 	}
 
 }

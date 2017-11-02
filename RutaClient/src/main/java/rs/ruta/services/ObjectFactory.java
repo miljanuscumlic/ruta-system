@@ -5,7 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import rs.ruta.client.Episode;
 import rs.ruta.common.SearchCriterion;
 
 
@@ -27,11 +26,9 @@ import rs.ruta.common.SearchCriterion;
 public class ObjectFactory {
 
     private final static QName _SearchParty_QNAME = new QName("http://ruta.rs/services", "SearchParty");
-    private final static QName _QueryPartyResponse_QNAME = new QName("http://ruta.rs/services", "QueryPartyResponse");
     private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
     private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
     private final static QName _GetDocument_QNAME = new QName("http://ruta.rs/services", "GetDocument");
-    private final static QName _TestEpisode_QNAME = new QName("http://ruta.rs/services", "TestEpisode");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _DeleteUserResponse_QNAME = new QName("http://ruta.rs/services", "DeleteUserResponse");
     private final static QName _GetDocumentResponse_QNAME = new QName("http://ruta.rs/services", "GetDocumentResponse");
@@ -42,24 +39,19 @@ public class ObjectFactory {
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _DeleteUser_QNAME = new QName("http://ruta.rs/services", "DeleteUser");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
-    private final static QName _TestEpisodeResponse_QNAME = new QName("http://ruta.rs/services", "TestEpisodeResponse");
     private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
-    private final static QName _Episode_QNAME = new QName("http://ruta.rs/services", "Episode");
     private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
     private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
     private final static QName _SearchCriterion_QNAME = new QName("urn:rs:ruta:client", "SearchCriterion");
     private final static QName _PutDocumentResponse_QNAME = new QName("http://ruta.rs/services", "PutDocumentResponse");
-    private final static QName _QueryPartyName_QNAME = new QName("http://ruta.rs/services", "QueryPartyName");
     private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
     private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
-    private final static QName _QueryParty_QNAME = new QName("http://ruta.rs/services", "QueryParty");
     private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
-    private final static QName _QueryPartyNameResponse_QNAME = new QName("http://ruta.rs/services", "QueryPartyNameResponse");
     private final static QName _PutDocument_QNAME = new QName("http://ruta.rs/services", "PutDocument");
 
     /**
@@ -150,14 +142,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QueryPartyResponse }
-     * 
-     */
-    public QueryPartyResponse createQueryPartyResponse() {
-        return new QueryPartyResponse();
-    }
-
-    /**
      * Create an instance of {@link SearchParty }
      * 
      */
@@ -179,14 +163,6 @@ public class ObjectFactory {
      */
     public DeleteUserResponse createDeleteUserResponse() {
         return new DeleteUserResponse();
-    }
-
-    /**
-     * Create an instance of {@link TestEpisode }
-     * 
-     */
-    public TestEpisode createTestEpisode() {
-        return new TestEpisode();
     }
 
     /**
@@ -222,14 +198,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QueryPartyName }
-     * 
-     */
-    public QueryPartyName createQueryPartyName() {
-        return new QueryPartyName();
-    }
-
-    /**
      * Create an instance of {@link SearchCatalogue }
      * 
      */
@@ -254,22 +222,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QueryPartyNameResponse }
-     * 
-     */
-    public QueryPartyNameResponse createQueryPartyNameResponse() {
-        return new QueryPartyNameResponse();
-    }
-
-    /**
-     * Create an instance of {@link QueryParty }
-     * 
-     */
-    public QueryParty createQueryParty() {
-        return new QueryParty();
-    }
-
-    /**
      * Create an instance of {@link RegisterUser }
      * 
      */
@@ -283,14 +235,6 @@ public class ObjectFactory {
      */
     public InsertPartyResponse createInsertPartyResponse() {
         return new InsertPartyResponse();
-    }
-
-    /**
-     * Create an instance of {@link TestEpisodeResponse }
-     * 
-     */
-    public TestEpisodeResponse createTestEpisodeResponse() {
-        return new TestEpisodeResponse();
     }
 
     /**
@@ -343,15 +287,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link QueryPartyResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryPartyResponse")
-    public JAXBElement<QueryPartyResponse> createQueryPartyResponse(QueryPartyResponse value) {
-        return new JAXBElement<QueryPartyResponse>(_QueryPartyResponse_QNAME, QueryPartyResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueResponse }{@code >}}
      * 
      */
@@ -376,15 +311,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "GetDocument")
     public JAXBElement<GetDocument> createGetDocument(GetDocument value) {
         return new JAXBElement<GetDocument>(_GetDocument_QNAME, GetDocument.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TestEpisode }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TestEpisode")
-    public JAXBElement<TestEpisode> createTestEpisode(TestEpisode value) {
-        return new JAXBElement<TestEpisode>(_TestEpisode_QNAME, TestEpisode.class, null, value);
     }
 
     /**
@@ -478,30 +404,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TestEpisodeResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TestEpisodeResponse")
-    public JAXBElement<TestEpisodeResponse> createTestEpisodeResponse(TestEpisodeResponse value) {
-        return new JAXBElement<TestEpisodeResponse>(_TestEpisodeResponse_QNAME, TestEpisodeResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
     public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
         return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Episode }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "Episode")
-    public JAXBElement<Episode> createEpisode(Episode value) {
-        return new JAXBElement<Episode>(_Episode_QNAME, Episode.class, null, value);
     }
 
     /**
@@ -559,15 +467,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link QueryPartyName }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryPartyName")
-    public JAXBElement<QueryPartyName> createQueryPartyName(QueryPartyName value) {
-        return new JAXBElement<QueryPartyName>(_QueryPartyName_QNAME, QueryPartyName.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogue }{@code >}}
      * 
      */
@@ -604,15 +503,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link QueryParty }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryParty")
-    public JAXBElement<QueryParty> createQueryParty(QueryParty value) {
-        return new JAXBElement<QueryParty>(_QueryParty_QNAME, QueryParty.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUser }{@code >}}
      * 
      */
@@ -628,15 +518,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertParty")
     public JAXBElement<InsertParty> createInsertParty(InsertParty value) {
         return new JAXBElement<InsertParty>(_InsertParty_QNAME, InsertParty.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link QueryPartyNameResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "QueryPartyNameResponse")
-    public JAXBElement<QueryPartyNameResponse> createQueryPartyNameResponse(QueryPartyNameResponse value) {
-        return new JAXBElement<QueryPartyNameResponse>(_QueryPartyNameResponse_QNAME, QueryPartyNameResponse.class, null, value);
     }
 
     /**

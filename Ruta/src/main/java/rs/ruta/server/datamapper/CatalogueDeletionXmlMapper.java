@@ -15,27 +15,24 @@ import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDe
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
-public class CatalogueDeletionXmlMapper extends XmlMapper
+public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 {
 	final private static String docPrefix = "";
-	final private static String collectionPath = "/ruta/catalogue-deletions";
-	final private static String deletedCollectionPath = "/ruta/deleted/catalogue-deletions";
+	final private static String collectionPath = "/catalogue-deletion";
 	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21";
 	//MMM: This map should be some kind of most recently used collection
-	private Map<Object, CatalogueDeletionType> loadedCatalogueDeletions;
+	private Map<String, CatalogueDeletionType> loadedCatalogueDeletions;
 
 	public CatalogueDeletionXmlMapper() throws DatabaseException
 	{
 		super();
-		loadedCatalogueDeletions = new ConcurrentHashMap<Object, CatalogueDeletionType>();
+		loadedCatalogueDeletions = new ConcurrentHashMap<String, CatalogueDeletionType>();
 	}
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
 	@Override
 	public String getDocumentPrefix() { return docPrefix; }
-	@Override
-	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 
@@ -45,7 +42,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper
 		CatalogueDeletionType catalogue = loadedCatalogueDeletions.get(id);
 		if(catalogue == null)
 		{
-			catalogue = (CatalogueDeletionType) super.find(id);
+			catalogue = super.find(id);
 
 /*			try
 			{
@@ -59,7 +56,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper
 			}
 			catch (JAXBException e)
 			{
-				logger.error("Exception is: ", e);;
+				logger.error(Exception is ", e);;
 			}*/
 			if(catalogue != null)
 				loadedCatalogueDeletions.put(id, catalogue);
@@ -68,42 +65,33 @@ public class CatalogueDeletionXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void insert(Object catalogueDeletion, Object id, T transaction) throws DetailException
+	public void insert(CatalogueDeletionType catalogueDeletion, String id,  DSTransaction transaction) throws DetailException
 	{
-		//MMM: should be used this ID instead of id passed as a paramater
-		//String ID = ((CatalogueDeletionType)catalogueDeletion).getUUID().getValue();
-
 		MapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
 		super.insert(catalogueDeletion, id, transaction);
-		loadedCatalogueDeletions.put(id, (CatalogueDeletionType) catalogueDeletion);
+		loadedCatalogueDeletions.put(id, catalogueDeletion);
 	}
 
 	@Override
-	public <T extends DSTransaction> void delete(Object id, T transaction) throws DetailException
+	public String insert(String username, CatalogueDeletionType object, DSTransaction transaction) throws DetailException
+	{
+		String id = getID(username);
+		insert(object, id, transaction);
+		return id;
+	}
+
+	@Override
+	public void delete(String id, DSTransaction transaction) throws DetailException
 	{
 		super.delete(id, transaction);
 		loadedCatalogueDeletions.remove(id);
 	}
 
-/*	@Override
-	public void delete(Object ref, String id) throws DetailException
-	{
-		try
-		{
-			MapperRegistry.getMapper(CatalogueDeletionType.class).insert(ref);
-		}
-		catch (Exception e)
-		{
-			throw new DatabaseException("Database connectivity issue. Catalogue Deletion object could not be saved.");
-		}
-		delete(id);
-	}*/
-
 	@Override
-	protected JAXBElement<CatalogueDeletionType> getJAXBElement(Object object)
+	protected JAXBElement<CatalogueDeletionType> getJAXBElement(CatalogueDeletionType object)
 	{
-		JAXBElement<CatalogueDeletionType> partyElement = (new ObjectFactory()).createCatalogueDeletion((CatalogueDeletionType) object);
-		return partyElement;
+		JAXBElement<CatalogueDeletionType> jaxbElement = new ObjectFactory().createCatalogueDeletion(object);
+		return jaxbElement;
 	}
 
 	@Override
@@ -113,25 +101,37 @@ public class CatalogueDeletionXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void update(Object object, Object id, T transaction) throws DetailException
+	public CatalogueDeletionType getLoadedObject(String id)
 	{
-		insert(object, id, transaction);
+		return loadedCatalogueDeletions.get(id);
 	}
 
-	/* (non-Javadoc)
-	 * @see rs.ruta.server.datamapper.XmlMapper#findAll()
-	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public ArrayList<?> findAll() throws DetailException
+	public ArrayList<CatalogueDeletionType> findAll() throws DetailException
 	{
-		ArrayList<CatalogueDeletionType> deletions;
+
+		ArrayList<CatalogueDeletionType> deletions = new ArrayList<>();
+		String ids[] = listAllDocumentIDs();
+		for(String id : ids)
+		{
+			final CatalogueDeletionType deletion = find(trimID(id));
+			if (deletion != null)
+				deletions.add(deletion);
+		}
+		return deletions.size() > 0 ? deletions : null;
+
+/*		ArrayList<CatalogueDeletionType> deletions;
 		deletions = (ArrayList<CatalogueDeletionType>) super.findAll();
 		if (deletions != null)
 			for(CatalogueDeletionType t : deletions)
 				loadedCatalogueDeletions.put(getID(t), t);
-		return deletions;
+		return deletions;*/
+	}
+
+	@Override
+	protected void clearLoadedObjects()
+	{
+		loadedCatalogueDeletions.clear();
 	}
 
 }
-

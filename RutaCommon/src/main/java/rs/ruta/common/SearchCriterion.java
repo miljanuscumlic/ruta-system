@@ -193,4 +193,5 @@ public class SearchCriterion
 			itemCommCode = null;
 		return this;
 	}
+
 }

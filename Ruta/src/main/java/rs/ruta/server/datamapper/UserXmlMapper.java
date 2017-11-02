@@ -15,21 +15,21 @@ import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ObjectFactory;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 import rs.ruta.server.UserException;
 
-public class UserXmlMapper extends XmlMapper
+public class UserXmlMapper extends XmlMapper<User>
 {
 	final private static String docPrefix = "";
 	final private static String userGroupName = "users";
-	final private static String collectionPath = "/ruta/keys";
-	final private static String deletedCollectionPath = "/ruta/deleted/keys";
+	final private static String collectionPath = "/key";
 	final private static SchemaType SECRET_KEY = AXSchemaType.EMAIL;
-	final private static SchemaType UNIQUE_ID = AXSchemaType.ALIAS_USERNAME;
-	final private static String objectPackageName = null;
+	final private static SchemaType DOCUMENT_ID = AXSchemaType.ALIAS_USERNAME;
+	final private static SchemaType PARTY_ID = AXSchemaType.FIRSTNAME;
+	final private static String objectPackageName = "rs.ruta.server.datamapper";
 
 	public UserXmlMapper() throws DatabaseException
 	{
@@ -37,14 +37,7 @@ public class UserXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public Object find(String id)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object find(Object object) throws DetailException
+	public User find(String id)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -58,40 +51,47 @@ public class UserXmlMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void insert(Object object, Object id, T transaction) throws DetailException
+	public void insert(User object, String id, DSTransaction transaction) throws DetailException
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public <T extends DSTransaction> String updateUser(Object user, T transaction) throws DetailException
+	public void deleteUser(String username, DSTransaction transaction) throws DetailException
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends DSTransaction> void update(Object object, Object id, T transaction) throws DetailException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public <T extends DSTransaction> void deleteUser(String username, Object id, T transaction) throws DetailException
-	{
-		//deletes user's catalogue and party data
+		String id = getID(username);
+		//deletes user's Catalogue
 		try
 		{
 			MapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
 		}
-		catch(Exception e ) { } //this is OK only when the catalogue is previously deleted, otherwise database could end up with leftovers?
+		catch(DetailException e )
+		{
+			if(! "Document does not exist!".equals(e.getMessage()))
+				throw e;
+		}
+		//deletes user's Catalogue Deletion
+		try
+		{
+			MapperRegistry.getMapper(CatalogueDeletionType.class).delete(id, transaction);
+		}
+		catch(DetailException e )
+		{
+			if(! "Document does not exist!".equals(e.getMessage()))
+				throw e;
+		}
+
+		//deletes Party data
 		MapperRegistry.getMapper(PartyType.class).delete(id, transaction);
 
-		//deletes document from the /keys collection
+		//deletes document from the /key collection
 		String secretKey = findSecretKey(username);
 		super.delete(secretKey, transaction);
+
+		//deletes document from the system/party-id collection
+		String partyID = findPartyID(username);
+		MapperRegistry.getMapper(PartyID.class).delete(partyID, transaction);
 
 		//deletes user from eXist database management system
 		deleteExistAccount(username);
@@ -104,34 +104,36 @@ public class UserXmlMapper extends XmlMapper
 	 * Could be <code>null</code> if no transaction is needed during deletion of the user's account from eXist database.
 	 * @throws DetailException if user account could not be deleted
 	 */
-	public <T extends DSTransaction> void deleteExistAccount(String username/*, T transaction*/) throws DetailException
+	public void deleteExistAccount(String username/*, T transaction*/) throws DetailException
 	{
 		Collection rootCollection = null;
 		try
 		{
 			rootCollection = getRootCollection();
+			if(rootCollection == null)
+				throw new DatabaseException("Could not retrieve the collection.");
 		}
 		catch(XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new DatabaseException("Collection could not be retrieved from the database.");
 		}
 		try
 		{
-			logger.info("Start deletion of user " + username + " account from the database.");
+			logger.info("Start deletion of user \"" + username + "\" account from the database.");
 			UserManagementService ums = (UserManagementService) rootCollection.getService("UserManagementService", "1.0");
 			Account account = ums.getAccount(username);
 			if(account == null)
 				throw new UserException("User account does not exist!");
 			ums.removeAccount(account);
-			logger.info("Finished deletion of user " + username + " account from the database.");
+			logger.info("Finished deletion of user account \"" + username + "\" from the database.");
 /*			There is no need to append anything to the Transaction journal because deregistration has succeeded
  			if(transaction != null)
 				((ExistTransaction)transaction).appendOperation(null, null, "DEREGISTER", null, null, username);*/
 		}
 		catch(XMLDBException e)
 		{
-			logger.info("Could not delete user " + username + " account from the database.");
+			logger.info("Could not delete user account \"" + username + "\" from the database.");
 			throw new UserException("User account could not be removed from the database.", e);
 		}
 		finally
@@ -143,32 +145,40 @@ public class UserXmlMapper extends XmlMapper
 			}
 			catch(XMLDBException e)
 			{
-				logger.error("Exception is: ", e);
+				logger.error("Exception is ", e);
 			}
 		}
 	}
 
 	@Override
-	public <T extends DSTransaction> Object registerUser(String username, String password, T transaction) throws DetailException
+	public String registerUser(String username, String password, DSTransaction transaction) throws DetailException
 	{
 		String secretKey = null;
 		try
 		{
 			logger.info("Start of registering of the user " + username + " with the CDR service.");
-			insertUser(username, password, (ExistTransaction) transaction);
-			//reservation of unique secretKey in /db/ruta/keys collection
-			secretKey = (String) insert(new PartyType(), transaction);
+			registerUserWithExist(username, password, (ExistTransaction) transaction);
+			//reservation of unique secretKey in /db/ruta/key collection
+			secretKey = (String) insert(username, new User(), transaction);
 			//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
 			insertMetadata(username, SECRET_KEY, secretKey);
-			//reservation of unique id in /db/ruta/parties
-			String id = (String) ((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).insert(new PartyType(), transaction);
-			insertMetadata(username, UNIQUE_ID, id);
+			//reservation of unique id for documents in /db/ruta/party
+			String id = (String) ((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).
+					insert(username, new PartyType(), transaction);
+			insertMetadata(username, DOCUMENT_ID, id);
+			//reservation of uuid for party in /db/ruta/system/party-id
+//			String uuid = (String) ((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).
+//					insertToCollection(uuidCollectionPath, new PartyType(), transaction);
+			String uuid = (String) ((PartyIDXmlMapper) MapperRegistry.getMapper(PartyID.class)).
+					insert(username, new PartyID(id), transaction);
+			insertMetadata(username, PARTY_ID, uuid);
+
 			logger.info("Finished registering of the user " + username + " with the CDR service.");
 		}
 		catch (XMLDBException e)
 		{
 			logger.error("Could not register the user " + username + " with the CDR service.");
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new UserException("User has insufficient data in the database, or data could not be retrieved.");
 		}
 		return secretKey;
@@ -180,7 +190,7 @@ public class UserXmlMapper extends XmlMapper
 	 * @param transaction
 	 * @throws DetailException if database collection or some information from it could not be retrieved
 	 */
-	private void insertUser(String username, String password, ExistTransaction transaction) throws DetailException
+	private void registerUserWithExist(String username, String password, ExistTransaction transaction) throws DetailException
 	{
 		Collection collection = null;
 		UserManagementService ums = null;
@@ -191,7 +201,7 @@ public class UserXmlMapper extends XmlMapper
 		}
 		catch(XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new DatabaseException("Collection could not be retrieved from the database.", e);
 		}
 		try
@@ -209,7 +219,7 @@ public class UserXmlMapper extends XmlMapper
 		}
 		catch(XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new UserException("Database connectivity issues or user already exists.", e);
 		}
 		finally
@@ -221,7 +231,7 @@ public class UserXmlMapper extends XmlMapper
 			}
 			catch(XMLDBException e)
 			{
-				logger.error("Exception is: ", e);
+				logger.error("Exception is ", e);
 			}
 		}
 	}
@@ -242,17 +252,19 @@ public class UserXmlMapper extends XmlMapper
 		try
 		{
 			root = getRootCollection(); // as admin
+			if(root == null)
+				throw new UserException("Could not retrieve the collection.");
 			ums = (UserManagementService) root.getService("UserManagementService", "1.0");
 			account = ums.getAccount(username);
 			//check to see if user has right credentials
 			collection = getRootCollection(username, password); // user tries to retrieve root collection
 			if(!secretKey.equals(account.getMetadataValue(SECRET_KEY)))
 				throw new UserException("User is not registered with the database!");
-			partyID = account.getMetadataValue(UNIQUE_ID); //null if user is not yet registered
+			partyID = account.getMetadataValue(DOCUMENT_ID); //null if user is not yet registered
 		}
 		catch (XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new UserException("Collection or the user data could not be retrieved from the database.");
 		}
 		finally
@@ -266,7 +278,7 @@ public class UserXmlMapper extends XmlMapper
 			}
 			catch (XMLDBException e)
 			{
-				logger.error("Exception is: ", e);
+				logger.error("Exception is ", e);
 			}
 		}
 		return partyID;
@@ -298,23 +310,25 @@ public class UserXmlMapper extends XmlMapper
 			}
 			catch(XMLDBException e)
 			{
-				logger.error("Exception is: ", e);
+				logger.error("Exception is ", e);
 			}
 		}
 	}
 
-	/**Retrieves metadata value of the given type for a user with passed username.
+	/**Retrieves metadata value of the given type for a user of passed username.
 	 * @param username user which metadata is get
 	 * @param schemaType type of the metadata
-	 * @return metadata value
+	 * @return metadata value or <code>null</code> if queried metadata is not stored for this user
 	 * @throws UserException if user is not registered or metadata cannot be retrieved
 	 */
-	public String findMetaData(String username, SchemaType schemaType) throws UserException
+	private String findMetaData(String username, SchemaType schemaType) throws UserException
 	{
 		Collection collection = null;
 		try
 		{
 			collection = getRootCollection();
+			if(collection == null)
+				throw new UserException("Could not retrieve the collection.");
 			UserManagementService ums = (UserManagementService) collection.getService("UserManagementService", "1.0");
 			Account account = ums.getAccount(username);
 			if(account != null)
@@ -324,9 +338,8 @@ public class UserXmlMapper extends XmlMapper
 		}
 		catch(XMLDBException e)
 		{
-			logger.error("Exception is: ", e);
+			logger.error("Exception is ", e);
 			throw new UserException("User has insufficient data in the database, or data could not be retrieved.", e);
-			//("User has insufficient data in the database, or data could not be retrieved.");
 		}
 		finally
 		{
@@ -337,7 +350,7 @@ public class UserXmlMapper extends XmlMapper
 			}
 			catch(XMLDBException e)
 			{
-				logger.error("Exception is: ", e);
+				logger.error("Exception is ", e);
 			}
 		}
 	}
@@ -351,24 +364,28 @@ public class UserXmlMapper extends XmlMapper
 	@Override
 	public String getCollectionPath() { return collectionPath; }
 	@Override
-	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
-	@Override
 	public String getDocumentPrefix() { return docPrefix; }
 
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 
 	@Override
-	protected JAXBElement<PartyType> getJAXBElement(Object object)
+	protected JAXBElement<User> getJAXBElement(User object)
 	{
-		JAXBElement<PartyType> partyElement = (new ObjectFactory()).createParty((PartyType) object);
+		JAXBElement<User> partyElement = new ObjectFactory().createUser(object);
 		return partyElement;
 	}
 
 	@Override
-	public String getID(Object object) throws DetailException
+	public String getID(String username) throws DetailException
 	{
-		return findMetaData((String) object, UNIQUE_ID);
+		return findMetaData(username, DOCUMENT_ID);
+	}
+
+	@Override
+	public String getUserID(String username) throws UserException
+	{
+		return findMetaData(username, PARTY_ID);
 	}
 
 	@Override
@@ -377,18 +394,28 @@ public class UserXmlMapper extends XmlMapper
 		return findMetaData(username, SECRET_KEY);
 	}
 
-	public String findID(String username) throws UserException
+	public String findPartyID(String username) throws UserException
 	{
-		return findMetaData(username, UNIQUE_ID);
+		return findMetaData(username, PARTY_ID);
 	}
 
-	/* (non-Javadoc)
-	 * @see rs.ruta.server.datamapper.XmlMapper#findAll()
+	/**Gets the ID designeted for all documents in different collections that belong to the user.
+	 * @param username user'username
+	 * @return document ID
+	 * @throws UserException if user is not registered or metadata cannot be retrieved
 	 */
+	public String findDocumentID(String username) throws UserException
+	{
+		return findMetaData(username, DOCUMENT_ID);
+	}
+
 	@Override
-	public ArrayList<?> findAll() throws DetailException
+	public ArrayList<User> findAll() throws DetailException
 	{
 		// TODO
 		return null;
 	}
+
+	@Override
+	public User getLoadedObject(String id) { return null; }
 }

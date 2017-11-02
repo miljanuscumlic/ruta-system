@@ -1,6 +1,7 @@
 package rs.ruta.client;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.*;
@@ -144,7 +145,7 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.registerUserAsync(username, password, futureUser ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. My Party has not been registered with the CDR service! ");
+				StringBuilder msg = new StringBuilder("My Party has not been registered with the CDR service! ");
 				try
 				{
 					RegisterUserResponse response = futureUser.get();
@@ -153,10 +154,10 @@ public class Client implements RutaNode
 					myParty.setPassword(password);
 					myParty.setSecretKey(key);
 					frame.appendToConsole("Party has been successfully registered with the CDR service."
-							+ " Please synchronised My Party with the CDR service to be able to use it.", Color.GREEN);
+							+ " Please synchronise My Party with the CDR service to be able to use it.", Color.GREEN);
 /*					port.insertPartyAsync(username, party, futureParty ->
 					{
-						StringBuilder msg1 = new StringBuilder("There has been a problem. My Party has not been registered with the CDR service! ");
+						StringBuilder msg1 = new StringBuilder("My Party has not been registered with the CDR service! ");
 						try
 						{
 							InsertPartyResponse res = futureParty.get();
@@ -189,7 +190,7 @@ public class Client implements RutaNode
 					if(cause instanceof RutaException)
 						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
 					else
-						msg.append(cause.getMessage());
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
 					frame.appendToConsole(msg.toString(), Color.RED);
 				}
 			});
@@ -197,7 +198,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Party has not been registered with the CDR service!"
+			frame.appendToConsole("My Party has not been registered with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -223,14 +224,14 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.insertPartyAsync(myParty.getUsername(), myParty.getCoreParty(), futureParty ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. My Party has not been registered with the CDR service! ");
+				StringBuilder msg = new StringBuilder("My Party has not been registered with the CDR service! ");
 				try
 				{
 					InsertPartyResponse res = futureParty.get();
 					String partyID = res.getReturn();
-					frame.appendToConsole("My Party has been successfully synchronised with the CDR service.", Color.GREEN);
 					myParty.getCoreParty().setPartyID(partyID);
 					myParty.setDirtyMyParty(false);
+					frame.appendToConsole("My Party has been successfully synchronised with the CDR service.", Color.GREEN);
 				}
 				catch (Exception e)
 				{
@@ -247,7 +248,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Party has not been synchronised with the CDR service!"
+			frame.appendToConsole("My Party has not been synchronised with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -262,7 +263,7 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.updatePartyAsync(myParty.getUsername(), myParty.getCoreParty(), future ->
 			{
-				String msg = "There has been a problem. My Party has not been synchronised with the CDR service! ";
+				String msg = "My Party has not been synchronised with the CDR service! ";
 				try
 				{
 					UpdatePartyResponse response = future.get();
@@ -284,7 +285,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Party has not been synchronised with the CDR service!"
+			frame.appendToConsole("My Party has not been synchronised with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -299,17 +300,22 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.deleteUserAsync(myParty.getUsername(), future ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. My Party has not been deleted from the CDR service! ");
+				StringBuilder msg = new StringBuilder("My Party has not been deleted from the CDR service! ");
 				try
 				{
 					DeleteUserResponse response = future.get();
 					myParty.setDirtyMyParty(true);
 					myParty.setDirtyCatalogue(true);
+					myParty.setInsertMyCatalogue(true);
 					myParty.setSecretKey(null);
 					myParty.setUsername(null);
 					myParty.setPassword(null);
 					myParty.getCoreParty().setPartyID(null);
-					frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN);
+					myParty.setCatalogueID(0);
+					myParty.setCatalogueDeletionID(0);
+					EventQueue.invokeLater(() ->
+						frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN)
+					);
 				}
 				catch (Exception e)
 				{
@@ -326,7 +332,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Party has not been deregistered from the CDR service!"
+			frame.appendToConsole("My Party has not been deregistered from the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -341,7 +347,7 @@ public class Client implements RutaNode
 			cdrDeleteMyCatalogue();
 		else
 		{
-			if(myParty.isInsertMyCatalogue() == true)
+			if(myParty.isInsertMyCatalogue() == true) //first time sending catalogue
 				cdrInsertMyCatalogue();
 			else
 				cdrUpdateMyCatalogue();
@@ -370,7 +376,7 @@ public class Client implements RutaNode
 			//port.putDocument(catalogue);
 			port.insertCatalogueAsync(username, catalogue, future ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. My Catalogue has not been deposited to the CDR service! ");
+				StringBuilder msg = new StringBuilder("My Catalogue has not been deposited to the CDR service! ");
 				try
 				{
 					InsertCatalogueResponse response =  future.get();
@@ -410,13 +416,12 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Catalogue has not been deposited to the CDR service!"
+			frame.appendToConsole("My Catalogue has not been deposited to the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
 
 	/**Updates My Catalogue in the CDR service.
-	 *
 	 */
 	private void cdrUpdateMyCatalogue()
 	{
@@ -433,15 +438,17 @@ public class Client implements RutaNode
 
 			Server port = getCDRPort();
 			String username = myParty.getUsername();
-			//port.putDocument(catalogue);
+
 			port.updateCatalogueAsync(username, catalogue, future ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. My Catalogue has not been updated by the CDR service! ");
+				StringBuilder msg = new StringBuilder("My Catalogue has not been updated by the CDR service! ");
 				try
 				{
 					UpdateCatalogueResponse response =  future.get();
-					frame.appendToConsole("My Catalogue has been successfully updated by the CDR service.", Color.GREEN);
 					myParty.setDirtyCatalogue(false);
+					EventQueue.invokeLater(() ->
+					frame.appendToConsole("My Catalogue has been successfully updated by the CDR service.", Color.GREEN)
+							);
 				}
 				catch (Exception e)
 				{
@@ -454,6 +461,7 @@ public class Client implements RutaNode
 					frame.appendToConsole(msg.toString(), Color.RED);
 				}
 			});
+
 			frame.appendToConsole("My Catalogue has been sent to the CDR service.", Color.BLACK);
 
 			//creating XML document - for test purpose only
@@ -475,7 +483,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Catalogue has not been updated by the CDR service!"
+			frame.appendToConsole("My Catalogue has not been updated by the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -522,7 +530,7 @@ public class Client implements RutaNode
 				}
 				catch (Exception e)
 				{
-					StringBuilder msg = new StringBuilder("There has been a problem. Catalogue could not be retrieved from the CDR service! Server responds:");
+					StringBuilder msg = new StringBuilder("Catalogue could not be retrieved from the CDR service! Server responds:");
 					Throwable cause = e.getCause();
 					if(cause instanceof RutaException)
 						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
@@ -539,7 +547,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. My Party has not been synchronised with the CDR service!"
+			frame.appendToConsole("My Party has not been synchronised with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 		/*catch (WebServiceException e)
@@ -561,7 +569,7 @@ public class Client implements RutaNode
 			String username = myParty.getUsername();
 			port.deleteCatalogueAsync(username, catalogueDeletion, future ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. Catalogue has not been deleted from the CDR service! ");
+				StringBuilder msg = new StringBuilder("Catalogue has not been deleted from the CDR service! ");
 				try
 				{
 					DeleteCatalogueResponse response = future.get();
@@ -584,7 +592,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			frame.appendToConsole("There has been a problem. Catalogue has not been deleted from the CDR service!"
+			frame.appendToConsole("Catalogue has not been deleted from the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -760,17 +768,20 @@ public class Client implements RutaNode
 		return port;
 	}
 
-	public void cdrSearchParty(String name)
+	//Method may be used for some testing purposes
+	@Deprecated
+	public void cdrSearchParty(SearchCriterion criterion)
 	{
 		try
 		{
 			Server port = getCDRPort();
-			port.queryPartyNameAsync(myParty.getUsername(), name, futureResult ->
+			port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
 			{
-				StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+				StringBuilder msg = new StringBuilder("The search could not be conducted! ");
 				try
 				{
-					QueryPartyNameResponse res = futureResult.get();
+					SearchCatalogueResponse res = futureResult.get();
+					//handle the Catalogue list
 					frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
 				}
 				catch (Exception e)
@@ -788,7 +799,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			frame.appendToConsole("There has been a problem. The search has not been conducted!" +
+			frame.appendToConsole("The search has not been conducted!" +
 		"Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -798,35 +809,12 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			/*** BEGIN TEST****/
-/*			port.testEpisodeAsync(new Episode(), futureResult ->
-			{
-				StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
-				try
-				{
-					TestEpisodeResponse res = futureResult.get();
 
-					frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
-				}
-				catch (Exception e)
-				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
-				}
-			});
-			frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);*/
-			/*** END TEST****/
-
-			if(criterion.isCatalogueSearched())
+			if(criterion.isCatalogueSearched()) //querying parties and catalogues
 			{
 				port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+					StringBuilder msg = new StringBuilder("The search could not be conducted! ");
 					try
 					{
 						SearchCatalogueResponse res = futureResult.get();
@@ -846,16 +834,62 @@ public class Client implements RutaNode
 				});
 				frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
 			}
-			else
+			else // querying only parties
 			{
+				//*******************TEST*************************
+/*				String query = "declare variable $party-name external := (); \n" +
+						"declare variable $party-company-id external := (); \n" +
+						"declare variable $party-class-code external := ();\n" +
+						"declare variable $party-city external := ();\n" +
+						"declare variable $party-country external := ();\n" +
+						"declare variable $party-all external := true();";
+
+				String partyName = criterion.getPartyName();
+				String partyCompanyID = criterion.getPartyCompanyID();
+				String partyClassCode = criterion.getPartyClassCode();
+				String partyCity = criterion.getPartyCity();
+				String partyCountry = criterion.getPartyCountry();
+				boolean partyAll = criterion.isPartyAll();
+
+				String itemName = criterion.getItemName();
+				String itemBarcode = criterion.getItemBarcode();
+				String itemCommCode = criterion.getItemCommCode();
+				boolean itemAll = criterion.isItemAll();
+
+				String preparedQuery = query;
+				if(partyName != null)
+					preparedQuery = preparedQuery.replaceFirst("party-name( )+external( )*:=( )*[(][)]",
+							(new StringBuilder("party-name := '").append(partyName).append("'")).toString());
+				if(partyCompanyID != null)
+					preparedQuery = preparedQuery.replaceFirst("party-company-id( )+external( )*:=( )*[(][)]",
+							(new StringBuilder("party-company-id := '").append(partyCompanyID).append("'")).toString());
+				if(partyClassCode != null)
+					preparedQuery = preparedQuery.replaceFirst("party-class-code( )+external( )*:=( )*[(][)]",
+							(new StringBuilder("party-class-code := '").append(partyClassCode).append("'")).toString());
+				if(partyCity != null)
+					preparedQuery = preparedQuery.replaceFirst("party-city( )+external( )*:=( )*[(][)]",
+							(new StringBuilder("party-city := '").append(partyCity).append("'")).toString());
+				if(partyCountry != null)
+					preparedQuery = preparedQuery.replaceFirst("party-country( )+external( )*:=( )*[(][)]",
+							(new StringBuilder("party-country := '").append(partyCountry).append("'")).toString());
+				if(!partyAll)
+					preparedQuery = preparedQuery.replaceFirst("party-all( )+external( )*:=( )*true",
+							(new StringBuilder("party-all := false")).toString());*/
+
+				//*******************TEST*************************
+
 				port.searchPartyAsync(myParty.getUsername(), criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+					StringBuilder msg = new StringBuilder("The search could not be conducted! ");
 					try
 					{
 						SearchPartyResponse res = futureResult.get();
 						//handle the Party list
+
 						frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
+						List<PartyType> results = res.getReturn();
+						for(PartyType p : results)
+							frame.appendToConsole(p.getPartyName().get(0).getNameValue(), Color.GREEN);
 					}
 					catch (Exception e)
 					{
@@ -873,7 +907,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			frame.appendToConsole("There has been a problem. The search has not been conducted!" +
+			frame.appendToConsole("The search has not been conducted!" +
 		"Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
@@ -883,7 +917,7 @@ public class Client implements RutaNode
 		Server port = getCDRPort();
 		port.findAllPartiesAsync(futureResult ->
 		{
-			StringBuilder msg = new StringBuilder("There has been a problem. The search could not be conducted! ");
+			StringBuilder msg = new StringBuilder("The search could not be conducted! ");
 			try
 			{
 				FindAllPartiesResponse res = futureResult.get();

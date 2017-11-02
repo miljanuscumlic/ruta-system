@@ -17,34 +17,24 @@ import org.xmldb.api.base.XMLDBException;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
-public class ExistTransactionMapper extends XmlMapper
+public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 {
 	final private static String docPrefix = ""; // "txn";
-	final private static String collectionPath = "/ruta/system/transactions";
-	final private static String deletedCollectionPath = "/ruta/deleted/system/transactions";
+	final private static String collectionPath = "/system/transaction";
 	final private static String objectPackageName = "rs.ruta.server.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
-	private Map<Object, ExistTransaction> loadedTransactions;
+	private Map<String, ExistTransaction> loadedTransactions;
 
 	public ExistTransactionMapper() throws DatabaseException
 	{
 		super();
-		loadedTransactions = new ConcurrentHashMap<Object, ExistTransaction>();
-	}
-
-	/**Roll backs all transactions documented in transaction journal documents.
-	 */
-	public void rollbackAllTransactions()
-	{
-		ExistTransaction.rollbackAll();
+		loadedTransactions = new ConcurrentHashMap<String, ExistTransaction>();
 	}
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
 	@Override
 	public String getDocumentPrefix() { return docPrefix; }
-	@Override
-	public String getDeletedBaseCollectionPath() { return deletedCollectionPath; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 
@@ -54,16 +44,15 @@ public class ExistTransactionMapper extends XmlMapper
 		ExistTransaction txn = loadedTransactions.get(id);
 		if(txn == null)
 		{
-			txn = (ExistTransaction) super.find(id);
+			txn = super.find(id);
 			if(txn != null)
-				loadedTransactions.put(id, (ExistTransaction) txn);
+				loadedTransactions.put(id, txn);
 		}
 		return txn;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ArrayList<?> findAll() throws DetailException
+	public ArrayList<ExistTransaction> findAll() throws DetailException
 	{
 		ArrayList<ExistTransaction> transactions;
 		transactions = (ArrayList<ExistTransaction>) super.findAll();
@@ -85,14 +74,15 @@ public class ExistTransactionMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void insert(Object txn, Object id, T transaction) throws DetailException
+	public void insert(ExistTransaction txn, String id, DSTransaction transaction) throws DetailException
 	{
 		super.insert(txn, id, transaction);
-		loadedTransactions.put(id, (ExistTransaction) txn);
+		loadedTransactions.put(id, txn);
 	}
 
+
 	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
-	 * be the same as one of previously used.
+	 * be the same as one of previously used. This method is overriden because there is no need to check if id was previously used (i.e. there is a document with the same name in the /deleted collection) because transactions are to backed up in the /deleted collection after they are closed.
 	 * @param collection collection in which scope unique ID is created
 	 * @return unique ID
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
@@ -105,25 +95,26 @@ public class ExistTransactionMapper extends XmlMapper
 	}
 
 	@Override
-	public <T extends DSTransaction> void delete(Object id, T transaction) throws DetailException
+	public void delete(String id, DSTransaction transaction) throws DetailException
 	{
 		super.delete(id, transaction);
 		loadedTransactions.remove(id);
 	}
 
 	@Override
-	protected JAXBElement<ExistTransaction> getJAXBElement(Object object)
+	protected JAXBElement<ExistTransaction> getJAXBElement(ExistTransaction object)
 	{
 		QName _TRANSACTION_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
-		JAXBElement<ExistTransaction> element =
-				new JAXBElement<ExistTransaction>(_TRANSACTION_QNAME, ExistTransaction.class, (ExistTransaction) object);
-		return element;
+		JAXBElement<ExistTransaction> jaxbElement =
+				new JAXBElement<ExistTransaction>(_TRANSACTION_QNAME, ExistTransaction.class, object);
+		return jaxbElement;
 	}
 
 	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException
 	{
-		return JAXBContext.newInstance(getObjectClass());
+		return super.getJAXBContext(); //MMM: lets test this
+		//return JAXBContext.newInstance(getObjectClass());
 	}
 
 	@Override
@@ -133,10 +124,15 @@ public class ExistTransactionMapper extends XmlMapper
 	}
 
 	@Override
-	public String getID(Object object) throws DetailException
+	public ExistTransaction getLoadedObject(String id)
 	{
-		return ((ExistTransaction)object).getTransactionID();
+		return loadedTransactions.get(id);
 	}
 
+	@Override
+	public String getID(ExistTransaction object) throws DetailException
+	{
+		return object.getTransactionID();
+	}
 
 }

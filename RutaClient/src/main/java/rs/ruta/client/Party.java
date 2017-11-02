@@ -670,6 +670,8 @@ public class Party extends PartyType
 
 	public void setPartyID(String id)
 	{
+		if(id == null)
+			setPartyIdentification(null);
 		 List<PartyIdentificationType> identifications = getPartyIdentification();
 		 if(identifications.size() == 0)
 			 identifications.add(new PartyIdentificationType());

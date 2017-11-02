@@ -1,5 +1,9 @@
 package rs.ruta.server.datamapper;
 
+import java.util.List;
+
+import rs.ruta.server.DetailException;
+
 /**Interface defining basic methods of the data store transactions. Transactions are atomic actions
  * comprised of the data store operations like insert/update/delete.
  */
@@ -26,5 +30,19 @@ public interface DSTransaction extends AutoCloseable
 	 * @return true if enabled, false otherwise
 	 */
 	public boolean isEnabled();
+
+	/**Roll backs all transactions.
+	 * @throws DetailException if could not connect to the database or could not to roll back the transactions
+	 */
+	public static void rollbackAll() throws DetailException
+	{
+		List<DSTransaction> transactions  = MapperRegistry.getMapper(DSTransaction.class).findAll();
+		if(transactions != null)
+			for(DSTransaction t: transactions)
+			{
+				t.rollback();
+				t.close();
+			}
+	}
 
 }

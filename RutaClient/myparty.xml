@@ -39,12 +39,12 @@
         </ns2:CommodityClassification>
     </MyProduct>
     <MyProduct>
-        <ns3:Description>marljivo</ns3:Description>
+        <ns3:Description>marljiv sam  </ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>Marljivost</ns3:Name>
     </MyProduct>
     <MyProduct>
-        <ns3:Description>kako biti radans</ns3:Description>
+        <ns3:Description>kako biti radostan</ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>Radnost</ns3:Name>
         <ns2:SellersItemIdentification>
@@ -124,12 +124,12 @@
     </MyProduct>
     <CoreParty>
         <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
-        <ns3:IndustryClassificationCode>89898</ns3:IndustryClassificationCode>
+        <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
         <ns2:PartyIdentification>
-            <ns3:ID>d655d1ea</ns3:ID>
+            <ns3:ID>a751f59e</ns3:ID>
         </ns2:PartyIdentification>
         <ns2:PartyName>
-            <ns3:Name>Rutadr</ns3:Name>
+            <ns3:Name>Rutaaааа</ns3:Name>
         </ns2:PartyName>
         <ns2:PostalAddress>
             <ns3:Floor>4</ns3:Floor>
@@ -174,12 +174,12 @@
     </CoreParty>
     <Following>true</Following>
     <Partner>false</Partner>
-    <CatalogueID>114</CatalogueID>
-    <CatalogueDeletionID>13</CatalogueDeletionID>
-    <catalogueIssueDate>2017-10-15T10:42:35.953+02:00</catalogueIssueDate>
+    <CatalogueID>2</CatalogueID>
+    <CatalogueDeletionID>0</CatalogueDeletionID>
+    <catalogueIssueDate>2017-11-03T00:02:23.421+01:00</catalogueIssueDate>
     <Password>ruta</Password>
     <Username>ruta</Username>
-    <SecretKey>f8f79bc6</SecretKey>
+    <SecretKey>62691c60</SecretKey>
     <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI></ns3:WebsiteURI>
@@ -1840,6 +1840,6 @@
         <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <DirtyCatalogue>false</DirtyCatalogue>
-    <DirtyMyParty>false</DirtyMyParty>
+    <DirtyMyParty>true</DirtyMyParty>
     <InsertMyCatalogue>false</InsertMyCatalogue>
 </ns4:MyParty>

@@ -71,6 +71,21 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 					throw new RuntimeException("SOAPException thrown.", e);
 				}
 			}
+			else // registerUser is true
+			{
+				String username = (String) mCtx.get("Username");
+				try
+				{
+					getSecretKey(username); // throws an exception if there is no user registered with this username
+
+					//user already registered with this username
+					generateFault("Username \""+ username + "\" has already been taken. Please choose another one and try again.");
+				}
+				catch (DetailException e)
+				{
+					//it's OK. User doesn't exist.
+				}
+			}
 		}
 		return true;
 	}
@@ -126,8 +141,8 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 
 	/**Connects to the database and retrieves the secret key metadata of the user.
 	 * @param username user's username
-	 * @return user's secret key or <code>null</code> if not found
-	 * @throws Exception throws exception if there is a problem with the database connectivity
+	 * @return user's secret key or <code>null</code> if secret key is not stored for the given username
+	 * @throws DetailException if there is a problem with the data store connectivity or user is not registered
 	 */
 	private String getSecretKey(String username) throws DetailException
 	{
