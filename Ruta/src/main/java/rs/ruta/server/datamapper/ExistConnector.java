@@ -32,8 +32,6 @@ public class ExistConnector implements DatastoreConnector
 	private static String deletedPath = "/deleted";
 	private static String queryPath = "/system/query";
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
-	protected static final String queryNameSearchCatalogue = "search-catalogue.xq";
-
 
 	/**Constructs eXist database instance and registers it at the <code>DatabaseManager</code>, enabling
 	 * the application to communicate with it.

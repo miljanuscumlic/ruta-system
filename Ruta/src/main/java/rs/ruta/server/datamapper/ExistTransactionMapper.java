@@ -19,7 +19,6 @@ import rs.ruta.server.DetailException;
 
 public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 {
-	final private static String docPrefix = ""; // "txn";
 	final private static String collectionPath = "/system/transaction";
 	final private static String objectPackageName = "rs.ruta.server.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
@@ -33,8 +32,6 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
-	@Override
-	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 
@@ -80,7 +77,6 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 		loadedTransactions.put(id, txn);
 	}
 
-
 	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
 	 * be the same as one of previously used. This method is overriden because there is no need to check if id was previously used (i.e. there is a document with the same name in the /deleted collection) because transactions are to backed up in the /deleted collection after they are closed.
 	 * @param collection collection in which scope unique ID is created
@@ -110,12 +106,13 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 		return jaxbElement;
 	}
 
-	@Override
+//Unnecessary beacause the method in supercla is sufficient
+/*	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException
 	{
 		return super.getJAXBContext(); //MMM: lets test this
 		//return JAXBContext.newInstance(getObjectClass());
-	}
+	}*/
 
 	@Override
 	public Class<?> getObjectClass()
@@ -134,5 +131,4 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	{
 		return object.getTransactionID();
 	}
-
 }

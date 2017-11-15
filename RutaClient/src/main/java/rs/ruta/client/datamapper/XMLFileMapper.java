@@ -22,7 +22,7 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 	}
 
 	@Override
-	public ArrayList<T> findAll()
+	public ArrayList<T> findAll() throws Exception
 	{
 		ArrayList<T> result = new ArrayList<T>(); // MMM:This List is not nessecery because there is always one element of type T, not a list of them
 		Path path = Paths.get(filename); // MMM: set the Path and the document files to some sensible place
@@ -60,7 +60,7 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void insertAll()
+	public void insertAll() throws Exception
 	{
 //		Path path = Paths.get(filename); // MMM: set the Path and the document files to some sensible place
 //		if (Files.exists(path))

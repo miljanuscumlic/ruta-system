@@ -18,6 +18,8 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 @XmlType(name = "Party")
 public class Party extends PartyType
 {
+	private static final long serialVersionUID = 7205209787239807571L;
+
 	public Party() { super(); }
 
 	public String getSimpleName()
@@ -39,7 +41,6 @@ public class Party extends PartyType
 			names.get(0).setName(new NameType());
 		names.get(0).getName().setValue(value);
 	}
-
 
 	/*	public void setProductDescription(int index, String value)
 	{
@@ -118,7 +119,7 @@ public class Party extends PartyType
 		}
 		catch (Exception e)
 		{
-			// should not do anything because the entry is invalid	MMM: should to be checked
+			// should not do anything because the entry is invalid	MMM: should be checked
 		}
 	}
 

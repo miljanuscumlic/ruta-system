@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.xmldb.api.base.XMLDBException;
 
+import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DetailException;
 
@@ -18,6 +19,13 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 * @return found object or <code>null</code> if object doesn't exist
 	 */
 	public T find(ID id) throws Exception;
+
+	/**Retrieves object from the data store. Object is identified by the user's ID.
+	 * @param id user's ID
+	 * @return found object or {@code null} if object doesn't exist
+	 * @throws DetailException if there is more than one object with the same ID
+	 */
+	public T findByUserId(ID id) throws DetailException;
 
 	/**Retrieves all objects from the data store or <code>null</code> if no object exists.
 	 * @return list of all the objects, or null if no objects are found
@@ -51,6 +59,12 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 * @throws DetailException if search request could not be processed
 	 */
 	default public <U> List<U> findGeneric(SearchCriterion criterion) throws DetailException { return null; }
+
+	/**Retrieves the {@link RutaVersion} object describing the last version of the {@code Ruta Client} application.
+	 * @return {@code RutaVersion} object
+	 * @throws DetailException if version object does not exist or could not be retrieved from the data store
+	 */
+	default public RutaVersion findClientVersion() throws DetailException { return null; }
 
 	/** Writes all objects to the data store.
 	 */
@@ -92,13 +106,14 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 */
 	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
 
+	//MMM: maybe unnecessary method
 	/**Retrieves object's id from the data store. ID is the result of the querying the data store
-	 * based on the contents of the passed argument.
-	 * @param object object which id is requested
-	 * @return object's id
+	 * based of the passed argument.
+	 * @param userID user's ID
+	 * @return id of the object in the datastore
 	 * @throws DetailException if the object cannot be found in the data store
 	 */
-	default public ID getID(T object) throws DetailException { return null; }
+	default public ID getIDByUserID(ID userID) throws DetailException { return null; }
 
 	//MMM: maybe this method should always return String, because insert WebMethod returns String
 	/**Retrieves unique ID of the user of the CDR service.
@@ -107,6 +122,14 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 * @throws DetailException if user ID could not be retrieved
 	 */
 	public ID getUserID(String username) throws DetailException;
+
+	/**Retrieves object's id from the data store. ID is the result of the querying the data store
+	 * based on the contents of the passed argument.
+	 * @param object object which id is requested
+	 * @return object's id
+	 * @throws DetailException if the object cannot be found in the data store
+	 */
+	default public ID getID(T object) throws DetailException { return null; }
 
 	/**Deletes object with passed id from the data store.
 	 * @param id id of the object that should be deleted

@@ -14,6 +14,12 @@
 			<class ref="rs.ruta.common.SearchCriterion" />
 		</bindings>
 	</bindings>
+  <bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
+		<bindings scd="~tns:RutaVersion">
+			<class ref="rs.ruta.common.RutaVersion" />
+		</bindings>
+	</bindings>
 
 </bindings>
 

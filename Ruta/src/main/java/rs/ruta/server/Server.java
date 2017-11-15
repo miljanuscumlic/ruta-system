@@ -7,19 +7,12 @@ import javax.jws.*;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 
 @WebService(targetNamespace = "http://ruta.rs/services")
 public interface Server
 {
-	@Deprecated
-	@WebMethod(operationName = "PutDocument")
-	public void putDocument(CatalogueType d);
-
-	@Deprecated
-	@WebMethod(operationName = "GetDocument")
-	public CatalogueType getDocument();
-
 	/**Inserts catalogue object in the database.
 	 * @param username username of the party which catalogue is stored
 	 * @param cat catalogue object to be stored in the database
@@ -88,9 +81,21 @@ public interface Server
 	@WebMethod(operationName = "UpdateParty")
 	public void updateParty(String username, PartyType party) throws RutaException;
 
+	/**Searches the database for all parties that conforms to the search criterion.
+	 * @param username username of user sending the search request
+	 * @param criterion search criterion
+	 * @return list of parties conforming the criterion
+	 * @throws RutaException if search query could not be processed
+	 */
 	@WebMethod(operationName = "SearchParty")
 	public List<PartyType> searchParty(String username, SearchCriterion criterion) throws RutaException;
 
+	/**Searches the database for all catalogue items that conforms to the search criterion.
+	 * @param username username of user sending the search request
+	 * @param criterion search criterion
+	 * @return list of catalogues with only the catalogue items conforming the criterion
+	 * @throws RutaException if search query could not be processed
+	 */
 	@WebMethod(operationName = "SearchCatalogue")
 	public List<CatalogueType> searchCatalogue(String username, SearchCriterion criterion) throws RutaException;
 
@@ -100,4 +105,10 @@ public interface Server
 	 */
 	@WebMethod(operationName = "FindAllParties")
 	public List<PartyType> findAllParties() throws RutaException;
+
+	@WebMethod(operationName = "NotifyUpdate")
+	public void notifyUpdate(RutaVersion version) throws RutaException;
+
+	@WebMethod(operationName = "UpdateRutaClient")
+	public RutaVersion updateRutaClient(String oldVersion) throws RutaException;
 }

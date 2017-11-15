@@ -15,6 +15,7 @@ import javax.xml.ws.ResponseWrapper;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 
 
@@ -140,37 +141,49 @@ public interface Server {
 
     /**
      * 
+     * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.GetDocumentResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateRutaClientResponse>
      */
-    @WebMethod(operationName = "GetDocument")
-    @RequestWrapper(localName = "GetDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.GetDocument")
-    @ResponseWrapper(localName = "GetDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.GetDocumentResponse")
-    public Response<GetDocumentResponse> getDocumentAsync();
+    @WebMethod(operationName = "UpdateRutaClient")
+    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClient")
+    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClientResponse")
+    public Response<UpdateRutaClientResponse> updateRutaClientAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0);
 
     /**
      * 
+     * @param arg0
      * @param asyncHandler
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "GetDocument")
-    @RequestWrapper(localName = "GetDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.GetDocument")
-    @ResponseWrapper(localName = "GetDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.GetDocumentResponse")
-    public Future<?> getDocumentAsync(
+    @WebMethod(operationName = "UpdateRutaClient")
+    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClient")
+    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClientResponse")
+    public Future<?> updateRutaClientAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<GetDocumentResponse> asyncHandler);
+        AsyncHandler<UpdateRutaClientResponse> asyncHandler);
 
     /**
      * 
+     * @param arg0
      * @return
-     *     returns oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType
+     *     returns rs.ruta.common.RutaVersion
+     * @throws RutaException
      */
-    @WebMethod(operationName = "GetDocument")
+    @WebMethod(operationName = "UpdateRutaClient")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "GetDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.GetDocument")
-    @ResponseWrapper(localName = "GetDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.GetDocumentResponse")
-    public CatalogueType getDocument();
+    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClient")
+    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClientResponse")
+    public RutaVersion updateRutaClient(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0)
+        throws RutaException
+    ;
 
     /**
      * 
@@ -424,6 +437,49 @@ public interface Server {
      * 
      * @param arg0
      * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.NotifyUpdateResponse>
+     */
+    @WebMethod(operationName = "NotifyUpdate")
+    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdate")
+    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdateResponse")
+    public Response<NotifyUpdateResponse> notifyUpdateAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        RutaVersion arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "NotifyUpdate")
+    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdate")
+    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdateResponse")
+    public Future<?> notifyUpdateAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        RutaVersion arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<NotifyUpdateResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "NotifyUpdate")
+    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdate")
+    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdateResponse")
+    public void notifyUpdate(
+        @WebParam(name = "arg0", targetNamespace = "")
+        RutaVersion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.FindCatalogueResponse>
      */
     @WebMethod(operationName = "FindCatalogue")
@@ -575,46 +631,6 @@ public interface Server {
         PartyType arg1)
         throws RutaException
     ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.PutDocumentResponse>
-     */
-    @WebMethod(operationName = "PutDocument")
-    @RequestWrapper(localName = "PutDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.PutDocument")
-    @ResponseWrapper(localName = "PutDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.PutDocumentResponse")
-    public Response<PutDocumentResponse> putDocumentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueType arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "PutDocument")
-    @RequestWrapper(localName = "PutDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.PutDocument")
-    @ResponseWrapper(localName = "PutDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.PutDocumentResponse")
-    public Future<?> putDocumentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueType arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<PutDocumentResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     */
-    @WebMethod(operationName = "PutDocument")
-    @RequestWrapper(localName = "PutDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.PutDocument")
-    @ResponseWrapper(localName = "PutDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.PutDocumentResponse")
-    public void putDocument(
-        @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueType arg0);
 
     /**
      * 

@@ -4,49 +4,53 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:client")
+@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:common")
 @XmlType(name = "SearchCriterion")
 @XmlAccessorType(XmlAccessType.FIELD)
-//MMM: should be part of the common project
 public class SearchCriterion
 {
-	@XmlElement(name="PartyName")
+	@XmlElement(name = "PartyName")
 	private String partyName;
-	@XmlElement(name="PartyCompanyID")
+	@XmlElement(name = "PartyCompanyID")
 	private String partyCompanyID;
-	@XmlElement(name="PartyClassCode")
+	@XmlElement(name = "PartyClassCode")
 	private String partyClassCode;
-	@XmlElement(name="PartyCity")
+	@XmlElement(name = "PartyCity")
 	private String partyCity;
-	@XmlElement(name="PartyCountry")
+	@XmlElement(name = "PartyCountry")
 	private String partyCountry;
-	@XmlElement(name="PartyAll")
+	@XmlElement(name = "PartyAll")
 	private boolean partyAll;
 
-	@XmlElement(name="ItemName")
+	@XmlElement(name = "ItemName")
 	private String itemName;
-	@XmlElement(name="ItemBarcode")
+	@XmlElement(name = "ItemDescription")
+	private String itemDescription;
+	@XmlElement(name = "ItemBarcode")
 	private String itemBarcode;
-	@XmlElement(name="ItemCommCode")
+	@XmlElement(name = "ItemCommCode")
 	private String itemCommCode;
-	@XmlElement(name="ItemAll")
+	@XmlElement(name = "ItemKeyword")
+	private String itemKeyword;
+	@XmlElement(name = "ItemAll")
 	private boolean itemAll;
 
 	public SearchCriterion()
 	{
 		partyName = partyCompanyID = partyClassCode = partyCity =
-				partyCountry = itemName = itemBarcode = itemCommCode = null;
+				partyCountry = itemName = itemDescription = itemBarcode = itemCommCode = itemKeyword = null;
 		partyAll = itemAll = false;
 	}
 
 	/**Cheks if the search is supposed to query Catalogues. If not the Parties are only queried.
 	 * @return true if Catalogues should be queried.
 	 */
-	public boolean isCatalogueSearched()
+	public boolean isCatalogueSearchedFor()
 	{
-		return itemName != null || itemBarcode != null || itemCommCode != null;
+		return itemName != null || itemDescription != null || itemBarcode != null || itemCommCode != null || itemKeyword != null;
 	}
 
 	public String getPartyName()
@@ -144,6 +148,25 @@ public class SearchCriterion
 		this.itemCommCode = itemCommCode;
 	}
 
+	public String getItemDescription()
+	{
+		return itemDescription;
+	}
+
+	public void setItemDescription(String itemDescription)
+	{
+		this.itemDescription = itemDescription;
+	}
+
+	public String getItemKeyword()
+	{
+		return itemKeyword;
+	}
+
+	public void setItemKeyword(String itemKeyword)
+	{
+		this.itemKeyword = itemKeyword;
+	}
 
 	public boolean isPartyAll()
 	{
@@ -187,10 +210,14 @@ public class SearchCriterion
 			partyCountry = null;
 		if("".equals(itemName))
 			itemName = null;
+		if("".equals(itemDescription))
+			itemDescription = null;
 		if("".equals(itemBarcode))
 			itemBarcode = null;
 		if("".equals(itemCommCode))
 			itemCommCode = null;
+		if("".equals(itemKeyword))
+			itemKeyword = null;
 		return this;
 	}
 

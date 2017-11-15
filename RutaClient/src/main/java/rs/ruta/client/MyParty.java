@@ -2,6 +2,8 @@ package rs.ruta.client;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.*;
 
@@ -12,8 +14,11 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 
 @XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType
 public class MyParty extends BusinessParty
 {
+/*	@XmlAttribute(required = false)
+	private static final String VERSION = Client.getVersion().getJaxbVersion();*/
 	@XmlElement(name = "Password")
 	private String password;
 	@XmlElement(name = "Username")
@@ -29,13 +34,18 @@ public class MyParty extends BusinessParty
 //	@XmlElement(name = "FollowerPartners")
 	@XmlTransient
 	private List<BusinessParty> followerParties;
+	@XmlElement(name = "PartySearch")
+	private List<Search<PartyType>> partySearches;
+	@XmlElement(name = "CatalogueSearch")
+	private List<Search<CatalogueType>> catalogueSearches;
 	@XmlElement(name = "DirtyCatalogue")
 	private boolean dirtyCatalogue; // MMM: this property is also saved as the preference
 	@XmlElement(name = "DirtyMyParty")
 	private boolean dirtyMyParty;
 	@XmlElement(name = "InsertMyCatalogue")
-	private boolean insertMyCatalogue; // true when catalogue should be inserted in the CDR i.e. deposit first time
-
+	private boolean insertMyCatalogue; // true when catalogue should be inserted in the CDR i.e. deposit for the first time
+	@XmlElement(name = "SearchNumber")
+	private long searchNumber;
 
 	public MyParty()
 	{
@@ -44,6 +54,7 @@ public class MyParty extends BusinessParty
 		dirtyCatalogue = false; //when first created My Catalogue is empty and therefore as nonexisting it is syncronized with the CDR service
 		dirtyMyParty = insertMyCatalogue = true;
 		username = password = secretKey = null;
+		searchNumber = 0;
 	}
 
 	public List<BusinessParty> getBusinessPartners()
@@ -80,6 +91,30 @@ public class MyParty extends BusinessParty
 	public void setFollowerParties(List<BusinessParty> followerParties)
 	{
 		this.followerParties = followerParties;
+	}
+
+	public List<Search<PartyType>> getPartySearches()
+	{
+		if(partySearches == null)
+			partySearches = new ArrayList<Search<PartyType>>();
+		return partySearches;
+	}
+
+	public void setPartySearches(List<Search<PartyType>> partySearches)
+	{
+		this.partySearches = partySearches;
+	}
+
+	public List<Search<CatalogueType>> getCatalogueSearches()
+	{
+		if(catalogueSearches == null)
+			catalogueSearches = new ArrayList<Search<CatalogueType>>();
+		return catalogueSearches;
+	}
+
+	public void setCatalogueSearches(List<Search<CatalogueType>> catalogueSearches)
+	{
+		this.catalogueSearches = catalogueSearches;
 	}
 
 	/**Checks if the party is completely registered with the CDR, i.e. if party has assigned unique Party ID.
@@ -158,7 +193,6 @@ public class MyParty extends BusinessParty
 			item.getSellersItemIdentification().setBarcodeSymbologyID(new BarcodeSymbologyIDType());
 		if(hasCellValueChanged(item.getSellersItemIdentification().getBarcodeSymbologyID().getValue(), value))
 			item.getSellersItemIdentification().getBarcodeSymbologyID().setValue(value);
-
 	}
 
 	@Override
@@ -189,51 +223,60 @@ public class MyParty extends BusinessParty
 	}
 
 	@Override
-	public void setProductItemClassificationCode(int index, String value)
+	public void setProductKeywords(int index, List<KeywordType> value)
 	{
 		ItemType item = getMyProducts().get(index);
-		List<CommodityClassificationType> commodities = item.getCommodityClassification();
-		if(commodities.size() == 0)
-			commodities.add(new CommodityClassificationType());
-		if(commodities.get(0).getItemClassificationCode() == null)
-			commodities.get(0).setItemClassificationCode(new ItemClassificationCodeType());
-		if(hasCellValueChanged(commodities.get(0).getItemClassificationCode().getValue(), value))
-			commodities.get(0).getItemClassificationCode().setValue(value);;
+		item.setKeyword(value);
 	}
 
-	/**Generates Catalogue Document from Items in the Product table.
+	@Override
+	public void setProductKeywords(int index, String value)
+	{
+		ItemType item = getMyProducts().get(index);
+		List<KeywordType> keywords =
+				Stream.of(value.split("( )*[,;]+")).map(keyword -> new KeywordType(keyword)).collect(Collectors.toList());
+		item.setKeyword(keywords);
+	}
+
+	/**Generates {@link CatalogueType} document from items in the Product table. Method returns {@code null} if Catalogue
+	 * does not have any item or some item has no name or is empty string.
 	 * @param receiverParty receiver Party of the Catalogue
-	 * @return catalogue
+	 * @return catalogue or {@code null}
 	 */
 	public CatalogueType createCatalogue(Party receiverParty)
 	{
-		//forming Catalogue document
 		CatalogueType catalogue = new CatalogueType();
-		IDType catID = new IDType();
-		String strID = String.valueOf(nextCatalogueID());
-		catID.setValue(strID);
-		catalogue.setID(catID);
-		UUIDType catUUID = new UUIDType();
-		catUUID.setValue(getCatalogueUUID());
-		catalogue.setUUID(catUUID);
-		IssueDateType date = new IssueDateType();
-		date.setValue(setCatalogueIssueDate());
-		catalogue.setIssueDate(date);
-
-		catalogue.setProviderParty((PartyType) getCoreParty());
-		catalogue.setReceiverParty((PartyType) receiverParty);
-		// MMM: insert here Receiver Party (CDR)
-
 		int cnt = 0;
-		for(ItemType prod : getMyProducts())
+		ArrayList<ItemType> myProducts = getMyProducts();
+		if(checkProductNames(myProducts) && myProducts.size() != 0)
 		{
-			CatalogueLineType catLine = new CatalogueLineType();
-			IDType catLineID = new IDType();
-			catLineID.setValue(catID.getValue() + "-" + cnt++);
-			catLine.setID(catLineID);
-			catLine.setItem(prod);
-			catalogue.getCatalogueLine().add(catLine);
+			//populating Catalogue document
+			IDType catID = new IDType();
+			String strID = String.valueOf(nextCatalogueID());
+			catID.setValue(strID);
+			catalogue.setID(catID);
+			UUIDType catUUID = new UUIDType();
+			catUUID.setValue(getCatalogueUUID());
+			catalogue.setUUID(catUUID);
+			IssueDateType date = new IssueDateType();
+			date.setValue(setCatalogueIssueDate());
+			catalogue.setIssueDate(date);
+			catalogue.setProviderParty((PartyType) getCoreParty());
+			catalogue.setReceiverParty((PartyType) receiverParty);
+
+			for(ItemType prod : myProducts)
+			{
+				CatalogueLineType catLine = new CatalogueLineType();
+				IDType catLineID = new IDType();
+				catLineID.setValue(catID.getValue() + "-" + cnt++);
+				catLine.setID(catLineID);
+				catLine.setItem(prod);
+				catalogue.getCatalogueLine().add(catLine);
+			}
 		}
+		else
+			catalogue = null;
+
 		return catalogue;
 	}
 
@@ -256,7 +299,7 @@ public class MyParty extends BusinessParty
 		return catalogueDeletion;
 	}
 
-	/**Creates object representing reference to the latest created Catalogue Document.
+	/**Creates object of {@code CatalogueReferenceType} representing reference to the latest created {@code CatalogueType} document.
 	 * @return object representing reference to the lateset catalogue document
 	 */
 	private CatalogueReferenceType getCatalogueReference()
@@ -284,6 +327,20 @@ public class MyParty extends BusinessParty
 		return getCoreParty().getPartyID()+ "CDL" + getCatalogueDeletionID();
 	}
 
+	private boolean checkProductNames(ArrayList<ItemType> myProducts)
+	{
+		boolean ok = true;
+		for(ItemType prod : myProducts)
+		{
+			String productName = prod.getNameValue();
+			if (productName == null || productName.equals(""))
+			{
+				ok = false;
+				break;
+			}
+		}
+		return ok;
+	}
 
 	/**Checks if the cell value has changed. If it has changed dirtyCatalogue field is set to true.
 	 * @param oldOne old value of the cell
@@ -305,8 +362,14 @@ public class MyParty extends BusinessParty
 
 	public void addFollowingParty(BusinessParty party)
 	{
-		if(! followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
+		if(party != null && !followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
 			getFollowingParties().add(party);
+	}
+
+	public void removeFollowingParty(BusinessParty party)
+	{
+		if(party != null && followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
+			getFollowingParties().remove(party);
 	}
 
 	public String getPassword()
@@ -329,15 +392,16 @@ public class MyParty extends BusinessParty
 		this.username = username;
 	}
 
-	/**
-	 * @return the dirtyMyParty
+	/**Get the boolean value telling if the {@code Party} data are in sync with the CDR service.
+	 * @return true if the {@code Party} is in sync with the CDR service
 	 */
 	public boolean isDirtyMyParty()
 	{
 		return dirtyMyParty;
 	}
 
-	/**Sets the value of the boolean flag designating whether the Party object has been changed recently.
+	/**Sets the value of the boolean flag designating whether the {@code Party} object has been changed
+	 * since it is retrieved from the database or updated with the CDR service.
 	 * @param dirtyMyParty boolean value to be set
 	 */
 	public void setDirtyMyParty(boolean dirtyMyParty)
@@ -379,4 +443,33 @@ public class MyParty extends BusinessParty
 		this.insertMyCatalogue = insertMyCatalogue;
 	}
 
+	public long getSearchNumber()
+	{
+		return searchNumber;
+	}
+
+	public void setSearchNumber(long searchNumber)
+	{
+		this.searchNumber = searchNumber;
+	}
+
+	/**Adds My Party to the list of following parties.
+	 */
+	public void followMyself()
+	{
+		BusinessParty myPartyCopy = new BusinessParty();
+		//Party coreParty = InstanceFactory.newInstance(getCoreParty());
+		Party coreParty = getCoreParty().clone();
+		myPartyCopy.setCoreParty(coreParty);
+		//addFollowingParty(myPartyCopy);
+		getFollowingParties().add(0, myPartyCopy);
+	}
+
+	/**Removes My Party from the list of following parties.
+	 */
+	public void unfollowMyParty()
+	{
+		//removeFollowingParty(followingParties.get(0));
+		getFollowingParties().remove(0);
+	}
 }

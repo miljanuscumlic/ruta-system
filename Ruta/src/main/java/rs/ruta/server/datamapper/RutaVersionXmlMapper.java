@@ -11,20 +11,25 @@ import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
+import org.xmldb.api.modules.XMLResource;
 
+import rs.ruta.common.RutaVersion;
 import rs.ruta.server.DatabaseException;
 import rs.ruta.server.DetailException;
 
-public class PartyIDXmlMapper extends XmlMapper<PartyID>
+public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 {
-	final private static String collectionPath = "/system/party-id";
-	final private static String objectPackageName = "rs.ruta.server.datamapper";
-	final private static String queryNameSearchID = "search-id.xq";
+	final private static String collectionPath = "/system/version";
+	final private static String objectPackageName = "rs.ruta.common";
+	final private static String queryNameVersion = "search-version.xq";
 
-	public PartyIDXmlMapper() throws DatabaseException { super(); }
+	public RutaVersionXmlMapper() throws DatabaseException
+	{
+		super();
+	}
 
 	@Override
-	public Class<?> getObjectClass() { return PartyID.class; }
+	public Class<?> getObjectClass() { return RutaVersion.class; }
 
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
@@ -33,27 +38,24 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	public String getCollectionPath() { return collectionPath; }
 
 	@Override
-	public PartyID getLoadedObject(String id) { return null; }
+	protected JAXBElement<RutaVersion> getJAXBElement(RutaVersion object)
+	{
+		QName _QNAME = new QName("urn:rs:ruta:common", "RutaVersion");
+		return new JAXBElement<RutaVersion>(_QNAME, RutaVersion.class, object);
+	}
 
 	@Override
 	public String getSearchQueryName()
 	{
-		return queryNameSearchID;
+		return queryNameVersion;
 	}
 
+	//MMM: maybe this method can be called find(id) where id could be always null or whatever
 	@Override
-	protected JAXBElement<PartyID> getJAXBElement(PartyID object)
-	{
-		QName _QNAME = new QName("urn:rs:ruta:services", "PartyID");
-		JAXBElement<PartyID> jaxbElement = new JAXBElement<PartyID> (_QNAME, PartyID.class,  object);
-		return jaxbElement;
-	}
-
-	@Override
-	public String getIDByUserID(String userID) throws DetailException
+	public RutaVersion findClientVersion() throws DetailException
 	{
 		Collection coll = null;
-		String searchResult = null;
+		RutaVersion searchResult = null;
 		try
 		{
 			coll = getCollection();
@@ -67,8 +69,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 			String query = null; // search query
 			//loading and preparing the .xq query file from the database
 			query = openDocument(getQueryPath(), getSearchQueryName());
-			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath).
-					append("/").append(userID).append(getDocumentSufix());
+			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
 
 //			final File queryFile = null;
@@ -80,23 +81,31 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 				CompiledExpression compiled = queryService.compile(query);
 				final ResourceSet results = queryService.execute(compiled);
 				final ResourceIterator iterator = results.getIterator();
-				long resultsCount = results.getSize();
-				while(iterator.hasMoreResources())
+				if(results.getSize() != 0)
 				{
-					Resource resource = null;
-					try
+					while(iterator.hasMoreResources())
 					{
-						resource = iterator.nextResource();
-						searchResult = (String) resource.getContent();
+						Resource resource = null;
+						try
+						{
+							resource = iterator.nextResource();
+							//System.out.println((String) resource.getContent());
+							RutaVersion result = load((XMLResource) resource);
+							/*		if(result == null) //resource is not whole document rather part of it
+							result = (RutaVersion) unmarshalFromXML((String) resource.getContent());*/
+							searchResult = result;
+						}
+						finally
+						{
+							if(resource != null)
+								((EXistResource) resource).freeResources();
+						}
 					}
-					finally
-					{
-						if(resource != null)
-							((EXistResource)resource).freeResources();
-					}
+					logger.info("Finished query of the " + uri);
+					return searchResult;
 				}
-				logger.info("Finished query of the " + uri);
-				return searchResult;
+				else
+					throw new DetailException("There is no version object of the Ruta Client application.");
 			}
 			else
 				throw new DatabaseException("Could not process the query. Query file does not exist.");
@@ -121,4 +130,5 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 			}
 		}
 	}
+
 }

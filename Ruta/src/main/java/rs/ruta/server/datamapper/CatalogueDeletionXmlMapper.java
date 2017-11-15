@@ -17,7 +17,6 @@ import rs.ruta.server.DetailException;
 
 public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 {
-	final private static String docPrefix = "";
 	final private static String collectionPath = "/catalogue-deletion";
 	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21";
 	//MMM: This map should be some kind of most recently used collection
@@ -31,8 +30,6 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
-	@Override
-	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 

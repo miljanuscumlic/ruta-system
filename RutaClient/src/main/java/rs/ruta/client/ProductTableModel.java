@@ -4,10 +4,15 @@ import java.math.BigDecimal;
 
 import javax.swing.table.*;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
+
 public class ProductTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private BusinessParty businessParty ;
+	private BusinessParty businessParty;
 	private boolean editable;
 
 	/**Creates new model for the product table.
@@ -68,19 +73,19 @@ public class ProductTableModel extends AbstractTableModel
 			case 0:
 				return rowIndex+1;
 			case 1:
-				return businessParty.getProductName(rowIndex);
+				return businessParty.getProductNameAsString(rowIndex);
 			case 2:
-				return businessParty.getProductDescription(rowIndex);
+				return businessParty.getProductDescriptionAsString(rowIndex);
 			case 3:
-				return businessParty.getProductPackSizeNumeric(rowIndex);
+				return businessParty.getProductPackSizeAsBigDecimal(rowIndex);
 			case 4:
-				return businessParty.getProductID(rowIndex);
+				return businessParty.getProductIDAsString(rowIndex);
 			case 5:
-				return businessParty.getProductBarcode(rowIndex);
+				return businessParty.getProductBarcodeAsString(rowIndex);
 			case 6:
-				return businessParty.getProductCommodityCode(rowIndex);
+				return businessParty.getProductCommodityCodeAsString(rowIndex);
 			case 7:
-				return businessParty.getProductItemClassificationCode(rowIndex);
+				return businessParty.getProductKeywordsAsString(rowIndex);
 			default:
 				return null;
 			}
@@ -94,10 +99,13 @@ public class ProductTableModel extends AbstractTableModel
 	{
 		//add new product to the list if the cell value not empty
 		if(businessParty.getProductCount() == rowIndex)
-			if(((String) obj).equals("")) // do nothing
+			if(("").equals((String) obj)) // do nothing
 				return;
 			else
+			{
 				businessParty.addNewEmptyProduct();
+				fireTableRowsInserted(rowIndex+1, columnIndex);
+			}
 		switch(columnIndex)
 		{
 		case 0:
@@ -121,7 +129,7 @@ public class ProductTableModel extends AbstractTableModel
 			businessParty.setProductCommodityCode(rowIndex, obj.toString());
 			break;
 		case 7:
-			businessParty.setProductItemClassificationCode(rowIndex, obj.toString());
+			businessParty.setProductKeywords(rowIndex, obj.toString());
 		default:
 			;
 		}
@@ -161,7 +169,7 @@ public class ProductTableModel extends AbstractTableModel
 		case 6:
 			return "Commodity Code";
 		case 7:
-			return "Classification Code";
+			return "Keywords";
 		default:
 			return "0";
 		}

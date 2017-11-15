@@ -6,12 +6,13 @@ import java.util.concurrent.ConcurrentMap;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.RutaVersion;
 import rs.ruta.server.DataManipulationException;
 import rs.ruta.server.DetailException;
 
 /**Class that hold global variables accountable for the connection to the classes responsible for the
- * database manipulation. One filed is the map containing all <code>DataMapper</code>s that maps domain
- * objects to the structeres of the particular data store instace in use. Also, there is a
+ * database manipulation. One field is the map containing all <code>DataMapper</code>s that maps domain
+ * objects to the structures of the particular data store instace in use. Also, there is a
  * <code>DSTransactionFactory</code> field responsible for the instatiation and controlling of the
  * <code>DSTransaction</code> object.
  *
@@ -67,6 +68,8 @@ public final class MapperRegistry
 				dataMapper = (DataMapper<S, String>) new ExistTransactionMapper();
 			else if(clazz == PartyID.class)
 				dataMapper = (DataMapper<S, String>) new PartyIDXmlMapper();
+			else if(clazz == RutaVersion.class)
+				dataMapper = (DataMapper<S, String>) new RutaVersionXmlMapper();
 			getInstance().mapRegistry.put(clazz, dataMapper);
 		}
 		if(dataMapper == null)

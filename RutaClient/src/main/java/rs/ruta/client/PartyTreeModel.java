@@ -9,7 +9,6 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameTyp
 
 public class PartyTreeModel extends DefaultTreeModel
 {
-
 	private static final long serialVersionUID = 4960608964751110674L;
 	private MyParty party;
 
@@ -69,11 +68,11 @@ public class PartyTreeModel extends DefaultTreeModel
 		followingPartners.retainAll(followingOthers);
 
 
-		if(party.getFollowingParties().size() > 0) // removes my Party
+		if(party.getFollowingParties().size() > 0) // removes My Party
 			followingOthers.remove((party.getFollowingParties().get(0)));
 		followingOthers.removeAll(party.getBusinessPartners());
 
-		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My party");
+		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My Party");
 		((DefaultMutableTreeNode) root).add(myPartyNode);
 
 		if(party.getFollowingParties().size() > 0)

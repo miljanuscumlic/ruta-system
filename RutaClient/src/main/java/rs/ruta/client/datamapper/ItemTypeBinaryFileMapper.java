@@ -103,9 +103,9 @@ public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 		commodity.setCommodityCode(commodityCode);
 		item.getCommodityClassification().add(commodity);
 
-		ItemClassificationCodeType classificationCode = new ItemClassificationCodeType();
-		classificationCode.setValue(p.getClassificationCode());
-		commodity.setItemClassificationCode(classificationCode);
+		List<KeywordType> keywords;
+		keywords = p.getKeywords();
+		item.setKeyword(keywords);
 
 		return (T) item;
 	}
@@ -176,19 +176,19 @@ return new Person(id, lastNameArg, firstNameArg, numDependentsArg);
 		private BigDecimal packSize;
 		private String barcode;
 		private String commodityCode;
-		private String classificationCode;
+		private List<KeywordType> keywords;
 
 		public Product(BusinessParty businessParty, int index)
 		{
 			mapID = nextID++;
-			name = businessParty.getProductName(index);
+			name = businessParty.getProductNameAsString(index);
 			//id = Long.valueOf(client.getProductID(index));
-			id = businessParty.getProductID(index);
-			description = businessParty.getProductDescription(index);
-			packSize = businessParty.getProductPackSizeNumeric(index);
-			barcode = businessParty.getProductBarcode(index);
-			commodityCode = businessParty.getProductCommodityCode(index);
-			classificationCode = businessParty.getProductItemClassificationCode(index);
+			id = businessParty.getProductIDAsString(index);
+			description = businessParty.getProductDescriptionAsString(index);
+			packSize = businessParty.getProductPackSizeAsBigDecimal(index);
+			barcode = businessParty.getProductBarcodeAsString(index);
+			commodityCode = businessParty.getProductCommodityCodeAsString(index);
+			keywords = businessParty.getProductKeywords(index);
 		}
 
 		public String getId() { return id; }
@@ -205,7 +205,7 @@ return new Person(id, lastNameArg, firstNameArg, numDependentsArg);
 
 		public String getCommodityCode() { return commodityCode; }
 
-		public String getClassificationCode() { return classificationCode; }
+		public List<KeywordType> getKeywords() { return keywords; }
 
 		@Override
 		public String toString()

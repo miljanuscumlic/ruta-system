@@ -23,9 +23,8 @@ import rs.ruta.server.UserException;
 
 public class UserXmlMapper extends XmlMapper<User>
 {
-	final private static String docPrefix = "";
 	final private static String userGroupName = "users";
-	final private static String collectionPath = "/key";
+	final private static String collectionPath = "/system/key";
 	final private static SchemaType SECRET_KEY = AXSchemaType.EMAIL;
 	final private static SchemaType DOCUMENT_ID = AXSchemaType.ALIAS_USERNAME;
 	final private static SchemaType PARTY_ID = AXSchemaType.FIRSTNAME;
@@ -363,8 +362,6 @@ public class UserXmlMapper extends XmlMapper<User>
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
-	@Override
-	public String getDocumentPrefix() { return docPrefix; }
 
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }

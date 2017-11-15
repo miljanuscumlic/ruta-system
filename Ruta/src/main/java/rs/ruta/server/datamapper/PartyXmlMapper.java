@@ -23,10 +23,9 @@ import rs.ruta.server.DetailException;
 
 public class PartyXmlMapper extends XmlMapper<PartyType>
 {
-	final private static String docPrefix = ""; // "party";
 	final private static String collectionPath = "/party";
 	final private static String objectPackageName = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";
-	protected static final String queryNameSearchParty = "search-party.xq";
+	final private static String queryNameSearchParty = "search-party.xq";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, PartyType> loadedParties;
 
@@ -38,8 +37,6 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 
 	@Override
 	public String getCollectionPath() { return collectionPath; }
-	@Override
-	public String getDocumentPrefix() { return docPrefix; }
 	@Override
 	public String getObjectPackageName() { return objectPackageName; }
 

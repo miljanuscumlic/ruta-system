@@ -5,20 +5,20 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.RutaVersion;
 
 
 /**
- * <p>Java class for QueryPartyNameResponse complex type.
+ * <p>Java class for UpdateRutaClientResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="QueryPartyNameResponse">
+ * &lt;complexType name="UpdateRutaClientResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}PartyType" minOccurs="0"/>
+ *         &lt;element name="return" type="{http://ruta.rs/services}RutaVersion" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -28,23 +28,23 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "QueryPartyNameResponse", propOrder = {
+@XmlType(name = "UpdateRutaClientResponse", propOrder = {
     "_return"
 })
-public class QueryPartyNameResponse {
+public class UpdateRutaClientResponse {
 
     @XmlElement(name = "return")
-    protected PartyType _return;
+    protected RutaVersion _return;
 
     /**
      * Gets the value of the return property.
      * 
      * @return
      *     possible object is
-     *     {@link PartyType }
+     *     {@link RutaVersion }
      *     
      */
-    public PartyType getReturn() {
+    public RutaVersion getReturn() {
         return _return;
     }
 
@@ -53,10 +53,10 @@ public class QueryPartyNameResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link PartyType }
+     *     {@link RutaVersion }
      *     
      */
-    public void setReturn(PartyType value) {
+    public void setReturn(RutaVersion value) {
         this._return = value;
     }
 

@@ -17,7 +17,7 @@ public class CDRPartyTypeXMLFileMapper<T> extends XMLFileMapper<T>
 	}
 
 	@Override
-	public void insertAll()
+	public void insertAll() throws Exception
 	{
 		super.insertAll();
 	}

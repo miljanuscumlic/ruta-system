@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
 
 public class ClientTest
 {
@@ -14,7 +15,15 @@ public class ClientTest
 		Client client = new Client();
 		Locale myLocale = Locale.forLanguageTag("sr-RS");
 		Locale.setDefault(myLocale);
-		client.preInitialize();
+		try
+		{
+			client.preInitialize();
+		}
+		catch(JAXBException e)
+		{
+			JOptionPane.showMessageDialog(null, "Data from the local data store are corrupted!", "Critical error", JOptionPane.ERROR_MESSAGE);
+		}
+
 
 		EventQueue.invokeLater(() ->
 		{

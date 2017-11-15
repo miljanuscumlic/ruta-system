@@ -2,6 +2,7 @@ package rs.ruta.client;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -18,7 +19,7 @@ public class BusinessParty
 //	@XmlElement(name = "MyProducts")
 //	@XmlTransient
 	@XmlElement(name = "MyProduct")
-	private ArrayList<ItemType> myProducts; //database alternative - MMM: to be replaced with real database
+	private ArrayList<ItemType> myProducts; //database alternative - MMM: to be replaced with the real database
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
@@ -26,16 +27,16 @@ public class BusinessParty
 	private Party coreParty;
 	@XmlElement(name = "Following")
 //	@XmlTransient
-	private boolean following;
+	private boolean following; // MMM: ?
 	@XmlElement(name = "Partner")
 //	@XmlTransient
-	private boolean partner;
+	private boolean partner; //MMM: ?
 	@XmlElement(name = "CatalogueID")
 //	@XmlTransient
 	protected long catalogueID;
 	@XmlElement(name = "CatalogueDeletionID")
 	protected long catalogueDeletionID;
-
+	@XmlElement(name = "CatalogueIssueDate")
 	protected XMLGregorianCalendar catalogueIssueDate;
 
 
@@ -97,6 +98,11 @@ public class BusinessParty
 	{
 		this.catalogueIssueDate = InstanceFactory.getDate();
 		return catalogueIssueDate;
+	}
+
+	public void removeCatalogueIssueDate()
+	{
+		this.catalogueIssueDate = null;
 	}
 
 	/**Returns next ID for the newly created CatalogueDeletion Document.
@@ -188,7 +194,7 @@ public class BusinessParty
 	}
 
 
-	public String getProductName(int index)
+	public String getProductNameAsString(int index)
 	{
 		ItemType item = myProducts.get(index);
 		/*NameType name = item.getName();
@@ -205,7 +211,7 @@ public class BusinessParty
 
 	}
 
-	public String getProductDescription(int index)
+	public String getProductDescriptionAsString(int index)
 	{
 		ItemType item = myProducts.get(index);
 		/*List<DescriptionType> descriptions = item.getDescription();
@@ -224,7 +230,7 @@ public class BusinessParty
 		catch(Exception e) { return null; }
 	}
 
-	public String getProductID(int index)
+	public String getProductIDAsString(int index)
 	{
 		ItemType item = myProducts.get(index);
 /*		ItemIdentificationType identification = item.getSellersItemIdentification();
@@ -243,7 +249,7 @@ public class BusinessParty
 		catch(Exception e) { return null; }
 	}
 
-	public String getProductBarcode(int index)
+	public String getProductBarcodeAsString(int index)
 	{
 		ItemType item = myProducts.get(index);
 		/*ItemIdentificationType identification = item.getSellersItemIdentification();
@@ -263,7 +269,7 @@ public class BusinessParty
 
 	}
 
-	public BigDecimal getProductPackSizeNumeric(int index) //MMM: check if return value should be String instead
+	public BigDecimal getProductPackSizeAsBigDecimal(int index) //MMM: check if return value should be String instead
 	{
 		ItemType item = myProducts.get(index);
 		/*	PackSizeNumericType packSize = item.getPackSizeNumeric();
@@ -278,7 +284,7 @@ public class BusinessParty
 		catch(Exception e) { return null; }
 	}
 
-	public String getProductCommodityCode(int index)
+	public String getProductCommodityCodeAsString(int index)
 	{
 		ItemType item = myProducts.get(index);
 		/*List<CommodityClassificationType> commodities = item.getCommodityClassification();
@@ -301,27 +307,21 @@ public class BusinessParty
 		catch(Exception e) { return null; }
 	}
 
-	public String getProductItemClassificationCode(int index)
+	/**Retrieves the list of keywords set for the {@link ItemType}
+	 * @param index index of the {@code ItemType} in the list of products
+	 * @return list of keywords
+	 */
+	public String getProductKeywordsAsString(int index)
 	{
 		ItemType item = myProducts.get(index);
-		/*List<CommodityClassificationType> commodities = item.getCommodityClassification();
-		if(commodities.size() != 0)
-		{
-			CommodityClassificationType commodityClass = commodities.get(0);
-			if(commodityClass != null)
-			{
-				ItemClassificationCodeType classificationCode = commodityClass.getItemClassificationCode();
-				if(classificationCode != null)
-					return classificationCode.toString();
-			}
-		}
-		return null;*/
+		return item.getKeywordCount() == 0 ? null :
+			item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(" ,"));
+	}
 
-		try
-		{
-			return InstanceFactory.getPropertyOrNull(item.getCommodityClassification().get(0).getItemClassificationCode(), ItemClassificationCodeType::getValue);
-		}
-		catch(Exception e) { return null; }
+	public List<KeywordType> getProductKeywords(int index)
+	{
+		ItemType item = myProducts.get(index);
+		return item.getKeyword();
 	}
 
 	public void addNewEmptyProduct()
@@ -382,7 +382,7 @@ public class BusinessParty
 		this.partner = partner;
 	}
 
-	/**This methods do nothing, because this base class is not suppose to change the values of properties
+	/**This methods do nothing, because this base class is not supposed to change the values of properties
 	 * @param index
 	 * @param value
 	 */
@@ -398,9 +398,11 @@ public class BusinessParty
 
 	public void setProductCommodityCode(int index, String value) { }
 
-	public void setProductItemClassificationCode(int index, String value) { }
+	public void setProductKeywords(int index, List<KeywordType> value) { }
 
-	/**Returns String representing BussinesParty class.
+	public void setProductKeywords(int index, String value) {}
+
+	/**Returns String representing BussinesParty class. Used as the node name in the tree model.
 	 * @return the name of the core Party or null if core Party is not set
 	 */
 	@Override

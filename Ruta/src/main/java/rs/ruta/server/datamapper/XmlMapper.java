@@ -40,6 +40,7 @@ import org.xmldb.api.modules.XPathQueryService;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.DataManipulationException;
 import rs.ruta.server.DatabaseException;
@@ -80,7 +81,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}*/
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T find(String id) throws DetailException
 	{
@@ -128,6 +128,97 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
+	@Override
+	public RutaVersion findClientVersion() throws DetailException
+	{
+		return MapperRegistry.getMapper(RutaVersion.class).findClientVersion();
+	}
+
+	@Override
+	public T findByUserId(String userID) throws DetailException
+	{
+		String id = getIDByUserID(userID);
+		T searchResult = find(id);
+		return searchResult;
+
+
+/*		Collection coll = null;
+		String searchResult = null;
+		try
+		{
+			coll = getCollection();
+			if(coll == null)
+				throw new DatabaseException("Collection does not exist.");
+			final String uri = getAbsoluteRutaCollectionPath();
+			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
+			logger.info("Start of the query of the " + uri);
+			queryService.setProperty("indent", "yes");
+
+			String query = null; // search query
+			//loading the .xq query file from the database
+			//prepare query String adding criteria for the search from SearchCriterion object
+			query = openDocument(getQueryPath(), getSearchQueryName());
+			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(getQueryPath()).
+					append("/").append(id).append(getDocumentSufix());
+			queryService.declareVariable("path", queryPath.toString());
+
+//			final File queryFile = null;
+			if(queryFile != null || query != null)
+			{
+				final StringBuilder queryBuilder = new StringBuilder();
+				fileContents(queryFile, queryBuilder);
+				CompiledExpression compiled = queryService.compile(queryBuilder.toString());
+				CompiledExpression compiled = queryService.compile(query);
+				final ResourceSet results = queryService.execute(compiled);
+				final ResourceIterator iterator = results.getIterator();
+				long resultsCount = results.getSize();
+				if (resultsCount > 0) //not possible
+					throw new DatabaseException("There has been an error in the process of the query exceution. Too many results.");
+				while(iterator.hasMoreResources())
+				{
+					Resource resource = null;
+					try
+					{
+						resource = iterator.nextResource();
+						//System.out.println((String) resource.getContent());
+						searchResult = (String) resource.getContent();
+						searchResult = load((XMLResource) resource);
+						if(searchResult == null) //resource is not whole document rather part of it
+							searchResult = (T) unmarshalFromXML((String) resource.getContent());
+					}
+					finally
+					{
+						if(resource != null)
+							((EXistResource)resource).freeResources();
+					}
+				}
+				logger.info("Finished query of the " + uri);
+				return find(searchResult);
+			}
+			else
+				throw new DatabaseException("Could not process the query. Query file does not exist.");
+		}
+		catch(XMLDBException e)
+		{
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+		}
+		finally
+		{
+			if(coll != null)
+			{
+				try
+				{
+					coll.close();
+				}
+				catch(XMLDBException e)
+				{
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}*/
+	}
+
 	/**Loads resource in proper object. At the beggining checks if object is already in the memory.
 	 * At the end puts the object in the memory.
 	 * @param resource resource which contents are to be loaded in the object
@@ -135,8 +226,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @throws XMLDBException
 	 * @throws DataManipulationException if object could not be unmarshalled from the xml
 	 */
-	@SuppressWarnings("unchecked")
-	private T load(XMLResource resource) throws XMLDBException, DataManipulationException
+	protected T load(XMLResource resource) throws XMLDBException, DataManipulationException
 	{
 		String id = resource.getId();
 		if(id == null)// resource is a result of a query and not whole document
@@ -218,7 +308,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		return objects.size() != 0 ? objects : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<T> findMany(SearchCriterion criterion) throws DetailException
 	{
@@ -269,12 +358,12 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 				return searchResult;
 			}
 			else
-				throw new DatabaseException("Could not to process the query. Query file does not exist.");
+				throw new DatabaseException("Could not process the query. Query file does not exist.");
 		}
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not to process the query. There is an error in the process of the exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
 		}
 		finally
 		{
@@ -339,12 +428,12 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 					return searchResult;
 				}
 				else
-					throw new DatabaseException("Could not to process the query. Query file does not exist.");
+					throw new DatabaseException("Could not process the query. Query file does not exist.");
 			}
 			catch(XMLDBException e)
 			{
 				logger.error(e.getMessage(), e);
-				throw new DatabaseException("Could not to process the query. There is an error in the process of the exceution.", e);
+				throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
 			}
 			finally
 			{
@@ -1160,8 +1249,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		return subPath == null ? getDeletedCollectionPath() : getDeletedCollectionPath() + subPath;
 	}
 
-	abstract public String getDocumentPrefix();
-
 	protected abstract JAXBElement<T> getJAXBElement(T object);
 
 	/**Gets instance of {@link JAXBContext} for particular subclass of {@code XMLMapper}. <code>JAXBContext</code>
@@ -1178,24 +1265,22 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		//return JAXBContext.newInstance(getObjectClass()); this is not working when querying the database
 	}
 
-	/*ID is retrieved
-	 * in the way it should be implemented (e.g. id could be retrieved from the user where it is stored as metadata
-	 * and the user could be discovered by querying the user part of the database with an input that could be
-	 * UUID of the Party stored in the object).
+	/**Gets the ID of the object  determined by the user's username.
+	 * @param username user'username
+	 * @return object's ID
+	 * @throws DetailException if user is not registered, ID could not be retrieved or database connectivity issues
 	 */
-	@Override
-	public String getID(T object) throws DetailException
-	{
-		//MMM: should be implemented if it is nessecery
-		throw new DetailException("This feature is not implemented yet!!!");
-	}
-
 	public String getID(String username) throws DetailException
 	{
 		return ((UserXmlMapper) MapperRegistry.getMapper(User.class)).getID(username);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+	public String getIDByUserID(String userID) throws DetailException
+	{
+		return MapperRegistry.getMapper(PartyID.class).getIDByUserID(userID);
+	}
+
 	@Override
 	public String getUserID(String username) throws DetailException
 	{
@@ -1267,12 +1352,12 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 				return searchResult;
 			}
 			else
-				throw new DatabaseException("Could not to process the query. Query file could not be opened.");
+				throw new DatabaseException("Could not process the query. Query file could not be opened.");
 		}
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not to process the query. There is an error in the process of the exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
 		}
 		finally
 		{
@@ -1290,6 +1375,9 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
+	/**Gets the name of the query document with the {@code .xq} extension for particular {@code XMLMapper} subclass.
+	 * @return filename of the query document or {@code null} if it is not defined for a subclass
+	 */
 	public String getSearchQueryName() { return null; };
 
 	/**Appends the content of a text file to the String Builder.
