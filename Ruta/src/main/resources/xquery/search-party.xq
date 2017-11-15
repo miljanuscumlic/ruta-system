@@ -31,4 +31,4 @@ return
             exists($party-company-id) and matches($company-id, $party-company-id, 'i') or
             exists($party-class-code) and matches($class-code, $party-class-code, 'i') or
             exists($party-city) and matches($city, $party-city, 'i') or
-            exists($party-country) and matches($country, $party-country, 'i')] 
+            exists($party-country) and matches($country, $party-country, 'i')]
