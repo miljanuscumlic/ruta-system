@@ -85,7 +85,7 @@
         <ns3:Name>wew</ns3:Name>
     </MyProduct>
     <MyProduct>
-        <ns3:Description> </ns3:Description>
+        <ns3:Description>   v</ns3:Description>
         <ns3:Name>SDGS</ns3:Name>
     </MyProduct>
     <MyProduct>
@@ -195,9 +195,9 @@
     </CoreParty>
     <Following>true</Following>
     <Partner>false</Partner>
-    <CatalogueID>1</CatalogueID>
+    <CatalogueID>2</CatalogueID>
     <CatalogueDeletionID>0</CatalogueDeletionID>
-    <CatalogueIssueDate>2017-11-15T12:00:52.828+01:00</CatalogueIssueDate>
+    <CatalogueIssueDate>2017-11-15T15:15:57.468+01:00</CatalogueIssueDate>
     <Password>ruta</Password>
     <Username>ruta</Username>
     <SecretKey>7b4642f1</SecretKey>

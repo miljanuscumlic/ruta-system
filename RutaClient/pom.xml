@@ -216,11 +216,15 @@
 									<fileSets>
 										<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
-											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Amanas\${project.artifactId}.jar</destinationFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Amanas\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
 										<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
-											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Dunav\${project.artifactId}.jar</destinationFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Dunav\${project.artifactId}-${project.version}.jar</destinationFile>
+										</fileSet>
+										<fileSet>
+											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Release\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
 									</fileSets>
 								</configuration>
