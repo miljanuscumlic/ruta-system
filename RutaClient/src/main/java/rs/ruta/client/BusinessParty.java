@@ -33,12 +33,11 @@ public class BusinessParty
 	private boolean partner; //MMM: ?
 	@XmlElement(name = "CatalogueID")
 //	@XmlTransient
-	protected long catalogueID;
+	protected long catalogueID; // MMM: catalogue related fields should be part of the MyParty class. They are not important to other business parties. Check this
 	@XmlElement(name = "CatalogueDeletionID")
 	protected long catalogueDeletionID;
 	@XmlElement(name = "CatalogueIssueDate")
 	protected XMLGregorianCalendar catalogueIssueDate;
-
 
 	public BusinessParty()
 	{
@@ -83,7 +82,7 @@ public class BusinessParty
 		this.catalogueDeletionID = catalogueDeletionID;
 	}
 
-	/**Gets issue date of the latest catalogue
+	/**Gets issue date of the latest catalogue.
 	 * @return catalogue issue date
 	 */
 	public XMLGregorianCalendar getCatalogueIssueDate()
@@ -91,7 +90,7 @@ public class BusinessParty
 		return catalogueIssueDate;
 	}
 
-	/**Sets catalogue issue date to current date
+	/**Sets catalogue issue date to current date.
 	 * @return set catalogue issue date
 	 */
 	public XMLGregorianCalendar setCatalogueIssueDate()
@@ -100,9 +99,19 @@ public class BusinessParty
 		return catalogueIssueDate;
 	}
 
+	/**Sets Catalogue issue date to {@code null}. Usually this is done after the Catalogue is deleted from the CDR.
+	 */
 	public void removeCatalogueIssueDate()
 	{
 		this.catalogueIssueDate = null;
+	}
+
+	/**Tells if the Catalogue is in the CDR.
+	 * @return true is CDR has My Party's Catalogue, false otherwise
+	 */
+	public boolean isCatalogueInCDR()
+	{
+		return catalogueIssueDate != null ? true : false;
 	}
 
 	/**Returns next ID for the newly created CatalogueDeletion Document.

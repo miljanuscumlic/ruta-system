@@ -196,8 +196,7 @@
     <Following>true</Following>
     <Partner>false</Partner>
     <CatalogueID>3</CatalogueID>
-    <CatalogueDeletionID>3</CatalogueDeletionID>
-    <CatalogueIssueDate>2017-11-18T15:27:45.656+01:00</CatalogueIssueDate>
+    <CatalogueDeletionID>5</CatalogueDeletionID>
     <Password>ruta</Password>
     <Username>ruta</Username>
     <SecretKey>7b4642f1</SecretKey>
@@ -3432,8 +3431,8 @@
             </ns2:CatalogueLine>
         </SearchResult>
     </CatalogueSearch>
-    <DirtyCatalogue>false</DirtyCatalogue>
+    <DirtyCatalogue>true</DirtyCatalogue>
     <DirtyMyParty>false</DirtyMyParty>
-    <InsertMyCatalogue>false</InsertMyCatalogue>
+    <InsertMyCatalogue>true</InsertMyCatalogue>
     <SearchNumber>35</SearchNumber>
 </ns5:MyParty>

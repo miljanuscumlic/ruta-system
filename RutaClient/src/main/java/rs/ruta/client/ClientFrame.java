@@ -429,14 +429,20 @@ public class ClientFrame extends JFrame
 			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
-				disableCatalogueMenuItems();
-				new Thread( () ->
+				if(myParty.isCatalogueInCDR())
 				{
-					client.cdrDeleteMyCatalogue();
-				}).start();
+					disableCatalogueMenuItems();
+					new Thread( () ->
+					{
+						client.cdrDeleteMyCatalogue();
+					}).start();
+				}
+				else
+					appendToConsole("Deletion request of My Catalogue has not been sent to the CDR service."
+							+ " My Catalogue is not present in the CDR service!", Color.RED);
 			}
 			else
-				appendToConsole("Request for the deletion of My Catalogue has not been sent to the CDR service."
+				appendToConsole("Deletion request of My Catalogue has not been sent to the CDR service."
 						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 
