@@ -57,18 +57,19 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 		case 1:
 			return party.getPartyNameCount() == 0 ? null : party.getPartyNameAtIndex(0).getNameValue();
 		case 2:
-			return party.getPartyLegalEntityAtIndex(0) == null ? null : party.getPartyLegalEntityAtIndex(0).getCompanyIDValue();
+			return party.getPartyLegalEntityCount() == 0
+					 ? null : party.getPartyLegalEntityAtIndex(0).getCompanyIDValue();
 		case 3:
-			return party.getPartyLegalEntityAtIndex(0) == null ? null :
+			return party.getPartyLegalEntityCount() == 0 ? null :
 				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getStreetName(), StreetNameType::getValue);
 		case 4:
-			return party.getPartyLegalEntityAtIndex(0) == null ? null :
+			return party.getPartyLegalEntityCount() == 0 ? null :
 				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getBuildingNumber(), BuildingNumberType::getValue);
 		case 5:
-			return party.getPartyLegalEntityAtIndex(0) == null ? null :
+			return party.getPartyLegalEntityCount() == 0 ? null :
 				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getCityName(), CityNameType::getValue);
 		case 6:
-			return party.getPartyLegalEntityAtIndex(0) == null ? null :
+			return party.getPartyLegalEntityCount() == 0 ? null :
 				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getCountry().getName(), NameType::getValue);
 		case 7:
 			return party.getIndustryClassificationCodeValue();

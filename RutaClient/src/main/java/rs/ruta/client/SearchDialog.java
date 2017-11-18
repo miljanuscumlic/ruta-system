@@ -19,14 +19,7 @@ public class SearchDialog extends JDialog
 {
 	private static final long serialVersionUID = -5806194025786533572L;
 
-	private String sName;
 	private JTextField sNameField;
-
-	private String partyName;
-	private String partyCompanyID;
-	private String partyClassCode;
-	private String partyCity;
-	private String partyCountry;
 
 	private JTextField pNameField;
 	private JTextField pIndustryClassCodeField;
@@ -36,12 +29,6 @@ public class SearchDialog extends JDialog
 	private JRadioButton pAll;
 	private JRadioButton pAny;
 
-	private String itemName;
-	private String itemDescription;
-	private String itemBarcode;
-	private String itemCommCode;
-	private String keyword;
-
 	private JTextField iNameField;
 	private JTextField iDescriptionField;
 	private JTextField iBarcodeField;
@@ -50,6 +37,7 @@ public class SearchDialog extends JDialog
 	private JRadioButton iAll;
 	private JRadioButton iAny;
 
+	private Search<?> search;
 	private SearchCriterion criterion;
 	private String searchName;
 
@@ -115,6 +103,11 @@ public class SearchDialog extends JDialog
 			criterion.setItemCommCode(iCommCodeField.getText());
 			criterion.setItemKeyword(iKeywordField.getText());
 			criterion.setItemAll(iAll.isSelected());
+			criterion.nullEmptyFields();
+
+			search = new Search<>();
+			search.setCriterion(criterion);
+			search.setSearchName(searchName);
 
 			setVisible(false);
 		});
@@ -227,6 +220,11 @@ public class SearchDialog extends JDialog
 		con.anchor = GridBagConstraints.EAST;
 		con.fill = GridBagConstraints.BOTH;
 		panel.add(comp, con);
+	}
+
+	public Search<?> getSearch()
+	{
+		return search;
 	}
 
 	/**Checks if the Search button is pressed

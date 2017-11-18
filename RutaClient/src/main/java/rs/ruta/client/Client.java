@@ -351,8 +351,7 @@ public class Client implements RutaNode
 					myParty.removeCatalogueIssueDate();
 					myParty.unfollowMyParty();
 					frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
-					EventQueue.invokeLater(() ->
-					frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN));
+					frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN);
 				}
 				catch (Exception e)
 				{
@@ -1079,7 +1078,7 @@ public class Client implements RutaNode
 						List<CatalogueType> results = res.getReturn();
 						if(results.size() != 0)
 						{
-							((Search<CatalogueType>)search).setResults(results);
+							((Search<CatalogueType>) search).setResults(results);
 							frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
 							frame.repaintTabbedPane();
 						}
@@ -1143,6 +1142,111 @@ public class Client implements RutaNode
 		catch(WebServiceException e)
 		{
 			frame.appendToConsole("Search request has not been processed! Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void cdrSearch(Search<?> search, boolean exist)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			SearchCriterion criterion = search.getCriterion();
+			if(criterion.isCatalogueSearchedFor()) //querying parties and catalogues
+			{
+				port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
+				{
+					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
+					try
+					{
+						SearchCatalogueResponse res = futureResult.get();
+						List<CatalogueType> results = res.getReturn();
+						if(exist)
+							myParty.getCatalogueSearches().remove(search);
+						if(results.size() != 0)
+						{
+							final Search<CatalogueType> newSearch = (Search<CatalogueType>) search;
+							newSearch.setResults(results);
+							myParty.getCatalogueSearches().add(0, newSearch);
+							frame.appendToConsole("Search results for search request \"" + newSearch.getSearchName() +
+									"\" have been successfully retrieved from the CDR service.", Color.GREEN);
+							frame.repaintTabbedPane();
+						}
+						else
+						{
+							if(!exist)
+								Search.decreaseSearchNumber();
+							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
+						}
+					}
+					catch (Exception e)
+					{
+						msg.append("Server responds: ");
+						Throwable cause = e.getCause();
+						if(cause instanceof RutaException)
+							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+						else
+							msg.append(trimSOAPFaultMessage(cause.getMessage()));
+						frame.appendToConsole(msg.toString(), Color.RED);
+					}
+					finally
+					{
+						frame.enableSearchMenuItems();
+					}
+				});
+				frame.appendToConsole("Search request \"" + search.getSearchName() +
+						"\" has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			}
+			else // querying only parties
+			{
+				port.searchPartyAsync(myParty.getUsername(), criterion, futureResult ->
+				{
+					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
+					try
+					{
+						SearchPartyResponse res = futureResult.get();
+						List<PartyType> results = res.getReturn();
+						if(exist)
+							myParty.getPartySearches().remove(search);
+						if(results.size() != 0)
+						{
+							final Search<PartyType> newSearch = (Search<PartyType>) search;
+							newSearch.setResults(results);
+							myParty.getPartySearches().add(0, newSearch);
+							frame.appendToConsole("Search results for search request \"" + newSearch.getSearchName() +
+									"\" have been successfully retrieved from the CDR service.", Color.GREEN);
+							frame.repaintTabbedPane();
+						}
+						else
+						{
+							if(!exist)
+								Search.decreaseSearchNumber();
+							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
+						}
+					}
+					catch (Exception e)
+					{
+						msg.append("Server responds: ");
+						Throwable cause = e.getCause();
+						if(cause instanceof RutaException)
+							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+						else
+							msg.append(trimSOAPFaultMessage(cause.getMessage()));
+						frame.appendToConsole(msg.toString(), Color.RED);
+					}
+					finally
+					{
+						frame.enableSearchMenuItems();
+					}
+				});
+				frame.appendToConsole("Search request \"" + search.getSearchName() +
+						"\" has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			}
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Search request \"" + search.getSearchName() +
+					"\"  has not been processed! Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
 

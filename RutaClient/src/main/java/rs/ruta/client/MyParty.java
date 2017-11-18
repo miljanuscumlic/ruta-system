@@ -51,7 +51,7 @@ public class MyParty extends BusinessParty
 	{
 		super();
 		setFollowing(true);
-		dirtyCatalogue = false; //when first created My Catalogue is empty and therefore as nonexisting it is syncronized with the CDR service
+		dirtyCatalogue = true;
 		dirtyMyParty = insertMyCatalogue = true;
 		username = password = secretKey = null;
 		searchNumber = 0;

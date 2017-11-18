@@ -703,30 +703,16 @@ public class ClientFrame extends JFrame
 
 //			((JComponent) searchTree).setComponentPopupMenu(searchTreePopupMenu);
 
-			deleteSearchItem.addActionListener( event ->
+			againSearchItem.addActionListener(event ->
 			{
-				//MMM: should be in a new method of the new class for TabbedPane
 				TreePath path = searchTree.getSelectionPath();
 				if(path == null) return;
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 				Object selectedSearch = selectedNode.getUserObject();
-
-				Class<?> nodeClass = null; // Class object of the node in the tree
-				if(!(selectedSearch instanceof String))
-					nodeClass = ((Search<?>) selectedSearch).getResultClass();
-				else
+				if(selectedSearch instanceof String)
 					return;
-				MyParty myParty = client.getMyParty();
-				if(nodeClass == PartyType.class)
-				{
-					if (myParty.getPartySearches().remove((Search<CatalogueType>) selectedSearch))
-						loadTab(tabbedPane.getSelectedIndex());
-				}
-				else if(nodeClass == CatalogueType.class)
-				{
-					if (myParty.getCatalogueSearches().remove((Search<CatalogueType>) selectedSearch))
-						loadTab(tabbedPane.getSelectedIndex());
-				}
+				else
+					client.cdrSearch((Search<?>) selectedSearch, true);
 			});
 
 			renameSearchItem.addActionListener(event ->
@@ -755,16 +741,30 @@ public class ClientFrame extends JFrame
 				}
 			});
 
-			againSearchItem.addActionListener(event ->
+			deleteSearchItem.addActionListener( event ->
 			{
+				//MMM: should be in a new method of the new class for TabbedPane
 				TreePath path = searchTree.getSelectionPath();
 				if(path == null) return;
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 				Object selectedSearch = selectedNode.getUserObject();
-				if(selectedSearch instanceof String)
-					return;
+
+				Class<?> nodeClass = null; // Class object of the node in the tree
+				if(!(selectedSearch instanceof String))
+					nodeClass = ((Search<?>) selectedSearch).getResultClass();
 				else
-					client.cdrSearch((Search<?>) selectedSearch);
+					return;
+				MyParty myParty = client.getMyParty();
+				if(nodeClass == PartyType.class)
+				{
+					if (myParty.getPartySearches().remove((Search<CatalogueType>) selectedSearch))
+						loadTab(tabbedPane.getSelectedIndex());
+				}
+				else if(nodeClass == CatalogueType.class)
+				{
+					if (myParty.getCatalogueSearches().remove((Search<CatalogueType>) selectedSearch))
+						loadTab(tabbedPane.getSelectedIndex());
+				}
 			});
 
 			arrangeTab0(leftPane, rightPane);
@@ -973,7 +973,8 @@ public class ClientFrame extends JFrame
 		if(searchDialog.isSearchPressed())
 		{
 			searchDialog.setSearchPressed(false);
-			client.cdrSearch(searchDialog.getSearchName(), searchDialog.getCriterion().nullEmptyFields());
+		//	client.cdrSearch(searchDialog.getSearchName(), searchDialog.getCriterion());
+			client.cdrSearch(searchDialog.getSearch(), false);
 		}
 	}
 
