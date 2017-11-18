@@ -221,12 +221,14 @@ public class Client implements RutaNode
 					frame.enablePartyMenuItems();
 				}
 			});
-			frame.appendToConsole("Request for the registration of My Party has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Request for the registration of My Party has been sent to the CDR service. Waiting for response...",
+					Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
 			frame.appendToConsole("My Party has not been registered with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enablePartyMenuItems();
 		}
 	}
 
@@ -285,6 +287,7 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("My Party has not been synchronised with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enablePartyMenuItems();
 		}
 	}
 
@@ -326,6 +329,7 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("My Party has not been synchronised with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enablePartyMenuItems();
 		}
 	}
 
@@ -378,6 +382,7 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("My Party has not been deregistered from the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enablePartyMenuItems();
 		}
 	}
 
@@ -424,13 +429,13 @@ public class Client implements RutaNode
 					StringBuilder msg = new StringBuilder("My Catalogue has not been deposited to the CDR service! ");
 					try
 					{
-						InsertCatalogueResponse response =  future.get();
+						InsertCatalogueResponse response = future.get();
 						frame.appendToConsole("My Catalogue has been successfully deposited to the CDR service.", Color.GREEN);
 						myParty.setDirtyCatalogue(false);
 						myParty.setInsertMyCatalogue(false);
 						myParty.followMyself();
 						frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
-						frame.appendToConsole("My party has been added to the Following parties.", Color.BLACK);
+						frame.appendToConsole("My Party has been added to the Following parties.", Color.BLACK);
 					}
 					catch (Exception e)
 					{
@@ -448,6 +453,7 @@ public class Client implements RutaNode
 					}
 				});
 				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for response...", Color.BLACK);
+				frame.enableCatalogueMenuItems();
 
 /*				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
@@ -503,7 +509,7 @@ public class Client implements RutaNode
 					StringBuilder msg = new StringBuilder("My Catalogue has not been updated by the CDR service! ");
 					try
 					{
-						UpdateCatalogueResponse response =  future.get();
+						UpdateCatalogueResponse response = future.get();
 						myParty.setDirtyCatalogue(false);
 						frame.appendToConsole("My Catalogue has been successfully updated by the CDR service.", Color.GREEN);
 					}
@@ -542,6 +548,7 @@ public class Client implements RutaNode
 			{
 				frame.appendToConsole("My Catalogue has not been sent to the CDR service because it is malformed. "
 						+ "All catalogue items should have a name and catalogue has to have at least one item.", Color.RED);
+				frame.enableCatalogueMenuItems();
 			}
 		}
 		catch (JAXBException e)
@@ -552,6 +559,7 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("My Catalogue has not been updated by the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enableCatalogueMenuItems();
 		}
 	}
 
@@ -621,6 +629,7 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("My Party has not been synchronised with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enableCatalogueMenuItems();
 		}
 		/*catch (WebServiceException e)
 			{
@@ -671,6 +680,7 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("Catalogue has not been deleted from the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enableCatalogueMenuItems();
 		}
 	}
 
@@ -1148,6 +1158,7 @@ public class Client implements RutaNode
 		catch(WebServiceException e)
 		{
 			frame.appendToConsole("Search request has not been processed! Server is not accessible. Please try again later.", Color.RED);
+			frame.enableSearchMenuItems();
 		}
 	}
 
@@ -1252,11 +1263,17 @@ public class Client implements RutaNode
 		catch(WebServiceException e)
 		{
 			frame.appendToConsole("Search request \"" + search.getSearchName() +
-					"\"  has not been processed! Server is not accessible. Please try again later.", Color.RED);
+					"\" has not been processed! Server is not accessible. Please try again later.", Color.RED);
+			frame.enableSearchMenuItems();
+			if(!exist)
+				Search.decreaseSearchNumber();
 		}
 	}
 
-	public Future<?> cdrUpdateClient()
+	/**Sends request to the CDR service to see if there is an available update of the Ruta Client Application.
+	 * @return instance of the {@link Future} interface returned by the webmethod invoked for this service
+	 */
+	public Future<?> cdrUpdateRutaClient()
 	{
 		Future<?> future = null;
 		try
@@ -1271,6 +1288,10 @@ public class Client implements RutaNode
 		return future;
 	}
 
+	/**Sends update notification to the CDR service. This notification tells other {@code Ruta Client}s if there is new
+	 * version of the Ruta Client Application.
+	 * @param version version of the new Ruta Client Application
+	 */
 	public void cdrUpdateNotification(RutaVersion version)
 	{
 		try
@@ -1302,7 +1323,6 @@ public class Client implements RutaNode
 			frame.appendToConsole("CDR service could not be notified! Server is not accessible. Please try again later.", Color.RED);
 		}
 	}
-
 
 	public void findAllParties()
 	{

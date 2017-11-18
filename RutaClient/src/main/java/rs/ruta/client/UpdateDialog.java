@@ -63,7 +63,7 @@ public class UpdateDialog extends JDialog
 				{
 					EventQueue.invokeLater(() -> label.setText("Please wait. Checking for updates..."));
 
-					future = client.cdrUpdateClient();
+					future = client.cdrUpdateRutaClient();
 					try
 					{
 						UpdateRutaClientResponse res = (UpdateRutaClientResponse) future.get();
