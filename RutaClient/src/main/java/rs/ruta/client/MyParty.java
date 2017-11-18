@@ -467,9 +467,17 @@ public class MyParty extends BusinessParty
 
 	/**Removes My Party from the list of following parties.
 	 */
-	public void unfollowMyParty()
+	public void unfollowMyself()
 	{
 		//removeFollowingParty(followingParties.get(0));
 		getFollowingParties().remove(0);
+	}
+
+	/**Updates My Party in the list of the following parties.
+	 */
+	public void updateMyself()
+	{
+		unfollowMyself();
+		followMyself();
 	}
 }

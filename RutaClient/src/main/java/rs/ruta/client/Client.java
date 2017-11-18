@@ -236,7 +236,11 @@ public class Client implements RutaNode
 	public void cdrSynchroniseMyParty()
 	{
 		if(myParty.isRegisteredWithCDR()) // update
+		{
 			cdrUpdateMyParty();
+			myParty.updateMyself();
+			frame.repaintTabbedPane();
+		}
 		else // first time input
 			cdrInsertMyParty();
 	}
@@ -349,7 +353,7 @@ public class Client implements RutaNode
 					myParty.setCatalogueID(0);
 					myParty.setCatalogueDeletionID(0);
 					myParty.removeCatalogueIssueDate();
-					myParty.unfollowMyParty();
+					myParty.unfollowMyself();
 					frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
 					frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN);
 				}
@@ -924,6 +928,7 @@ public class Client implements RutaNode
 		}
 	}
 
+	@Deprecated
 	public void cdrSearch(String searchName, SearchCriterion criterion)
 	{
 		try
@@ -1059,6 +1064,7 @@ public class Client implements RutaNode
 		}
 	}
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public void cdrSearch(Search<?> search)
 	{
