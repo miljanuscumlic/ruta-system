@@ -11,7 +11,8 @@ public class AboutDialog extends JDialog
 	public AboutDialog(JFrame owner)
 	{
 		super(owner, "About Ruta Client", true);
-		JLabel label = new JLabel("<html>Ruta Client ver. 0.0.1 <br /> Ruta is an application for global Electronic Data Interchange.</html>",
+		JLabel label = new JLabel("<html>Ruta Client ver. " + Client.getVersion().getVersion() +
+				"<br /> Ruta is an application for global Electronic Data Interchange.</html>",
 				SwingConstants.CENTER);
 		add(label, BorderLayout.CENTER);
 		JButton ok = new JButton("OK");

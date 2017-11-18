@@ -772,6 +772,149 @@
         <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <FollowingPartner>
+        <MyProduct>
+            <ns3:Description>kako biti veseo</ns3:Description>
+            <ns3:PackSizeNumeric>3</ns3:PackSizeNumeric>
+            <ns3:Name>Veselje</ns3:Name>
+            <ns3:Keyword>veselje</ns3:Keyword>
+            <ns3:Keyword> uspeh</ns3:Keyword>
+            <ns3:Keyword> sve</ns3:Keyword>
+            <ns3:Keyword> баш све</ns3:Keyword>
+            <ns2:SellersItemIdentification>
+                <ns3:ID>458</ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode>78</ns3:CommodityCode>
+                <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>kako biti radostan</ns3:Description>
+            <ns3:PackSizeNumeric>4</ns3:PackSizeNumeric>
+            <ns3:Name>Radost</ns3:Name>
+            <ns3:Keyword></ns3:Keyword>
+            <ns2:SellersItemIdentification>
+                <ns3:ID>98</ns3:ID>
+                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode>78</ns3:CommodityCode>
+                <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>kako biti ushićen :)</ns3:Description>
+            <ns3:PackSizeNumeric>5</ns3:PackSizeNumeric>
+            <ns3:Name>Ushićenje</ns3:Name>
+            <ns3:Keyword></ns3:Keyword>
+            <ns2:SellersItemIdentification>
+                <ns3:ID>02324</ns3:ID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode>78</ns3:CommodityCode>
+                <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>marljiv sam    </ns3:Description>
+            <ns3:PackSizeNumeric>10</ns3:PackSizeNumeric>
+            <ns3:Name>Marljivost</ns3:Name>
+            <ns3:Keyword></ns3:Keyword>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode>14</ns3:CommodityCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>kako biti radostan 2</ns3:Description>
+            <ns3:PackSizeNumeric/>
+            <ns3:Name>Radost 2</ns3:Name>
+            <ns3:Keyword>6</ns3:Keyword>
+            <ns3:Keyword> iuo</ns3:Keyword>
+            <ns3:Keyword> iuiuwe</ns3:Keyword>
+            <ns2:SellersItemIdentification>
+                <ns3:ID></ns3:ID>
+                <ns3:BarcodeSymbologyID>4885-22</ns3:BarcodeSymbologyID>
+            </ns2:SellersItemIdentification>
+            <ns2:CommodityClassification>
+                <ns3:CommodityCode></ns3:CommodityCode>
+            </ns2:CommodityClassification>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>   </ns3:Description>
+            <ns3:Name>uyiu</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>  </ns3:Description>
+            <ns3:Name>ertier </ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description> </ns3:Description>
+            <ns3:Name>dddddddddddddddddddddddddddd</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>     </ns3:Description>
+            <ns3:Name>wew</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>   v</ns3:Description>
+            <ns3:Name>SDGS</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description> </ns3:Description>
+            <ns3:Name>TSETG</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>ASDF</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>876RUdyh</ns3:Description>
+            <ns3:Name>XFGXFZG2</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>WQEQWE</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description></ns3:Description>
+            <ns3:Name>TYIUTYI</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>YRUR</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>sdfsd</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>fgdsfgds</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>asedfs</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Description>waerfwa</ns3:Description>
+            <ns3:Name>sada</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>asd</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>asd </ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>dsfsdfsdfd</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>asdasdas </ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>sadffa</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>tryrty</ns3:Name>
+        </MyProduct>
+        <MyProduct>
+            <ns3:Name>rtyrt</ns3:Name>
+        </MyProduct>
         <CoreParty>
             <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
             <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
@@ -824,7 +967,7 @@
         </CoreParty>
         <Following>false</Following>
         <Partner>false</Partner>
-        <CatalogueID>0</CatalogueID>
+        <CatalogueID>3</CatalogueID>
         <CatalogueDeletionID>0</CatalogueDeletionID>
     </FollowingPartner>
     <FollowingPartner>

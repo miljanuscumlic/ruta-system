@@ -819,9 +819,32 @@ public class ClientFrame extends JFrame
 		tabbedPane.setComponentAt(tabIndex, component);
 	}
 
+	@SuppressWarnings("serial")
 	private JTable createCatalogueTable(AbstractTableModel tableModel)
 	{
-		JTable table = new JTable(tableModel);
+		JTable table = new JTable(tableModel)
+		{
+			//implementing column header's tooltip
+			@Override
+			protected JTableHeader createDefaultTableHeader()
+			{
+				return new JTableHeader(columnModel)
+				{
+					@Override
+					public String getToolTipText(MouseEvent e)
+					{
+						java.awt.Point p = e.getPoint();
+						int index = columnModel.getColumnIndexAtX(p.x);
+						int realIndex = columnModel.getColumn(index).getModelIndex();
+						if(realIndex == 7)
+							return "comma separeted values";
+						else
+							return null;
+					}
+				};
+			}
+		};
+
 		table.setFillsViewportHeight(true); // filling the viewport with white background color
 
 		TableColumnModel colModel = table.getColumnModel();
