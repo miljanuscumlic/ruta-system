@@ -107,7 +107,7 @@ public class Client implements RutaNode
 			myParty.setCoreParty(frame.showPartyDialog(myParty.getCoreParty(), "My Party")); //displaying My Party Data dialog
 			//			insertMyParty();
 		}
-		frame.setTitle("Ruta Client - " + myParty.getCoreParty().getSimpleName());
+		frame.updateTitle(myParty.getCoreParty().getSimpleName());
 		/*		else
 		{
 			// trying to load the party data from the XML file

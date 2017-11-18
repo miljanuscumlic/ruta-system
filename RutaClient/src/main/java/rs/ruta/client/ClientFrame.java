@@ -202,7 +202,7 @@ public class ClientFrame extends JFrame
 		importDataItem.addActionListener(event ->
 		{
 			chooser.setCurrentDirectory(new File("."));
-			chooser.setDialogTitle("Local data import");
+			chooser.setDialogTitle("Local Data Import");
 			int result = chooser.showOpenDialog(this);
 			if(result == JFileChooser.APPROVE_OPTION)
 			{
@@ -219,7 +219,7 @@ public class ClientFrame extends JFrame
 						myParty.setItemDataMapper("client-products.dat");
 						myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", true));
 						Search.setSearchNumber(myParty.getSearchNumber());
-
+						updateTitle(myParty.getCoreParty().getSimpleName());
 						client.setMyParty(myParty);
 						//client.insertMyParty();
 						repaintTabbedPane(); // frame update
@@ -242,7 +242,7 @@ public class ClientFrame extends JFrame
 		exportDataItem.addActionListener(event ->
 		{
 			chooser.setCurrentDirectory(new File("."));
-			chooser.setDialogTitle("Local data export");
+			chooser.setDialogTitle("Local Data Export");
 			int result = chooser.showSaveDialog(this);
 			if(result == JFileChooser.APPROVE_OPTION)
 			{
@@ -920,7 +920,7 @@ public class ClientFrame extends JFrame
 		if(partyDialog.isChanged())
 		{
 			party = partyDialog.getParty();
-			setTitle("Ruta Client - " + party.getSimpleName());
+			updateTitle(party.getSimpleName());
 			MyParty myParty = client.getMyParty();
 			myParty.setCoreParty(party);
 			myParty.setDirtyMyParty(true);
@@ -1113,6 +1113,14 @@ public class ClientFrame extends JFrame
 		((DefaultTreeModel) searchTree.getModel()).reload();*/
 	}
 
+	/**Update the main frame's title.
+	 * @param partyName party naem that should be shown in the title bar
+	 */
+	public void updateTitle(String partyName)
+	{
+		this.setTitle("Ruta Client - " + partyName);
+	}
+
 
 	/**Shuts down the eXist database, its application program and jetty server as its container.
 	 * @throws Exception thrown if database could not be stopped
@@ -1134,8 +1142,5 @@ public class ClientFrame extends JFrame
 	}*/
 
 	//****************************************************************
-
-
-
 
 }
