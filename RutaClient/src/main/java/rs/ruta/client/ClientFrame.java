@@ -483,8 +483,8 @@ public class ClientFrame extends JFrame
 		JMenuItem updateItem = new JMenuItem("Check for Updates");
 		helpMenu.add(updateItem);
 		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
-//		Temporarily commented  - not including in the realese version of the Client
-//		helpMenu.add(notifyItem);
+//		MMM: Temporarily commented  - not including in the realese version of the Client
+		helpMenu.add(notifyItem);
 
 		aboutItem.addActionListener(event ->
 		{

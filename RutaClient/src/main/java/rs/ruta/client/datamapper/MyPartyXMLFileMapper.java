@@ -96,8 +96,7 @@ public class MyPartyXMLFileMapper<T> extends XMLFileMapper<T>
 		return (T) client.getMyParty();
 	}
 
-	//MMM: not finished method yet and it is not necessary beause the JAXB will ignore all elements and attributes
-	//that are not defined in the Class
+	//MMM: not finished method yet
 	private void checkVersion() throws XMLStreamException
 	{
 		// Create an XMLStreamReader on XML input

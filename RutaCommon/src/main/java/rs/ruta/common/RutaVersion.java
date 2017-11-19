@@ -13,13 +13,13 @@ import javax.xml.bind.annotation.XmlType;
 public class RutaVersion
 {
 	@XmlTransient
-	private static String[] kinds = {"Service", "Client"};
+	private static String[] kinds = {"Client", "Service"};
 	@XmlElement(name = "Side")
 	private String side;
 	@XmlElement(name = "Version")
 	private String version;
-//	@XmlElement(name = "JAXBVersion")
-//	private String jaxbVersion;
+	@XmlElement(name = "JAXBVersion")
+	private String jaxbVersion;
 	@XmlElement(name = "Weblink")
 	private String weblink;
 
@@ -29,7 +29,7 @@ public class RutaVersion
 	{
 		this.version = version;
 		this.side = side;
-//		this.jaxbVersion = jaxbVersion;
+		this.jaxbVersion = jaxbVersion;
 		this.weblink = weblink;
 	}
 
@@ -53,15 +53,15 @@ public class RutaVersion
 		this.version = version;
 	}
 
-//	public String getJaxbVersion()
-//	{
-//		return jaxbVersion;
-//	}
-//
-//	public void setJaxbVersion(String jaxbVersion)
-//	{
-//		this.jaxbVersion = jaxbVersion;
-//	}
+	public String getJaxbVersion()
+	{
+		return jaxbVersion;
+	}
+
+	public void setJaxbVersion(String jaxbVersion)
+	{
+		this.jaxbVersion = jaxbVersion;
+	}
 
 	public String getWeblink()
 	{
@@ -73,7 +73,9 @@ public class RutaVersion
 		this.weblink = weblink;
 	}
 
-
-
+	public static String[] getKinds()
+	{
+		return kinds;
+	}
 
 }

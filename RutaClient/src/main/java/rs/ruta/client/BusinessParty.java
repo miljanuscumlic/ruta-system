@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.*;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
@@ -16,10 +15,9 @@ import rs.ruta.client.datamapper.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BusinessParty
 {
-//	@XmlElement(name = "MyProducts")
 //	@XmlTransient
 	@XmlElement(name = "MyProduct")
-	private ArrayList<ItemType> myProducts; //database alternative - MMM: to be replaced with the real database
+	private ArrayList<ItemType> products; //database alternative - MMM: to be replaced with the real database
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
@@ -31,95 +29,11 @@ public class BusinessParty
 	@XmlElement(name = "Partner")
 //	@XmlTransient
 	private boolean partner; //MMM: ?
-	@XmlElement(name = "CatalogueID")
-//	@XmlTransient
-	protected long catalogueID; // MMM: catalogue related fields should be part of the MyParty class. They are not important to other business parties. Check this
-	@XmlElement(name = "CatalogueDeletionID")
-	protected long catalogueDeletionID;
-	@XmlElement(name = "CatalogueIssueDate")
-	protected XMLGregorianCalendar catalogueIssueDate;
 
 	public BusinessParty()
 	{
-		myProducts = getMyProducts();
-		catalogueID = 0;
-		catalogueDeletionID = 0;
-		catalogueIssueDate = null;
+		products = getMyProducts();
 		coreParty = null;
-	}
-
-	/**Returns ID of the latest created Catalogue Document.
-	 * @return catalogue ID
-	 */
-	public long getCatalogueID()
-	{
-		return catalogueID;
-	}
-
-	public void setCatalogueID(long catalogueID)
-	{
-		this.catalogueID = catalogueID;
-	}
-
-	/**Returns next ID for the newly created Catalogue Document.
-	 * @return next catalogue ID
-	 */
-	public long nextCatalogueID()
-	{
-		return ++catalogueID;
-	}
-
-	/**Returns ID of the latest created Catalogue Deletion Document.
-	 * @return catalogue deletion ID
-	 */
-	public long getCatalogueDeletionID()
-	{
-		return catalogueDeletionID;
-	}
-
-	public void setCatalogueDeletionID(long catalogueDeletionID)
-	{
-		this.catalogueDeletionID = catalogueDeletionID;
-	}
-
-	/**Gets issue date of the latest catalogue.
-	 * @return catalogue issue date
-	 */
-	public XMLGregorianCalendar getCatalogueIssueDate()
-	{
-		return catalogueIssueDate;
-	}
-
-	/**Sets catalogue issue date to current date.
-	 * @return set catalogue issue date
-	 */
-	public XMLGregorianCalendar setCatalogueIssueDate()
-	{
-		this.catalogueIssueDate = InstanceFactory.getDate();
-		return catalogueIssueDate;
-	}
-
-	/**Sets Catalogue issue date to {@code null}. Usually this is done after the Catalogue is deleted from the CDR.
-	 */
-	public void removeCatalogueIssueDate()
-	{
-		this.catalogueIssueDate = null;
-	}
-
-	/**Tells if the Catalogue is in the CDR.
-	 * @return true is CDR has My Party's Catalogue, false otherwise
-	 */
-	public boolean isCatalogueInCDR()
-	{
-		return catalogueIssueDate != null ? true : false;
-	}
-
-	/**Returns next ID for the newly created CatalogueDeletion Document.
-	 * @return next catalogue deletion ID
-	 */
-	public long nextCatalogueDeletionID()
-	{
-		return ++catalogueDeletionID;
 	}
 
 	public boolean isFollowing()
@@ -161,19 +75,19 @@ public class BusinessParty
 
 	public ArrayList<ItemType> getMyProducts()
 	{
-		if (myProducts == null)
-			myProducts = new ArrayList<ItemType>();
-		return myProducts;
+		if (products == null)
+			products = new ArrayList<ItemType>();
+		return products;
 	}
 
-	public void setMyProducts(ArrayList<ItemType> myProducts)
+	public void setProducts(ArrayList<ItemType> products)
 	{
-		this.myProducts = myProducts;
+		this.products = products;
 	}
 
-	public void setMyProducts(CatalogueType catalogue)
+	public void setProducts(CatalogueType catalogue)
 	{
-		try
+/*		try
 		{
 			String strID = InstanceFactory.getPropertyOrNull(catalogue.getID(), IDType::getValue);
 			catalogueID = Integer.parseInt(strID);
@@ -181,14 +95,13 @@ public class BusinessParty
 		catch(Exception e)
 		{
 			catalogueID = 0;
-		}
+		}*/
 		List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
 		if(catalogueLines.size() != 0)
 		{
-			myProducts.clear();
+			products.clear();
 			for(CatalogueLineType line : catalogueLines)
-				myProducts.add(line.getItem());
-				//myProducts.add(InstanceFactory.newInstance(line.getItem()));
+				products.add(line.getItem());
 		}
 	}
 
@@ -205,7 +118,7 @@ public class BusinessParty
 
 	public String getProductNameAsString(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		/*NameType name = item.getName();
 		if(name != null)
 			return name.getValue();
@@ -222,7 +135,7 @@ public class BusinessParty
 
 	public String getProductDescriptionAsString(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		/*List<DescriptionType> descriptions = item.getDescription();
 		if(descriptions.size() != 0)
 		{
@@ -241,7 +154,7 @@ public class BusinessParty
 
 	public String getProductIDAsString(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 /*		ItemIdentificationType identification = item.getSellersItemIdentification();
 		if(identification != null)
 		{
@@ -260,7 +173,7 @@ public class BusinessParty
 
 	public String getProductBarcodeAsString(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		/*ItemIdentificationType identification = item.getSellersItemIdentification();
 		if(identification != null)
 		{
@@ -280,7 +193,7 @@ public class BusinessParty
 
 	public BigDecimal getProductPackSizeAsBigDecimal(int index) //MMM: check if return value should be String instead
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		/*	PackSizeNumericType packSize = item.getPackSizeNumeric();
 		if(packSize != null)
 			return packSize.toString();
@@ -295,7 +208,7 @@ public class BusinessParty
 
 	public String getProductCommodityCodeAsString(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		/*List<CommodityClassificationType> commodities = item.getCommodityClassification();
 		if(commodities.size() != 0)
 		{
@@ -322,21 +235,21 @@ public class BusinessParty
 	 */
 	public String getProductKeywordsAsString(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		return item.getKeywordCount() == 0 ? null :
 			item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(" ,"));
 	}
 
 	public List<KeywordType> getProductKeywords(int index)
 	{
-		ItemType item = myProducts.get(index);
+		ItemType item = products.get(index);
 		return item.getKeyword();
 	}
 
 	public void addNewEmptyProduct()
 	{
 //		myProducts.add(InstanceFactory.newInstanceItemType());
-		myProducts.add(new ItemType());
+		products.add(new ItemType());
 	}
 
 	/**Returns the number of party's products.
@@ -344,7 +257,7 @@ public class BusinessParty
 	 */
 	public int getProductCount()
 	{
-		return myProducts.size();
+		return products.size();
 	}
 
 	/**
@@ -354,11 +267,11 @@ public class BusinessParty
 	{
 		if(itemDataMapper != null)
 		{
-			if(myProducts.size() == 0)
+			if(products.size() == 0)
 			{
-				myProducts = (ArrayList<ItemType>) itemDataMapper.findAll();
-				if(myProducts == null) // nothing found
-					myProducts = new ArrayList<ItemType>();
+				products = (ArrayList<ItemType>) itemDataMapper.findAll();
+				if(products == null) // nothing found
+					products = new ArrayList<ItemType>();
 			}
 		}
 	}

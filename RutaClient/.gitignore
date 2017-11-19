@@ -1,2 +1,7 @@
 /target/
 *.class
+/myparty*.xml
+/response.xml
+/request.xml
+/client*.dat
+/catalogue*.xml

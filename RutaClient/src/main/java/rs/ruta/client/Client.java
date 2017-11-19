@@ -585,7 +585,7 @@ public class Client implements RutaNode
 					if(catalogue != null)
 					{
 						frame.appendToConsole("Catalogue has been successfully retrieved from the CDR service.", Color.GREEN);
-						myParty.getFollowingParties().get(0).setMyProducts(catalogue);
+						myParty.getFollowingParties().get(0).setProducts(catalogue);
 
 /*						//creating XML document - for test purpose only
 						ObjectFactory objFactory = new ObjectFactory();

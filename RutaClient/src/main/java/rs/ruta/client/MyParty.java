@@ -1,11 +1,13 @@
 package rs.ruta.client;
 
 import java.math.BigDecimal;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.*;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
@@ -17,8 +19,6 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 @XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType
 public class MyParty extends BusinessParty
 {
-/*	@XmlAttribute(required = false)
-	private static final String VERSION = Client.getVersion().getJaxbVersion();*/
 	@XmlElement(name = "Password")
 	private String password;
 	@XmlElement(name = "Username")
@@ -46,6 +46,14 @@ public class MyParty extends BusinessParty
 	private boolean insertMyCatalogue; // true when catalogue should be inserted in the CDR i.e. deposit for the first time
 	@XmlElement(name = "SearchNumber")
 	private long searchNumber;
+	@XmlElement(name = "CatalogueID")
+	protected long catalogueID;
+	@XmlElement(name = "CatalogueDeletionID")
+	protected long catalogueDeletionID;
+	@XmlElement(name = "CatalogueIssueDate")
+	protected XMLGregorianCalendar catalogueIssueDate;
+	@XmlAttribute(name = "JAXBVersion")
+	private String jaxb; // version of the MyParty class
 
 	public MyParty()
 	{
@@ -55,6 +63,84 @@ public class MyParty extends BusinessParty
 		dirtyMyParty = insertMyCatalogue = true;
 		username = password = secretKey = null;
 		searchNumber = 0;
+		catalogueID = 0;
+		catalogueDeletionID = 0;
+		catalogueIssueDate = null;
+		jaxb = Client.getVersion().getJaxbVersion();
+	}
+
+	/**Returns ID of the latest created Catalogue Document.
+	 * @return catalogue ID
+	 */
+	public long getCatalogueID()
+	{
+		return catalogueID;
+	}
+
+	public void setCatalogueID(long catalogueID)
+	{
+		this.catalogueID = catalogueID;
+	}
+
+	/**Returns next ID for the newly created Catalogue Document.
+	 * @return next catalogue ID
+	 */
+	public long nextCatalogueID()
+	{
+		return ++catalogueID;
+	}
+
+	/**Returns ID of the latest created Catalogue Deletion Document.
+	 * @return catalogue deletion ID
+	 */
+	public long getCatalogueDeletionID()
+	{
+		return catalogueDeletionID;
+	}
+
+	public void setCatalogueDeletionID(long catalogueDeletionID)
+	{
+		this.catalogueDeletionID = catalogueDeletionID;
+	}
+
+	/**Gets issue date of the latest catalogue.
+	 * @return catalogue issue date
+	 */
+	public XMLGregorianCalendar getCatalogueIssueDate()
+	{
+		return catalogueIssueDate;
+	}
+
+	/**Sets catalogue issue date to current date.
+	 * @return set catalogue issue date
+	 */
+	public XMLGregorianCalendar setCatalogueIssueDate()
+	{
+		this.catalogueIssueDate = InstanceFactory.getDate();
+		return catalogueIssueDate;
+	}
+
+	/**Sets Catalogue issue date to {@code null}. Usually this is done after the Catalogue is deleted from the CDR.
+	 */
+	public void removeCatalogueIssueDate()
+	{
+		this.catalogueIssueDate = null;
+	}
+
+	/**Tells if the Catalogue is in the CDR.
+	 * @return true is CDR has My Party's Catalogue, false otherwise
+	 */
+	public boolean isCatalogueInCDR()
+	{
+		return catalogueIssueDate != null ? true : false;
+	}
+
+	/**Returns next ID for the newly created CatalogueDeletion Document.
+	 * @return next catalogue deletion ID
+	 */
+	public long nextCatalogueDeletionID()
+	{
+		return ++catalogueDeletionID;
 	}
 
 	public List<BusinessParty> getBusinessPartners()
