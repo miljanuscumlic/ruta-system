@@ -982,12 +982,12 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 			deletedResource = deletedCollection.createResource(deletedDocumentName, resourceType);
 			deletedResource.setContent(resource.getContent());
 			deletedCollection.storeResource(deletedResource);
-			logger.info("Finished copying of the document " + originalDocumentName + ".xml" + "from " + getCollectionPath() +
+			logger.info("Finished copying of the document " + originalDocumentName + ".xml" + " from " + getCollectionPath() +
 					" to " + deletedPath + "/" + deletedDocumentName);
 		}
 		catch(XMLDBException e)
 		{
-			logger.error("Could not copy the document " + originalDocumentName + ".xml" + "from " + getCollectionPath() +
+			logger.error("Could not copy the document " + originalDocumentName + ".xml" + " from " + getCollectionPath() +
 					" to " + deletedPath + "/" + deletedDocumentName);
 			logger.error("Exception is ", e);;
 			throw new DatabaseException("Document could not be backed up.", e);

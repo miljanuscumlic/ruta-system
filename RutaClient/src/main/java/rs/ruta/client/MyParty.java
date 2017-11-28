@@ -523,7 +523,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**Sets the value of the field that tells if the Catalogue should be inserted in or updated with the CDR service.
-	 * @param insertMyCatalogue true if Catalogue should be deposited in the CDR service for the first time i.e inserted,
+	 * @param insertMyCatalogue true if Catalogue should be deposited in the CDR service for the first time i.e. inserted,
 	 *  false otherwise i.e. updated
 	 */
 	public void setInsertMyCatalogue(boolean insertMyCatalogue)

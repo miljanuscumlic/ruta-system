@@ -400,15 +400,13 @@ public class Client implements RutaNode
 	 */
 	void cdrSynchroniseMyCatalogue()
 	{
-		if(myParty.getProductCount() == 0) // delete My Catalogue from CDR
-			cdrDeleteMyCatalogue();
+		if(myParty.isInsertMyCatalogue() == true) //first time sending catalogue
+			cdrInsertMyCatalogue();
 		else
-		{
-			if(myParty.isInsertMyCatalogue() == true) //first time sending catalogue
-				cdrInsertMyCatalogue();
+			if(myParty.getProductCount() == 0) // delete My Catalogue from CDR
+				cdrDeleteMyCatalogue();
 			else
 				cdrUpdateMyCatalogue();
-		}
 	}
 
 	/**Inserts My Catalogue for the first time in the CDR service. Updates are done with the
@@ -461,7 +459,6 @@ public class Client implements RutaNode
 					}
 				});
 				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for a response...", Color.BLACK);
-				frame.enableCatalogueMenuItems();
 
 /*				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
@@ -480,16 +477,20 @@ public class Client implements RutaNode
 			{
 				frame.appendToConsole("My Catalogue has not been sent to the CDR service because it is malformed. "
 						+ "All catalogue items should have a name and catalogue has to have at least one item.", Color.RED);
+				frame.enableCatalogueMenuItems();
 			}
+
 		}
 		catch (JAXBException e)
 		{
 			e.printStackTrace();
+			frame.enableCatalogueMenuItems();
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
 			frame.appendToConsole("My Catalogue has not been deposited to the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
+			frame.enableCatalogueMenuItems();
 		}
 	}
 
@@ -562,6 +563,7 @@ public class Client implements RutaNode
 		catch (JAXBException e)
 		{
 			e.printStackTrace();
+			frame.enableCatalogueMenuItems();
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
@@ -632,6 +634,7 @@ public class Client implements RutaNode
 		catch (JAXBException e)
 		{
 			e.printStackTrace();
+			frame.enableCatalogueMenuItems();
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
