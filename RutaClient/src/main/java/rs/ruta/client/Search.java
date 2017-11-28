@@ -16,7 +16,7 @@ public class Search<T>
 	@XmlElement(name = "SearchName")
 	private String searchName;
 	@XmlTransient
-	private static long num;
+	private static long num; // number of the next search
 	@XmlElement(name = "SearchCriterion")
 	private SearchCriterion criterion;
 	@XmlElement(name= "SearchResult")

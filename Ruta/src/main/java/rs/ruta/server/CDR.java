@@ -1,13 +1,22 @@
 package rs.ruta.server;
 
+import java.awt.Image;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.annotation.*;
 import javax.jws.*;
 import javax.servlet.ServletContext;
+import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.ws.*;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.soap.MTOM;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.ReportAttachment;
+import rs.ruta.common.BugReport;
+import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.server.datamapper.*;
@@ -37,8 +49,8 @@ import rs.ruta.server.datamapper.*;
 
 //wildfly wsdl generation
 @WebService(endpointInterface = "rs.ruta.server.Server", targetNamespace = "http://ruta.rs/services")
-
-@BindingType(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+//wsdlLocation = "http://ruta.sytes.net:9010/ruta-server-0.0.1/CDR?wsdl")
+@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING)
 public class CDR implements Server
 {
 	@Resource
@@ -575,16 +587,16 @@ public class CDR implements Server
 	}
 
 	@Override
-	public RutaVersion updateRutaClient(String oldVersion) throws RutaException
+	public RutaVersion updateRutaClient(String currentVersion) throws RutaException
 	{
 		String exceptionMsg = "Could not retrieve the current version from the CDR service!";
 		try
 		{
 			init();
-			RutaVersion currentVersion = MapperRegistry.getMapper(RutaVersion.class).findClientVersion();
-			if(currentVersion.getVersion().compareTo(oldVersion) <= 0) //there is no new version
-				currentVersion = null;
-			return currentVersion;
+			RutaVersion latestVersion = MapperRegistry.getMapper(RutaVersion.class).findClientVersion();
+			if(latestVersion.getVersion().compareTo(currentVersion) <= 0) //there is no new version
+				latestVersion = null;
+			return latestVersion;
 		}
 		catch(Exception e)
 		{
@@ -605,8 +617,225 @@ public class CDR implements Server
 		{
 			init();
 			transaction = transactionFactory.openTransaction();
-			String id =  ((RutaVersionXmlMapper)MapperRegistry.getMapper(RutaVersion.class)).createID();
-			MapperRegistry.getMapper(RutaVersion.class).insert(version, id, transaction);;
+			String id =  MapperRegistry.getMapper(RutaVersion.class).createID();
+			MapperRegistry.getMapper(RutaVersion.class).insert(version, id, transaction);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (transaction != null)
+			{
+				try
+				{
+					transaction.rollback();
+				}
+				catch(TransactionException ex)
+				{
+					transactionFailure = true;
+				}
+			}
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+		finally
+		{
+			if (transaction != null && !transactionFailure)
+			{
+				try
+				{
+					transaction.close();
+				}
+				catch (TransactionException e)
+				{
+					transactionFailure = true;
+					logger.error("Exception is ", e);;
+					throw new RutaException(exceptionMsg, ((DetailException) e.getCause()).getFaultInfo());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void insertBugReport(BugReport bugReport) throws RutaException
+	{
+		String exceptionMsg = "Bug could not be inserted in the database!";
+		DSTransaction transaction = null;
+		try
+		{
+			init();
+			transaction = transactionFactory.openTransaction();
+			bugReport.setCreated(InstanceFactory.getDate());
+			String id =  MapperRegistry.getMapper(BugReport.class).createID();
+			bugReport.setId(id);
+			MapperRegistry.getMapper(BugReport.class).insert(bugReport, id, transaction);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (transaction != null)
+			{
+				try
+				{
+					transaction.rollback();
+				}
+				catch(TransactionException ex)
+				{
+					transactionFailure = true;
+				}
+			}
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+		finally
+		{
+			if (transaction != null && !transactionFailure)
+			{
+				try
+				{
+					transaction.close();
+				}
+				catch (TransactionException e)
+				{
+					transactionFailure = true;
+					logger.error("Exception is ", e);;
+					throw new RutaException(exceptionMsg, ((DetailException) e.getCause()).getFaultInfo());
+				}
+			}
+		}
+	}
+
+	@Override
+	public List<BugReport> findBugReport(int start, int count) throws RutaException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void insertImage(@XmlMimeType("application/octet-stream") Image image) throws RutaException
+	{
+		String exceptionMsg = "File could not be deposited to the CDR service!";
+		DSTransaction transaction = null;
+		try
+		{
+			init();
+			transaction = transactionFactory.openTransaction();
+			String id =  MapperRegistry.getMapper(BugReport.class).createID();
+			MapperRegistry.getMapper(BugReport.class).insert(image, id, transaction);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (transaction != null)
+			{
+				try
+				{
+					transaction.rollback();
+				}
+				catch(TransactionException ex)
+				{
+					transactionFailure = true;
+				}
+			}
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+		finally
+		{
+			if (transaction != null && !transactionFailure)
+			{
+				try
+				{
+					transaction.close();
+				}
+				catch (TransactionException e)
+				{
+					transactionFailure = true;
+					logger.error("Exception is ", e);;
+					throw new RutaException(exceptionMsg, ((DetailException) e.getCause()).getFaultInfo());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void insertFile(@XmlMimeType("application/octet-stream") DataHandler dataHandler, String filename) throws RutaException
+	{
+		String exceptionMsg = "File could not be deposited to the CDR service!";
+		DSTransaction transaction = null;
+		try
+		{
+			init();
+			transaction = transactionFactory.openTransaction();
+
+			File file = new File(filename);
+			BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(file));
+			BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
+			byte buffer[] = new byte[1024];
+			int n = 0;
+			while((n = bin.read(buffer)) != -1)
+				bout.write(buffer, 0, n);
+			bin.close();
+			bout.close();
+
+			String id =  MapperRegistry.getMapper(BugReport.class).createID();
+			MapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (transaction != null)
+			{
+				try
+				{
+					transaction.rollback();
+				}
+				catch(TransactionException ex)
+				{
+					transactionFailure = true;
+				}
+			}
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+		finally
+		{
+			if (transaction != null && !transactionFailure)
+			{
+				try
+				{
+					transaction.close();
+				}
+				catch (TransactionException e)
+				{
+					transactionFailure = true;
+					logger.error("Exception is ", e);;
+					throw new RutaException(exceptionMsg, ((DetailException) e.getCause()).getFaultInfo());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void insertAttachment(ReportAttachment attachment, String filename) throws RutaException
+	{
+		String exceptionMsg = "Attachment could not be deposited to the CDR service!";
+		DSTransaction transaction = null;
+		try
+		{
+			init();
+			transaction = transactionFactory.openTransaction();
+			File file = attachment.getFile();
+			String id =  MapperRegistry.getMapper(BugReport.class).createID();
+			MapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
 		}
 		catch(Exception e)
 		{

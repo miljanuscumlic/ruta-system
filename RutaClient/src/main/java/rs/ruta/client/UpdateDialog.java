@@ -39,7 +39,7 @@ public class UpdateDialog extends JDialog
 	{
 		super(owner, "Update check", true);
 		setResizable(false);
-		setSize(400, 120);
+		setSize(440, 120);
 		setLocationRelativeTo(owner);
 		JPanel labelPanel = new JPanel();
 		label = new JLabel("", SwingConstants.CENTER);
@@ -93,7 +93,7 @@ public class UpdateDialog extends JDialog
 									// set the text of the JEditorPane to the given text.
 									editorPane.setText("<html><b>There is a new version " + result.getVersion() +
 											" of the Ruta Client application.<br />" + "You can download it at: <a href=\"" +
-											link + "\">" + link +"</a><br/>(copy and paste link in browser if Download button doesn't work :)</b></html>");
+											link + "\">" + link +"</a><br/>(copy and paste the link in a browser if Download button doesn't work :)</b></html>");
 
 									// add a CSS rule to force body tags to use the default label font
 									// instead of the value in javax.swing.text.html.default.csss

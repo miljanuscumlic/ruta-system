@@ -5,6 +5,8 @@ import java.text.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import rs.ruta.common.InstanceFactory;
+
 @SuppressWarnings("serial")
 public class PartyTableCellRenderer extends DefaultTableCellRenderer//extends JFormattedTextField implements TableCellRenderer
 {

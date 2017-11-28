@@ -14,58 +14,11 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 public final class InstanceFactory
 {
 
-	public static LocalDate getLocalDate(XMLGregorianCalendar xgc)
-	{
-		LocalDate date = null;
-		if(xgc != null)
-		{
-			date = LocalDate.of(xgc.getYear(), xgc.getMonth(), xgc.getDay());
-		}
-		//System.out.println(date);
-		return date;
-	}
-
-	public static XMLGregorianCalendar getDate()
-	{
-		try
-		{
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-		}
-		catch (DatatypeConfigurationException e) {
-			throw new Error(e);
-		}
-	}
-
-	public static XMLGregorianCalendar getDate(GregorianCalendar gc)
-	{
-		try
-		{
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
-		}
-		catch (DatatypeConfigurationException e) {
-			throw new Error(e);
-		}
-	}
-
-
-	/**Dissect the passed string in day, month and year and construct new XMLGregorianCalendar object
-	 * @param str string representation of the datum
-	 * @return XMLGregorianCalendar object representing datum
-	 * @throws Exception if something goes wrong within the call of static factory method that constructs the XMLGregorianCalendar object
-	 */
-	public static XMLGregorianCalendar getXMLGregorianCalendar(String str) throws Exception
-	{
-//		System.out.println(str);
-		String[] datum = str.split("\\.");
-		return DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
-				Integer.parseInt(datum[2]), Integer.parseInt(datum[1]), Integer.parseInt(datum[0]), DatatypeConstants.FIELD_UNDEFINED
-				);
-	}
-
 	/**Instatiate new instance object of the ItemType, setting all properties used in the Ruta application on not null.
 	 * Properties not used in the Ruta remain null.
 	 * @return new object of type ItemType
 	 */
+	@Deprecated
 	public static ItemType newInstanceItemType()
 	{
 		ItemType item = new ItemType();
@@ -85,6 +38,7 @@ public final class InstanceFactory
 	 * Properties not used in the Ruta remain null.
 	 * @return new object of type PartyType
 	 */
+	@Deprecated
 	public static PartyType newInstancePartyType()
 	{
 		PartyType party = new PartyType();
@@ -111,7 +65,7 @@ public final class InstanceFactory
 		return party;
 	}
 
-
+	@Deprecated
 	public static Party newInstanceParty()
 	{
 		Party party = new Party();
@@ -142,6 +96,7 @@ public final class InstanceFactory
 	 * Properties not used in the Ruta remain null.
 	 * @return new object of type ContactType
 	 */
+	@Deprecated
 	public static ContactType newInstanceContactType()
 	{
 		ContactType contact = new ContactType();
@@ -159,13 +114,14 @@ public final class InstanceFactory
 	 * Properties not used in the Ruta remain null.
 	 * @return new object of type PartyLegalEntityType
 	 */
+	@Deprecated
 	public static PartyLegalEntityType newInstancePartyLegalEntity()
 	{
 		PartyLegalEntityType entity = new PartyLegalEntityType();
 		entity.setRegistrationName(new RegistrationNameType());
 		entity.setCompanyID(new CompanyIDType());
 		entity.setRegistrationDate(new RegistrationDateType());
-		entity.getRegistrationDate().setValue(getDate()); // MMM: based on xsd it must have some value - for TEST purposes setting to now()
+//		entity.getRegistrationDate().setValue(getDate()); // MMM: based on xsd it must have some value - for TEST purposes setting to now()
 		entity.setRegistrationAddress(newInstanceAddressType());
 
 		return entity;
@@ -175,6 +131,7 @@ public final class InstanceFactory
 	 * Properties not used in the Ruta remain null.
 	 * @return new object of type AddressType
 	 */
+	@Deprecated
 	public static AddressType newInstanceAddressType()
 	{
 		AddressType address = new AddressType();
@@ -204,6 +161,7 @@ public final class InstanceFactory
 	 * @param cl object of type T that is being copied
 	 * @return new instance object of type T
 	 */
+	@Deprecated
 	public static <T> T newInstance(Class<T> cl)
 	{
 		T object = null;
@@ -258,6 +216,7 @@ public final class InstanceFactory
 	 * @param depth pertmitable number of layers of the recursion
 	 * @return new instance object of type T
 	 */
+	@Deprecated
 	public static <T> T newInstance(Class<T> cl, int depth)
 	{
 		T object = null;
@@ -444,6 +403,7 @@ public final class InstanceFactory
 	 * @param oldObject object from which the properties are copied
 	 * @param copyObject object to which properties are copied
 	 */
+	@Deprecated
 	public static <T> void copyInstance(T oldObject, T copyObject)
 	{
 		Class<?> copyClazz = copyObject.getClass();
@@ -660,10 +620,10 @@ public final class InstanceFactory
 	 * @param extractor function which has two type parameters: of the type T or some supertype of the T, and U or some subtype of U
 	 * @return value of the type U wich is the result of the called passed method getValue
 	 */
-	public static <T, U> U getPropertyOrNull(T property, Function<? super T, ? extends U> extractor)
+/*	public static <T, U> U getPropertyOrNull(T property, Function<? super T, ? extends U> extractor)
 	{
 		return property != null ? extractor.apply(property) : null;
-	}
+	}*/
 
 	/**Recursion version of the getter method .Gets the value of the property if it is defined. If the owner of the property,
 	 * or property is null, returns null.

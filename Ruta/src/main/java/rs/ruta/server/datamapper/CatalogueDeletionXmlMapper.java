@@ -87,8 +87,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	@Override
 	protected JAXBElement<CatalogueDeletionType> getJAXBElement(CatalogueDeletionType object)
 	{
-		JAXBElement<CatalogueDeletionType> jaxbElement = new ObjectFactory().createCatalogueDeletion(object);
-		return jaxbElement;
+		return new ObjectFactory().createCatalogueDeletion(object);
 	}
 
 	@Override

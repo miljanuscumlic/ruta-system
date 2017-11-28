@@ -2,6 +2,7 @@ package rs.ruta.client;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.*;
@@ -9,10 +10,14 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.prefs.Preferences;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.xml.bind.*;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPBinding;
 
 import com.helger.commons.state.ESuccess;
 import com.helger.ubl21.UBL21Writer;
@@ -29,14 +34,17 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Sup
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.*;
 import rs.ruta.client.datamapper.*;
+import rs.ruta.common.ReportAttachment;
+import rs.ruta.common.BugReport;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.services.*;
+import rs.ruta.common.InstanceFactory;
 
 public class Client implements RutaNode
 {
 	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_21"; // colon separated package list
-	final private static String defaultEndPoint = "http://localhost:8080/ruta-server-0.0.1/CDR";
+	final private static String defaultEndPoint = "http://ruta.sytes.net:9010/ruta-server-0.0.1/CDR";
 	private static String cdrEndPoint = defaultEndPoint;
 	final private static String eclipseMonitorEndPoint = "http://localhost:7777/ruta-server-0.0.1/CDR";
 	private MyParty myParty;
@@ -221,7 +229,7 @@ public class Client implements RutaNode
 					frame.enablePartyMenuItems();
 				}
 			});
-			frame.appendToConsole("Request for the registration of My Party has been sent to the CDR service. Waiting for response...",
+			frame.appendToConsole("Request for the registration of My Party has been sent to the CDR service. Waiting for a response...",
 					Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
@@ -281,7 +289,7 @@ public class Client implements RutaNode
 					frame.enablePartyMenuItems();
 				}
 			});
-			frame.appendToConsole("Request for the synchronisation of My Party has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Request for the synchronisation of My Party has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
@@ -323,7 +331,7 @@ public class Client implements RutaNode
 					frame.enablePartyMenuItems();
 				}
 			});
-			frame.appendToConsole("Request for the synchronisation of My Party has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Request for the synchronisation of My Party has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
@@ -376,7 +384,7 @@ public class Client implements RutaNode
 					frame.enablePartyMenuItems();
 				}
 			});
-			frame.appendToConsole("Request for deregistration of My Party has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Request for deregistration of My Party has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
@@ -452,7 +460,7 @@ public class Client implements RutaNode
 						frame.enableCatalogueMenuItems();
 					}
 				});
-				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for response...", Color.BLACK);
+				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 				frame.enableCatalogueMenuItems();
 
 /*				//creating XML document - for test purpose only
@@ -529,7 +537,7 @@ public class Client implements RutaNode
 					}
 				});
 
-				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for response...", Color.BLACK);
+				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 
 /*				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
@@ -619,7 +627,7 @@ public class Client implements RutaNode
 					frame.repaintTabbedPane();
 				}
 			});
-			frame.appendToConsole("Request for catalogue has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Request for catalogue has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch (JAXBException e)
 		{
@@ -674,7 +682,7 @@ public class Client implements RutaNode
 					frame.enableCatalogueMenuItems();
 				}
 			});
-			frame.appendToConsole("Request for the Catalogue deletion has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Request for the Catalogue deletion has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
@@ -899,6 +907,11 @@ public class Client implements RutaNode
 		//bindEclipseEndPoint(port);
 		if(!defaultEndPoint.equals(cdrEndPoint))
 			bindCDREndPoint(port);
+
+
+		BindingProvider bp = (BindingProvider) port;
+	    SOAPBinding binding = (SOAPBinding) bp.getBinding();
+	    binding.setMTOMEnabled(true);
 		return port;
 	}
 
@@ -929,7 +942,7 @@ public class Client implements RutaNode
 					frame.appendToConsole(msg.toString(), Color.RED);
 				}
 			});
-			frame.appendToConsole("Search request has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Search request has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
@@ -981,7 +994,7 @@ public class Client implements RutaNode
 						frame.appendToConsole(msg.toString(), Color.RED);
 					}
 				});
-				frame.appendToConsole("Search request \"" + searchName + "\" has been sent to the CDR service. Waiting for response...", Color.BLACK);
+				frame.appendToConsole("Search request \"" + searchName + "\" has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 			}
 			else // querying only parties
 			{
@@ -1065,7 +1078,7 @@ public class Client implements RutaNode
 						frame.enableSearchMenuItems();
 					}
 				});
-				frame.appendToConsole("Search request \"" + searchName + "\" has been sent to the CDR service. Waiting for response...", Color.BLACK);
+				frame.appendToConsole("Search request \"" + searchName + "\" has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 			}
 		}
 		catch(WebServiceException e)
@@ -1116,7 +1129,7 @@ public class Client implements RutaNode
 						frame.enableSearchMenuItems();
 					}
 				});
-				frame.appendToConsole("Search request has been sent to the CDR service. Waiting for response...", Color.BLACK);
+				frame.appendToConsole("Search request has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 			}
 			else // querying only parties
 			{
@@ -1212,7 +1225,7 @@ public class Client implements RutaNode
 					}
 				});
 				frame.appendToConsole("Search request \"" + search.getSearchName() +
-						"\" has been sent to the CDR service. Waiting for response...", Color.BLACK);
+						"\" has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 			}
 			else // querying only parties
 			{
@@ -1257,7 +1270,7 @@ public class Client implements RutaNode
 					}
 				});
 				frame.appendToConsole("Search request \"" + search.getSearchName() +
-						"\" has been sent to the CDR service. Waiting for response...", Color.BLACK);
+						"\" has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 			}
 		}
 		catch(WebServiceException e)
@@ -1316,11 +1329,140 @@ public class Client implements RutaNode
 					frame.appendToConsole(msg.toString(), Color.RED);
 				}
 			});
-			frame.appendToConsole("Update notification has been sent to the CDR service. Waiting for response...", Color.BLACK);
+			frame.appendToConsole("Update notification has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
 			frame.appendToConsole("CDR service could not be notified! Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	public void cdrReportBug(BugReport bug)
+	{
+		try
+		{
+			bug.setReportedBy(myParty.getUsername());
+			Server port = getCDRPort();
+			port.insertBugReportAsync(bug, futureResult ->
+			{
+				StringBuilder msg = new StringBuilder("Bug could not be reported! ");
+				try
+				{
+					InsertBugReportResponse res = futureResult.get();
+					frame.appendToConsole("Bug report has been successfully deposited to the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Bug report has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Bug could not be reported to the CDR service! Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	public void cdrInsertFile()
+	{
+		try
+		{
+
+			Server port = getCDRPort();
+			File image = new File("test.jpg");
+			long length = image.length();
+			String path = image.getPath();
+	        FileDataSource fileDataSource = new FileDataSource(path);
+	        DataHandler dataHandler = new DataHandler(fileDataSource);
+
+/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
+	        byte buffer[] = new byte[(int)length];
+	        bin.read(buffer);
+	        bin.close();*/
+
+			port.insertFileAsync(dataHandler, "test.jpg", futureResult ->
+			{
+				StringBuilder msg = new StringBuilder("File could not be inserted! ");
+				try
+				{
+					InsertFileResponse res = futureResult.get();
+					frame.appendToConsole("File has been successfully deposited to the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("File has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("File not be deposited to the CDR service! Server is not accessible. Please try again later.", Color.RED);
+		}
+		catch(Exception e)
+		{
+			frame.appendToConsole("File could not be deposited to the CDR service! Error is on the client's side.", Color.RED);
+		}
+	}
+
+	public void cdrInsertAttachment()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			File image = new File("test.jpg");
+/*			long length = image.length();
+			String path = image.getPath();
+	        FileDataSource fileDataSource = new FileDataSource(path);
+	        DataHandler dataHandler = new DataHandler(fileDataSource);*/
+	        ReportAttachment att = new ReportAttachment(image, image.getName());
+
+/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
+	        byte buffer[] = new byte[(int)length];
+	        bin.read(buffer);
+	        bin.close();*/
+
+			port.insertAttachmentAsync(att, "test.jpg", futureResult ->
+			{
+				StringBuilder msg = new StringBuilder("File could not be inserted! ");
+				try
+				{
+					InsertAttachmentResponse res = futureResult.get();
+					frame.appendToConsole("File has been successfully deposited to the CDR service.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("File has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("File not be deposited to the CDR service! Server is not accessible. Please try again later.", Color.RED);
+		}
+		catch(Exception e)
+		{
+			frame.appendToConsole("File could not be deposited to the CDR service! Error is on the client's side.", Color.RED);
 		}
 	}
 
@@ -1349,5 +1491,6 @@ public class Client implements RutaNode
 		});
 		frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
 	}
+
 
 }

@@ -185,8 +185,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	@Override
 	protected JAXBElement<PartyType> getJAXBElement(PartyType object)
 	{
-		JAXBElement<PartyType> jaxbElement = new ObjectFactory().createParty(object);
-		return jaxbElement;
+		return new ObjectFactory().createParty(object);
 	}
 
 	@Override

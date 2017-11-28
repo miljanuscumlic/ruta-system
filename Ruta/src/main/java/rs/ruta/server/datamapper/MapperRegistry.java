@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentMap;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.BugReport;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.server.DataManipulationException;
 import rs.ruta.server.DetailException;
@@ -70,6 +71,8 @@ public final class MapperRegistry
 				dataMapper = (DataMapper<S, String>) new PartyIDXmlMapper();
 			else if(clazz == RutaVersion.class)
 				dataMapper = (DataMapper<S, String>) new RutaVersionXmlMapper();
+			else if(clazz == BugReport.class)
+				dataMapper = (DataMapper<S, String>) new BugReportXmlMapper();
 			getInstance().mapRegistry.put(clazz, dataMapper);
 		}
 		if(dataMapper == null)

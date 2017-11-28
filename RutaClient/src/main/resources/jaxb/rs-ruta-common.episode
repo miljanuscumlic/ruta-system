@@ -14,14 +14,23 @@
 			<class ref="rs.ruta.common.SearchCriterion" />
 		</bindings>
 	</bindings>
-  <bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
 		if-exists="true">
 		<bindings scd="~tns:RutaVersion">
 			<class ref="rs.ruta.common.RutaVersion" />
 		</bindings>
 	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
+		<bindings scd="~tns:BugReport">
+			<class ref="rs.ruta.common.BugReport" />
+		</bindings>
+	</bindings>
+  	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
+		<bindings scd="~tns:ReportAttachment">
+			<class ref="rs.ruta.common.ReportAttachment" />
+		</bindings>
+	</bindings>
 
 </bindings>
-
-
-

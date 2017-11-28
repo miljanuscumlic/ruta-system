@@ -5,6 +5,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
+import rs.ruta.common.BugReport;
+import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 
@@ -27,34 +29,47 @@ import rs.ruta.common.SearchCriterion;
 public class ObjectFactory {
 
     private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
+    private final static QName _InsertFile_QNAME = new QName("http://ruta.rs/services", "InsertFile");
     private final static QName _SearchParty_QNAME = new QName("http://ruta.rs/services", "SearchParty");
     private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
     private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
     private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _DeleteUserResponse_QNAME = new QName("http://ruta.rs/services", "DeleteUserResponse");
+    private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/services", "InsertBugReportResponse");
     private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClientResponse");
+    private final static QName _FindBug_QNAME = new QName("http://ruta.rs/services", "FindBug");
+    private final static QName _BugReport_QNAME = new QName("urn:rs:ruta:common", "BugReport");
     private final static QName _NotifyUpdate_QNAME = new QName("http://ruta.rs/services", "NotifyUpdate");
     private final static QName _SearchPartyResponse_QNAME = new QName("http://ruta.rs/services", "SearchPartyResponse");
     private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
+    private final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
     private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
+    private final static QName _InsertAttachmentResponse_QNAME = new QName("http://ruta.rs/services", "InsertAttachmentResponse");
     private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "SearchCatalogueResponse");
+    private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _DeleteUser_QNAME = new QName("http://ruta.rs/services", "DeleteUser");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
+    private final static QName _FindBugResponse_QNAME = new QName("http://ruta.rs/services", "FindBugResponse");
     private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
     private final static QName _SearchCriterion_QNAME = new QName("urn:rs:ruta:common", "SearchCriterion");
     private final static QName _RutaVersion_QNAME = new QName("urn:rs:ruta:common", "RutaVersion");
     private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
+    private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/services", "InsertBugReport");
+    private final static QName _ReportAttachment_QNAME = new QName("urn:rs:ruta:common", "ReportAttachment");
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
+    private final static QName _InsertImageResponse_QNAME = new QName("http://ruta.rs/services", "InsertImageResponse");
     private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
     private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
     private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
+    private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
     private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
+    private final static QName _InsertFileResponse_QNAME = new QName("http://ruta.rs/services", "InsertFileResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: rs.ruta.services
@@ -88,6 +103,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FindBug }
+     * 
+     */
+    public FindBug createFindBug() {
+        return new FindBug();
+    }
+
+    /**
+     * Create an instance of {@link InsertImage }
+     * 
+     */
+    public InsertImage createInsertImage() {
+        return new InsertImage();
+    }
+
+    /**
      * Create an instance of {@link DeleteCatalogueResponse }
      * 
      */
@@ -109,6 +140,14 @@ public class ObjectFactory {
      */
     public SearchCatalogueResponse createSearchCatalogueResponse() {
         return new SearchCatalogueResponse();
+    }
+
+    /**
+     * Create an instance of {@link InsertAttachmentResponse }
+     * 
+     */
+    public InsertAttachmentResponse createInsertAttachmentResponse() {
+        return new InsertAttachmentResponse();
     }
 
     /**
@@ -144,11 +183,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InsertFile }
+     * 
+     */
+    public InsertFile createInsertFile() {
+        return new InsertFile();
+    }
+
+    /**
      * Create an instance of {@link SearchParty }
      * 
      */
     public SearchParty createSearchParty() {
         return new SearchParty();
+    }
+
+    /**
+     * Create an instance of {@link InsertBugReportResponse }
+     * 
+     */
+    public InsertBugReportResponse createInsertBugReportResponse() {
+        return new InsertBugReportResponse();
     }
 
     /**
@@ -208,11 +263,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InsertAttachment }
+     * 
+     */
+    public InsertAttachment createInsertAttachment() {
+        return new InsertAttachment();
+    }
+
+    /**
      * Create an instance of {@link SearchCatalogue }
      * 
      */
     public SearchCatalogue createSearchCatalogue() {
         return new SearchCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link InsertFileResponse }
+     * 
+     */
+    public InsertFileResponse createInsertFileResponse() {
+        return new InsertFileResponse();
     }
 
     /**
@@ -237,6 +308,14 @@ public class ObjectFactory {
      */
     public InsertPartyResponse createInsertPartyResponse() {
         return new InsertPartyResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindBugResponse }
+     * 
+     */
+    public FindBugResponse createFindBugResponse() {
+        return new FindBugResponse();
     }
 
     /**
@@ -272,11 +351,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InsertImageResponse }
+     * 
+     */
+    public InsertImageResponse createInsertImageResponse() {
+        return new InsertImageResponse();
+    }
+
+    /**
      * Create an instance of {@link RegisterUserResponse }
      * 
      */
     public RegisterUserResponse createRegisterUserResponse() {
         return new RegisterUserResponse();
+    }
+
+    /**
+     * Create an instance of {@link InsertBugReport }
+     * 
+     */
+    public InsertBugReport createInsertBugReport() {
+        return new InsertBugReport();
     }
 
     /**
@@ -286,6 +381,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "NotifyUpdateResponse")
     public JAXBElement<NotifyUpdateResponse> createNotifyUpdateResponse(NotifyUpdateResponse value) {
         return new JAXBElement<NotifyUpdateResponse>(_NotifyUpdateResponse_QNAME, NotifyUpdateResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertFile }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertFile")
+    public JAXBElement<InsertFile> createInsertFile(InsertFile value) {
+        return new JAXBElement<InsertFile>(_InsertFile_QNAME, InsertFile.class, null, value);
     }
 
     /**
@@ -343,12 +447,39 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertBugReportResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertBugReportResponse")
+    public JAXBElement<InsertBugReportResponse> createInsertBugReportResponse(InsertBugReportResponse value) {
+        return new JAXBElement<InsertBugReportResponse>(_InsertBugReportResponse_QNAME, InsertBugReportResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClientResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClientResponse")
     public JAXBElement<UpdateRutaClientResponse> createUpdateRutaClientResponse(UpdateRutaClientResponse value) {
         return new JAXBElement<UpdateRutaClientResponse>(_UpdateRutaClientResponse_QNAME, UpdateRutaClientResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindBug }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindBug")
+    public JAXBElement<FindBug> createFindBug(FindBug value) {
+        return new JAXBElement<FindBug>(_FindBug_QNAME, FindBug.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BugReport }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "BugReport")
+    public JAXBElement<BugReport> createBugReport(BugReport value) {
+        return new JAXBElement<BugReport>(_BugReport_QNAME, BugReport.class, null, value);
     }
 
     /**
@@ -379,6 +510,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReportAttachment }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "Attachment")
+    public JAXBElement<ReportAttachment> createAttachment(ReportAttachment value) {
+        return new JAXBElement<ReportAttachment>(_Attachment_QNAME, ReportAttachment.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogue }{@code >}}
      * 
      */
@@ -388,12 +528,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachmentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertAttachmentResponse")
+    public JAXBElement<InsertAttachmentResponse> createInsertAttachmentResponse(InsertAttachmentResponse value) {
+        return new JAXBElement<InsertAttachmentResponse>(_InsertAttachmentResponse_QNAME, InsertAttachmentResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogueResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchCatalogueResponse")
     public JAXBElement<SearchCatalogueResponse> createSearchCatalogueResponse(SearchCatalogueResponse value) {
         return new JAXBElement<SearchCatalogueResponse>(_SearchCatalogueResponse_QNAME, SearchCatalogueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertImage }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertImage")
+    public JAXBElement<InsertImage> createInsertImage(InsertImage value) {
+        return new JAXBElement<InsertImage>(_InsertImage_QNAME, InsertImage.class, null, value);
     }
 
     /**
@@ -421,6 +579,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogueResponse")
     public JAXBElement<InsertCatalogueResponse> createInsertCatalogueResponse(InsertCatalogueResponse value) {
         return new JAXBElement<InsertCatalogueResponse>(_InsertCatalogueResponse_QNAME, InsertCatalogueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindBugResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindBugResponse")
+    public JAXBElement<FindBugResponse> createFindBugResponse(FindBugResponse value) {
+        return new JAXBElement<FindBugResponse>(_FindBugResponse_QNAME, FindBugResponse.class, null, value);
     }
 
     /**
@@ -460,6 +627,24 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertBugReport }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertBugReport")
+    public JAXBElement<InsertBugReport> createInsertBugReport(InsertBugReport value) {
+        return new JAXBElement<InsertBugReport>(_InsertBugReport_QNAME, InsertBugReport.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReportAttachment }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "ReportAttachment")
+    public JAXBElement<ReportAttachment> createReportAttachment(ReportAttachment value) {
+        return new JAXBElement<ReportAttachment>(_ReportAttachment_QNAME, ReportAttachment.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogueResponse }{@code >}}
      * 
      */
@@ -475,6 +660,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogue")
     public JAXBElement<InsertCatalogue> createInsertCatalogue(InsertCatalogue value) {
         return new JAXBElement<InsertCatalogue>(_InsertCatalogue_QNAME, InsertCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertImageResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertImageResponse")
+    public JAXBElement<InsertImageResponse> createInsertImageResponse(InsertImageResponse value) {
+        return new JAXBElement<InsertImageResponse>(_InsertImageResponse_QNAME, InsertImageResponse.class, null, value);
     }
 
     /**
@@ -502,6 +696,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogue")
     public JAXBElement<DeleteCatalogue> createDeleteCatalogue(DeleteCatalogue value) {
         return new JAXBElement<DeleteCatalogue>(_DeleteCatalogue_QNAME, DeleteCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachment }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertAttachment")
+    public JAXBElement<InsertAttachment> createInsertAttachment(InsertAttachment value) {
+        return new JAXBElement<InsertAttachment>(_InsertAttachment_QNAME, InsertAttachment.class, null, value);
     }
 
     /**
@@ -538,6 +741,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertParty")
     public JAXBElement<InsertParty> createInsertParty(InsertParty value) {
         return new JAXBElement<InsertParty>(_InsertParty_QNAME, InsertParty.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertFileResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertFileResponse")
+    public JAXBElement<InsertFileResponse> createInsertFileResponse(InsertFileResponse value) {
+        return new JAXBElement<InsertFileResponse>(_InsertFileResponse_QNAME, InsertFileResponse.class, null, value);
     }
 
 }

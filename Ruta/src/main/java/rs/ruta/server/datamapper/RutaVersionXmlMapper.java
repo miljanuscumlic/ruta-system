@@ -19,7 +19,7 @@ import rs.ruta.server.DetailException;
 
 public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 {
-	final private static String collectionPath = "/system/version";
+	final private static String collectionPath = "/version";
 	final private static String objectPackageName = "rs.ruta.common";
 	final private static String queryNameVersion = "search-version.xq";
 
@@ -40,8 +40,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	@Override
 	protected JAXBElement<RutaVersion> getJAXBElement(RutaVersion object)
 	{
-		QName _QNAME = new QName("urn:rs:ruta:common", "RutaVersion");
-		return new JAXBElement<RutaVersion>(_QNAME, RutaVersion.class, object);
+		return new rs.ruta.common.ObjectFactory().createRutaVersion(object);
 	}
 
 	@Override

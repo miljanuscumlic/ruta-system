@@ -1,5 +1,7 @@
 package rs.ruta.server.datamapper;
 
+import java.awt.Image;
+import java.io.File;
 import java.util.List;
 
 import org.xmldb.api.base.XMLDBException;
@@ -168,5 +170,19 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 * @return ID
 	 */
 	public ID createID() throws XMLDBException;
+
+	/**Inserts file in the datastore.
+	 * @param file
+	 * @param id
+	 * @param transaction
+	 */
+	default public void insert(File file, String id, DSTransaction transaction) throws DetailException { }
+
+	/**Inserts image in the datastore.
+	 * @param file
+	 * @param id
+	 * @param transaction
+	 */
+	default public void insert(Image file, String id, DSTransaction transaction) throws DetailException { }
 
 }

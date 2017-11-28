@@ -1,6 +1,5 @@
 package rs.ruta.client;
 
-
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BuildingNumberType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.CityNameType;
@@ -8,6 +7,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.Electro
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.StreetNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.TelephoneType;
+import rs.ruta.common.InstanceFactory;
 
 public class PartySearchTableModel extends SearchTableModel<PartyType>
 {

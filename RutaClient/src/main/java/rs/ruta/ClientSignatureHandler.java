@@ -80,7 +80,6 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	@Override
 	public boolean handleFault(SOAPMessageContext context)
 	{
-
 		return true;
 	}
 

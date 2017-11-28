@@ -15,9 +15,10 @@ public class ClientExcludeHandler implements LogicalHandler<LogicalMessageContex
 
 	/* Puts ("RegisterUser", true) in MessageContext map if the message is registerUser,
 	 * that means clientHashHandler, next handler in chain, will skip this message.
-	 * In a case of the registerUser method, user still don't have a secret key, which is nesseccary in the
-	 * logic of the clientHashHandler. That's way it must be excluded from message processing.
-	 * Otherwise it returns true and clientHashHandler will process these messages.
+	 * In a case of the registerUser method, user still don't have a secret key, which is necessary in the
+	 * logic of the clientHashHandler. That's why it must be excluded from message processing.
+	 * Otherwise if messages of other types were encountered method returns true and clientHashHandler
+	 * will process these messages.
 	 * @see javax.xml.ws.handler.Handler#handleMessage(javax.xml.ws.handler.MessageContext)
 	 */
 	@Override

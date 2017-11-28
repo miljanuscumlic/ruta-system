@@ -77,8 +77,10 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 		loadedTransactions.put(id, txn);
 	}
 
-	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
-	 * be the same as one of previously used. This method is overriden because there is no need to check if id was previously used (i.e. there is a document with the same name in the /deleted collection) because transactions are to backed up in the /deleted collection after they are closed.
+	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot be the same
+	 * as one of previously used. This method is overriden because there is no need to check if id was previously used
+	 * (i.e. there was a document with the same name in the /deleted collection) because transactions are not to be backed up
+	 * in the /deleted collection after they are closed.
 	 * @param collection collection in which scope unique ID is created
 	 * @return unique ID
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
@@ -100,13 +102,15 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	@Override
 	protected JAXBElement<ExistTransaction> getJAXBElement(ExistTransaction object)
 	{
-		QName _TRANSACTION_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
+/*		QName _TRANSACTION_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
 		JAXBElement<ExistTransaction> jaxbElement =
 				new JAXBElement<ExistTransaction>(_TRANSACTION_QNAME, ExistTransaction.class, object);
-		return jaxbElement;
+		return jaxbElement;*/
+		return new ObjectFactory().createExistTransaction(object);
+
 	}
 
-//Unnecessary beacause the method in supercla is sufficient
+//Unnecessary beacause the method in superclass is sufficient
 /*	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException
 	{

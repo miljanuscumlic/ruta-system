@@ -104,8 +104,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	@Override
 	protected JAXBElement<CatalogueType> getJAXBElement(CatalogueType object)
 	{
-		JAXBElement<CatalogueType> jaxbElement = new ObjectFactory().createCatalogue(object);
-		return jaxbElement;
+		return  new ObjectFactory().createCatalogue(object);
 	}
 
 	@Override

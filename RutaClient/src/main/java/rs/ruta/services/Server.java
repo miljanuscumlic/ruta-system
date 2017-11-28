@@ -3,6 +3,7 @@ package rs.ruta.services;
 
 import java.util.List;
 import java.util.concurrent.Future;
+import javax.activation.DataHandler;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -15,6 +16,8 @@ import javax.xml.ws.ResponseWrapper;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.BugReport;
+import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 
@@ -31,6 +34,58 @@ import rs.ruta.common.SearchCriterion;
 })
 public interface Server {
 
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertFileResponse>
+     */
+    @WebMethod(operationName = "InsertFile")
+    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFile")
+    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFileResponse")
+    public Response<InsertFileResponse> insertFileAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "InsertFile")
+    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFile")
+    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFileResponse")
+    public Future<?> insertFileAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<InsertFileResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "InsertFile")
+    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFile")
+    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFileResponse")
+    public void insertFile(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
+        throws RutaException
+    ;
 
     /**
      * 
@@ -136,6 +191,49 @@ public interface Server {
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         CatalogueType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertBugReportResponse>
+     */
+    @WebMethod(operationName = "InsertBugReport")
+    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReport")
+    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReportResponse")
+    public Response<InsertBugReportResponse> insertBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReport arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "InsertBugReport")
+    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReport")
+    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReportResponse")
+    public Future<?> insertBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReport arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<InsertBugReportResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "InsertBugReport")
+    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReport")
+    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReportResponse")
+    public void insertBugReport(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReport arg0)
         throws RutaException
     ;
 
@@ -279,6 +377,61 @@ public interface Server {
      * @param arg1
      * @param arg0
      * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindBugResponse>
+     */
+    @WebMethod(operationName = "FindBug")
+    @RequestWrapper(localName = "FindBug", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBug")
+    @ResponseWrapper(localName = "FindBugResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugResponse")
+    public Response<FindBugResponse> findBugAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        int arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        int arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FindBug")
+    @RequestWrapper(localName = "FindBug", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBug")
+    @ResponseWrapper(localName = "FindBugResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugResponse")
+    public Future<?> findBugAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        int arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        int arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FindBugResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns java.util.List<rs.ruta.common.BugReport>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FindBug")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FindBug", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBug")
+    @ResponseWrapper(localName = "FindBugResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugResponse")
+    public List<BugReport> findBug(
+        @WebParam(name = "arg0", targetNamespace = "")
+        int arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        int arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.SearchCatalogueResponse>
      */
     @WebMethod(operationName = "SearchCatalogue")
@@ -378,6 +531,58 @@ public interface Server {
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         CatalogueDeletionType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertAttachmentResponse>
+     */
+    @WebMethod(operationName = "InsertAttachment")
+    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachment")
+    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachmentResponse")
+    public Response<InsertAttachmentResponse> insertAttachmentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        ReportAttachment arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "InsertAttachment")
+    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachment")
+    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachmentResponse")
+    public Future<?> insertAttachmentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        ReportAttachment arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<InsertAttachmentResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "InsertAttachment")
+    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachment")
+    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachmentResponse")
+    public void insertAttachment(
+        @WebParam(name = "arg0", targetNamespace = "")
+        ReportAttachment arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
         throws RutaException
     ;
 
@@ -629,6 +834,49 @@ public interface Server {
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         PartyType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertImageResponse>
+     */
+    @WebMethod(operationName = "InsertImage")
+    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImage")
+    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImageResponse")
+    public Response<InsertImageResponse> insertImageAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "InsertImage")
+    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImage")
+    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImageResponse")
+    public Future<?> insertImageAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<InsertImageResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "InsertImage")
+    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImage")
+    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImageResponse")
+    public void insertImage(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0)
         throws RutaException
     ;
 

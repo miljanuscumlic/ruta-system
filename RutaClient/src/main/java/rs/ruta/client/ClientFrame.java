@@ -60,6 +60,7 @@ public class ClientFrame extends JFrame
 	private SearchDialog searchDialog;
 	private CDRSettingsDialog settingsDialog;
 	private NotifyDialog notifyDialog;
+	private BugReportDialog bugReportDialog;
 //	private Component tab0RightPane;
 //	private Component tab0LeftPane;
 	private JComponent tab0Pane;
@@ -274,7 +275,6 @@ public class ClientFrame extends JFrame
 			/*BusinessParty tempParty = new BusinessParty();
 			Party tempCoreParty = InstanceFactory.newInstance(client.getMyParty().getCoreParty());
 			tempParty.setCoreParty(tempCoreParty);*/
-			client.getMyParty().followMyself();
 			//*****************
 			//adding Bussines Partners for the test purposes
 /*			List<BusinessParty> bp = client.getMyParty().getBusinessPartners();
@@ -298,9 +298,14 @@ public class ClientFrame extends JFrame
 			}*/
 			//*****************
 
+//			client.getMyParty().followMyself();
+
+
+
+
 			loadTab(tabbedPane.getSelectedIndex());
 		});
-//		partyMenu.add(followPartyItem);
+		localDataMenu.add(followPartyItem);
 
 		menuBar.add(localDataMenu);
 
@@ -463,11 +468,8 @@ public class ClientFrame extends JFrame
 
 		cdrSettingsItem.addActionListener(event ->
 		{
-			if(settingsDialog == null)
-			{
-				settingsDialog = new CDRSettingsDialog(ClientFrame.this);
-				settingsDialog.setTitle("CDR Settings");
-			}
+			settingsDialog = new CDRSettingsDialog(ClientFrame.this);
+			settingsDialog.setTitle("CDR Settings");
 			settingsDialog.setVisible(true);
 			if(settingsDialog.isApplyPressed())
 			{
@@ -483,8 +485,12 @@ public class ClientFrame extends JFrame
 		JMenuItem updateItem = new JMenuItem("Check for Updates");
 		helpMenu.add(updateItem);
 		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
-//		MMM: Temporarily commented  - not including in the realese version of the Client
+//		MMM: Comment notifyItem before new version of Ruta Client is released
 		helpMenu.add(notifyItem);
+		JMenuItem bugItem = new JMenuItem("Report a Bug");
+		helpMenu.add(bugItem);
+		JMenuItem fileItem = new JMenuItem("Send a File");
+		helpMenu.add(fileItem);
 
 		aboutItem.addActionListener(event ->
 		{
@@ -527,6 +533,23 @@ public class ClientFrame extends JFrame
 				client.cdrUpdateNotification(notifyDialog.getVersion());
 			}
 		});
+
+		bugItem.addActionListener(event ->
+		{
+			bugReportDialog = new BugReportDialog(ClientFrame.this);
+			bugReportDialog.setVisible(true);
+			if(bugReportDialog.isReportPressed())
+			{
+				bugReportDialog.clearData();
+				client.cdrReportBug(bugReportDialog.getBugReport());
+			}
+		});
+
+		fileItem.addActionListener(event ->
+		{
+			client.cdrInsertAttachment();
+		});
+
 
 		menuBar.add(helpMenu);
 	}

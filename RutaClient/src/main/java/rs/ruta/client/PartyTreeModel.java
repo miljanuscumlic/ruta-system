@@ -6,6 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
+import rs.ruta.common.InstanceFactory;
 
 public class PartyTreeModel extends DefaultTreeModel
 {

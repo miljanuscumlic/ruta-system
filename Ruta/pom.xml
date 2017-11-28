@@ -17,10 +17,6 @@
 		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target</ruta.common.path>
 	</properties>
 
-	<!-- temporary repository for exist -->
-	<!-- <repositories> <repository> <id>exist</id> <url>https://raw.github.com/eXist-db/mvn-repo/master/</url>
-		</repository> </repositories> -->
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -50,14 +46,10 @@
 			<artifactId>ph-ubl21</artifactId>
 			<!-- <version>5.1.0</version> -->
 		</dependency>
-		<!-- MMM: Temporary working solution before installing it in nexus repository-->
 		<dependency>
 			<groupId>rs.ruta</groupId>
 			<artifactId>ruta-common</artifactId>
 			<version>0.0.1</version>
-<!-- 			<scope>system</scope>
-			  <systemPath>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target/ruta-common-0.0.1.jar</systemPath>
-			<systemPath>${ruta.common.path}/ruta-common-0.0.1.jar</systemPath> -->
 		</dependency>
 	</dependencies>
 
@@ -190,6 +182,12 @@
 						<groupId>org.wildfly.plugins</groupId>
 						<artifactId>wildfly-maven-plugin</artifactId>
 						<version>1.1.0.Final</version>
+					  	<!-- <configuration>
+		                    <hostname>192.168.1.110</hostname>
+		                    <port>9990</port>
+		                    <username>milijan</username>
+		                    <password>Labirint09;</password>
+		                </configuration> -->
 					</plugin>
 				</plugins>
 			</build>

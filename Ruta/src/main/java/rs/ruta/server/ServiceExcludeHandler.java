@@ -11,7 +11,7 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.w3c.dom.Node;
-//MMM: might be a part of ServiceSignatureHandler as on the client side
+//MMM: this class could be a part of ServiceSignatureHandler as it is on the client side
 public class ServiceExcludeHandler implements SOAPHandler<SOAPMessageContext>
 {
 

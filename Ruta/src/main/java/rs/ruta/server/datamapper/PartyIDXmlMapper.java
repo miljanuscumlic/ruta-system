@@ -44,9 +44,11 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	@Override
 	protected JAXBElement<PartyID> getJAXBElement(PartyID object)
 	{
-		QName _QNAME = new QName("urn:rs:ruta:services", "PartyID");
+/*		QName _QNAME = new QName("urn:rs:ruta:services", "PartyID");
 		JAXBElement<PartyID> jaxbElement = new JAXBElement<PartyID> (_QNAME, PartyID.class,  object);
-		return jaxbElement;
+		return jaxbElement;*/
+		 return new ObjectFactory().createPartyID(object);
+
 	}
 
 	@Override

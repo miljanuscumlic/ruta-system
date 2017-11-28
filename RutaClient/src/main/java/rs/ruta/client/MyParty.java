@@ -14,6 +14,8 @@ import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDe
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 
+import rs.ruta.common.InstanceFactory;
+
 @XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType

@@ -21,7 +21,7 @@ public class CDRSettingsDialog extends JDialog
 	private static final long serialVersionUID = -1973674445580159781L;
 	private JTextField serviceField;
 	private String serviceLocation;
-	private boolean applyPressed; //wheather the Appy button is pressed
+	private boolean applyPressed; //wheather Apply button is pressed
 
 	public CDRSettingsDialog(ClientFrame owner)
 	{

@@ -1,5 +1,6 @@
 package rs.ruta.server.datamapper;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -614,6 +615,65 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
+	@Override
+	public void insert(File file, String id, DSTransaction transaction) throws DetailException
+	{
+		Collection collection = null;
+		try
+		{
+			collection = getCollection();
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			insertBinary(collection, file, (String)id, (ExistTransaction)transaction);
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved.", e);
+		}
+		finally
+		{
+			try
+			{
+				if(collection != null)
+					collection.close();
+			}
+			catch (XMLDBException e)
+			{
+				logger.error("Exception is ", e);
+			}
+		}
+	}
+
+	@Override
+	public void insert(Image object, String id, DSTransaction transaction) throws DetailException
+	{
+		Collection collection = null;
+		try
+		{
+			collection = getCollection();
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			insertImage(collection, object, (String)id, (ExistTransaction)transaction);
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved.", e);
+		}
+		finally
+		{
+			try
+			{
+				if(collection != null)
+					collection.close();
+			}
+			catch (XMLDBException e)
+			{
+				logger.error("Exception is ", e);
+			}
+		}
+	}
+
+
 	/**Inserts object in the collection.
 	 * @param collection collection in which the object is to be stored
 	 * @param object object to be stored
@@ -671,6 +731,124 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 			}
 		}
 	}
+
+	/**Inserts binary object in the collection.
+	 * @param collection collection in which the object is to be stored
+	 * @param object file to be stored
+	 * @param transaction transaction object
+	 * @return id of the file, unique in the scope of the collection
+	 * @throws DetailException if file could not be stored
+	 */
+	private void insertBinary(Collection collection, File object, String id, ExistTransaction transaction) throws DetailException
+	{
+		Resource resource = null;
+		String resourceType = "BinaryResource";
+		String colPath = getCollectionPath(collection); // getCollectionPath() was OK before I put insertToCollection() method so the path cannot be get from the overriden method getCollectionPath()
+//		colPath = ((CollectionImpl) collection).getPathURI().getCollectionPath();
+		String xmlResult = null; //Storing object in the String
+		String documentName = "";
+		try
+		{
+			documentName = object.getName();
+			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
+			resource = collection.getResource(documentName);
+			//MMM: commented code in regard with the transaction should be removed and the code prilagodjen to the binary files
+/*			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
+				copyResourceToDeleted(resource, transaction, "UPDATE");
+			else //first time insert
+*/			{
+				resource = collection.createResource(documentName, resourceType);
+/*				if(transaction != null && transaction.isEnabled())
+					transaction.appendOperation(colPath, documentName, "INSERT", null, null, null);*/
+			}
+			resource.setContent(object);
+			collection.storeResource(resource);
+			logger.info("Finished storing of the document " + documentName + " to the location " + colPath);
+		}
+		catch(XMLDBException e)
+		{
+			logger.error("Could not save the document " + documentName + " to the location " + colPath);
+			logger.error("Exception is ", e);;
+			throw new DatabaseException("The document could not be saved to the database.", e);
+		}
+/*		catch(DataManipulationException e)
+		{
+			logger.error("Could not save the document " + documentName + " to the location " + colPath);
+			throw e;
+		}*/
+		finally
+		{
+			try
+			{
+				if (resource != null)
+					((EXistResource)resource).freeResources();
+			}
+			catch(XMLDBException e)
+			{
+				logger.error("Exception is ", e);;
+			}
+		}
+	}
+
+	/**Inserts image as binary object in the collection.
+	 * @param collection collection in which the object is to be stored
+	 * @param object image to be stored
+	 * @param transaction transaction object
+	 * @return id of the file, unique in the scope of the collection
+	 * @throws DetailException if file could not be stored
+	 */
+	private void insertImage(Collection collection, Image object, String id, ExistTransaction transaction) throws DetailException
+	{
+		Resource resource = null;
+		String resourceType = "BinaryResource";
+		String colPath = getCollectionPath(collection); // getCollectionPath() was OK before I put insertToCollection() method so the path cannot be get from the overriden method getCollectionPath()
+//		colPath = ((CollectionImpl) collection).getPathURI().getCollectionPath();
+		String xmlResult = null; //Storing object in the String
+		String documentName = "";
+		try
+		{
+			documentName = createID();
+			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
+			resource = collection.getResource(documentName);
+			//MMM: commented code in regard with the transaction should be removed and the code prilagodjen to the binary files
+/*			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
+				copyResourceToDeleted(resource, transaction, "UPDATE");
+			else //first time insert
+*/			{
+				resource = collection.createResource(documentName, resourceType);
+/*				if(transaction != null && transaction.isEnabled())
+					transaction.appendOperation(colPath, documentName, "INSERT", null, null, null);*/
+			}
+			resource.setContent(object);
+			collection.storeResource(resource);
+			logger.info("Finished storing of the document " + documentName + " to the location " + colPath);
+		}
+		catch(XMLDBException e)
+		{
+			logger.error("Could not save the document " + documentName + " to the location " + colPath);
+			logger.error("Exception is ", e);;
+			throw new DatabaseException("The document could not be saved to the database.", e);
+		}
+/*		catch(DataManipulationException e)
+		{
+			logger.error("Could not save the document " + documentName + " to the location " + colPath);
+			throw e;
+		}*/
+		finally
+		{
+			try
+			{
+				if (resource != null)
+					((EXistResource)resource).freeResources();
+			}
+			catch(XMLDBException e)
+			{
+				logger.error("Exception is ", e);;
+			}
+		}
+	}
+
+
 
 	/**If id has a dot character in itself this method deletes the dot and all characters after it.
 	 * @param id id that is the subject of trimming
@@ -859,6 +1037,8 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 					result = new String((byte[])content, "UTF-8"); // ASCII
 				}
 			}
+			if(result != null)
+				logger.info("The document " + collectionPath + "/" + documentName + " is opened.");
 			return result;
 		}
 		catch(XMLDBException | UnsupportedEncodingException e)
@@ -872,14 +1052,63 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 			try
 			{
 				if(resource != null)
-				{
 					((EXistResource)resource).freeResources();
-					logger.info("The document " + collectionPath + "/" + documentName + " is opened.");
-				}
 				if(collection != null)
 					collection.close();
 			}
 			catch(XMLDBException e)
+			{
+				logger.error("Exception is ", e);
+			}
+		}
+	}
+
+	/**Saves the document with specified document name to the specified collection. Document is passed to the method as
+	 * a {@code String}. If document does not exist it will be created. If exists its contents will be replaced.
+	 * @param collectionPath path of the collection
+	 * @param documentName document name
+	 * @param document document as {@code String}
+	 * @throws DatabaseException if document could not be saved to the collection
+	 */
+	public void saveDocument(String collectionPath, String documentName, String document) throws DatabaseException
+	{
+		Resource resource = null;
+		Collection collection = null;
+		try
+		{
+			logger.info("Start saving of the document " + collectionPath + "/" + documentName + ".");
+			collection = getCollection(collectionPath);
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			resource = collection.getResource(documentName);
+			if(resource == null)
+				resource = collection.createResource(documentName, "XMLResource");
+			resource.setContent(document);
+			collection.storeResource(resource);
+			logger.info("Finished copying of the document " + collectionPath + "/" + documentName  + ".");
+		}
+		catch(XMLDBException e)
+		{
+			logger.info("Could not save the document " + collectionPath + "/" + documentName + ".");
+			logger.error("Exception is ", e);;
+			throw new DatabaseException("Document could not be saved to the collection.", e);
+		}
+		finally
+		{
+			try
+			{
+				if(resource != null)
+					((EXistResource)resource).freeResources();
+			}
+			catch(XMLDBException e)
+			{
+				logger.error("Exception is ", e);
+			}
+			try
+			{
+				if(collection != null)
+					collection.close();
+			} catch (XMLDBException e)
 			{
 				logger.error("Exception is ", e);
 			}
@@ -1049,7 +1278,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @return unique ID
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
 	 */
-	public String createID(Collection collection) throws XMLDBException
+	protected String createID(Collection collection) throws XMLDBException
 	{
 		String id;
 		do
@@ -1099,7 +1328,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @return true if id has been used earlier, otherwise false
 	 * @throws XMLDBException if collection cannot be retrieved from the database
 	 */
-	private boolean wasIDDeleted(Collection collection, String id) throws XMLDBException
+	protected boolean wasIDDeleted(Collection collection, String id) throws XMLDBException
 	{
 		Collection deleted = null;
 		String collectionPath = ((CollectionImpl) collection).getPathURI().getCollectionPath();

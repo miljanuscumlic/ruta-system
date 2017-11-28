@@ -162,13 +162,13 @@ public class UserXmlMapper extends XmlMapper<User>
 			//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
 			insertMetadata(username, SECRET_KEY, secretKey);
 			//reservation of unique id for documents in /db/ruta/party
-			String id = (String) ((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).
+			String id = (String) (MapperRegistry.getMapper(PartyType.class)).
 					insert(username, new PartyType(), transaction);
 			insertMetadata(username, DOCUMENT_ID, id);
 			//reservation of uuid for party in /db/ruta/system/party-id
 //			String uuid = (String) ((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).
 //					insertToCollection(uuidCollectionPath, new PartyType(), transaction);
-			String uuid = (String) ((PartyIDXmlMapper) MapperRegistry.getMapper(PartyID.class)).
+			String uuid = (String) (MapperRegistry.getMapper(PartyID.class)).
 					insert(username, new PartyID(id), transaction);
 			insertMetadata(username, PARTY_ID, uuid);
 
@@ -369,8 +369,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	@Override
 	protected JAXBElement<User> getJAXBElement(User object)
 	{
-		JAXBElement<User> partyElement = new ObjectFactory().createUser(object);
-		return partyElement;
+		return new ObjectFactory().createUser(object);
 	}
 
 	@Override

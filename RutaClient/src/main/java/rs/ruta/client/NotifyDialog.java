@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -24,14 +23,13 @@ public class NotifyDialog extends JDialog
 	private static final long serialVersionUID = 7550213837453337452L;
 	private RutaVersion version;
 	private JList<String> sideList;
-	private JTextField sideField;
 	private JTextField versionField;
 	private JTextField jaxbField;
 	private JTextField linkField;
 
 	private boolean notifyPressed; // true if the notify button were pressed
 
-	public NotifyDialog(ClientFrame owner	)
+	public NotifyDialog(ClientFrame owner)
 	{
 		super(owner, "Notify about new Ruta Client application", true);
 		setResizable(false);
@@ -44,9 +42,9 @@ public class NotifyDialog extends JDialog
 		sideList = new JList<String>(types);
 		sideList.setVisibleRowCount(1);
 		sideList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		sideList.setSelectedValue(types[0], true);;
+		sideList.setSelectedValue(types[0], true);
+
 		int width = 20;
-		sideField = new JTextField(width);
 		versionField = new JTextField(width);
 		jaxbField = new JTextField(width);
 		linkField = new JTextField(width);

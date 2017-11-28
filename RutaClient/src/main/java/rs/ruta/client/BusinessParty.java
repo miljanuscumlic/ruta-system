@@ -1,6 +1,7 @@
 package rs.ruta.client;
 
 import java.math.BigDecimal;
+import rs.ruta.common.InstanceFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
