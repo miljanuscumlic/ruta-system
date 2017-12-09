@@ -17,7 +17,7 @@ import rs.ruta.client.datamapper.*;
 public class BusinessParty
 {
 //	@XmlTransient
-	@XmlElement(name = "MyProduct")
+	@XmlElement(name = "Products")
 	private ArrayList<ItemType> products; //database alternative - MMM: to be replaced with the real database
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
@@ -247,10 +247,27 @@ public class BusinessParty
 		return item.getKeyword();
 	}
 
+	/**Adds new empty {@link ItemType} to the product list.
+	 */
 	public void addNewEmptyProduct()
 	{
-//		myProducts.add(InstanceFactory.newInstanceItemType());
 		products.add(new ItemType());
+	}
+
+	/**Removes {@link ItemType} from the product list.
+	 * @param row product's number
+	 */
+	public void removeProduct(int row)
+	{
+		products.remove(row);
+	}
+
+	/**Adds passed {@link ItemType} to the product list.
+	 * @param item {@link ItemType} to be added
+	 */
+	public void addProduct(ItemType item)
+	{
+		products.add(item);
 	}
 
 	/**Returns the number of party's products.

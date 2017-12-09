@@ -555,7 +555,7 @@ public class ClientFrame extends JFrame
 	}
 
 	/**Enables menu items regarding Search after client gets the response from the CDR service.
-	 * All method calls are made througn the {@link EventQueue}.
+	 * All method calls are made through the {@link EventQueue}.
 	 */
 	public void enableSearchMenuItems()
 	{
@@ -563,7 +563,7 @@ public class ClientFrame extends JFrame
 	}
 
 	/**Disables menu items regarding Search after client sends the request to the CDR service.
-	 * All method calls are made througn the {@link EventQueue}.
+	 * All method calls are made through the {@link EventQueue}.
 	 */
 	public void disableSearchMenuItems()
 	{
@@ -571,7 +571,7 @@ public class ClientFrame extends JFrame
 	}
 
 	/**Enables menu items regarding My Party after client gets the response from the CDR service.
-	 * All method calls are made througn the {@link EventQueue}.
+	 * All method calls are made through the {@link EventQueue}.
 	 */
 	public void enablePartyMenuItems()
 	{
@@ -584,7 +584,7 @@ public class ClientFrame extends JFrame
 	}
 
 	/**Disables menu items regarding My Party after client sends the request to the CDR service.
-	 * All method calls are made througn the {@link EventQueue}.
+	 * All method calls are made through the {@link EventQueue}.
 	 */
 	public void disablePartyMenuItems()
 	{
@@ -597,7 +597,7 @@ public class ClientFrame extends JFrame
 	}
 
 	/**Enables menu items regarding My Catalogue after client gets the response from the CDR service.
-	 * All method calls are made througn the {@link EventQueue}.
+	 * All method calls are made through the {@link EventQueue}.
 	 */
 	public void enableCatalogueMenuItems()
 	{
@@ -607,7 +607,7 @@ public class ClientFrame extends JFrame
 	}
 
 	/**Disables menu items regarding My Catalogue after client sends the request to the CDR service.
-	 * All method calls are made througn the {@link EventQueue}.
+	 * All method calls are made through the {@link EventQueue}.
 	 */
 	public void disableCatalogueMenuItems()
 	{
@@ -832,8 +832,8 @@ public class ClientFrame extends JFrame
 				int col = table.getSelectedColumn();
 
 				MyParty myParty = client.getMyParty();
-				myParty.getMyProducts().remove(row);
-
+//				myParty.getMyProducts().remove(row);
+				myParty.removeProduct(row);
 				loadTab(tabbedPane.getSelectedIndex());
 			});
 			component = new JScrollPane(table);

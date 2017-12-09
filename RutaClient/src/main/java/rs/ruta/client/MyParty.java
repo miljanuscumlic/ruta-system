@@ -568,4 +568,21 @@ public class MyParty extends BusinessParty
 		unfollowMyself();
 		followMyself();
 	}
+
+	@Override
+	public void removeProduct(int row)
+	{
+		super.removeProduct(row);
+		dirtyCatalogue = true;
+	}
+
+	@Override
+	public void addProduct(ItemType item)
+	{
+		super.addProduct(item);
+		dirtyCatalogue = true;
+	}
+
+
+
 }
