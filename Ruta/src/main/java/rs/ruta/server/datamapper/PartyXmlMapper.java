@@ -29,7 +29,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, PartyType> loadedParties;
 
-	public PartyXmlMapper() throws DatabaseException
+	public PartyXmlMapper() throws DetailException
 	{
 		super();
 		loadedParties = new ConcurrentHashMap<String, PartyType>();
@@ -87,23 +87,52 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected void clearLoadedObjects()
+	protected void clearCachedObjects()
 	{
 		loadedParties.clear();
 	}
 
 	@Override
-	public PartyType getLoadedObject(String id)
+	public PartyType getCachedObject(String id)
 	{
 		return loadedParties.get(id);
 	}
 
 	@Override
-	public void putLoadedObject(String id, PartyType object)
+	public void doCacheObject(String id, PartyType object)
 	{
-		loadedParties.put(id,  object);
+		loadedParties.put(id, object);
 	}
 
+	@Override
+	protected String doGetOrCreateID(Collection collection, PartyType party, String username, DSTransaction transaction) throws DetailException
+	{
+		String id = null;
+		//object that should be stored doesn't have an ID and User has no Document ID metadata set
+		try
+		{
+			if(getPartyID(party) == null && getID(username) == null)
+			{
+				collection = getCollection();
+				if(collection == null)
+					throw new DatabaseException("Could not retrieve the collection.");
+				id = createID(collection);
+			}
+			else
+			{
+				id = getID(username);
+				String uuid = (String) getUserID(username);
+				setPartyID(party, uuid);
+			}
+		}
+		catch (XMLDBException e)
+		{
+			throw new DatabaseException("Could not retrieve the collection or create unique ID.", e);
+		}
+		return id;
+	}
+
+	@Deprecated
 	@Override
 	public String insert(String username, PartyType party, DSTransaction transaction) throws DetailException
 	{
@@ -194,14 +223,15 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		return PartyType.class;
 	}
 
-	@Override
+	//@Deprecated //MMM: delete it
+/*	@Override
 	public String update(String username, PartyType party, DSTransaction transaction) throws DetailException
 	{
 		//update not going through the insert method because Party object has its unique ID, and insert method creates new one
 		String id = (String) super.update(username, party, transaction);
 		loadedParties.put(id, party);
 		return id;
-	}
+	}*/
 
 	@Override
 	public String getSearchQueryName()

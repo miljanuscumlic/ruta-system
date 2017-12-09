@@ -24,7 +24,7 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, ExistTransaction> loadedTransactions;
 
-	public ExistTransactionMapper() throws DatabaseException
+	public ExistTransactionMapper() throws DetailException
 	{
 		super();
 		loadedTransactions = new ConcurrentHashMap<String, ExistTransaction>();
@@ -125,7 +125,7 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	}
 
 	@Override
-	public ExistTransaction getLoadedObject(String id)
+	public ExistTransaction getCachedObject(String id)
 	{
 		return loadedTransactions.get(id);
 	}

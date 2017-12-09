@@ -62,7 +62,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 						generateFault("Signatures do not matches!");
 				}
 				//SOAPFaultException formed in generateFault method should not be cought here
-				catch(DetailException e) // might be thrown by getSecretKey
+				catch(DetailException e) // might be thrown by getSecretKey e.g. if the database is not accessible
 				{
 					generateFault(e.getMessage());
 				}
@@ -83,7 +83,10 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 				}
 				catch (DetailException e)
 				{
-					//it's OK. User doesn't exist.
+					//it's OK if user doesn't exist.
+					//but if database is not accessible send SOAP Foalt
+					if(e.getMessage().contains("Database connectivity problem. The collection could not be created or retrieved."))
+						generateFault(e.getMessage());
 				}
 			}
 		}

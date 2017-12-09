@@ -22,7 +22,9 @@ import rs.ruta.server.DatabaseException;
 public class ExistConnector implements DatastoreConnector
 {
 	private static String uriPrefix = "xmldb:exist://";
-	private static String rutaCollectionPath = "/db/ruta"; // path of the application's base collection
+	private static String rutaDevelopCollectionPath = "/db/ruta-develop"; // path of the application's base collection in develop branch
+	private static String rutaMasterCollectionPath = "/db/ruta"; // path of the application's base collection in master branch
+	private static String rutaCollectionPath = rutaDevelopCollectionPath; // path of the application's base collection
 	private static String uriSufix = "/exist/xmlrpc";
 	private static String server = "localhost";
 	private static String port = "8888";
@@ -32,24 +34,50 @@ public class ExistConnector implements DatastoreConnector
 	private static String deletedPath = "/deleted";
 	private static String queryPath = "/system/query";
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
+	private static boolean connected = false;
 
 	/**Constructs eXist database instance and registers it at the <code>DatabaseManager</code>, enabling
 	 * the application to communicate with it.
 	 */
-	public static void connectDatabase()
+	public static void connectToDatabase() throws DatabaseException
 	{
+		if(!connected)
+		{
+			try
+			{
+				@SuppressWarnings("unchecked")
+				final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
+				final Database database = dbClass.newInstance();
+				database.setProperty("create-database", "true");
+				DatabaseManager.registerDatabase(database);
+				connected = true;
+			}
+			catch(Exception e)
+			{
+				logger.error("Exception is ", e);
+				throw new DatabaseException("Database could not be registered with the database manager.");
+			}
+		}
+		if(! isDatabaseAccessible())
+			throw new DatabaseException("Database connectivity issue. Database is not accessible.");
+	}
+
+	/**Checks whether the database is accessible.
+	 * @return true or false
+	 */
+	static boolean isDatabaseAccessible()
+	{
+		boolean access = true;
 		try
 		{
-			@SuppressWarnings("unchecked")
-			final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
-			final Database database = dbClass.newInstance();
-			database.setProperty("create-database", "true");
-			DatabaseManager.registerDatabase(database);
+			getRootCollection();
 		}
-		catch(Exception e)
+		catch (XMLDBException e)
 		{
-			logger.error("Exception is ", e);
+			access = false;
+			//logger.error("Exception is ", e);
 		}
+		return access;
 	}
 
 	/**Starts the eXist database application in its own jetty server on this machine.
@@ -126,6 +154,7 @@ public class ExistConnector implements DatastoreConnector
 			root = getRootCollection();
 			final DatabaseInstanceManager dbm = (DatabaseInstanceManager) root.getService("DatabaseInstanceManager", "1.0");
 			dbm.shutdown();
+			connected = false;
 		}
 		catch (XMLDBException e)
 		{
@@ -309,7 +338,8 @@ public class ExistConnector implements DatastoreConnector
 		getOrCreateCollection(getBaseUri(), getRelativeRutaCollectionPath() + collectionPath, username, password);
 	}
 
-	/**Checks if the collection exist. If not, method creates the collection and asigns database admin as an owner of the collection.
+	/**Checks whether the collection exist. If not, method creates the collection and asigns database admin
+	 * as an owner of the collection.
 	 * @param collectionPath relative collection path
 	 * @throws DatabaseException if collection could not be retrieved or created
 	 */

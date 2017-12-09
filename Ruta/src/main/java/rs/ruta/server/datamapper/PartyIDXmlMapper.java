@@ -21,7 +21,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	final private static String objectPackageName = "rs.ruta.server.datamapper";
 	final private static String queryNameSearchID = "search-id.xq";
 
-	public PartyIDXmlMapper() throws DatabaseException { super(); }
+	public PartyIDXmlMapper() throws DetailException { super(); }
 
 	@Override
 	public Class<?> getObjectClass() { return PartyID.class; }
@@ -33,7 +33,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	public String getCollectionPath() { return collectionPath; }
 
 	@Override
-	public PartyID getLoadedObject(String id) { return null; }
+	public PartyID getCachedObject(String id) { return null; }
 
 	@Override
 	public String getSearchQueryName()

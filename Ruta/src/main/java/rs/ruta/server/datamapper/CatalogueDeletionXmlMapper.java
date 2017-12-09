@@ -1,13 +1,17 @@
 package rs.ruta.server.datamapper;
 
 import java.io.StringReader;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
+import org.xmldb.api.base.Collection;
+import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
@@ -22,7 +26,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	//MMM: This map should be some kind of most recently used collection
 	private Map<String, CatalogueDeletionType> loadedCatalogueDeletions;
 
-	public CatalogueDeletionXmlMapper() throws DatabaseException
+	public CatalogueDeletionXmlMapper() throws DetailException
 	{
 		super();
 		loadedCatalogueDeletions = new ConcurrentHashMap<String, CatalogueDeletionType>();
@@ -62,6 +66,18 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
+	protected String doGetOrCreateID(Collection collection, CatalogueDeletionType catalogueDeletion, String username, DSTransaction transaction)
+			throws DetailException
+	{
+		String id = null;
+		if(username != null)
+			id = getID(username);
+		MapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
+		return id;
+	}
+
+/*	@Deprecated
+	@Override
 	public void insert(CatalogueDeletionType catalogueDeletion, String id,  DSTransaction transaction) throws DetailException
 	{
 		MapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
@@ -69,13 +85,14 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 		loadedCatalogueDeletions.put(id, catalogueDeletion);
 	}
 
+	@Deprecated
 	@Override
 	public String insert(String username, CatalogueDeletionType object, DSTransaction transaction) throws DetailException
 	{
 		String id = getID(username);
 		insert(object, id, transaction);
 		return id;
-	}
+	}*/
 
 	@Override
 	public void delete(String id, DSTransaction transaction) throws DetailException
@@ -97,7 +114,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
-	public CatalogueDeletionType getLoadedObject(String id)
+	public CatalogueDeletionType getCachedObject(String id)
 	{
 		return loadedCatalogueDeletions.get(id);
 	}
@@ -125,7 +142,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
-	protected void clearLoadedObjects()
+	protected void clearCachedObjects()
 	{
 		loadedCatalogueDeletions.clear();
 	}

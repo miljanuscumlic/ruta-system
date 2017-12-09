@@ -30,7 +30,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	final private static SchemaType PARTY_ID = AXSchemaType.FIRSTNAME;
 	final private static String objectPackageName = "rs.ruta.server.datamapper";
 
-	public UserXmlMapper() throws DatabaseException
+	public UserXmlMapper() throws DetailException
 	{
 		super();
 	}
@@ -50,12 +50,51 @@ public class UserXmlMapper extends XmlMapper<User>
 	}
 
 	@Override
-	public void insert(User object, String id, DSTransaction transaction) throws DetailException
+	public void deleteUser(String username) throws DetailException
 	{
-		// TODO Auto-generated method stub
+		DSTransaction transaction = openOperation();
+		try
+		{
+			String id = getID(username);
+			//deletes user's Catalogue and Catalogue Deletion documents
+			try
+			{
+				MapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
+				MapperRegistry.getMapper(CatalogueDeletionType.class).delete(id, transaction);
+			}
+			catch(DetailException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
 
+			//deletes Party data
+			MapperRegistry.getMapper(PartyType.class).delete(id, transaction);
+
+			//deletes document from the /key collection
+			String secretKey = findSecretKey(username);
+			super.delete(secretKey, transaction);
+
+			//deletes document from the system/party-id collection
+			String partyID = findPartyID(username);
+			MapperRegistry.getMapper(PartyID.class).delete(partyID, transaction);
+
+			//deletes user from eXist database management system
+			deleteExistAccount(username);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw e;
+		}
+		finally
+		{
+			closeOperation(null, transaction);
+		}
 	}
 
+	@Deprecated
 	@Override
 	public void deleteUser(String username, DSTransaction transaction) throws DetailException
 	{
@@ -114,7 +153,6 @@ public class UserXmlMapper extends XmlMapper<User>
 		}
 		catch(XMLDBException e)
 		{
-			logger.error("Exception is ", e);
 			throw new DatabaseException("Collection could not be retrieved from the database.");
 		}
 		try
@@ -149,6 +187,49 @@ public class UserXmlMapper extends XmlMapper<User>
 		}
 	}
 
+	@Override
+	public String registerUser(String username, String password) throws DetailException
+	{
+		DSTransaction transaction = openOperation();
+		String secretKey = null;
+		try
+		{
+			logger.info("Start of registering of the user " + username + " with the CDR service.");
+			registerUserWithExist(username, password, (ExistTransaction) transaction);
+			//reservation of unique secretKey in /db/ruta/key collection
+			secretKey = (String) insert(username, new User(), transaction);
+			//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
+			insertMetadata(username, SECRET_KEY, secretKey);
+			//reservation of unique id for documents in /db/ruta/party
+			String id = (String) (MapperRegistry.getMapper(PartyType.class)).insert(username, new PartyType(), transaction);
+			insertMetadata(username, DOCUMENT_ID, id);
+			//reservation of uuid for party in /db/ruta/system/party-id
+			String uuid = (String) (MapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(id), transaction);
+			insertMetadata(username, PARTY_ID, uuid);
+
+			logger.info("Finished registering of the user " + username + " with the CDR service.");
+		}
+		catch (XMLDBException e)
+		{
+			logger.error("Could not register the user " + username + " with the CDR service.");
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw new UserException("User has insufficient data in the database, or data could not be retrieved.");
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw e;
+		}
+		finally
+		{
+			 closeOperation(null, transaction);
+		}
+		return secretKey;
+	}
+
+	@Deprecated
 	@Override
 	public String registerUser(String username, String password, DSTransaction transaction) throws DetailException
 	{
@@ -413,5 +494,5 @@ public class UserXmlMapper extends XmlMapper<User>
 	}
 
 	@Override
-	public User getLoadedObject(String id) { return null; }
+	public User getCachedObject(String id) { return null; }
 }

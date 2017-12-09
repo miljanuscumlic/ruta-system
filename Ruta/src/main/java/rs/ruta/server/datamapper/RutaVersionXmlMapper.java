@@ -23,7 +23,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	final private static String objectPackageName = "rs.ruta.common";
 	final private static String queryNameVersion = "search-version.xq";
 
-	public RutaVersionXmlMapper() throws DatabaseException
+	public RutaVersionXmlMapper() throws DetailException
 	{
 		super();
 	}

@@ -87,4 +87,12 @@ public final class MapperRegistry
 	{
 		return new ExistTransactionFactory();
 	}
+
+	/**Checks whether the datastore is accessible.
+	 * @return true or false
+	 */
+	public static boolean isDatastoreAccessible()
+	{
+		return ExistConnector.isDatabaseAccessible();
+	}
 }

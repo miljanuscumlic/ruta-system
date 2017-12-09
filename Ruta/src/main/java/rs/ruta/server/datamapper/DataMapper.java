@@ -81,6 +81,8 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 */
 	public void insert(T object, ID id, DSTransaction transaction) throws DetailException;
 
+	public void insert(T object) throws DetailException;
+
 	/**Inserts object to the data store. If necessary unique id of the object may be created.
 	 * @param username username of the user whose object is to be stored in the datastore
 	 * @param object object to be stored
@@ -89,6 +91,8 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 * @throws DetailException if object cannot be insert in the store
 	 */
 	public ID insert(String username, T object, DSTransaction transaction) throws DetailException;
+
+	public ID insert(String username, T object) throws DetailException;
 
 	/**Updates object with passed id.
 	 * @param object object to be updated
@@ -107,6 +111,8 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 * @throws DetailException if object could not be updated
 	 */
 	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
+
+	public ID update(String username, T object) throws DetailException;
 
 	//MMM: maybe unnecessary method
 	/**Retrieves object's id from the data store. ID is the result of the querying the data store
@@ -147,6 +153,8 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 */
 	default public void deleteUser(String username, DSTransaction transaction) throws DetailException {}
 
+	default public void deleteUser(String username) throws DetailException {}
+
 	/**Registers new user with the data store.
 	 * @param username user's username
 	 * @param password user's password
@@ -156,6 +164,8 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	 */
 	default public ID registerUser(String username, String password, DSTransaction transaction)
 			throws DetailException { return null; }
+
+	default public ID registerUser(String username, String password) throws DetailException { return null; }
 
 	/**Gets user's secret key from the data store.
 	 * @param username user's username

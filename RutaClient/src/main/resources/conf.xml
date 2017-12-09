@@ -53,7 +53,7 @@
         - http://exist-db.org/exist/apps/doc/documentation.xml
         - http://atomic.exist-db.org/
         
-    Version: 3.2.0
+    Version: 3.5.0
 
 -->
 <exist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/conf.xsd">
@@ -156,8 +156,12 @@
         collections, you can also increase the collectionCacheSize value 
     -->
     <db-connection cacheSize="256M" checkMaxCacheSize="true" collectionCache="64M" database="native"
-        files="D:\Fakultet\_Diplomski\_diplomski rad\git\RutaClient\target\data" pageSize="4096" nodesBuffer="1000" cacheShrinkThreshold="10000"
+        files="\data" pageSize="4096" nodesBuffer="1000" cacheShrinkThreshold="10000"
         doc-ids="default" minDiskSpace="128M">
+		
+<!--		<db-connection cacheSize="256M" checkMaxCacheSize="true" collectionCache="64M" database="native"
+        files="d:\Temp\webapp\WEB-INF\data" pageSize="4096" nodesBuffer="1000" cacheShrinkThreshold="10000"
+        doc-ids="default" minDiskSpace="128M">  -->
 
         <!--
             Startup Triggers are executed before the database becomes generally available
@@ -171,10 +175,18 @@
 		-->
 		<trigger class="org.exist.security.GnuCryptoJceProviderStartupTrigger"/>
 
-		<!--
-		    Trigger for registering eXists XML:DB URL handler with Java
-		-->
-		<trigger class="org.exist.protocolhandler.URLStreamHandlerStartupTrigger"/>
+                <!--
+                    Trigger for registering eXists XML:DB URL handler with Java
+                -->
+                <trigger class="org.exist.protocolhandler.URLStreamHandlerStartupTrigger">
+                    <!-- Keep stream's data in memory -->
+                    <parameter name="mode" value="memory"/>
+                    <!-- low memory requirements, but also it have design bugs:
+                          - broker hold while io stream in "use";
+                          - require 2 threads per operation
+                    -->
+                    <!--<parameter name="mode" value="threads"/>-->
+                </trigger>
 
                 <!-- 
                     EXQuery RESTXQ trigger to load the RESTXQ Registry at startup time 
@@ -322,7 +334,7 @@
                 and if inconsistencies are found in the db, it writes an emergency
                 backup to the same directory.
         -->
-        <recovery enabled="yes"  group-commit="no"   journal-dir="D:\Fakultet\_Diplomski\_diplomski rad\git\RutaClient\target\data" 
+        <recovery enabled="yes"  group-commit="no"   journal-dir="/data"
                   size="100M" sync-on-commit="no"  force-restart="no"  consistency-check="yes"/>
 
         <!--

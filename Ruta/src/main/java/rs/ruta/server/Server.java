@@ -112,12 +112,12 @@ public interface Server
 	@WebMethod(operationName = "FindAllParties")
 	public List<PartyType> findAllParties() throws RutaException;
 
-	/**Inserts notification about the new Ruta Client application update
+	/**Inserts notification about the new Ruta Client application update.
 	 * @param version Ruta Client version
 	 * @throws RutaException if notification could not be inserted in the data store
 	 */
 	@WebMethod(operationName = "NotifyUpdate")
-	public void notifyUpdate(RutaVersion version) throws RutaException;
+	public void insertUpdateNotification(RutaVersion version) throws RutaException;
 
 	/**Checks the data store if there is a newer version of the Ruta Client application.
 	 * @param currentVersion Ruta Client application's version of the user who sends the request
@@ -125,7 +125,7 @@ public interface Server
 	 * @throws RutaException if latest {@link Version} could not be retrieved
 	 */
 	@WebMethod(operationName = "UpdateRutaClient")
-	public RutaVersion updateRutaClient(String currentVersion) throws RutaException;
+	public RutaVersion findClientVersion(String currentVersion) throws RutaException;
 
 	/**Inserts the {@code BugReport} in the datastore.
 	 * @param bugReport bug to be inserted

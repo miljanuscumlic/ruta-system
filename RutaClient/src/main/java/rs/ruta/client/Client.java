@@ -44,16 +44,16 @@ import rs.ruta.common.InstanceFactory;
 public class Client implements RutaNode
 {
 	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_21"; // colon separated package list
-	final private static String defaultEndPoint = "http://ruta.sytes.net:9010/ruta-server-0.0.1/CDR";
+	final private static String defaultEndPoint = "http://ruta.sytes.net:9009/ruta-server-0.1.0-SNAPSHOT/CDR";
 	private static String cdrEndPoint = defaultEndPoint;
-	final private static String eclipseMonitorEndPoint = "http://localhost:7777/ruta-server-0.0.1/CDR";
+	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.1.0-SNAPSHOT/CDR";
 	private MyParty myParty;
 	private MyPartyXMLFileMapper<MyParty> partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
 	private Party CDRParty;
 	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper;
 	private ClientFrame frame;
 	private Preferences prefNode;
-	private static RutaVersion version = new RutaVersion("Client", "0.0.1", "0.0.1", null);
+	private static RutaVersion version = new RutaVersion("Client", "0.1.0-SNAPSHOT", "0.0.1", null);
 
 	public Client()
 	{
@@ -524,6 +524,7 @@ public class Client implements RutaNode
 					}
 					catch (Exception e)
 					{
+						e.printStackTrace();
 						msg.append("Server responds: ");
 						Throwable cause = e.getCause();
 						if(cause instanceof RutaException)
@@ -567,6 +568,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
+			e.printStackTrace();
 			frame.appendToConsole("My Catalogue has not been updated by the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 			frame.enableCatalogueMenuItems();
@@ -902,20 +904,28 @@ public class Client implements RutaNode
 	 */
 	private Server getCDRPort()
 	{
-		//getting webservice port
-		CDRService service = new CDRService();
-		service.setHandlerResolver(new ClientHandlerResolver(myParty));
-		Server port = service.getCDRPort();
-		//temporary setting for TCP/IP Monitor in Eclipse
-		//bindEclipseEndPoint(port);
-		if(!defaultEndPoint.equals(cdrEndPoint))
-			bindCDREndPoint(port);
+		try
+		{
+			//getting webservice port
+			CDRService service = new CDRService();
+			service.setHandlerResolver(new ClientHandlerResolver(myParty));
+			Server port = service.getCDRPort();
+			//temporary setting for TCP/IP Monitor in Eclipse
+			//bindEclipseEndPoint(port);
+			if(!defaultEndPoint.equals(cdrEndPoint))
+				bindCDREndPoint(port);
 
 
-		BindingProvider bp = (BindingProvider) port;
-	    SOAPBinding binding = (SOAPBinding) bp.getBinding();
-	    binding.setMTOMEnabled(true);
-		return port;
+			BindingProvider bp = (BindingProvider) port;
+			SOAPBinding binding = (SOAPBinding) bp.getBinding();
+			binding.setMTOMEnabled(true);
+			return port;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	//Method may be used for some testing purposes

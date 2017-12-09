@@ -54,32 +54,124 @@ import rs.ruta.server.datamapper.DataMapper;
  */
 public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<T, String>
 {
-	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
 
-	public XmlMapper() throws DatabaseException
+	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
+	private final DSTransactionFactory transactionFactory;
+	/** True when database transaction has failed.*/
+	private volatile boolean transactionFailure;
+
+	public XmlMapper() throws DetailException
 	{
+		transactionFailure = true;
+		transactionFactory = MapperRegistry.getTransactionFactory();
 		init();
 	}
 
-	private void init() throws DatabaseException
+	private void init() throws DetailException
 	{
-		connectDatabase();
+		connectToDatabase();
 		checkCollection(getCollectionPath());
 		checkCollection(getDeletedCollectionPath());
 		checkCollection(getQueryPath());
 
-		/*try
+/*		try
 		{
-			@SuppressWarnings("unchecked")
-			final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
-			final Database database = dbClass.newInstance();
-			database.setProperty("create-database", "true");
-			DatabaseManager.registerDatabase(database);
+			rollbackTransactions();
 		}
 		catch(Exception e)
 		{
-			logger.error("Exception is ", e);
+			if (e.getCause().getMessage().contains("connect"))
+			{
+				logger.warn("Cound not connect to the database! The database might not be started. Details: " + e.getMessage() +
+						" " + e.getCause().getMessage());
+				logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable"
+					+ " and all SOAP requests will be rejected.");
+			}
+			else
+				throw e;
 		}*/
+	}
+
+	/**Does the common procedure on the start of every database operation.
+	 * Checks whether there was a transaction failure and rolls back all outstanding transactions if there are any.
+	 * Creates new transaction for the operation in hand.
+	 * @throws DetailException if outstanding transactions could not be rolled back or new transaction could not be opened
+	 */
+	protected DSTransaction openOperation() throws DetailException
+	{
+		if(transactionFailure)
+			rollbackTransactions();
+		DSTransaction transaction = null;
+		try
+		{
+			transaction = transactionFactory.openTransaction();
+		}
+		catch(TransactionException e)
+		{
+			throw new DatabaseException("Could not open new database transaction.", e.getCause());
+		}
+		return transaction;
+	}
+
+	/**Does the common procedure at the end of every database operation; it is encapsulated in the finally block
+	 * of the procedure. Closes both collection and transaction.
+	 * @param collection
+	 * @param transaction
+	 * @throws DetailException
+	 */
+	protected void closeOperation(Collection collection, DSTransaction transaction) throws DetailException
+	{
+		try
+		{
+			if(collection != null)
+				collection.close();
+		} catch (XMLDBException e)
+		{
+			logger.error("Exception is ", e);
+		}
+		if (transaction != null && !transactionFailure)
+		{
+			try
+			{
+				transaction.close();
+			}
+			catch (TransactionException e)
+			{
+				transactionFailure = true;
+				logger.error("Exception is ", e);;
+				throw (DetailException) e.getCause();
+			}
+		}
+	}
+
+	/**Checks whether transaction is closed. If not then it rolls back that transaction.
+	 * @param transaction transaction to be checked
+	 */
+	protected void checkTransaction(DSTransaction transaction)
+	{
+		if (transaction != null)
+		{
+			try
+			{
+				transaction.rollback();
+			}
+			catch(TransactionException ex)
+			{
+				transactionFailure = true;
+			}
+		}
+	}
+
+	/**Rolls back all outstanding transactions saved in the journals if there is any.
+	 * @throws DetailException if could not connect to the database or could not roll back the transactions
+	 */
+	private synchronized void rollbackTransactions() throws DetailException
+	{
+		if(transactionFailure) //check again to be sure that some other thread did not finished executing rollbackTransactions
+		{
+			DSTransaction.rollbackAll();
+			transactionFailure = false;
+		}
 	}
 
 	@Override
@@ -234,12 +326,12 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 			return null;
 		else
 		{
-			T object = getLoadedObject(id);
+			T object = getCachedObject(id);
 			if(object == null)
 			{
 				String result = (String) resource.getContent();
 				object = (T) unmarshalFromXML(result);
-				putLoadedObject(id, object);
+				doCacheObject(id, object);
 			}
 			return object;
 		}
@@ -250,14 +342,14 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @return loaded in-memory object or {@code null} if it is not loaded in the memory or particular subclass
 	 * does not have a map of in-memory objects
 	 */
-	public T getLoadedObject(String id) { return null; }
+	public T getCachedObject(String id) { return null; }
 
 	/**Puts the object in the memory. If particular subclass of {@link XmlMapper} has no map of in-memory objects
 	 * this method does nothing.
 	 * @param id object's id
 	 * @param object object to be loaded in the memory
 	 */
-	public void putLoadedObject(String id, T object) { }
+	public void doCacheObject(String id, T object) { }
 
 	@Override
 	public ArrayList<T> findAll() throws DetailException
@@ -516,6 +608,66 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 */
 	abstract public String getObjectPackageName();
 
+	/**Create unique ID for an object after doing some class specific checks, verifications or method calls.
+	 * This method defines default behaviour but is overidden by any class that has a need for specific
+	 * procedures before it creates a new ID.
+	 * @param collection object's collection
+	 * @param object object which ID should be generated
+	 * @param username user's username which is the object
+	 * @param transaction transaction object
+	 * @return new ID for an object
+	 * @throws DetailException if ID could not be created
+	 */
+	protected String doGetOrCreateID(Collection collection, T object, String username, DSTransaction transaction)
+			throws DetailException
+	{
+		String id = null;
+		try
+		{
+			if(username != null)
+				id = getID(username);
+			if(id == null)
+				id = createID(collection);
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved or unique ID created.", e);
+		}
+		return id;
+	}
+
+	@Override
+	public String insert(String username, T object) throws DetailException
+	{
+		DSTransaction transaction = openOperation();
+		Collection collection = null;
+		String id = null;
+		try
+		{
+			collection = getCollection();
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			id = doGetOrCreateID(collection, object, username, transaction); //subclass's hook operation
+			insert(collection, object, id, (ExistTransaction) transaction);
+			doCacheObject(id, object); //subclass's hook operation
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved.", e);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw e;
+		}
+		finally
+		{
+			 closeOperation(collection, transaction);
+		}
+		return id;
+	}
+
 	@Override
 	public String insert(String username, T object, DSTransaction transaction) throws DetailException
 	{
@@ -583,6 +735,37 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 			{
 				logger.error("Exception is ", e);
 			}
+		}
+	}
+
+	@Override
+	public void insert(T object) throws DetailException
+	{
+		DSTransaction transaction = openOperation();
+		Collection collection = null;
+		String id = null;
+		try
+		{
+			collection = getCollection();
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			id = doGetOrCreateID(collection, object, null, null); //subclass's hook operation
+			insert(collection, object, id, (ExistTransaction) transaction);
+			doCacheObject(id, object); //subclass's hook operation
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved.", e);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw e;
+		}
+		finally
+		{
+			 closeOperation(collection, transaction);
 		}
 	}
 
@@ -1273,7 +1456,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	}
 
 	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
-	 * be the same as one of previously used but deleted IDs.
+	 * be the same as one of previously used but deleted IDs what is checked in this method.
 	 * @param collection collection in which scope unique ID is created
 	 * @return unique ID
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
@@ -1496,7 +1679,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 
 	/**Gets the ID of the object  determined by the user's username.
 	 * @param username user'username
-	 * @return object's ID
+	 * @return object's ID or {@code null} if object has no ID set in the database
 	 * @throws DetailException if user is not registered, ID could not be retrieved or database connectivity issues
 	 */
 	public String getID(String username) throws DetailException
@@ -1516,12 +1699,19 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		return MapperRegistry.getMapper(User.class).getUserID(username);
 	}
 
+	@Deprecated
 	@Override
 	public String update(String username, T object, DSTransaction transaction) throws DetailException
 	{
 		String id = getID(username);
 		insert(object, id, transaction);
 		return id;
+	}
+
+	@Override
+	public String update(String username, T object) throws DetailException
+	{
+		return insert(username, object);
 	}
 
 	@Override
@@ -1674,16 +1864,16 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 
 	/**Clears in memory object in {@link XmlMapper} subclass.
 	 */
-	protected void clearLoadedObjects() { }
+	protected void clearCachedObjects() { }
 
 	/**Clears all in memory objects in all {@link XmlMapper} subclasses.
 	 * @throws DetailException due to database connetivity issues
 	 */
 	public void clearInMemoryObjects() throws DetailException
 	{
-		((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearLoadedObjects();
-		((CatalogueXmlMapper) MapperRegistry.getMapper(CatalogueType.class)).clearLoadedObjects();
-		((CatalogueDeletionXmlMapper) MapperRegistry.getMapper(CatalogueDeletionType.class)).clearLoadedObjects();
+		((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
+		((CatalogueXmlMapper) MapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();
+		((CatalogueDeletionXmlMapper) MapperRegistry.getMapper(CatalogueDeletionType.class)).clearCachedObjects();
 	}
 
 }

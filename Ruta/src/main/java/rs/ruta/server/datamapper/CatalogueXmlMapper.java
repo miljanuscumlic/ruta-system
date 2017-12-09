@@ -26,7 +26,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	//MMM: This map should be some kind of most recently used collection
 	private Map<String, CatalogueType> loadedCatalogues;
 
-	public CatalogueXmlMapper() throws DatabaseException
+	public CatalogueXmlMapper() throws DetailException
 	{
 		super();
 		loadedCatalogues = new ConcurrentHashMap<String, CatalogueType>();
@@ -114,19 +114,20 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	public CatalogueType getLoadedObject(String id)
+	public CatalogueType getCachedObject(String id)
 	{
 		return loadedCatalogues.get(id);
 	}
 
-	@Override
+	//@Deprecated //MMM: delete it
+/*	@Override
 	public String update(String username, CatalogueType catalogue, DSTransaction transaction) throws DetailException
 	{
 //		insert(username, catalogue, transaction);
 		String id = (String) super.update(username, catalogue, transaction);
 		loadedCatalogues.put(id, catalogue);
 		return id;
-	}
+	}*/
 
 	@Override
 	public ArrayList<CatalogueType> findAll() throws DetailException
@@ -158,7 +159,13 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	protected void clearLoadedObjects()
+	public void doCacheObject(String id, CatalogueType object)
+	{
+		loadedCatalogues.put(id, object);
+	}
+
+	@Override
+	protected void clearCachedObjects()
 	{
 		loadedCatalogues.clear();
 	}

@@ -1,0 +1,29 @@
+Ruta Client 0.1.0-SNAPSHOT
+This is the first minor release of Ruta Client Application. From naw on Ruta follows semantic versioning scheme.
+
+
+Ruta Client 0.0.1
+This is initial release of the Ruta Client Application
+
+Features:
+
+- Implemented support for creation and management of My Party
+- Implemented support for creation and management of My Catalogue
+- Implemented support for saving the local data to the xml file
+- Implemented import of local data from the selected xml file
+- Implemented export of the local data to the xml file
+- Implemented registration procedure of My Party with Central Data Repository
+- Implemented deregistration procedure of My Party from Central Data Repository
+- Implemented synchronization of My Party's data with Central Data Repository
+- Implemented synchronization of My Catalogue's data with Central Data Repository
+- Implemented deletion of My Catalogue from Central Data Repository
+- Implemented pull request of My Catalogue from Central Data Repository
+- Implemented search querying of registered Parties's data from Central Data Repository
+- Implemented search querying of registered Parties's Catalogue data from Central Data Repository
+- Implemented bug reporting
+- Implemented Ruta Client Application update check
+- Implemented browsing of the previously pulled My Party's Catalogue data from Central Data Repository
+- Implemented browsing of the previously made search requests and retrieved search results
+- Implemented function of retrying previously made search requests
+- Implemented deletion of the previously made search requests
+- Implemented distinction between Catalogue based and Party based searches

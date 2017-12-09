@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.ruta</groupId>
 	<artifactId>ruta-client</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>RutaClient</name>
 	<packaging>jar</packaging>
  
@@ -80,7 +80,7 @@
 									<!-- <wsdlDirectory>${basedir}/src/main/resources/WEB-INF/wsdl</wsdlDirectory>
 										<wsdlFiles> <wsdlFile>CDR.wsdl</wsdlFile> </wsdlFiles> <wsdlLocation>/WEB-INF/wsdl/CDR.wsdl</wsdlLocation> -->
 									<wsdlUrls>
-										<wsdlUrl>http://localhost:9010/ruta-server-0.0.1/CDR?wsdl</wsdlUrl>
+										<wsdlUrl>http://localhost:9009/ruta-server-${project.version}/CDR?wsdl</wsdlUrl>
 									</wsdlUrls>
 									<packageName>rs.ruta.services</packageName>
 								</configuration>
