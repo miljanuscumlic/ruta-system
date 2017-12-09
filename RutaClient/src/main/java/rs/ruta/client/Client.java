@@ -53,7 +53,7 @@ public class Client implements RutaNode
 	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper;
 	private ClientFrame frame;
 	private Preferences prefNode;
-	private static RutaVersion version = new RutaVersion("Client", "0.0.1", "0.0.1", null);
+	private static RutaVersion version = new RutaVersion("Client", "0.0.2", "0.0.1", null);
 
 	public Client()
 	{
