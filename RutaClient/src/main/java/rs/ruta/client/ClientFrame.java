@@ -560,6 +560,7 @@ public class ClientFrame extends JFrame
 	public void enableSearchMenuItems()
 	{
 		cdrSearchItem.setEnabled(true);
+		cdrDeregisterPartyItem.setEnabled(true);
 	}
 
 	/**Disables menu items regarding Search after client sends the request to the CDR service.
@@ -568,6 +569,7 @@ public class ClientFrame extends JFrame
 	public void disableSearchMenuItems()
 	{
 		cdrSearchItem.setEnabled(false);
+		cdrDeregisterPartyItem.setEnabled(false);
 	}
 
 	/**Enables menu items regarding My Party after client gets the response from the CDR service.
@@ -604,6 +606,7 @@ public class ClientFrame extends JFrame
 		cdrPullCatalogueItem.setEnabled(true);
 		cdrSynchCatalogueItem.setEnabled(true);
 		cdrDeleteCatalogueItem.setEnabled(true);
+		cdrDeregisterPartyItem.setEnabled(true);
 	}
 
 	/**Disables menu items regarding My Catalogue after client sends the request to the CDR service.
@@ -614,6 +617,7 @@ public class ClientFrame extends JFrame
 		cdrPullCatalogueItem.setEnabled(false);
 		cdrSynchCatalogueItem.setEnabled(false);
 		cdrDeleteCatalogueItem.setEnabled(false);
+		cdrDeregisterPartyItem.setEnabled(false);
 	}
 
 	private void savePreferences()
