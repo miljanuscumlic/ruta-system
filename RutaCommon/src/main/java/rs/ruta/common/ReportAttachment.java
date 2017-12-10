@@ -53,7 +53,7 @@ public class ReportAttachment
 		this.ownerId = ownerId;
 	}
 
-	/**Constructs the {@code Attachment} from the {@code File}.
+	/**Constructs the {@code ReportAttachment} from the {@code File}.
 	 * @param file file to be set as attachment
 	 * @param name file's name
 	 * @throws IOException if the data could not be retrieved from the file
@@ -65,7 +65,7 @@ public class ReportAttachment
 		this.name = name;
 	}
 
-	/**Constructs the {@code Attachment} from the {@code File}.
+	/**Constructs the {@code ReportAttachment} from the {@code File}.
 	 * @param file file to be set as attachment
 	 * @throws IOException if the data could not be retrieved from the file
 	 */

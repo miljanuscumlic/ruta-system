@@ -3,6 +3,7 @@ package rs.ruta.client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -43,8 +44,9 @@ public class BugReportDialog extends JDialog
 	private JLabel productLabel = new JLabel("Ruta", SwingConstants.LEFT);
 	private JTextField att1Field;
 	private JTextField att2Field;
-
 	private boolean reportPressed;
+	private ReportAttachment att1;
+	private ReportAttachment att2;
 
 	public BugReportDialog(ClientFrame owner)
 	{
@@ -105,6 +107,10 @@ public class BugReportDialog extends JDialog
 			bugReport.setOs(osField.getText());
 			bugReport.setDescription(descriptionArea.getText());
 			bugReport.setJavaVersion(javaField.getText());
+			if(att1 != null)
+				bugReport.getAttachments().add(att1);
+			if(att2 != null)
+				bugReport.getAttachments().add(att2);
 			setVisible(false);
 			dispose();
 		});
@@ -136,10 +142,13 @@ public class BugReportDialog extends JDialog
 		Insets insets3 = new Insets(5, 5, 0, 0);
 /*		JLabel att1Filename = new JLabel("", SwingConstants.SOUTH_EAST);
 		JLabel att2Filename = new JLabel("", SwingConstants.SOUTH_EAST);*/
-		JButton att1Button = new JButton("Add attachment");
-		JButton att2Button = new JButton("Add attachment");
+		JButton addAtt1Button = new JButton("Add");
+		JButton addAtt2Button = new JButton("Add");
+		JButton remAtt1Button = new JButton("Remove");
+		JButton remAtt2Button = new JButton("Remove");
 
-		ActionListener action = new ActionListener()
+
+		ActionListener addAction = new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent event)
@@ -150,17 +159,28 @@ public class BugReportDialog extends JDialog
 				int result = chooser.showOpenDialog(BugReportDialog.this);
 				if(result == JFileChooser.APPROVE_OPTION)
 				{
-					ReportAttachment att;
 					try
 					{
-						att = new ReportAttachment(chooser.getSelectedFile());
-						bugReport.getAttachments().add(att);
-						if((JButton)(event.getSource()) == att1Button)
+						File selectedFile = chooser.getSelectedFile();
+
+						if((JButton)(event.getSource()) == addAtt1Button)
 						{
+							att1 = new ReportAttachment(selectedFile);
 							att1Field.setText(chooser.getSelectedFile().getName());
+							bugPanel.remove(addAtt1Button);
+							putGridCell(bugPanel, 9, 0, 1, 1, insets2, remAtt1Button);
+							bugPanel.revalidate();
+							bugPanel.repaint();
 						}
 						else
+						{
+							att2 = new ReportAttachment(selectedFile);
 							att2Field.setText(chooser.getSelectedFile().getName());
+							bugPanel.remove(addAtt2Button);
+							putGridCell(bugPanel, 10, 0, 1, 1, insets2, remAtt2Button);
+							bugPanel.revalidate();
+							bugPanel.repaint();
+						}
 					}
 					catch (IOException e)
 					{
@@ -171,9 +191,37 @@ public class BugReportDialog extends JDialog
 				}
 			}
 		};
+		addAtt1Button.addActionListener(addAction);
+		addAtt2Button.addActionListener(addAction);
 
-		att1Button.addActionListener( action);
-		att2Button.addActionListener( action);
+		ActionListener removeAction = new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent event)
+			{
+				if(event.getSource() == remAtt1Button)
+				{
+					att1 = null;
+					att1Field.setText(null);
+					bugPanel.remove(remAtt1Button);
+					putGridCell(bugPanel, 9, 0, 1, 1, insets2, addAtt1Button);
+					bugPanel.revalidate();
+					bugPanel.repaint();
+				}
+				else //remAtt2Button
+				{
+					att2 = null;
+					att2Field.setText(null);
+					bugPanel.remove(remAtt2Button);
+					putGridCell(bugPanel, 10, 0, 1, 1, insets2, addAtt2Button);
+					bugPanel.revalidate();
+					bugPanel.repaint();
+				}
+			}
+		};
+
+		remAtt1Button.addActionListener(removeAction);
+		remAtt2Button.addActionListener(removeAction);
 
 		putGridCell(bugPanel, 0, 0, 1, 1, insets1, new JLabel("Product: ", SwingConstants.LEFT));
 		putGridCell(bugPanel, 0, 1, 1, 1, insets1, productLabel);
@@ -191,11 +239,12 @@ public class BugReportDialog extends JDialog
 		putGridCell(bugPanel, 6, 1, 1, 1, insets2, summaryField);
 		putGridCell(bugPanel, 7, 0, 1, 1, insets2, new JLabel("Bug description: ", SwingConstants.LEFT));
 		putGridCell(bugPanel, 7, 1, 1, 1, insets2, new JScrollPane(descriptionArea));
-		putGridCell(bugPanel, 8, 0, 1, 1, insets2, att1Button);
-		putGridCell(bugPanel, 8, 1, 1, 1, insets3, att1Field);
-		putGridCell(bugPanel, 9, 0, 1, 1, insets2, att2Button);
-		putGridCell(bugPanel, 9, 1, 1, 1, insets3, att2Field);
-		putGridCell(bugPanel, 10, 0, 2, 1, insets1, new JLabel("All filled fields are merely hints. Please correct them if neccessary.",
+		putGridCell(bugPanel, 8, 0, 1, 1, insets2, new JLabel("Attachments: ", SwingConstants.LEFT));
+		putGridCell(bugPanel, 9, 0, 1, 1, insets2, addAtt1Button);
+		putGridCell(bugPanel, 9, 1, 1, 1, insets3, att1Field);
+		putGridCell(bugPanel, 10, 0, 1, 1, insets2, addAtt2Button);
+		putGridCell(bugPanel, 10, 1, 1, 1, insets3, att2Field);
+		putGridCell(bugPanel, 11, 0, 2, 1, insets1, new JLabel("All filled fields are merely hints. Please correct them if neccessary.",
 				SwingConstants.LEFT));
 		return bugPanel;
 	}

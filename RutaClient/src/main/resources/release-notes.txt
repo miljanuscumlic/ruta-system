@@ -1,5 +1,5 @@
 Ruta Client 0.0.2
-This is the patch release of the Ruta Client Application
+This is the first patch release of the Ruta Client Application
 
 Features:
 
@@ -9,6 +9,8 @@ Bug fixes:
 
 - (Hopefully) Fixed issue when connecting to the CDR service
 - Fixed bug when deleting a product from My Catalogue, My Catalogue was not marked as dirty
+- Fixed bug not disabling Deregister My Party menu item after calling CDR service
+- Fixed bug not being able to remove previously added attachment to a Bug Report
 
 
 Ruta Client 0.0.1
