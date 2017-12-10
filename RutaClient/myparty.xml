@@ -167,7 +167,7 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description>  ds  dsf</ns3:Description>
+        <ns3:Description>  ds  dsf wwdf  af af  c sqd kjh </ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>sdfsd</ns3:Name>
         <ns3:Keyword>ern er ert er</ns3:Keyword>
@@ -181,33 +181,9 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description>  f fdsaffdws fdd eoir ewuy</ns3:Description>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>fgdsfgds</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID></ns3:ID>
-            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-        </ns2:CommodityClassification>
-    </Products>
-    <Products>
         <ns3:Description></ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>asedfs</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID></ns3:ID>
-            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-        </ns2:CommodityClassification>
-    </Products>
-    <Products>
-        <ns3:Description>qw  </ns3:Description>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>asd</ns3:Name>
         <ns2:SellersItemIdentification>
             <ns3:ID></ns3:ID>
             <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -295,7 +271,7 @@
             <ns3:ID>cc2e55da</ns3:ID>
         </ns2:PartyIdentification>
         <ns2:PartyName>
-            <ns3:Name>Rutasdfft</ns3:Name>
+            <ns3:Name>Rutasd</ns3:Name>
         </ns2:PartyName>
         <ns2:PostalAddress>
             <ns3:Floor>4</ns3:Floor>
@@ -3506,11 +3482,11 @@
             </ns2:CatalogueLine>
         </SearchResult>
     </CatalogueSearch>
-    <DirtyCatalogue>true</DirtyCatalogue>
-    <DirtyMyParty>false</DirtyMyParty>
+    <DirtyCatalogue>false</DirtyCatalogue>
+    <DirtyMyParty>true</DirtyMyParty>
     <InsertMyCatalogue>false</InsertMyCatalogue>
     <SearchNumber>40</SearchNumber>
-    <CatalogueID>2</CatalogueID>
+    <CatalogueID>11</CatalogueID>
     <CatalogueDeletionID>0</CatalogueDeletionID>
-    <CatalogueIssueDate>2017-12-09T16:25:08.156+01:00</CatalogueIssueDate>
+    <CatalogueIssueDate>2017-12-10T15:49:08.843+01:00</CatalogueIssueDate>
 </ns5:MyParty>

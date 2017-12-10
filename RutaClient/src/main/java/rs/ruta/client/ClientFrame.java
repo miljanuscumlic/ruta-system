@@ -12,6 +12,7 @@ import java.time.format.FormatStyle;
 import java.util.prefs.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -44,10 +45,9 @@ import java.util.List;
 public class ClientFrame extends JFrame
 {
 	private static final long serialVersionUID = 7189003953286046899L;
-	private static final int DEFAULT_WIDTH = 1000;
-	private static final int DEFAULT_HEIGHT = 800;
+	private static final String DEFAULT_WIDTH = "1000";
+	private static final String DEFAULT_HEIGHT = "800";
 	//private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
-	private Preferences prefNode = Preferences.userNodeForPackage(this.getClass());
 
 	private Client client;
 	private JTabbedPane tabbedPane;
@@ -88,13 +88,14 @@ public class ClientFrame extends JFrame
 		this.client = client;
 		this.client.setFrame(this);
 
-		// get position, size, title from preferences
-		int left = prefNode.getInt("left", 0);
-		int top = prefNode.getInt("top", 0);
-		int width = prefNode.getInt("width", DEFAULT_WIDTH);
-		int height = prefNode.getInt("height", DEFAULT_HEIGHT);
+		//get frame related properties
+		Properties properties = client.getProperties();
+		int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));
+		int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));
+		int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
+		int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
 		setBounds(left, top, width, height);
-		String title = prefNode.get("title", "Ruta Client");
+		String title = properties.getProperty("mainFrame.title", "Ruta Client");
 		setTitle(title);
 
 		//file chooser
@@ -103,7 +104,7 @@ public class ClientFrame extends JFrame
 		chooser.setFileFilter(filter);
 
 
-		//save window position on exit
+		//save properties and local data on exit
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
@@ -111,20 +112,21 @@ public class ClientFrame extends JFrame
 			{
 				client.getMyParty().exportMyProducts();
 				//				client.closeDataStreams();
-				savePreferences();
-				client.savePreferences();
-				//MMM: should be deleted when db comes into play. Calling here just because is saves also the catalogue ID and catalogueDirty
+				/*savePreferences();
+				client.savePreferences();*/
+				saveProperties();
+				client.storeProperties();
+				//MMM: should be deleted when db comes into play. Calling here just because it saves also the catalogue ID and catalogueDirty
 				try
 				{
 					client.insertMyParty();
 				}
 				catch(Exception e)
 				{
-					/*JOptionPane.showMessageDialog(ClientFrame.this, "Data could not be saved to the local data store!", "Fatal error",
-							JOptionPane.ERROR_MESSAGE);*/
 					String[] options = {"YES", "NO"};
-					int choice = JOptionPane.showOptionDialog(ClientFrame.this, "Data could not be saved to the local data store! Do yo want to close the program anyway?",
-							"Fatal error", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+					int choice = JOptionPane.showOptionDialog(ClientFrame.this, "Data could not be saved to the local data store! "
+							+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
+							JOptionPane.ERROR_MESSAGE, null, options, options[0]);
 					if(choice == 0)
 						System.exit(0);
 				}
@@ -218,13 +220,12 @@ public class ClientFrame extends JFrame
 					{
 						myParty = parties.get(0);
 						myParty.setItemDataMapper("client-products.dat");
-						myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", true));
 						Search.setSearchNumber(myParty.getSearchNumber());
 						updateTitle(myParty.getCoreParty().getSimpleName());
 						client.setMyParty(myParty);
 						//client.insertMyParty();
 						repaintTabbedPane(); // frame update
-						appendToConsole("Local data have been successefully imported from the file: " + filePath, Color.GREEN);
+						appendToConsole("Local data have been successfully imported from the file: " + filePath, Color.GREEN);
 					}
 				}
 				catch(JAXBException e)
@@ -255,7 +256,7 @@ public class ClientFrame extends JFrame
 				try
 				{
 					partyMapper.insertAll();
-					appendToConsole("Local data have been successefully exported to the file: " + filePath, Color.GREEN);
+					appendToConsole("Local data have been successfully exported to the file: " + filePath, Color.GREEN);
 				}
 				catch (JAXBException e)
 				{
@@ -620,13 +621,17 @@ public class ClientFrame extends JFrame
 		cdrDeregisterPartyItem.setEnabled(false);
 	}
 
-	private void savePreferences()
+	/**Saves properties from {@code ClientFrame} class fields to {@link Properties} object.
+	 */
+	private void saveProperties()
 	{
-		prefNode.putInt("left", getX());
-		prefNode.putInt("top", getY());
-		prefNode.putInt("width", getWidth());
-		prefNode.putInt("height", getHeight());
-		prefNode.put("title", "Ruta Client - " + client.getMyParty().getCoreParty().getSimpleName());
+		Properties properties = client.getProperties();
+		properties.put("mainFrame.left", String.valueOf(getX()));
+		properties.put("mainFrame.top", String.valueOf(getY()));
+		properties.put("mainFrame.width", String.valueOf(getWidth()));
+		properties.put("mainFrame.height", String.valueOf(getHeight()));
+		properties.put("mainFrame.title", "Ruta Client - " + client.getMyParty().getCoreParty().getSimpleName());
+
 		//MMM: add column sizes for all tabs
 	}
 

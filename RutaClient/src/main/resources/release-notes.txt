@@ -4,11 +4,12 @@ This is the first patch release of the Ruta Client Application
 Features:
 
 - Implemented deletion of the previously added product in My Catalogue
+- Preference usage is deprecated and from now on .properties file is used to store Ruta Client instance specific settings
 
 Bug fixes:
 
 - (Hopefully) Fixed issue when connecting to the CDR service
-- Fixed bug when deleting a product from My Catalogue, My Catalogue was not marked as dirty
+- Fixed bug when deleting a product from My Catalogue, where My Catalogue was not marked as dirty
 - Fixed bug not disabling Deregister My Party menu item after calling CDR service
 - Fixed bug not being able to remove previously added attachment to a Bug Report
 

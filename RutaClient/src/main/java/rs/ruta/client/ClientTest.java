@@ -1,6 +1,7 @@
 package rs.ruta.client;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 
 import javax.swing.*;
@@ -21,9 +22,9 @@ public class ClientTest
 		}
 		catch(JAXBException e)
 		{
-			JOptionPane.showMessageDialog(null, "Data from the local data store are corrupted!", "Critical error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Data from the local data store are corrupted!", "Critical error",
+					JOptionPane.ERROR_MESSAGE);
 		}
-
 
 		EventQueue.invokeLater(() ->
 		{

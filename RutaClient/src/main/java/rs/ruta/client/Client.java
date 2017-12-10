@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.prefs.Preferences;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -52,32 +51,23 @@ public class Client implements RutaNode
 	private Party CDRParty;
 	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper;
 	private ClientFrame frame;
-	private Preferences prefNode;
 	private static RutaVersion version = new RutaVersion("Client", "0.0.2", "0.0.1", null);
+	private Properties properties;
 
 	public Client()
 	{
 		myParty = new MyParty();
 		/*		myParty.setItemDataMapper("client-products.dat");
-		myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));*/
+		*/
 		CDRParty = getCDRParty();
 		partyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
 		CDRPartyDataMapper = new CDRPartyTypeXMLFileMapper<Party>(Client.this, "cdr.xml");
-		prefNode = Preferences.userNodeForPackage(this.getClass());
+		properties = new Properties();
 	}
-
-	/**Gets the {@link Version} object describing the version of the {@code Ruta Client} application
-	 * @return {@code Version} object of the {@code Ruta Client} application
-	 */
-	public static RutaVersion getVersion() { return version;}
-
-	/**Sets the {@link Version} object describing the version of the {@code Ruta Client} application
-	 * @param version {@code Version} object of the {@code Ruta Client} application
-	 */
-	public static void setVersion(RutaVersion version) { Client.version = version; }
 
 	/** Initializes fields of Client object from local data store.
 	 * @throws JAXBException if importing data from the data store is unsuccessful
+	 * @throws IOException if properties could not be read from the file
 	 */
 	public void preInitialize() throws JAXBException
 	{
@@ -87,12 +77,12 @@ public class Client implements RutaNode
 		//		myParty = InstanceFactory.newInstance(PartyType.class); // Producing StackOverflowException for PartyType.class object
 		//		myParty = InstanceFactory.newInstancePartyType(); // instatiation of new partialy empty PartyType object with not null fields used in this version of the Ruta
 		//		myParty = InstanceFactory.newInstance(PartyType.class, 1);
-		loadPreferences();
+
+		loadProperties();
 		if(parties.size() != 0)
 		{
 			myParty = parties.get(0);
 			myParty.setItemDataMapper("client-products.dat");
-//			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
 			Search.setSearchNumber(myParty.getSearchNumber());
 		}
 
@@ -111,7 +101,6 @@ public class Client implements RutaNode
 			//		if(parties.size() == 0)
 		{
 			myParty.setItemDataMapper("client-products.dat");
-//			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
 			myParty.setCoreParty(frame.showPartyDialog(myParty.getCoreParty(), "My Party")); //displaying My Party Data dialog
 			//			insertMyParty();
 		}
@@ -124,26 +113,72 @@ public class Client implements RutaNode
 			//InstanceFactory.copyInstance(parties.get(0), myParty); // MMM: check why I am coping the party into the new object
 			myParty = parties.get(0);
 			myParty.setItemDataMapper("client-products.dat");
-			myParty.setDirtyCatalogue(prefNode.getBoolean("dirtyCatalogue", false));
 		}*/
 	}
 
-	/**
-	 * Saves the value of variables that should be kept beetwen two program invocations
+	public Properties getProperties()
+	{
+		return properties;
+	}
+
+	public void setProperties(Properties properties)
+	{
+		this.properties = properties;
+	}
+
+	/**Loads {@link Properties} field object from the {@code .properties} file.
 	 */
-	public void savePreferences()
+	public void loadProperties()
 	{
-		prefNode.put("cdrEndPoint", Client.cdrEndPoint);
-//		prefNode.putBoolean("dirtyCatalogue", myParty.isDirtyCatalogue());
+		//ClassLoader classLoader = getClass().getClassLoader();
+		try(InputStream input = new FileInputStream("ruta.properties") /*classLoader.getResourceAsStream("ruta.properties")*/)
+		{
+			properties.load(input);
+		}
+		catch (IOException | NullPointerException e)
+		{
+			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
+					"Information", JOptionPane.INFORMATION_MESSAGE);
+			//e.printStackTrace();
+		}
+		Client.cdrEndPoint = properties.getProperty("cdrEndPoint", Client.defaultEndPoint);
 	}
 
-	public void loadPreferences()
+	/**Stores {@link Properties} field object to the {@code .properties} file.
+	 */
+	public void storeProperties()
 	{
-		Client.cdrEndPoint = prefNode.get("cdrEndPoint", Client.defaultEndPoint);
+		saveProperties();
+		try(OutputStream output = new FileOutputStream("ruta.properties"))
+		{
+			properties.store(output, "Ruta Client properties");
+		}
+		catch (IOException | NullPointerException e)
+		{
+			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
+		}
 	}
 
-	/**
-	 * Inserts My Party data to the local data store.
+	/**Saves properties from {@code Client} class fields to {@link Properties} object.
+	 */
+	private void saveProperties()
+	{
+		properties.put("cdrEndPoint", Client.cdrEndPoint);
+	}
+
+	/**Gets the {@link Version} object describing the version of the {@code Ruta Client} application
+	 * @return {@code Version} object of the {@code Ruta Client} application
+	 */
+	public static RutaVersion getVersion() { return version;}
+
+	/**Sets the {@link Version} object describing the version of the {@code Ruta Client} application
+	 * @param version {@code Version} object of the {@code Ruta Client} application
+	 */
+	public static void setVersion(RutaVersion version) { Client.version = version; }
+
+	/**Inserts My Party data to the local data store.
 	 * @throws Exception if data could not be inserted in the data store
 	 */
 	public void insertMyParty() throws Exception
@@ -216,6 +251,7 @@ public class Client implements RutaNode
 				}
 				catch (Exception e)
 				{
+					e.printStackTrace();
 					msg.append("Server responds: ");
 					Throwable cause = e.getCause();
 					if(cause instanceof RutaException)
@@ -234,6 +270,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
+			e.printStackTrace();
 			frame.appendToConsole("My Party has not been registered with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 			frame.enablePartyMenuItems();
