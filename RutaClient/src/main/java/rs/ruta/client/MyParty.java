@@ -558,7 +558,11 @@ public class MyParty extends BusinessParty
 	public void unfollowMyself()
 	{
 		//removeFollowingParty(followingParties.get(0));
-		getFollowingParties().remove(0);
+
+		List<BusinessParty> followings = getFollowingParties();
+
+		if(followings.size() != 0 && followings.get(0).getCoreParty().getSimpleName().equals(this.getCoreParty().getSimpleName()))
+			getFollowingParties().remove(0);
 	}
 
 	/**Updates My Party in the list of the following parties.

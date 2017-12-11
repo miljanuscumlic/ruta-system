@@ -1,7 +1,11 @@
 package rs.ruta.client;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 import javax.swing.*;
@@ -12,6 +16,24 @@ public class ClientTest
 
 	public static void main(String[] args)
 	{
+
+		PrintStream console = System.err;
+
+		File file = new File("err.txt");
+		FileOutputStream fos;
+		try
+		{
+			fos = new FileOutputStream(file);
+			PrintStream ps = new PrintStream(fos);
+			System.setErr(ps);
+		}
+		catch (FileNotFoundException e1)
+		{
+			e1.printStackTrace();
+		}
+
+		System.err.println("This goes to err.txt");
+
 		//RutaNode client = new Client();
 		Client client = new Client();
 		Locale myLocale = Locale.forLanguageTag("sr-RS");
