@@ -176,6 +176,10 @@ public class BugReport
 		this.description = description;
 	}
 
+	/**Gets the list of appended {@link ReportAttachment}s to the {@code BugReport}.
+	 * If the list has not been created at the moment of invocation, this method creates an empty list.
+	 * @return list of attachemnts
+	 */
 	public List<ReportAttachment> getAttachments()
 	{
 		if(attachments == null)

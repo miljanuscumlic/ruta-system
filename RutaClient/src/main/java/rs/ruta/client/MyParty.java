@@ -558,7 +558,11 @@ public class MyParty extends BusinessParty
 	public void unfollowMyself()
 	{
 		//removeFollowingParty(followingParties.get(0));
-		getFollowingParties().remove(0);
+
+		List<BusinessParty> followings = getFollowingParties();
+
+		if(followings.size() != 0 && followings.get(0).getCoreParty().getSimpleName().equals(this.getCoreParty().getSimpleName()))
+			getFollowingParties().remove(0);
 	}
 
 	/**Updates My Party in the list of the following parties.
@@ -568,4 +572,21 @@ public class MyParty extends BusinessParty
 		unfollowMyself();
 		followMyself();
 	}
+
+	@Override
+	public void removeProduct(int row)
+	{
+		super.removeProduct(row);
+		dirtyCatalogue = true;
+	}
+
+	@Override
+	public void addProduct(ItemType item)
+	{
+		super.addProduct(item);
+		dirtyCatalogue = true;
+	}
+
+
+
 }

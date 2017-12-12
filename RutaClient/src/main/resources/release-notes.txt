@@ -1,9 +1,38 @@
 Ruta Client 0.1.0-SNAPSHOT
 This is the first minor release of Ruta Client Application. From naw on Ruta follows semantic versioning scheme.
 
+--------------------
+
+Ruta Client 0.0.3
+This is the patch release of the Ruta Client Application.
+
+Feature:
+- Error stream is redirected to err.txt file
+
+Bug fixes:
+- Fixed bug not showing that My Party has been deregistered after successfully finished deregistration
+
+--------------------
+
+Ruta Client 0.0.2
+This is the first patch release of the Ruta Client Application.
+
+Features:
+
+- Implemented deletion of the previously added product in My Catalogue
+- Preference usage is deprecated and from now on .properties file is used to store Ruta Client instance specific settings
+
+Bug fixes:
+
+- (Hopefully) Fixed issue when connecting to the CDR service
+- Fixed bug when deleting a product from My Catalogue, where My Catalogue was not marked as dirty
+- Fixed bug not disabling Deregister My Party menu item after calling CDR service
+- Fixed bug not being able to remove previously added attachment to a Bug Report
+
+--------------------
 
 Ruta Client 0.0.1
-This is initial release of the Ruta Client Application
+This is initial release of the Ruta Client Application.
 
 Features:
 
@@ -26,4 +55,4 @@ Features:
 - Implemented browsing of the previously made search requests and retrieved search results
 - Implemented function of retrying previously made search requests
 - Implemented deletion of the previously made search requests
-- Implemented distinction between Catalogue based and Party based searches
+- Implemented the distinction of Catalogue based versus Party based searches
