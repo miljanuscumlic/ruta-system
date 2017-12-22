@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;

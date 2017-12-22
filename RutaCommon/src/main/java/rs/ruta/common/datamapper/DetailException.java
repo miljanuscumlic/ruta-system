@@ -1,4 +1,4 @@
-package rs.ruta.server;
+package rs.ruta.common.datamapper;
 
 /**DetailException describes the detail of the exception that is thrown. Its FaultInfo
  * field that contains the detail description is later incorporated in the RutaException.

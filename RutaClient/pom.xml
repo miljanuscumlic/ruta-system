@@ -55,10 +55,7 @@
 		<dependency>
 			<groupId>rs.ruta</groupId>
 			<artifactId>ruta-common</artifactId>
-			<version>0.0.1</version>
-<!-- 			<scope>system</scope>
-			 <systemPath>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target/ruta-common-0.0.1.jar</systemPath>
-			<systemPath>${ruta.common.path}/ruta-common-0.0.1.jar</systemPath> -->
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>
 
@@ -216,16 +213,16 @@
 									<fileSets>
 										<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
-											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Amanas\${project.artifactId}-${project.version}.jar</destinationFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client More\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
 										<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
-											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Dunav\${project.artifactId}-${project.version}.jar</destinationFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Suma\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
-										<fileSet>
+								<!-- 	<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
 											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Release\${project.artifactId}-${project.version}.jar</destinationFile>
-										</fileSet>
+										</fileSet> -->
 									</fileSets>
 								</configuration>
 							</execution>

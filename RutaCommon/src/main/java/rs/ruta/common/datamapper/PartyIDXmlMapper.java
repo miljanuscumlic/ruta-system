@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -12,31 +12,30 @@ import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
+import rs.ruta.common.PartyID;
 
 public class PartyIDXmlMapper extends XmlMapper<PartyID>
 {
 	final private static String collectionPath = "/system/party-id";
-	final private static String objectPackageName = "rs.ruta.server.datamapper";
+	final private static String objectPackageName = "rs.ruta.common";
 	final private static String queryNameSearchID = "search-id.xq";
 
 	public PartyIDXmlMapper() throws DetailException { super(); }
 
 	@Override
-	public Class<?> getObjectClass() { return PartyID.class; }
+	protected Class<?> getObjectClass() { return PartyID.class; }
 
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 
 	@Override
-	public PartyID getCachedObject(String id) { return null; }
+	protected PartyID getCachedObject(String id) { return null; }
 
 	@Override
-	public String getSearchQueryName()
+	protected String getSearchQueryName()
 	{
 		return queryNameSearchID;
 	}
@@ -47,7 +46,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 /*		QName _QNAME = new QName("urn:rs:ruta:services", "PartyID");
 		JAXBElement<PartyID> jaxbElement = new JAXBElement<PartyID> (_QNAME, PartyID.class,  object);
 		return jaxbElement;*/
-		 return new ObjectFactory().createPartyID(object);
+		 return new rs.ruta.common.ObjectFactory().createPartyID(object);
 
 	}
 

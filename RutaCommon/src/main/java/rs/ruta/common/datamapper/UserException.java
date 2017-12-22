@@ -1,4 +1,4 @@
-package rs.ruta.server;
+package rs.ruta.common.datamapper;
 
 import javax.xml.ws.WebFault;
 

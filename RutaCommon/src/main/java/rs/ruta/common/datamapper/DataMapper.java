@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.awt.Image;
 import java.io.File;
@@ -8,7 +8,6 @@ import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.server.DetailException;
 
 /**DataMapper interface declares methods responsible for mapping between objects from the domain model
  * and persistance interpretation of that data in the data store. To be able to connect to

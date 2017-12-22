@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import org.exist.security.SchemaType;
 

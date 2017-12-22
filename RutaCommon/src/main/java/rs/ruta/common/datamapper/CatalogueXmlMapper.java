@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.io.StringReader;
 import java.util.*;
@@ -15,8 +15,6 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.ObjectFactory;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
 
 public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 {
@@ -33,9 +31,9 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public CatalogueType find(String id) throws DetailException
@@ -108,13 +106,13 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	public Class<?> getObjectClass()
+	protected Class<?> getObjectClass()
 	{
 		return CatalogueType.class;
 	}
 
 	@Override
-	public CatalogueType getCachedObject(String id)
+	protected CatalogueType getCachedObject(String id)
 	{
 		return loadedCatalogues.get(id);
 	}
@@ -153,13 +151,13 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	public String getSearchQueryName()
+	protected String getSearchQueryName()
 	{
 		return queryNameSearchCatalogue;
 	}
 
 	@Override
-	public void doCacheObject(String id, CatalogueType object)
+	protected void doCacheObject(String id, CatalogueType object)
 	{
 		loadedCatalogues.put(id, object);
 	}
@@ -171,7 +169,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	public String prepareQuery(SearchCriterion criterion) throws DatabaseException
+	protected String prepareQuery(SearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);
 		if(query == null)

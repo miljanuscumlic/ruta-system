@@ -1,6 +1,4 @@
-package rs.ruta.server.datamapper;
-
-import rs.ruta.server.DetailException;
+package rs.ruta.common.datamapper;
 
 public class TransactionException extends DetailException
 {

@@ -1,8 +1,6 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.util.List;
-
-import rs.ruta.server.DetailException;
 
 /**Interface defining basic methods of the data store transactions. Transactions are atomic actions
  * comprised of the data store operations like insert/update/delete.

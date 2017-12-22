@@ -29,7 +29,8 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.server.datamapper.*;
+import rs.ruta.common.User;
+import rs.ruta.common.datamapper.*;
 
 //handlers.xml should be inside ResourceRoot directory /WEB-INF/classes because WildFly is searching for it on that path
 //ResourceRoot [root=\"/C:/Program Files/wildfly-10.1.0.Final/bin/content/Ruta-SNAPSHOT-0.0.1.war/WEB-INF/classes\"]

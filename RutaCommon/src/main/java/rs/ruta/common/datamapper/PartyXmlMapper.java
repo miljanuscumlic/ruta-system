@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -17,9 +17,6 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.server.DataManipulationException;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
 
 public class PartyXmlMapper extends XmlMapper<PartyType>
 {
@@ -36,9 +33,9 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public PartyType find(String id) throws DetailException
@@ -93,13 +90,13 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	public PartyType getCachedObject(String id)
+	protected PartyType getCachedObject(String id)
 	{
 		return loadedParties.get(id);
 	}
 
 	@Override
-	public void doCacheObject(String id, PartyType object)
+	protected void doCacheObject(String id, PartyType object)
 	{
 		loadedParties.put(id, object);
 	}
@@ -218,7 +215,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	public Class<?> getObjectClass()
+	protected Class<?> getObjectClass()
 	{
 		return PartyType.class;
 	}
@@ -234,13 +231,13 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}*/
 
 	@Override
-	public String getSearchQueryName()
+	protected String getSearchQueryName()
 	{
 		return queryNameSearchParty;
 	}
 
 	@Override
-	public String prepareQuery(SearchCriterion criterion) throws DatabaseException
+	protected String prepareQuery(SearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryNameSearchParty);
 		if(query == null)
@@ -286,7 +283,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	public String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException
+	protected String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryName);
 		if(query == null)

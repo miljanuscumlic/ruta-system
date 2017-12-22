@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import javax.xml.bind.JAXBElement;
 
@@ -8,8 +8,6 @@ import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.common.BugReport;
 import rs.ruta.common.InstanceFactory;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
 
 public class BugReportXmlMapper extends XmlMapper<BugReport>
 {
@@ -26,13 +24,13 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	}
 
 	@Override
-	public Class<?> getObjectClass() { return BugReport.class; }
+	protected Class<?> getObjectClass() { return BugReport.class; }
 
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 
 	@Override
 	protected JAXBElement<BugReport> getJAXBElement(BugReport object)
@@ -41,7 +39,7 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	}
 
 	@Override
-	public String getSearchQueryName()
+	protected String getSearchQueryName()
 	{
 		return queryBugReport;
 	}
@@ -69,7 +67,7 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 
 	/** Creates unique id which is the increment of the last created id.
 	 * Passed {@code Collection} argument is never used because there is a {@code collectionPath} field.
-	 * @see rs.ruta.server.datamapper.XmlMapper#createID()
+	 * @see rs.ruta.common.datamapper.XmlMapper#createID()
 	 */
 	@Override
 	public synchronized String createID(Collection collection) throws XMLDBException

@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -14,8 +14,6 @@ import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 
 import rs.ruta.common.RutaVersion;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
 
 public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 {
@@ -29,13 +27,13 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	}
 
 	@Override
-	public Class<?> getObjectClass() { return RutaVersion.class; }
+	protected Class<?> getObjectClass() { return RutaVersion.class; }
 
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 
 	@Override
 	protected JAXBElement<RutaVersion> getJAXBElement(RutaVersion object)
@@ -44,7 +42,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	}
 
 	@Override
-	public String getSearchQueryName()
+	protected String getSearchQueryName()
 	{
 		return queryNameVersion;
 	}

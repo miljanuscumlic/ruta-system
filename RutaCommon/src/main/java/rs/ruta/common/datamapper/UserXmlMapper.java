@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.util.ArrayList;
 
@@ -17,9 +17,8 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
-import rs.ruta.server.UserException;
+import rs.ruta.common.PartyID;
+import rs.ruta.common.User;
 
 public class UserXmlMapper extends XmlMapper<User>
 {
@@ -28,7 +27,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	final private static SchemaType SECRET_KEY = AXSchemaType.EMAIL;
 	final private static SchemaType DOCUMENT_ID = AXSchemaType.ALIAS_USERNAME;
 	final private static SchemaType PARTY_ID = AXSchemaType.FIRSTNAME;
-	final private static String objectPackageName = "rs.ruta.server.datamapper";
+	final private static String objectPackageName = "rs.ruta.common";
 
 	public UserXmlMapper() throws DetailException
 	{
@@ -436,25 +435,25 @@ public class UserXmlMapper extends XmlMapper<User>
 	}
 
 	@Override
-	public Class<?> getObjectClass()
+	protected Class<?> getObjectClass()
 	{
 		return null;
 	}
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	protected JAXBElement<User> getJAXBElement(User object)
 	{
-		return new ObjectFactory().createUser(object);
+		return new rs.ruta.common.ObjectFactory().createUser(object);
 	}
 
 	@Override
-	public String getID(String username) throws DetailException
+	protected String getID(String username) throws DetailException
 	{
 		return findMetaData(username, DOCUMENT_ID);
 	}
@@ -494,5 +493,5 @@ public class UserXmlMapper extends XmlMapper<User>
 	}
 
 	@Override
-	public User getCachedObject(String id) { return null; }
+	protected User getCachedObject(String id) { return null; }
 }

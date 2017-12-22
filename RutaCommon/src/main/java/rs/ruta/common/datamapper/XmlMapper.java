@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.awt.Image;
 import java.io.File;
@@ -41,12 +41,11 @@ import org.xmldb.api.modules.XPathQueryService;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.server.DataManipulationException;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
-import rs.ruta.server.datamapper.DataMapper;
+import rs.ruta.common.User;
+import rs.ruta.common.datamapper.DataMapper;
 
 /**XmlMapper abstract class maps the domain model used in the Ruta System to the eXist database.
  * Each class of the domain model which objects are deposited and fetched from the database
@@ -73,23 +72,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		checkCollection(getCollectionPath());
 		checkCollection(getDeletedCollectionPath());
 		checkCollection(getQueryPath());
-
-/*		try
-		{
-			rollbackTransactions();
-		}
-		catch(Exception e)
-		{
-			if (e.getCause().getMessage().contains("connect"))
-			{
-				logger.warn("Cound not connect to the database! The database might not be started. Details: " + e.getMessage() +
-						" " + e.getCause().getMessage());
-				logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable"
-					+ " and all SOAP requests will be rejected.");
-			}
-			else
-				throw e;
-		}*/
 	}
 
 	/**Does the common procedure on the start of every database operation.
@@ -342,14 +324,14 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @return loaded in-memory object or {@code null} if it is not loaded in the memory or particular subclass
 	 * does not have a map of in-memory objects
 	 */
-	public T getCachedObject(String id) { return null; }
+	protected T getCachedObject(String id) { return null; }
 
 	/**Puts the object in the memory. If particular subclass of {@link XmlMapper} has no map of in-memory objects
 	 * this method does nothing.
 	 * @param id object's id
 	 * @param object object to be loaded in the memory
 	 */
-	public void doCacheObject(String id, T object) { }
+	protected void doCacheObject(String id, T object) { }
 
 	@Override
 	public ArrayList<T> findAll() throws DetailException
@@ -551,7 +533,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * query file does not exist
 	 * @throws DatabaseException if collection or query file could not be opened
 	 */
-	public String prepareQuery(SearchCriterion criterion) throws DatabaseException { return null; }
+	protected String prepareQuery(SearchCriterion criterion) throws DatabaseException { return null; }
 
 	/**Populates query string with search keywords from the {@link SearchCriterion} object. Name of the query
 	 * to be populated is sent as a argument.
@@ -561,7 +543,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * query file does not exist
 	 * @throws DatabaseException if collection or query file could not be opened
 	 */
-	public String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException { return null; }
+	protected String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException { return null; }
 
 	/**Unmarshall object from XML document represented as string.
 	 * @param xml XML as String object to be transformed to the object
@@ -600,13 +582,13 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		return result;
 	}
 
-	abstract public Class<?> getObjectClass();
+	protected abstract Class<?> getObjectClass();
 
 	/**Gets the name of the package which object's class belongs. The object and class in question are ones that
 	 * <code>XmlMapper</code> subclass is mapping to the XML.
 	 * @return name of the package
 	 */
-	abstract public String getObjectPackageName();
+	protected abstract String getObjectPackageName();
 
 	/**Create unique ID for an object after doing some class specific checks, verifications or method calls.
 	 * This method defines default behaviour but is overidden by any class that has a need for specific
@@ -856,7 +838,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
-
 	/**Inserts object in the collection.
 	 * @param collection collection in which the object is to be stored
 	 * @param object object to be stored
@@ -1031,8 +1012,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
-
-
 	/**If id has a dot character in itself this method deletes the dot and all characters after it.
 	 * @param id id that is the subject of trimming
 	 * @return trimmed id
@@ -1198,7 +1177,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * if the document does not exist
 	 * @throws DatabaseException if collection or document could not ber opened
 	 */
-	public String openDocument(String collectionPath, String documentName) throws DatabaseException
+	protected String openDocument(String collectionPath, String documentName) throws DatabaseException
 	{
 		String result = null;
 		Collection collection = null;
@@ -1253,7 +1232,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @param document document as {@code String}
 	 * @throws DatabaseException if document could not be saved to the collection
 	 */
-	public void saveDocument(String collectionPath, String documentName, String document) throws DatabaseException
+	protected void saveDocument(String collectionPath, String documentName, String document) throws DatabaseException
 	{
 		Resource resource = null;
 		Collection collection = null;
@@ -1305,7 +1284,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @param sourceDocumentName name of the source document
 	 * @throws DatabaseException if document could not be moved to a new location
 	 */
-	public void moveDocument(String destinationCollectionPath, String destinationDocumentName, String sourceCollectionPath,
+	protected void moveDocument(String destinationCollectionPath, String destinationDocumentName, String sourceCollectionPath,
 			String sourceDocumentName) throws DatabaseException
 	{
 		copyDocument(destinationCollectionPath, destinationDocumentName, sourceCollectionPath, sourceDocumentName);
@@ -1319,7 +1298,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @param sourceDocumentName name of the source document
 	 * @throws DatabaseException if source document does not exist or could not be moved to a new location
 	 */
-	public void copyDocument(String destinationCollectionPath, String destinationDocumentName, String sourceCollectionPath,
+	protected void copyDocument(String destinationCollectionPath, String destinationDocumentName, String sourceCollectionPath,
 			String sourceDocumentName) throws DatabaseException
 	{
 		Collection sourceCollection = null;
@@ -1386,7 +1365,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @param documentName name of the document to be deleted
 	 * @throws DatabaseException if document could not be deleted
 	 */
-	public void deleteDocument(String collectionPath, String documentName) throws DatabaseException
+	protected void deleteDocument(String collectionPath, String documentName) throws DatabaseException
 	{
 		Collection collection = null;
 		Resource resource = null;
@@ -1511,7 +1490,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * @return true if id has been used earlier, otherwise false
 	 * @throws XMLDBException if collection cannot be retrieved from the database
 	 */
-	protected boolean wasIDDeleted(Collection collection, String id) throws XMLDBException
+	private boolean wasIDDeleted(Collection collection, String id) throws XMLDBException
 	{
 		Collection deleted = null;
 		String collectionPath = ((CollectionImpl) collection).getPathURI().getCollectionPath();
@@ -1612,14 +1591,13 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	public void insertAll()
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	/**Returns relative path of the collection that stores documents. The path to the collection is defined in
 	 * the subclass of the <code>XMLMapper</code>.
 	 * @return <code>String</code> that represent relative path of the collection
 	 */
-	abstract public String getCollectionPath();
+	protected abstract String getCollectionPath();
 
 	/**Returns relative path of the collection. The path is relative to the base application collection.
 	 * @param collection <code>Collection</code> instance
@@ -1636,14 +1614,14 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 * respresents base collection that stores deleted documents for particular subclass.
 	 * @return <code>String</code> that represent relative path of the deleted collection
 	 */
-	public String getDeletedCollectionPath(){ return getDeletedCollectionPath(getCollectionPath()); }
+	protected String getDeletedCollectionPath(){ return getDeletedCollectionPath(getCollectionPath()); }
 
 	/**Returns relative path (to the root application collection) of the base collection in which are placed
 	 * deleted documents from the collection which relative path is passed as argument. The path to the
 	 * <code>/deleted</code> collection is defined the <code>ExistConnector</code> class.
 	 * @return String that represent relative path of the deleted collection
 	 */
-	public String getDeletedCollectionPath(String collectionPath)
+	protected String getDeletedCollectionPath(String collectionPath)
 	{
 		StringBuilder del = new StringBuilder();
 		del.append(getDeletedPath());
@@ -1677,12 +1655,12 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		//return JAXBContext.newInstance(getObjectClass()); this is not working when querying the database
 	}
 
-	/**Gets the ID of the object  determined by the user's username.
+	/**Gets the ID of the object based on the user's username.
 	 * @param username user'username
 	 * @return object's ID or {@code null} if object has no ID set in the database
 	 * @throws DetailException if user is not registered, ID could not be retrieved or database connectivity issues
 	 */
-	public String getID(String username) throws DetailException
+	protected String getID(String username) throws DetailException
 	{
 		return ((UserXmlMapper) MapperRegistry.getMapper(User.class)).getID(username);
 	}
@@ -1797,7 +1775,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	/**Gets the name of the query document with the {@code .xq} extension for particular {@code XMLMapper} subclass.
 	 * @return filename of the query document or {@code null} if it is not defined for a subclass
 	 */
-	public String getSearchQueryName() { return null; };
+	protected String getSearchQueryName() { return null; };
 
 	/**Appends the content of a text file to the String Builder.
 	 * @param f The file to read the contents of
@@ -1834,7 +1812,11 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
-	public String[] listAllDocumentIDs() throws DetailException
+	/**Gets the list of all document in the subclass's collection.
+	 * @return list as array of {@code String}s
+	 * @throws DetailException if collection or resources' list could not be retrieved
+	 */
+	protected String[] listAllDocumentIDs() throws DetailException
 	{
 //		List<String> ids = null;
 		try
@@ -1854,7 +1836,6 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 		}
 	}
 
-
 	/*	@Override
 	public void update(String username, Object object) throws Exception
 	{
@@ -1869,7 +1850,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	/**Clears all in memory objects in all {@link XmlMapper} subclasses.
 	 * @throws DetailException due to database connetivity issues
 	 */
-	public void clearInMemoryObjects() throws DetailException
+	public void clearAllCachedObjects() throws DetailException
 	{
 		((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
 		((CatalogueXmlMapper) MapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();

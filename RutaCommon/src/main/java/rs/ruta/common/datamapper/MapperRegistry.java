@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -7,9 +7,9 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
-import rs.ruta.server.DataManipulationException;
-import rs.ruta.server.DetailException;
+import rs.ruta.common.User;
 
 /**Class that hold global variables accountable for the connection to the classes responsible for the
  * database manipulation. One field is the map containing all <code>DataMapper</code>s that maps domain

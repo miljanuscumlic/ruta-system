@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 public class ExistTransactionFactory extends DSTransactionFactory
 {

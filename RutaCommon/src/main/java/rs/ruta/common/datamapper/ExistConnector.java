@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -15,13 +15,12 @@ import org.xmldb.api.base.Database;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
 
-import rs.ruta.server.DatabaseException;
-
 /**ExistConnector encapsulates common data and methods related to connection to the eXist database.
  */
 public class ExistConnector implements DatastoreConnector
 {
-	private static String uriPrefix = "xmldb:exist://";
+	private static String databaseId = "exist";
+	private static String uriPrefix = "xmldb:" + databaseId + "://";
 	private static String rutaDevelopCollectionPath = "/db/ruta-develop"; // path of the application's base collection in develop branch
 	private static String rutaMasterCollectionPath = "/db/ruta"; // path of the application's base collection in master branch
 	private static String rutaCollectionPath = rutaDevelopCollectionPath; // path of the application's base collection

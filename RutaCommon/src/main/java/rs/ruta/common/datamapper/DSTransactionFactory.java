@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 /**Factory class which subclasses generates objects of <code>DSTransaction</code>. Class
  *<code>DSTransactionFactory</code> is not used when there is no need for transactions

@@ -22,8 +22,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import rs.ruta.server.datamapper.MapperRegistry;
-import rs.ruta.server.datamapper.User;
+import rs.ruta.common.User;
+import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.MapperRegistry;
 
 public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 {

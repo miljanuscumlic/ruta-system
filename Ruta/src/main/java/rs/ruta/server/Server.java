@@ -15,6 +15,7 @@ import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.datamapper.RutaException;
 
 @WebService(targetNamespace = "http://ruta.rs/services")
 public interface Server

@@ -17,8 +17,6 @@ public class ClientTest
 	public static void main(String[] args)
 	{
 
-		PrintStream console = System.err;
-
 		File file = new File("err.txt");
 		FileOutputStream fos;
 		try
@@ -31,8 +29,6 @@ public class ClientTest
 		{
 			e1.printStackTrace();
 		}
-
-		System.err.println("This goes to err.txt");
 
 		//RutaNode client = new Client();
 		Client client = new Client();

@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -16,8 +16,6 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
 
 public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 {
@@ -33,9 +31,9 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public CatalogueDeletionType find(String id) throws DetailException
@@ -108,13 +106,13 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
-	public Class<?> getObjectClass()
+	protected Class<?> getObjectClass()
 	{
 		return CatalogueDeletionType.class;
 	}
 
 	@Override
-	public CatalogueDeletionType getCachedObject(String id)
+	protected CatalogueDeletionType getCachedObject(String id)
 	{
 		return loadedCatalogueDeletions.get(id);
 	}

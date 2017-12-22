@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,13 +14,10 @@ import javax.xml.namespace.QName;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
-
 public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 {
 	final private static String collectionPath = "/system/transaction";
-	final private static String objectPackageName = "rs.ruta.server.datamapper";
+	final private static String objectPackageName = "rs.ruta.common.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, ExistTransaction> loadedTransactions;
 
@@ -31,9 +28,9 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	}
 
 	@Override
-	public String getCollectionPath() { return collectionPath; }
+	protected String getCollectionPath() { return collectionPath; }
 	@Override
-	public String getObjectPackageName() { return objectPackageName; }
+	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
 	public ExistTransaction find(String id) throws DetailException
@@ -119,13 +116,13 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	}*/
 
 	@Override
-	public Class<?> getObjectClass()
+	protected Class<?> getObjectClass()
 	{
 		return ExistTransaction.class;
 	}
 
 	@Override
-	public ExistTransaction getCachedObject(String id)
+	protected ExistTransaction getCachedObject(String id)
 	{
 		return loadedTransactions.get(id);
 	}

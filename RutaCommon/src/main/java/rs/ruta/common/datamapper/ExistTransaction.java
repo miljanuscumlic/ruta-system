@@ -1,4 +1,4 @@
-package rs.ruta.server.datamapper;
+package rs.ruta.common.datamapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmldb.api.base.XMLDBException;
 
-import rs.ruta.server.DatabaseException;
-import rs.ruta.server.DetailException;
-import rs.ruta.server.UserException;
+import rs.ruta.common.User;
 
 /**Represents transaction in the eXist database. At this point only Atomicity of all ACID properties
  * is implemented. Atomicity ensures that all constituent operations inside the transaction are
@@ -45,7 +43,7 @@ public class ExistTransaction implements DSTransaction
 
 	/**Opens a transaction by creating a journal document that records every interaction with the database.
 	 * @throws TransactionException if journal document could not be saved to the database
-	 * @see rs.ruta.server.datamapper.DSTransaction#open()
+	 * @see rs.ruta.common.datamapper.DSTransaction#open()
 	 */
 	@Override
 	public void open() throws TransactionException
@@ -64,7 +62,7 @@ public class ExistTransaction implements DSTransaction
 
 	/**Closes a transaction by deleting the journal document that records every interaction with the database.
 	 * @throws TransactionException if journal document could not be deleted from the database
-	 * @see rs.ruta.server.datamapper.DSTransaction#close()
+	 * @see rs.ruta.common.datamapper.DSTransaction#close()
 	 */
 	@Override
 	public void close() throws TransactionException
@@ -226,7 +224,7 @@ public class ExistTransaction implements DSTransaction
 			{
 				try
 				{
-					((XmlMapper)MapperRegistry.getMapper(DSTransaction.class)).moveDocument(originalCollectionPath, originalDocumentName,
+					((XmlMapper<DSTransaction>)MapperRegistry.getMapper(DSTransaction.class)).moveDocument(originalCollectionPath, originalDocumentName,
 							backupCollectionPath, backupDocumentName);
 				}
 				catch(DatabaseException e)
@@ -236,7 +234,7 @@ public class ExistTransaction implements DSTransaction
 				}
 			}
 			else if(operation.equals("INSERT")) // delete document from original collection
-				((XmlMapper)MapperRegistry.getMapper(DSTransaction.class)).deleteDocument(originalCollectionPath, originalDocumentName);
+				((XmlMapper<DSTransaction>)MapperRegistry.getMapper(DSTransaction.class)).deleteDocument(originalCollectionPath, originalDocumentName);
 			else if(operation.equals("REGISTER")) //delete user Account from eXist database
 			{
 				try
