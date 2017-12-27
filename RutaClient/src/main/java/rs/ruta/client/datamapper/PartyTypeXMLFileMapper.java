@@ -2,7 +2,8 @@ package rs.ruta.client.datamapper;
 
 import javax.xml.bind.JAXBElement;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ObjectFactory;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.*;
 
 public class PartyTypeXMLFileMapper<T> extends XMLFileMapper<T>

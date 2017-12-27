@@ -37,6 +37,7 @@ import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.services.*;
 import rs.ruta.common.InstanceFactory;
 
@@ -47,20 +48,23 @@ public class Client implements RutaNode
 	private static String cdrEndPoint = defaultEndPoint;
 	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.1.0-SNAPSHOT/CDR";
 	private MyParty myParty;
-	private MyPartyXMLFileMapper<MyParty> partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
+//	private MyPartyXMLFileMapper<MyParty> partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
+	private MyPartyExistMapper partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
 	private Party CDRParty;
 	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper;
 	private ClientFrame frame;
 	private static RutaVersion version = new RutaVersion("Client", "0.1.0-SNAPSHOT", "0.0.1", null);
 	private Properties properties;
 
-	public Client()
+	public Client() throws DetailException
 	{
 		myParty = new MyParty();
 		/*		myParty.setItemDataMapper("client-products.dat");
 		*/
 		CDRParty = getCDRParty();
-		partyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
+		//partyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
+		partyDataMapper = new MyPartyExistMapper(Client.this);
+		partyDataMapper.setLocalAPI();
 		CDRPartyDataMapper = new CDRPartyTypeXMLFileMapper<Party>(Client.this, "cdr.xml");
 		properties = new Properties();
 	}
@@ -68,7 +72,7 @@ public class Client implements RutaNode
 	/** Initializes fields of Client object from local data store.
 	 * @throws JAXBException if importing data from the data store is unsuccessful
 	 */
-	public void preInitialize() throws JAXBException
+	public void preInitialize() throws Exception
 	{
 		// trying to load the party data from the XML file
 		ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
@@ -78,7 +82,7 @@ public class Client implements RutaNode
 		//		myParty = InstanceFactory.newInstance(PartyType.class, 1);
 
 		loadProperties();
-		if(parties.size() != 0)
+		if(parties != null && parties.size() != 0)
 		{
 			myParty = parties.get(0);
 			myParty.setItemDataMapper("client-products.dat");
@@ -183,7 +187,7 @@ public class Client implements RutaNode
 	public void insertMyParty() throws Exception
 	{
 		myParty.setSearchNumber(Search.getSearchNum());
-		getPartyDataMapper().insertAll();
+		partyDataMapper.insertAll();
 		//MMM: inserting in embedded exist database - not working at the moment
 		//MapperRegistry.getMapper(MyParty.class);
 	}
@@ -860,10 +864,10 @@ public class Client implements RutaNode
 		((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, cdrEndPoint);
 	}
 
-	public OLDDataMapper getPartyDataMapper()
+/*	public OLDDataMapper getPartyDataMapper()
 	{
 		return partyDataMapper;
-	}
+	}*/
 
 	@Deprecated
 	public OLDDataMapper getCDRPartyDataMapper()

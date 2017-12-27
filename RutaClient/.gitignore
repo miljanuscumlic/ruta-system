@@ -6,3 +6,7 @@
 /client*.dat
 /catalogue*.xml
 /err.txt
+/data/
+/logs/
+/conf.xml
+/*.properties

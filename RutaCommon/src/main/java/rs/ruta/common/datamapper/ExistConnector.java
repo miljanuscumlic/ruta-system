@@ -49,7 +49,6 @@ public class ExistConnector implements DatastoreConnector
 				final Database database = dbClass.newInstance();
 				database.setProperty("create-database", "true");
 				DatabaseManager.registerDatabase(database);
-				connected = true;
 			}
 			catch(Exception e)
 			{
@@ -57,7 +56,9 @@ public class ExistConnector implements DatastoreConnector
 				throw new DatabaseException("Database could not be registered with the database manager.");
 			}
 		}
-		if(! isDatabaseAccessible())
+		if(isDatabaseAccessible())
+			connected = true;
+		else
 			throw new DatabaseException("Database connectivity issue. Database is not accessible.");
 	}
 
@@ -240,6 +241,13 @@ public class ExistConnector implements DatastoreConnector
 	public static String getBaseUri()
 	{
 		return baseUri;
+	}
+
+	/**Sets static fields so that the local XMLDB API is called.
+	 */
+	public void setLocalAPI()
+	{
+		baseUri = uriPrefix + "/";
 	}
 
 	public static String getDocumentSufix() { return docSufix; }

@@ -42,7 +42,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	}
 
 	@Override
-	public void insertAll()
+	public void insertAll() throws DetailException
 	{
 		// TODO Auto-generated method stub
 

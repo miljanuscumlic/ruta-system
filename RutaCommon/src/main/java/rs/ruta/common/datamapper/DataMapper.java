@@ -68,8 +68,9 @@ public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the 
 	default public RutaVersion findClientVersion() throws DetailException { return null; }
 
 	/** Writes all objects to the data store.
+	 * @throws DetailException TODO
 	 */
-	public void insertAll();
+	public void insertAll() throws DetailException;
 
 	/**Inserts object with the passed id to the data store.
 	 * @param object object to be stored

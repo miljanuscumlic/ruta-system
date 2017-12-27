@@ -1588,7 +1588,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	}
 
 	@Override
-	public void insertAll()
+	public void insertAll() throws DetailException
 	{
 		// TODO Auto-generated method stub
 	}
