@@ -34,7 +34,7 @@ public interface DSTransaction extends AutoCloseable
 	 */
 	public static void rollbackAll() throws DetailException
 	{
-		List<DSTransaction> transactions  = (List<DSTransaction>) MapperRegistry.getMapper(DSTransaction.class).findAll();
+		List<DSTransaction> transactions  = (List<DSTransaction>) MapperRegistry.getInstance().getMapper(DSTransaction.class).findAll();
 		if(transactions != null)
 			for(DSTransaction t: transactions)
 			{

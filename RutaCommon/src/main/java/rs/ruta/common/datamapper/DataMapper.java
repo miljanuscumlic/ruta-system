@@ -9,7 +9,7 @@ import org.xmldb.api.base.XMLDBException;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 
-/**DataMapper interface declares methods responsible for mapping between objects from the domain model
+/**DataMapper interface declares methods responsible for mappings between objects from the domain model
  * and persistance interpretation of that data in the data store. To be able to connect to
  * some particular database one should implement DataMapper interface and its methods.
  */

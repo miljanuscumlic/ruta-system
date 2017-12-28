@@ -54,6 +54,8 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 					String timestamp = getTimestamp();
 					String username = myParty.getUsername();
 					String secretKey = myParty.getSecretKey();
+					if(username == null || secretKey == null)
+						throw new RuntimeException("User is not registered with the CDR service!");
 					String signature = getSignature(username, timestamp, getBytes(secretKey));
 					Node firstChild = header.getFirstChild();
 					append(firstChild, "Username", username);

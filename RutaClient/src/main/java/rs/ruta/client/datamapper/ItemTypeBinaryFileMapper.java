@@ -57,7 +57,7 @@ public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 		{
 /*			long catID = businessParty.getCatalogueID(); // Catalogue ID number
 			output.writeObject(catID);*/
-			ArrayList<ItemType> list = businessParty.getMyProducts();
+			ArrayList<ItemType> list = businessParty.getProducts();
 			for(int i = 0; i < list.size(); i++ )
 				output.writeObject(new Product(businessParty, i)); // writing data to the file
 		}

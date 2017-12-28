@@ -41,7 +41,7 @@ public class MyParty extends BusinessParty
 	@XmlElement(name = "CatalogueSearch")
 	private List<Search<CatalogueType>> catalogueSearches;
 	@XmlElement(name = "DirtyCatalogue")
-	private boolean dirtyCatalogue; // MMM: this property is also saved as the preference
+	private boolean dirtyCatalogue;
 	@XmlElement(name = "DirtyMyParty")
 	private boolean dirtyMyParty;
 	@XmlElement(name = "InsertMyCatalogue")
@@ -241,7 +241,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductName(int index, String value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		if(item.getName() == null)
 			item.setName(new NameType());
 		if(hasCellValueChanged(item.getName().getValue(), value))
@@ -251,7 +251,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductDescription(int index, String value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		List<DescriptionType> descriptions = item.getDescription();
 		if(descriptions.size() == 0)
 			descriptions.add(new DescriptionType());
@@ -262,7 +262,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductID(int index, String value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		if(item.getSellersItemIdentification() == null)
 			item.setSellersItemIdentification(new ItemIdentificationType());
 		if(item.getSellersItemIdentification().getID() == null)
@@ -274,7 +274,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductBarcode(int index, String value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		if(item.getSellersItemIdentification() == null)
 			item.setSellersItemIdentification(new ItemIdentificationType());
 		if(item.getSellersItemIdentification().getBarcodeSymbologyID() == null)
@@ -286,7 +286,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductPackSizeNumeric(int index, BigDecimal value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		if(item.getPackSizeNumeric() == null)
 			item.setPackSizeNumeric(new PackSizeNumericType());
 		if(hasCellValueChanged(item.getPackSizeNumeric().getValue(), value))
@@ -300,7 +300,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductCommodityCode(int index, String value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		List<CommodityClassificationType> commodities = item.getCommodityClassification();
 		if(commodities.size() == 0)
 			commodities.add(new CommodityClassificationType());
@@ -313,14 +313,14 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductKeywords(int index, List<KeywordType> value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		item.setKeyword(value);
 	}
 
 	@Override
 	public void setProductKeywords(int index, String value)
 	{
-		ItemType item = getMyProducts().get(index);
+		ItemType item = getProducts().get(index);
 		List<KeywordType> keywords =
 				Stream.of(value.split("( )*[,;]+")).map(keyword -> new KeywordType(keyword)).collect(Collectors.toList());
 		item.setKeyword(keywords);
@@ -335,7 +335,7 @@ public class MyParty extends BusinessParty
 	{
 		CatalogueType catalogue = new CatalogueType();
 		int cnt = 0;
-		ArrayList<ItemType> myProducts = getMyProducts();
+		ArrayList<ItemType> myProducts = getProducts();
 		if(checkProductNames(myProducts) && myProducts.size() != 0)
 		{
 			//populating Catalogue document

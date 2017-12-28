@@ -1,8 +1,7 @@
 package rs.ruta.client.datamapper;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.*;
@@ -12,8 +11,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
+import org.xmldb.api.base.Collection;
+import org.xmldb.api.base.XMLDBException;
+
 import rs.ruta.client.*;
+import rs.ruta.common.datamapper.DSTransaction;
+import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.XmlMapper;
 
 public class MyPartyExistMapper extends XmlMapper<MyParty>
@@ -25,9 +30,9 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, MyParty> loadedParties;
 
-	public MyPartyExistMapper(Client client) throws DetailException
+	public MyPartyExistMapper(Client client, ExistConnector connector) throws DetailException
 	{
-		super();
+		super(connector);
 		loadedParties = new ConcurrentHashMap<String, MyParty>();
 		this.client = client;
 	}
@@ -50,7 +55,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 		}
 		return parties.size() > 0 ? parties : null;
 
-/*		ArrayList<PartyType> parties;
+		/*		ArrayList<PartyType> parties;
 		parties = (ArrayList<PartyType>) super.findAll(username);
 		if (parties != null)
 			for(PartyType t : parties)
@@ -107,6 +112,41 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	public void insertAll() throws DetailException
 	{
 		super.insert(client.getMyParty());
+	}
+
+	//MMM: this could be more elegantly solved if the MyParty object has an id field - then just retrieve it
+	//MMM: but this class is only temporary, so I shall no bother
+	@Override
+	public String getID(MyParty object) throws DetailException
+	{
+		String id = null;
+		String[] ids = listAllDocumentIDs();
+		int cnt = ids.length;
+		if(cnt == 0)
+			return null;
+		if(ids.length == 1)
+			return trimID(ids[0]);
+		else if(ids.length > 1)
+			throw new DatabaseException("There is more than one object in a collection.");
+		return id;
+	}
+
+	@Override
+	protected String doGetOrCreateID(Collection collection, MyParty object, String username, DSTransaction transaction)
+			throws DetailException
+	{
+		String id = null;
+		try
+		{
+			id = getID(object);
+			if (id == null)
+				id = createID(collection);
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved or unique ID created.", e);
+		}
+		return id;
 	}
 
 }

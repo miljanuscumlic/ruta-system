@@ -33,7 +33,7 @@ public class BusinessParty
 
 	public BusinessParty()
 	{
-		products = getMyProducts();
+		products = getProducts();
 		coreParty = null;
 	}
 
@@ -74,7 +74,7 @@ public class BusinessParty
 		return coreParty == null ? false : true;
 	}
 
-	public ArrayList<ItemType> getMyProducts()
+	public ArrayList<ItemType> getProducts()
 	{
 		if (products == null)
 			products = new ArrayList<ItemType>();
@@ -278,10 +278,9 @@ public class BusinessParty
 		return products.size();
 	}
 
-	/**
-	 * Reads all products of party from the data store. If the products are already read, skips the read.
+	/**Reads all products of the {@link Party} from the data store. If products have been already read, skips the read.
 	 */
-	public void importMyProducts()
+	public void importProducts()
 	{
 		if(itemDataMapper != null)
 		{
@@ -297,7 +296,7 @@ public class BusinessParty
 	/**
 	 * Writes all Products to the data store.
 	 */
-	public void exportMyProducts()
+	public void exportProducts()
 	{
 		itemDataMapper.insertAll();
 	}

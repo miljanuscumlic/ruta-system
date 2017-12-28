@@ -50,8 +50,8 @@ public class ExistTransaction implements DSTransaction
 	{
 		try
 		{
-			transactionID = MapperRegistry.getMapper(DSTransaction.class).createID();
-			MapperRegistry.getMapper(DSTransaction.class).insert(this, transactionID, null);
+			transactionID = MapperRegistry.getInstance().getMapper(DSTransaction.class).createID();
+			MapperRegistry.getInstance().getMapper(DSTransaction.class).insert(this, transactionID, null);
 		}
 		catch (DetailException | XMLDBException e)
 		{
@@ -69,7 +69,7 @@ public class ExistTransaction implements DSTransaction
 	{
 		try //delete transaction journal document
 		{
-			MapperRegistry.getMapper(DSTransaction.class).delete(transactionID, null);
+			MapperRegistry.getInstance().getMapper(DSTransaction.class).delete(transactionID, null);
 		}
 		catch (DetailException e)
 		{
@@ -147,7 +147,7 @@ public class ExistTransaction implements DSTransaction
 		operations.add(0, new Operation(originalCollectionPath, originalDocumentName, operation,
 				backupCollectionPath, backupDocumentName, username));
 		timestamp = System.currentTimeMillis();
-		MapperRegistry.getMapper(DSTransaction.class).update(this, transactionID, null);
+		MapperRegistry.getInstance().getMapper(DSTransaction.class).update(this, transactionID, null);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public class ExistTransaction implements DSTransaction
 			{
 				try
 				{
-					((XmlMapper<DSTransaction>)MapperRegistry.getMapper(DSTransaction.class)).moveDocument(originalCollectionPath, originalDocumentName,
+					((XmlMapper<DSTransaction>)MapperRegistry.getInstance().getMapper(DSTransaction.class)).moveDocument(originalCollectionPath, originalDocumentName,
 							backupCollectionPath, backupDocumentName);
 				}
 				catch(DatabaseException e)
@@ -234,12 +234,12 @@ public class ExistTransaction implements DSTransaction
 				}
 			}
 			else if(operation.equals("INSERT")) // delete document from original collection
-				((XmlMapper<DSTransaction>)MapperRegistry.getMapper(DSTransaction.class)).deleteDocument(originalCollectionPath, originalDocumentName);
+				((XmlMapper<DSTransaction>)MapperRegistry.getInstance().getMapper(DSTransaction.class)).deleteDocument(originalCollectionPath, originalDocumentName);
 			else if(operation.equals("REGISTER")) //delete user Account from eXist database
 			{
 				try
 				{
-					((UserXmlMapper)MapperRegistry.getMapper(User.class)).deleteExistAccount(username);
+					((UserXmlMapper)MapperRegistry.getInstance().getMapper(User.class)).deleteExistAccount(username);
 				}
 				catch(UserException e)
 				{// it's OK if the user does not exist; in that case rollback should not be done

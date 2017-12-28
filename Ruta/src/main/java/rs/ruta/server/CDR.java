@@ -65,6 +65,7 @@ public class CDR implements Server
 
 	private void checkDataStore()
 	{
+		new ServiceMapperRegistry(); //initialize the registry
 		if(! MapperRegistry.isDatastoreAccessible())
 		{
 			//logger.error("Exception is ", e);
@@ -92,7 +93,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(CatalogueType.class).insert(username, cat);
+			MapperRegistry.getInstance().getMapper(CatalogueType.class).insert(username, cat);
 		}
 		catch(Exception e)
 		{
@@ -112,7 +113,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(CatalogueType.class).update(username, cat);
+			MapperRegistry.getInstance().getMapper(CatalogueType.class).update(username, cat);
 		}
 		catch(Exception e)
 		{
@@ -133,7 +134,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			cat = MapperRegistry.getMapper(CatalogueType.class).findByUserId(id);
+			cat = MapperRegistry.getInstance().getMapper(CatalogueType.class).findByUserId(id);
 			return cat;
 		}
 		catch(Exception e)
@@ -154,7 +155,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catDeletion);
+			MapperRegistry.getInstance().getMapper(CatalogueDeletionType.class).insert(username, catDeletion);
 			//			MapperRegistry.getMapper(CatalogueType.class).delete(id); //deprecated: when CatalogueDeletion is not used
 		}
 		catch(Exception e)
@@ -176,7 +177,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			secretKey = (String) MapperRegistry.getMapper(User.class).registerUser(username, password);
+			secretKey = (String) MapperRegistry.getInstance().getMapper(User.class).registerUser(username, password);
 			return secretKey;
 		}
 		catch(Exception e)
@@ -199,8 +200,8 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(PartyType.class).insert(username, party);
-			id = MapperRegistry.getMapper(User.class).getUserID(username);
+			MapperRegistry.getInstance().getMapper(PartyType.class).insert(username, party);
+			id = MapperRegistry.getInstance().getMapper(User.class).getUserID(username);
 			return id;
 		}
 		catch(Exception e)
@@ -222,7 +223,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(PartyType.class).update(username, party);
+			MapperRegistry.getInstance().getMapper(PartyType.class).update(username, party);
 		}
 		catch(Exception e)
 		{
@@ -242,7 +243,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(User.class).deleteUser(username);
+			MapperRegistry.getInstance().getMapper(User.class).deleteUser(username);
 		}
 		catch(Exception e)
 		{
@@ -263,7 +264,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult =  MapperRegistry.getMapper(PartyType.class).findMany(criterion);
+			searchResult =  MapperRegistry.getInstance().getMapper(PartyType.class).findMany(criterion);
 
 			/*			logger.info("*****************************************************************");
 			long fm1avg = 0, fm2avg = 0, fm3avg = 0;
@@ -330,7 +331,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult = MapperRegistry.getMapper(CatalogueType.class).findMany(criterion);
+			searchResult = MapperRegistry.getInstance().getMapper(CatalogueType.class).findMany(criterion);
 			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
@@ -352,7 +353,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult = MapperRegistry.getMapper(PartyType.class).findAll();
+			searchResult = MapperRegistry.getInstance().getMapper(PartyType.class).findAll();
 			logger.info("Finished finding all parties");
 			return searchResult.size() != 0 ? searchResult : null;
 		}
@@ -373,7 +374,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			RutaVersion latestVersion = MapperRegistry.getMapper(RutaVersion.class).findClientVersion();
+			RutaVersion latestVersion = MapperRegistry.getInstance().getMapper(RutaVersion.class).findClientVersion();
 			if(latestVersion.getVersion().compareTo(currentVersion) <= 0) //there is no new version
 				latestVersion = null;
 			return latestVersion;
@@ -396,7 +397,7 @@ public class CDR implements Server
 		{
 			init();
 			//			String id =  MapperRegistry.getMapper(RutaVersion.class).createID();
-			MapperRegistry.getMapper(RutaVersion.class).insert(null, version);
+			MapperRegistry.getInstance().getMapper(RutaVersion.class).insert(null, version);
 		}
 		catch(Exception e)
 		{
@@ -416,7 +417,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getMapper(BugReport.class).insert(null, bugReport);
+			MapperRegistry.getInstance().getMapper(BugReport.class).insert(null, bugReport);
 		}
 		catch(Exception e)
 		{
@@ -445,8 +446,8 @@ public class CDR implements Server
 		try
 		{
 			init();
-			String id =  MapperRegistry.getMapper(BugReport.class).createID();
-			MapperRegistry.getMapper(BugReport.class).insert(image, id, transaction);
+			String id =  MapperRegistry.getInstance().getMapper(BugReport.class).createID();
+			MapperRegistry.getInstance().getMapper(BugReport.class).insert(image, id, transaction);
 		}
 		catch(Exception e)
 		{
@@ -478,8 +479,8 @@ public class CDR implements Server
 			bin.close();
 			bout.close();
 
-			String id =  MapperRegistry.getMapper(BugReport.class).createID();
-			MapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
+			String id =  MapperRegistry.getInstance().getMapper(BugReport.class).createID();
+			MapperRegistry.getInstance().getMapper(BugReport.class).insert(file, id, transaction);
 		}
 		catch(Exception e)
 		{
@@ -501,8 +502,8 @@ public class CDR implements Server
 		{
 			init();
 			File file = attachment.getFile();
-			String id =  MapperRegistry.getMapper(BugReport.class).createID();
-			MapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
+			String id =  MapperRegistry.getInstance().getMapper(BugReport.class).createID();
+			MapperRegistry.getInstance().getMapper(BugReport.class).insert(file, id, transaction);
 		}
 		catch(Exception e)
 		{

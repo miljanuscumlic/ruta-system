@@ -20,7 +20,10 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	final private static String objectPackageName = "rs.ruta.common";
 	final private static String queryNameSearchID = "search-id.xq";
 
-	public PartyIDXmlMapper() throws DetailException { super(); }
+	public PartyIDXmlMapper(ExistConnector connector) throws DetailException
+	{
+		super(connector);
+	}
 
 	@Override
 	protected Class<?> getObjectClass() { return PartyID.class; }

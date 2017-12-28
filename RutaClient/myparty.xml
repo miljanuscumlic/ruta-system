@@ -107,7 +107,7 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description>   vhjsdfsd df dfsg  wer </ns3:Description>
+        <ns3:Description>   vhjsdfsd df dfsg </ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>SDGS</ns3:Name>
         <ns2:SellersItemIdentification>
@@ -119,7 +119,7 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description>sd fsd</ns3:Description>
+        <ns3:Description>sd fsd </ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>TSETG</ns3:Name>
         <ns2:SellersItemIdentification>
@@ -131,7 +131,7 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description>c fg fd  hjgjh    </ns3:Description>
+        <ns3:Description>c fg fd  hjgjh ds</ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>ASDF</ns3:Name>
         <ns2:SellersItemIdentification>
@@ -155,35 +155,9 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description>dfsdfd d     dfsdf</ns3:Description>
+        <ns3:Description>dfsdfd d     dfsd</ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>WQEQWE</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID></ns3:ID>
-            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-        </ns2:CommodityClassification>
-    </Products>
-    <Products>
-        <ns3:Description>  ds  dsf</ns3:Description>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>sdfsd</ns3:Name>
-        <ns3:Keyword>ern er ert er</ns3:Keyword>
-        <ns3:Keyword> hhg</ns3:Keyword>
-        <ns2:SellersItemIdentification>
-            <ns3:ID></ns3:ID>
-            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-        </ns2:CommodityClassification>
-    </Products>
-    <Products>
-        <ns3:Description>  f fdsaffdws fdd eoirdzfb  opupo</ns3:Description>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>fgdsfgds</ns3:Name>
         <ns2:SellersItemIdentification>
             <ns3:ID></ns3:ID>
             <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -196,30 +170,6 @@
         <ns3:Description></ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>asedfs</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID></ns3:ID>
-            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-        </ns2:CommodityClassification>
-    </Products>
-    <Products>
-        <ns3:Description>waerfwa se ew  ffda Fefdf  kjh </ns3:Description>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>sada</ns3:Name>
-        <ns2:SellersItemIdentification>
-            <ns3:ID></ns3:ID>
-            <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-        </ns2:SellersItemIdentification>
-        <ns2:CommodityClassification>
-            <ns3:CommodityCode></ns3:CommodityCode>
-        </ns2:CommodityClassification>
-    </Products>
-    <Products>
-        <ns3:Description>qw  </ns3:Description>
-        <ns3:PackSizeNumeric/>
-        <ns3:Name>asd</ns3:Name>
         <ns2:SellersItemIdentification>
             <ns3:ID></ns3:ID>
             <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -253,7 +203,7 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description></ns3:Description>
+        <ns3:Description>novi opis 2. put</ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>asdasdas </ns3:Name>
         <ns2:SellersItemIdentification>
@@ -289,9 +239,9 @@
         </ns2:CommodityClassification>
     </Products>
     <Products>
-        <ns3:Description></ns3:Description>
+        <ns3:Description>tako je bilo dobro</ns3:Description>
         <ns3:PackSizeNumeric/>
-        <ns3:Name>JOS JEDAN DAN LEPI</ns3:Name>
+        <ns3:Name>JOS JEDAN DAN LEPI PROIZVOD</ns3:Name>
         <ns2:SellersItemIdentification>
             <ns3:ID></ns3:ID>
             <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -304,10 +254,10 @@
         <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
         <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
         <ns2:PartyIdentification>
-            <ns3:ID>b3eacab1</ns3:ID>
+            <ns3:ID>6b7a858c</ns3:ID>
         </ns2:PartyIdentification>
         <ns2:PartyName>
-            <ns3:Name>Rutasdfft</ns3:Name>
+            <ns3:Name>Rutasd</ns3:Name>
         </ns2:PartyName>
         <ns2:PostalAddress>
             <ns3:Floor>4</ns3:Floor>
@@ -325,7 +275,7 @@
         </ns2:PostalAddress>
         <ns2:PartyLegalEntity>
             <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
-            <ns3:CompanyID>589754564</ns3:CompanyID>
+            <ns3:CompanyID>58975456</ns3:CompanyID>
             <ns3:RegistrationDate>2018-02-03</ns3:RegistrationDate>
             <ns2:RegistrationAddress>
                 <ns3:Floor>4</ns3:Floor>
@@ -354,7 +304,7 @@
     <Partner>false</Partner>
     <Password>ruta</Password>
     <Username>ruta</Username>
-    <SecretKey>6f777081</SecretKey>
+    <SecretKey>884c8e23</SecretKey>
     <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI></ns3:WebsiteURI>
@@ -1013,7 +963,7 @@
             </ns2:CommodityClassification>
         </Products>
         <Products>
-            <ns3:Description>   vhjsdfsd df dfsg  wer </ns3:Description>
+            <ns3:Description>   vhjsdfsd df dfsg </ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>SDGS</ns3:Name>
             <ns2:SellersItemIdentification>
@@ -1025,7 +975,7 @@
             </ns2:CommodityClassification>
         </Products>
         <Products>
-            <ns3:Description>sd fsd</ns3:Description>
+            <ns3:Description>sd fsd </ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>TSETG</ns3:Name>
             <ns2:SellersItemIdentification>
@@ -1037,7 +987,7 @@
             </ns2:CommodityClassification>
         </Products>
         <Products>
-            <ns3:Description>c fg fd  hjgjh    </ns3:Description>
+            <ns3:Description>c fg fd  hjgjh ds</ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>ASDF</ns3:Name>
             <ns2:SellersItemIdentification>
@@ -1061,35 +1011,9 @@
             </ns2:CommodityClassification>
         </Products>
         <Products>
-            <ns3:Description>dfsdfd d     dfsdf</ns3:Description>
+            <ns3:Description>dfsdfd d     dfsd</ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>WQEQWE</ns3:Name>
-            <ns2:SellersItemIdentification>
-                <ns3:ID></ns3:ID>
-                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-            </ns2:SellersItemIdentification>
-            <ns2:CommodityClassification>
-                <ns3:CommodityCode></ns3:CommodityCode>
-            </ns2:CommodityClassification>
-        </Products>
-        <Products>
-            <ns3:Description>  ds  dsf</ns3:Description>
-            <ns3:PackSizeNumeric/>
-            <ns3:Name>sdfsd</ns3:Name>
-            <ns3:Keyword>ern er ert er</ns3:Keyword>
-            <ns3:Keyword> hhg</ns3:Keyword>
-            <ns2:SellersItemIdentification>
-                <ns3:ID></ns3:ID>
-                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-            </ns2:SellersItemIdentification>
-            <ns2:CommodityClassification>
-                <ns3:CommodityCode></ns3:CommodityCode>
-            </ns2:CommodityClassification>
-        </Products>
-        <Products>
-            <ns3:Description>  f fdsaffdws fdd eoirdzfb  opupo</ns3:Description>
-            <ns3:PackSizeNumeric/>
-            <ns3:Name>fgdsfgds</ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:ID></ns3:ID>
                 <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -1102,30 +1026,6 @@
             <ns3:Description></ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>asedfs</ns3:Name>
-            <ns2:SellersItemIdentification>
-                <ns3:ID></ns3:ID>
-                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-            </ns2:SellersItemIdentification>
-            <ns2:CommodityClassification>
-                <ns3:CommodityCode></ns3:CommodityCode>
-            </ns2:CommodityClassification>
-        </Products>
-        <Products>
-            <ns3:Description>waerfwa se ew  ffda Fefdf  kjh </ns3:Description>
-            <ns3:PackSizeNumeric/>
-            <ns3:Name>sada</ns3:Name>
-            <ns2:SellersItemIdentification>
-                <ns3:ID></ns3:ID>
-                <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-            </ns2:SellersItemIdentification>
-            <ns2:CommodityClassification>
-                <ns3:CommodityCode></ns3:CommodityCode>
-            </ns2:CommodityClassification>
-        </Products>
-        <Products>
-            <ns3:Description>qw  </ns3:Description>
-            <ns3:PackSizeNumeric/>
-            <ns3:Name>asd</ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:ID></ns3:ID>
                 <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -1159,7 +1059,7 @@
             </ns2:CommodityClassification>
         </Products>
         <Products>
-            <ns3:Description></ns3:Description>
+            <ns3:Description>novi opis 2. put</ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>asdasdas </ns3:Name>
             <ns2:SellersItemIdentification>
@@ -1195,9 +1095,9 @@
             </ns2:CommodityClassification>
         </Products>
         <Products>
-            <ns3:Description></ns3:Description>
+            <ns3:Description>tako je bilo</ns3:Description>
             <ns3:PackSizeNumeric/>
-            <ns3:Name>JOS JEDAN DAN LEPI</ns3:Name>
+            <ns3:Name>JOS JEDAN DAN LEPI PROIZVOD</ns3:Name>
             <ns2:SellersItemIdentification>
                 <ns3:ID></ns3:ID>
                 <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
@@ -1210,7 +1110,61 @@
             <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
             <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
             <ns2:PartyIdentification>
-                <ns3:ID>b3eacab1</ns3:ID>
+                <ns3:ID>6b7a858c</ns3:ID>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Rutasd</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor>4</ns3:Floor>
+                <ns3:Room>26</ns3:Room>
+                <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                <ns3:CityName>Beograd</ns3:CityName>
+                <ns3:PostalZone>11000</ns3:PostalZone>
+                <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                <ns2:Country>
+                    <ns3:Name>Srbija</ns3:Name>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
+                <ns3:CompanyID>58975456</ns3:CompanyID>
+                <ns3:RegistrationDate>2018-02-03</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor>4</ns3:Floor>
+                    <ns3:Room>26</ns3:Room>
+                    <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                    <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                    <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                    <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                    <ns3:CityName>Beograd</ns3:CityName>
+                    <ns3:PostalZone>11000</ns3:PostalZone>
+                    <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                    <ns2:Country>
+                        <ns3:Name>Srbija</ns3:Name>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:Name>Miljan</ns3:Name>
+                <ns3:Telephone>087.6654598</ns3:Telephone>
+                <ns3:Telefax>087.369544</ns3:Telefax>
+                <ns3:ElectronicMail>miljan@ruta.rs</ns3:ElectronicMail>
+                <ns3:Note>super</ns3:Note>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
+            <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
+            <ns2:PartyIdentification>
+                <ns3:ID>cc2e55da</ns3:ID>
             </ns2:PartyIdentification>
             <ns2:PartyName>
                 <ns3:Name>Rutasdfft</ns3:Name>
@@ -1232,6 +1186,60 @@
             <ns2:PartyLegalEntity>
                 <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
                 <ns3:CompanyID>589754564</ns3:CompanyID>
+                <ns3:RegistrationDate>2018-02-03</ns3:RegistrationDate>
+                <ns2:RegistrationAddress>
+                    <ns3:Floor>4</ns3:Floor>
+                    <ns3:Room>26</ns3:Room>
+                    <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                    <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                    <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                    <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                    <ns3:CityName>Beograd</ns3:CityName>
+                    <ns3:PostalZone>11000</ns3:PostalZone>
+                    <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                    <ns2:Country>
+                        <ns3:Name>Srbija</ns3:Name>
+                    </ns2:Country>
+                </ns2:RegistrationAddress>
+            </ns2:PartyLegalEntity>
+            <ns2:Contact>
+                <ns3:Name>Miljan</ns3:Name>
+                <ns3:Telephone>087.6654598</ns3:Telephone>
+                <ns3:Telefax>087.369544</ns3:Telefax>
+                <ns3:ElectronicMail>miljan@ruta.rs</ns3:ElectronicMail>
+                <ns3:Note>super</ns3:Note>
+            </ns2:Contact>
+        </CoreParty>
+        <Following>false</Following>
+        <Partner>false</Partner>
+    </FollowingPartner>
+    <FollowingPartner>
+        <CoreParty>
+            <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
+            <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
+            <ns2:PartyIdentification>
+                <ns3:ID>434cb8cd</ns3:ID>
+            </ns2:PartyIdentification>
+            <ns2:PartyName>
+                <ns3:Name>Rutasdfft</ns3:Name>
+            </ns2:PartyName>
+            <ns2:PostalAddress>
+                <ns3:Floor>4</ns3:Floor>
+                <ns3:Room>26</ns3:Room>
+                <ns3:StreetName>Ruzveltova</ns3:StreetName>
+                <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
+                <ns3:BuildingNumber>46</ns3:BuildingNumber>
+                <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
+                <ns3:CityName>Beograd</ns3:CityName>
+                <ns3:PostalZone>11000</ns3:PostalZone>
+                <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
+                <ns2:Country>
+                    <ns3:Name>Srbija</ns3:Name>
+                </ns2:Country>
+            </ns2:PostalAddress>
+            <ns2:PartyLegalEntity>
+                <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
+                <ns3:CompanyID>5897545646</ns3:CompanyID>
                 <ns3:RegistrationDate>2018-02-03</ns3:RegistrationDate>
                 <ns2:RegistrationAddress>
                     <ns3:Floor>4</ns3:Floor>
@@ -2858,180 +2866,6 @@
         </SearchResult>
     </CatalogueSearch>
     <CatalogueSearch>
-        <SearchName>Search_24</SearchName>
-        <SearchCriterion>
-            <PartyName>ruta</PartyName>
-            <PartyAll>true</PartyAll>
-            <ItemName>d</ItemName>
-            <ItemAll>true</ItemAll>
-        </SearchCriterion>
-        <SearchResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns8="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2" xsi:type="ns8:CatalogueType">
-            <ns3:ID>2</ns3:ID>
-            <ns3:UUID>765cb135CAT2</ns3:UUID>
-            <ns3:IssueDate>2017-11-15+01:00</ns3:IssueDate>
-            <ns2:ProviderParty>
-                <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
-                <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
-                <ns2:PartyIdentification>
-                    <ns3:ID>765cb135</ns3:ID>
-                </ns2:PartyIdentification>
-                <ns2:PartyName>
-                    <ns3:Name>Rutasesdfsdfs12</ns3:Name>
-                </ns2:PartyName>
-                <ns2:PostalAddress>
-                    <ns3:Floor>4</ns3:Floor>
-                    <ns3:Room>26</ns3:Room>
-                    <ns3:StreetName>Ruzveltova</ns3:StreetName>
-                    <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
-                    <ns3:BuildingNumber>46</ns3:BuildingNumber>
-                    <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
-                    <ns3:CityName>Beograd</ns3:CityName>
-                    <ns3:PostalZone>11000</ns3:PostalZone>
-                    <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
-                    <ns2:Country>
-                        <ns3:Name>Srbija</ns3:Name>
-                    </ns2:Country>
-                </ns2:PostalAddress>
-                <ns2:PartyLegalEntity>
-                    <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
-                    <ns3:CompanyID>5897545646</ns3:CompanyID>
-                    <ns3:RegistrationDate>2018-02-01</ns3:RegistrationDate>
-                    <ns2:RegistrationAddress>
-                        <ns3:Floor>4</ns3:Floor>
-                        <ns3:Room>26</ns3:Room>
-                        <ns3:StreetName>Ruzveltova</ns3:StreetName>
-                        <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
-                        <ns3:BuildingNumber>46</ns3:BuildingNumber>
-                        <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
-                        <ns3:CityName>Beograd</ns3:CityName>
-                        <ns3:PostalZone>11000</ns3:PostalZone>
-                        <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
-                        <ns2:Country>
-                            <ns3:Name>Srbija</ns3:Name>
-                        </ns2:Country>
-                    </ns2:RegistrationAddress>
-                </ns2:PartyLegalEntity>
-                <ns2:Contact>
-                    <ns3:Name>Miljan</ns3:Name>
-                    <ns3:Telephone>087.6654598</ns3:Telephone>
-                    <ns3:Telefax>087.369544</ns3:Telefax>
-                    <ns3:ElectronicMail>miljan@ruta.rs</ns3:ElectronicMail>
-                    <ns3:Note>super</ns3:Note>
-                </ns2:Contact>
-            </ns2:ProviderParty>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-1</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>kako biti radostan</ns3:Description>
-                    <ns3:PackSizeNumeric>4</ns3:PackSizeNumeric>
-                    <ns3:Name>Radost</ns3:Name>
-                    <ns3:Keyword></ns3:Keyword>
-                    <ns2:SellersItemIdentification>
-                        <ns3:ID>98</ns3:ID>
-                        <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-                    </ns2:SellersItemIdentification>
-                    <ns2:CommodityClassification>
-                        <ns3:CommodityCode>78</ns3:CommodityCode>
-                        <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
-                    </ns2:CommodityClassification>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-4</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>kako biti radostan 2</ns3:Description>
-                    <ns3:PackSizeNumeric/>
-                    <ns3:Name>Radost 2</ns3:Name>
-                    <ns3:Keyword>6</ns3:Keyword>
-                    <ns3:Keyword> iuo</ns3:Keyword>
-                    <ns3:Keyword> iuiuwe</ns3:Keyword>
-                    <ns2:SellersItemIdentification>
-                        <ns3:ID></ns3:ID>
-                        <ns3:BarcodeSymbologyID>4885-22</ns3:BarcodeSymbologyID>
-                    </ns2:SellersItemIdentification>
-                    <ns2:CommodityClassification>
-                        <ns3:CommodityCode></ns3:CommodityCode>
-                    </ns2:CommodityClassification>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-7</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description> </ns3:Description>
-                    <ns3:Name>dddddddddddddddddddddddddddd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-9</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>   v</ns3:Description>
-                    <ns3:Name>SDGS</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-11</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>ASDF</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-16</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>sdfsd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-17</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>fgdsfgds</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-18</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asedfs</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-19</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>waerfwa</ns3:Description>
-                    <ns3:Name>sada</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-20</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-21</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asd </ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-22</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>dsfsdfsdfd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-23</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asdasdas </ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>2-24</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>sadffa</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-        </SearchResult>
-    </CatalogueSearch>
-    <CatalogueSearch>
         <SearchName>Search_20</SearchName>
         <SearchCriterion>
             <PartyAll>true</PartyAll>
@@ -3540,235 +3374,11 @@
             </ns2:CatalogueLine>
         </SearchResult>
     </CatalogueSearch>
-    <CatalogueSearch>
-        <SearchName>Search_18</SearchName>
-        <SearchCriterion>
-            <PartyName>ruta</PartyName>
-            <PartyAll>true</PartyAll>
-            <ItemName>d</ItemName>
-            <ItemAll>true</ItemAll>
-        </SearchCriterion>
-        <SearchResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns8="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2" xsi:type="ns8:CatalogueType">
-            <ns3:ID>1</ns3:ID>
-            <ns3:UUID>bf2dcca3CAT1</ns3:UUID>
-            <ns3:IssueDate>2017-11-09+01:00</ns3:IssueDate>
-            <ns2:ProviderParty>
-                <ns3:WebsiteURI>dunav-gradnja.rs</ns3:WebsiteURI>
-                <ns2:PartyIdentification>
-                    <ns3:ID>bf2dcca3</ns3:ID>
-                </ns2:PartyIdentification>
-                <ns2:PartyName>
-                    <ns3:Name>Dunav</ns3:Name>
-                </ns2:PartyName>
-                <ns2:PostalAddress>
-                    <ns3:StreetName>Kralja Petra</ns3:StreetName>
-                    <ns3:BuildingName>Zadužbina Bele Mihalja</ns3:BuildingName>
-                    <ns3:BuildingNumber>23a</ns3:BuildingNumber>
-                    <ns3:CityName>Apatin</ns3:CityName>
-                    <ns3:PostalZone>25260</ns3:PostalZone>
-                    <ns3:CountrySubentity>Vojvodina</ns3:CountrySubentity>
-                    <ns2:Country>
-                        <ns3:Name>Srbija</ns3:Name>
-                    </ns2:Country>
-                </ns2:PostalAddress>
-                <ns2:PartyLegalEntity>
-                    <ns3:RegistrationName>Dunav gradnja</ns3:RegistrationName>
-                    <ns3:CompanyID>78954643</ns3:CompanyID>
-                    <ns3:RegistrationDate>1968-07-04</ns3:RegistrationDate>
-                    <ns2:RegistrationAddress>
-                        <ns3:StreetName>Dunavska</ns3:StreetName>
-                        <ns3:BuildingNumber>bb</ns3:BuildingNumber>
-                        <ns3:CityName>Apatin</ns3:CityName>
-                        <ns3:PostalZone>25260</ns3:PostalZone>
-                        <ns3:CountrySubentity>Vojvodina</ns3:CountrySubentity>
-                        <ns2:Country>
-                            <ns3:Name>Srbija</ns3:Name>
-                        </ns2:Country>
-                    </ns2:RegistrationAddress>
-                </ns2:PartyLegalEntity>
-                <ns2:Contact>
-                    <ns3:Name>Jovan Radonjić</ns3:Name>
-                    <ns3:Telephone>025.4598312</ns3:Telephone>
-                    <ns3:ElectronicMail>jovan@dunav-gradnja.rs</ns3:ElectronicMail>
-                </ns2:Contact>
-            </ns2:ProviderParty>
-            <ns2:CatalogueLine>
-                <ns3:ID>1-0</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>jedan</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>1-1</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>dva</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-        </SearchResult>
-        <SearchResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns8="urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2" xsi:type="ns8:CatalogueType">
-            <ns3:ID>3</ns3:ID>
-            <ns3:UUID>e2df62d3CAT3</ns3:UUID>
-            <ns3:IssueDate>2017-11-15+01:00</ns3:IssueDate>
-            <ns2:ProviderParty>
-                <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
-                <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
-                <ns2:PartyIdentification>
-                    <ns3:ID>e2df62d3</ns3:ID>
-                </ns2:PartyIdentification>
-                <ns2:PartyName>
-                    <ns3:Name>Rutasesdfsdfs</ns3:Name>
-                </ns2:PartyName>
-                <ns2:PostalAddress>
-                    <ns3:Floor>4</ns3:Floor>
-                    <ns3:Room>26</ns3:Room>
-                    <ns3:StreetName>Ruzveltova</ns3:StreetName>
-                    <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
-                    <ns3:BuildingNumber>46</ns3:BuildingNumber>
-                    <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
-                    <ns3:CityName>Beograd</ns3:CityName>
-                    <ns3:PostalZone>11000</ns3:PostalZone>
-                    <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
-                    <ns2:Country>
-                        <ns3:Name>Srbija</ns3:Name>
-                    </ns2:Country>
-                </ns2:PostalAddress>
-                <ns2:PartyLegalEntity>
-                    <ns3:RegistrationName>Ruta System d.o.o</ns3:RegistrationName>
-                    <ns3:CompanyID>5897545646</ns3:CompanyID>
-                    <ns3:RegistrationDate>2018-02-01</ns3:RegistrationDate>
-                    <ns2:RegistrationAddress>
-                        <ns3:Floor>4</ns3:Floor>
-                        <ns3:Room>26</ns3:Room>
-                        <ns3:StreetName>Ruzveltova</ns3:StreetName>
-                        <ns3:BuildingName>preko puta Zire</ns3:BuildingName>
-                        <ns3:BuildingNumber>46</ns3:BuildingNumber>
-                        <ns3:CitySubdivisionName>Zvezdara</ns3:CitySubdivisionName>
-                        <ns3:CityName>Beograd</ns3:CityName>
-                        <ns3:PostalZone>11000</ns3:PostalZone>
-                        <ns3:CountrySubentity>grad Beograd</ns3:CountrySubentity>
-                        <ns2:Country>
-                            <ns3:Name>Srbija</ns3:Name>
-                        </ns2:Country>
-                    </ns2:RegistrationAddress>
-                </ns2:PartyLegalEntity>
-                <ns2:Contact>
-                    <ns3:Name>Miljan</ns3:Name>
-                    <ns3:Telephone>087.6654598</ns3:Telephone>
-                    <ns3:Telefax>087.369544</ns3:Telefax>
-                    <ns3:ElectronicMail>miljan@ruta.rs</ns3:ElectronicMail>
-                    <ns3:Note>super</ns3:Note>
-                </ns2:Contact>
-            </ns2:ProviderParty>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-1</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>kako biti radostan</ns3:Description>
-                    <ns3:PackSizeNumeric>4</ns3:PackSizeNumeric>
-                    <ns3:Name>Radost</ns3:Name>
-                    <ns3:Keyword></ns3:Keyword>
-                    <ns2:SellersItemIdentification>
-                        <ns3:ID>98</ns3:ID>
-                        <ns3:BarcodeSymbologyID></ns3:BarcodeSymbologyID>
-                    </ns2:SellersItemIdentification>
-                    <ns2:CommodityClassification>
-                        <ns3:CommodityCode>78</ns3:CommodityCode>
-                        <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
-                    </ns2:CommodityClassification>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-4</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>kako biti radostan 2</ns3:Description>
-                    <ns3:PackSizeNumeric/>
-                    <ns3:Name>Radost 2</ns3:Name>
-                    <ns3:Keyword>6</ns3:Keyword>
-                    <ns3:Keyword> iuo</ns3:Keyword>
-                    <ns3:Keyword> iuiuwe</ns3:Keyword>
-                    <ns2:SellersItemIdentification>
-                        <ns3:ID></ns3:ID>
-                        <ns3:BarcodeSymbologyID>4885-22</ns3:BarcodeSymbologyID>
-                    </ns2:SellersItemIdentification>
-                    <ns2:CommodityClassification>
-                        <ns3:CommodityCode></ns3:CommodityCode>
-                    </ns2:CommodityClassification>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-9</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description> </ns3:Description>
-                    <ns3:Name>SDGS</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-11</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>ASDF</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-16</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>sdfsd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-17</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>fgdsfgds</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-18</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asedfs</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-19</ns3:ID>
-                <ns2:Item>
-                    <ns3:Description>waerfwa</ns3:Description>
-                    <ns3:Name>sada</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-20</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-21</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asd </ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-22</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>dsfsdfsdfd</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-23</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>asdasdas </ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-            <ns2:CatalogueLine>
-                <ns3:ID>3-24</ns3:ID>
-                <ns2:Item>
-                    <ns3:Name>sadffa</ns3:Name>
-                </ns2:Item>
-            </ns2:CatalogueLine>
-        </SearchResult>
-    </CatalogueSearch>
-    <DirtyCatalogue>false</DirtyCatalogue>
+    <DirtyCatalogue>true</DirtyCatalogue>
     <DirtyMyParty>false</DirtyMyParty>
     <InsertMyCatalogue>false</InsertMyCatalogue>
     <SearchNumber>40</SearchNumber>
-    <CatalogueID>2</CatalogueID>
+    <CatalogueID>4</CatalogueID>
     <CatalogueDeletionID>0</CatalogueDeletionID>
-    <CatalogueIssueDate>2017-12-22T15:00:58.562+01:00</CatalogueIssueDate>
+    <CatalogueIssueDate>2017-12-28T12:40:36.953+01:00</CatalogueIssueDate>
 </ns5:MyParty>

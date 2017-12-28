@@ -38,6 +38,8 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.ExistConnector;
+import rs.ruta.common.datamapper.MapperRegistry;
 import rs.ruta.services.*;
 import rs.ruta.common.InstanceFactory;
 
@@ -48,24 +50,26 @@ public class Client implements RutaNode
 	private static String cdrEndPoint = defaultEndPoint;
 	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.1.0-SNAPSHOT/CDR";
 	private MyParty myParty;
-//	private MyPartyXMLFileMapper<MyParty> partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
+//	private MyPartyXMLFileMapper<MyParty> partyDataMapper; //former store to myparty.xml
 	private MyPartyExistMapper partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
 	private Party CDRParty;
-	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper;
+//	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper; //MMM: not used anymore
 	private ClientFrame frame;
 	private static RutaVersion version = new RutaVersion("Client", "0.1.0-SNAPSHOT", "0.0.1", null);
 	private Properties properties;
+	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 
 	public Client() throws DetailException
 	{
 		myParty = new MyParty();
-		/*		myParty.setItemDataMapper("client-products.dat");
-		*/
 		CDRParty = getCDRParty();
 		//partyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
-		partyDataMapper = new MyPartyExistMapper(Client.this);
-		partyDataMapper.setLocalAPI();
-		CDRPartyDataMapper = new CDRPartyTypeXMLFileMapper<Party>(Client.this, "cdr.xml");
+		//MMM: temporary connector and mapper - would be replaced with MapperRegistry
+		ExistConnector connector = new ExistConnector();
+		connector.setLocalAPI();
+		new ClientMapperRegistry(); // just to initialize the registry. No reference needed later.
+//		MapperRegistry.initialize(mapperRegistry);
+		partyDataMapper = new MyPartyExistMapper(Client.this, connector);
 		properties = new Properties();
 	}
 
@@ -85,15 +89,8 @@ public class Client implements RutaNode
 		if(parties != null && parties.size() != 0)
 		{
 			myParty = parties.get(0);
-			myParty.setItemDataMapper("client-products.dat");
 			Search.setSearchNumber(myParty.getSearchNumber());
 		}
-
-		//MMM: this could/should be lazy called when needed, not at start
-		/*		ArrayList<Party> CDRParties = (ArrayList<Party>) CDRPartyDataMapper.findAll();
-
-		if(CDRParties.size() != 0)
-			InstanceFactory.copyInstance(CDRParties.get(0), CDRParty);*/
 	}
 
 	/**If not already initialized in the preInitialize method, shows dialog for inputing Party data.
@@ -103,7 +100,6 @@ public class Client implements RutaNode
 		if(! myParty.hasCoreParty())
 			//		if(parties.size() == 0)
 		{
-			myParty.setItemDataMapper("client-products.dat");
 			myParty.setCoreParty(frame.showPartyDialog(myParty.getCoreParty(), "My Party")); //displaying My Party Data dialog
 			//			insertMyParty();
 		}
@@ -115,7 +111,6 @@ public class Client implements RutaNode
 
 			//InstanceFactory.copyInstance(parties.get(0), myParty); // MMM: check why I am coping the party into the new object
 			myParty = parties.get(0);
-			myParty.setItemDataMapper("client-products.dat");
 		}*/
 	}
 
@@ -190,16 +185,6 @@ public class Client implements RutaNode
 		partyDataMapper.insertAll();
 		//MMM: inserting in embedded exist database - not working at the moment
 		//MapperRegistry.getMapper(MyParty.class);
-	}
-
-	/**
-	 * Inserts CDR Party data to the data store
-	 * @throws Exception
-	 */
-	@Deprecated
-	public void insertCDRParty() throws Exception
-	{
-		getCDRPartyDataMapper().insertAll();
 	}
 
 	/**Sends request for registration to the Central Data Repository.
@@ -340,7 +325,6 @@ public class Client implements RutaNode
 	}
 
 	/**Update My Party data with the CDR service.
-	 *
 	 */
 	private void cdrUpdateMyParty()
 	{
@@ -868,12 +852,6 @@ public class Client implements RutaNode
 	{
 		return partyDataMapper;
 	}*/
-
-	@Deprecated
-	public OLDDataMapper getCDRPartyDataMapper()
-	{
-		return CDRPartyDataMapper;
-	}
 
 	private void importXMLDocument() // MMM: to be finished later for use of XML documents import
 	{
@@ -1543,6 +1521,14 @@ public class Client implements RutaNode
 			}
 		});
 		frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);
+	}
+
+	/**Safely shuts down the data store.
+	 * @throws Exception if data store could not be disconnected from
+	 */
+	public void shutdownDataStore() throws Exception
+	{
+		partyDataMapper.getConnector().shutdownDatabase();
 	}
 
 

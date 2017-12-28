@@ -49,7 +49,7 @@ public class ClientTest
 		final String EXIST_HOME = System.getProperty("user.dir");
 		System.setProperty("exist.home", EXIST_HOME);
 
-		//TEST - write to eXist embedded database
+		//TEST START - write to eXist embedded database
 		//initialise the database driver
 		@SuppressWarnings("unchecked")
 		final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
@@ -60,22 +60,22 @@ public class ClientTest
 		Collection coll = null;
 		try
 		{
-			//1) get the collection
+			//get the collection
 			final String path = "/db/test";
 			final String uri = "xmldb:exist://" + path;
 			final String username = "admin";
-			final String password = "";
+			final String password = null;
 			coll = DatabaseManager.getCollection(uri, username, password);
 
 			if(coll == null) {
-				//1.1) if the collection does not exist, create it!
+				//if the collection does not exist, create it!
 				//logger.warn("Collection {} does not exist! Creating collection...", path);
 				coll = createCollection(uri, username, password);
 				//logger.info("Created Collection {}", path);
 			}
 
 			final File source = new File("test.jpg");
-			//2) store the document(s) into the collection
+			//store the document(s) into the collection
 			storeDocuments(coll, source);
 		}
 		finally
@@ -90,7 +90,7 @@ public class ClientTest
 				}
 				finally
 				{
-					//6) shutdown the database
+					//shutdown the database
 					manager.shutdown();
 				}
 			}
@@ -115,14 +115,12 @@ public class ClientTest
 				frame.setVisible(true);
 				client.initialize();
 			});
-
 		}
 		catch(Exception e)
 		{
-			JOptionPane.showMessageDialog(null, "Data from the local data store is corrupted!", "Critical error",
+			JOptionPane.showMessageDialog(null, /*"Data from the local data store is corrupted!\n" +*/ e.getMessage(), "Critical error",
 					JOptionPane.ERROR_MESSAGE);
 		}
-
 	}
 
 	/**

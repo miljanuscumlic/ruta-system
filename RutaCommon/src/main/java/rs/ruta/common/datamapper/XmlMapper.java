@@ -51,16 +51,18 @@ import rs.ruta.common.datamapper.DataMapper;
  * Each class of the domain model which objects are deposited and fetched from the database
  * have its own data mapper class derived from the XMLMapper.
  */
-public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<T, String>
+public abstract class XmlMapper<T> /*extends ExistConnector*/ implements DataMapper<T, String>
 {
 
 	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
 	private final DSTransactionFactory transactionFactory;
 	/** True when database transaction has failed.*/
 	private volatile boolean transactionFailure;
+	private ExistConnector connector;
 
-	public XmlMapper() throws DetailException
+	public XmlMapper(ExistConnector connector) throws DetailException
 	{
+		this.connector = connector;
 		transactionFailure = true;
 		transactionFactory = MapperRegistry.getTransactionFactory();
 		init();
@@ -68,10 +70,48 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 
 	private void init() throws DetailException
 	{
-		connectToDatabase();
-		checkCollection(getCollectionPath());
-		checkCollection(getDeletedCollectionPath());
-		checkCollection(getQueryPath());
+		connector.connectToDatabase();
+		connector.checkCollection(getCollectionPath());
+		connector.checkCollection(getDeletedCollectionPath());
+		connector.checkCollection(getQueryPath());
+	}
+
+	/**Gets the {@link ExistConnector} instance responsible for connection to the database.
+	 * @return
+	 */
+	public ExistConnector getConnector()
+	{
+		return connector;
+	}
+
+	protected String getQueryPath()
+	{
+		return ExistConnector.getQueryPath();
+	}
+
+	protected String getAbsoluteRutaCollectionPath()
+	{
+		return ExistConnector.getAbsoluteRutaCollectionPath();
+	}
+
+	protected String getRelativeRutaCollectionPath()
+	{
+		return ExistConnector.getRelativeRutaCollectionPath();
+	}
+
+	protected String getDocumentSufix()
+	{
+		return ExistConnector.getDocumentSufix();
+	}
+
+	protected Collection getRootCollection() throws XMLDBException
+	{
+		return ExistConnector.getRootCollection();
+	}
+
+	protected Collection getRootCollection(String username, String password) throws XMLDBException
+	{
+		return ExistConnector.getRootCollection(username, password);
 	}
 
 	/**Does the common procedure on the start of every database operation.
@@ -206,7 +246,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	@Override
 	public RutaVersion findClientVersion() throws DetailException
 	{
-		return MapperRegistry.getMapper(RutaVersion.class).findClientVersion();
+		return MapperRegistry.getInstance().getMapper(RutaVersion.class).findClientVersion();
 	}
 
 	@Override
@@ -590,7 +630,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 */
 	protected abstract String getObjectPackageName();
 
-	/**Create unique ID for an object after doing some class specific checks, verifications or method calls.
+	/**Creates unique ID for an object after doing some subclass specific checks, verifications or method calls.
 	 * This method defines default behaviour but is overidden by any class that has a need for specific
 	 * procedures before it creates a new ID.
 	 * @param collection object's collection
@@ -1128,7 +1168,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 			originalDocumentName = trimID(((XMLResource) resource).getDocumentId());
 			deletedPath = getDeletedSubcollectionPath("/" + originalDocumentName); //subcollection has the name same as originalDocumentName
 
-			deletedCollection = getOrCreateCollection(deletedPath);
+			deletedCollection = ExistConnector.getOrCreateCollection(deletedPath);
 			if(deletedCollection == null)
 				throw new DatabaseException("Collection does not exist.");
 			deletedDocumentName = originalDocumentName + "-" + String.valueOf(deletedCollection.getResourceCount()) + getDocumentSufix();
@@ -1624,7 +1664,7 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	protected String getDeletedCollectionPath(String collectionPath)
 	{
 		StringBuilder del = new StringBuilder();
-		del.append(getDeletedPath());
+		del.append(ExistConnector.getDeletedPath());
 		del.append(collectionPath.replaceFirst(getRelativeRutaCollectionPath(), ""));
 		return del.toString();
 	}
@@ -1662,19 +1702,19 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 */
 	protected String getID(String username) throws DetailException
 	{
-		return ((UserXmlMapper) MapperRegistry.getMapper(User.class)).getID(username);
+		return ((UserXmlMapper) MapperRegistry.getInstance().getMapper(User.class)).getID(username);
 	}
 
 	@Override
 	public String getIDByUserID(String userID) throws DetailException
 	{
-		return MapperRegistry.getMapper(PartyID.class).getIDByUserID(userID);
+		return MapperRegistry.getInstance().getMapper(PartyID.class).getIDByUserID(userID);
 	}
 
 	@Override
 	public String getUserID(String username) throws DetailException
 	{
-		return MapperRegistry.getMapper(User.class).getUserID(username);
+		return MapperRegistry.getInstance().getMapper(User.class).getUserID(username);
 	}
 
 	@Deprecated
@@ -1852,9 +1892,9 @@ public abstract class XmlMapper<T> extends ExistConnector implements DataMapper<
 	 */
 	public void clearAllCachedObjects() throws DetailException
 	{
-		((PartyXmlMapper) MapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
-		((CatalogueXmlMapper) MapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();
-		((CatalogueDeletionXmlMapper) MapperRegistry.getMapper(CatalogueDeletionType.class)).clearCachedObjects();
+		((PartyXmlMapper) MapperRegistry.getInstance().getMapper(PartyType.class)).clearCachedObjects();
+		((CatalogueXmlMapper) MapperRegistry.getInstance().getMapper(CatalogueType.class)).clearCachedObjects();
+		((CatalogueDeletionXmlMapper) MapperRegistry.getInstance().getMapper(CatalogueDeletionType.class)).clearCachedObjects();
 	}
 
 }

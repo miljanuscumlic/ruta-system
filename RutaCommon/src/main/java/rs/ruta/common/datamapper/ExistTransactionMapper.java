@@ -21,9 +21,9 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, ExistTransaction> loadedTransactions;
 
-	public ExistTransactionMapper() throws DetailException
+	public ExistTransactionMapper(ExistConnector connector) throws DetailException
 	{
-		super();
+		super(connector);
 		loadedTransactions = new ConcurrentHashMap<String, ExistTransaction>();
 	}
 

@@ -26,9 +26,9 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, PartyType> loadedParties;
 
-	public PartyXmlMapper() throws DetailException
+	public PartyXmlMapper(ExistConnector connector) throws DetailException
 	{
-		super();
+		super(connector);
 		loadedParties = new ConcurrentHashMap<String, PartyType>();
 	}
 

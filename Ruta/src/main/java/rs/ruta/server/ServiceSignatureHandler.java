@@ -60,7 +60,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 						generateFault(username + " is not registered!");
 					String localSignature = getSignature(username, timestamp, getBytes(secretKey));
 					if(!verifySignatures(signature, localSignature))
-						generateFault("Signatures do not matches!");
+						generateFault("Signatures do not match!");
 				}
 				//SOAPFaultException formed in generateFault method should not be cought here
 				catch(DetailException e) // might be thrown by getSecretKey e.g. if the database is not accessible
@@ -150,7 +150,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	 */
 	private String getSecretKey(String username) throws DetailException
 	{
-		return (String) MapperRegistry.getMapper(User.class).findSecretKey(username);
+		return (String) MapperRegistry.getInstance().getMapper(User.class).findSecretKey(username);
 	}
 
 	/**Generates SOAPFaultException that is thrown as SOAP Fault to the client. Reason for the exception is

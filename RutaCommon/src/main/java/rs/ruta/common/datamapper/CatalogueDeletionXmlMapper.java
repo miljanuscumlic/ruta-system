@@ -24,9 +24,9 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	//MMM: This map should be some kind of most recently used collection
 	private Map<String, CatalogueDeletionType> loadedCatalogueDeletions;
 
-	public CatalogueDeletionXmlMapper() throws DetailException
+	public CatalogueDeletionXmlMapper(ExistConnector connector) throws DetailException
 	{
-		super();
+		super(connector);
 		loadedCatalogueDeletions = new ConcurrentHashMap<String, CatalogueDeletionType>();
 	}
 
@@ -70,7 +70,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 		String id = null;
 		if(username != null)
 			id = getID(username);
-		MapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
+		MapperRegistry.getInstance().getMapper(CatalogueType.class).delete(id, transaction);
 		return id;
 	}
 

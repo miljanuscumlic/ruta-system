@@ -16,9 +16,9 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	final private static String queryBugReport = "search-bug-report.xq"; //MMM: not implemented yet
 	final private static String nextIdDocument = "nextId.xml";
 
-	public BugReportXmlMapper() throws DetailException
+	public BugReportXmlMapper(ExistConnector connector) throws DetailException
 	{
-		super();
+		super(connector);
 		if(openDocument(collectionPath, nextIdDocument) == null)
 			saveDocument(collectionPath, nextIdDocument, "<nextId>0</nextId>");
 	}

@@ -2,7 +2,6 @@ package rs.ruta.common.datamapper;
 
 public class ExistTransactionFactory extends DSTransactionFactory
 {
-
 	@Override
 	public ExistTransaction openTransaction() throws TransactionException
 	{
@@ -10,5 +9,4 @@ public class ExistTransactionFactory extends DSTransactionFactory
 		t.open();
 		return t;
 	}
-
 }

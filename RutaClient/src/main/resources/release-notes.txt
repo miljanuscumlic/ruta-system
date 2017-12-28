@@ -1,5 +1,5 @@
 Ruta Client 0.1.0-SNAPSHOT
-This is the first minor release of Ruta Client Application. From naw on Ruta follows semantic versioning scheme.
+This is the first minor release of Ruta Client Application. From now on Ruta will mostly follow semantic versioning scheme.
 
 --------------------
 

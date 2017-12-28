@@ -23,7 +23,6 @@ public class ProductTableModel extends AbstractTableModel
 	{
 		this.businessParty = businessParty;
 		this.editable = editable;
-		businessParty.importMyProducts();
 	}
 
 	/**Creates new model for the product table. Party should be set with the subsequent call to
@@ -48,13 +47,12 @@ public class ProductTableModel extends AbstractTableModel
 	public void setBusinessParty(BusinessParty businessParty)
 	{
 		this.businessParty = businessParty;
-		businessParty.importMyProducts();
 	}
 
 	@Override
 	public int getRowCount()
 	{
-		return businessParty != null ? (editable ? businessParty.getMyProducts().size() + 1 : businessParty.getMyProducts().size()) : 0;
+		return businessParty != null ? (editable ? businessParty.getProducts().size() + 1 : businessParty.getProducts().size()) : 0;
 	}
 
 	@Override
@@ -66,7 +64,7 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		if(rowIndex < businessParty.getMyProducts().size())
+		if(rowIndex < businessParty.getProducts().size())
 		{
 			switch(columnIndex)
 			{

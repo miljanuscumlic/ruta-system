@@ -24,9 +24,9 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	//MMM: This map should be some kind of most recently used collection
 	private Map<String, CatalogueType> loadedCatalogues;
 
-	public CatalogueXmlMapper() throws DetailException
+	public CatalogueXmlMapper(ExistConnector connector) throws DetailException
 	{
-		super();
+		super(connector);
 		loadedCatalogues = new ConcurrentHashMap<String, CatalogueType>();
 	}
 

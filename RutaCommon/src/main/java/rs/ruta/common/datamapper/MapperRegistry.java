@@ -11,19 +11,19 @@ import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.User;
 
-/**Class that hold global variables accountable for the connection to the classes responsible for the
+/**Class that holds global variables accountable for the connection to the classes responsible for the
  * database manipulation. One field is the map containing all <code>DataMapper</code>s that maps domain
  * objects to the structures of the particular data store instace in use. Also, there is a
  * <code>DSTransactionFactory</code> field responsible for the instatiation and controlling of the
  * <code>DSTransaction</code> object.
- *
  */
-public final class MapperRegistry
+public abstract class MapperRegistry
 {
-	private static MapperRegistry registry = new MapperRegistry();
+	private static MapperRegistry registry;
 	private ConcurrentMap<Class<?>, DataMapper<?, String>> mapRegistry;
+	private static ExistConnector connector;
 
-	private MapperRegistry()
+	protected MapperRegistry()
 	{
 		mapRegistry = new ConcurrentHashMap<Class<?>, DataMapper<?, String>>();
 	}
@@ -36,52 +36,45 @@ public final class MapperRegistry
 		return registry;
 	}
 
-	/**Initialize to a new empty MapperRegistry object.
+	/**Initialize to a passed instance object of {@link MapperRegistry} subclass.
 	 */
-	public static void initialize()
+	public static void initialize(MapperRegistry aRegistry)
 	{
-		registry = new MapperRegistry();
+		registry = aRegistry;
 	}
 
-	/**Gets the data mapper for connection to the data store based on the <code>Class</code> paramater.
+	protected static ExistConnector getConnector()
+	{
+		return connector;
+	}
+
+	protected static void setConnector(ExistConnector connector)
+	{
+		MapperRegistry.connector = connector;
+	}
+
+	public ConcurrentMap<Class<?>, DataMapper<?, String>> getMapRegistry()
+	{
+		return mapRegistry;
+	}
+
+	public void setMapRegistry(ConcurrentMap<Class<?>, DataMapper<?, String>> mapRegistry)
+	{
+		this.mapRegistry = mapRegistry;
+	}
+
+	/**Gets the {@link DataMapper} for connection to the data store based on the <code>Class</code> paramater.
 	 * If mapper for a particular class is not in the registry, it will be added to it prior to its retrieval.
 	 * @param clazz <code>Class</code> object of the class which mapper should be returned
 	 * @return data mapper for the input parameter object or <code>null</code>
-	 * if datamapper for the intended clazz parameter does not exist.
+	 * if datamapper for the intended <code>Class</code> parameter does not exist
 	 * @throws DetailException if mapper could not be created and added to the registry
 	 * due to database connetivity issues
 	 */
-	@SuppressWarnings("unchecked")
-	public static <S> DataMapper<S, String> getMapper(Class<S> clazz) throws DetailException
-	{
-		DataMapper<S, String> dataMapper = (DataMapper<S, String>) getInstance().mapRegistry.get(clazz);
-		if(dataMapper == null)
-		{
-			if(clazz == CatalogueType.class)
-				dataMapper = (DataMapper<S, String>) new CatalogueXmlMapper();
-			else if(clazz == CatalogueDeletionType.class)
-				dataMapper = (DataMapper<S, String>) new CatalogueDeletionXmlMapper();
-			else if(clazz == PartyType.class)
-				dataMapper = (DataMapper<S, String>) new PartyXmlMapper();
-			else if(clazz == User.class)
-				dataMapper = (DataMapper<S, String>) new UserXmlMapper();
-			else if(clazz == DSTransaction.class)
-				dataMapper = (DataMapper<S, String>) new ExistTransactionMapper();
-			else if(clazz == PartyID.class)
-				dataMapper = (DataMapper<S, String>) new PartyIDXmlMapper();
-			else if(clazz == RutaVersion.class)
-				dataMapper = (DataMapper<S, String>) new RutaVersionXmlMapper();
-			else if(clazz == BugReport.class)
-				dataMapper = (DataMapper<S, String>) new BugReportXmlMapper();
-			getInstance().mapRegistry.put(clazz, dataMapper);
-		}
-		if(dataMapper == null)
-			throw new DataManipulationException("There is no mapper for the class " + clazz.toString() + ".");
-		return dataMapper;
-	}
+	public abstract <S> DataMapper<S, String> getMapper(Class<S> clazz) throws DetailException;
 
-	/**Gets the concrete instance of the <code>DSTransactionFactory</code> in use.
-	 * @return
+	/**Gets the concrete instance of the {@link DSTransactionFactory} in use.
+	 * @return concrete {@code DSTransactionFactory} instance object
 	 */
 	public static DSTransactionFactory getTransactionFactory()
 	{
@@ -93,6 +86,6 @@ public final class MapperRegistry
 	 */
 	public static boolean isDatastoreAccessible()
 	{
-		return ExistConnector.isDatabaseAccessible();
+		return connector.isDatabaseAccessible();
 	}
 }

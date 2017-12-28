@@ -9,9 +9,7 @@ import java.io.InputStreamReader;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.prefs.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,9 +36,6 @@ import org.slf4j.LoggerFactory;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
-import rs.ruta.services.RutaException;
-
-import java.util.List;
 
 public class ClientFrame extends JFrame
 {
@@ -103,20 +98,19 @@ public class ClientFrame extends JFrame
 		FileFilter filter = new FileNameExtensionFilter("XML files", "xml");
 		chooser.setFileFilter(filter);
 
-
 		//save properties and local data on exit
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent event)
 			{
-				client.getMyParty().exportMyProducts();
-				//				client.closeDataStreams();
+				boolean exit = true; //  = false when window should not be closed after exception is thrown
+				//client.closeDataStreams();
 				/*savePreferences();
 				client.savePreferences();*/
 				saveProperties();
 				client.storeProperties();
-				//MMM: should be deleted when db comes into play. Calling here just because it saves also the catalogue ID and catalogueDirty
+
 				try
 				{
 					client.insertMyParty();
@@ -127,8 +121,24 @@ public class ClientFrame extends JFrame
 					int choice = JOptionPane.showOptionDialog(ClientFrame.this, "Data could not be saved to the local data store! "
 							+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
 							JOptionPane.ERROR_MESSAGE, null, options, options[0]);
-					if(choice == 0)
-						System.exit(0);
+					if(choice == 1)
+						exit = false;
+				}
+				if(exit)
+				{
+					try
+					{
+						client.shutdownDataStore();
+					}
+					catch(Exception e)
+					{
+						String[] options = {"YES", "NO"};
+						int choice = JOptionPane.showOptionDialog(ClientFrame.this, "Data store could not be disconnected from! "
+								+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
+								JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+						if(choice == 1)
+							System.exit(0);
+					}
 				}
 			}
 		});
@@ -194,7 +204,7 @@ public class ClientFrame extends JFrame
 			try
 			{
 				client.insertMyParty();
-				appendToConsole("Data have been saved to the local data store.", Color.GREEN);
+				appendToConsole("Data has been saved to the local data store.", Color.GREEN);
 			}
 			catch (Exception e)
 			{
@@ -219,7 +229,6 @@ public class ClientFrame extends JFrame
 					if(parties.size() != 0)
 					{
 						myParty = parties.get(0);
-						myParty.setItemDataMapper("client-products.dat");
 						Search.setSearchNumber(myParty.getSearchNumber());
 						updateTitle(myParty.getCoreParty().getSimpleName());
 						client.setMyParty(myParty);
@@ -537,14 +546,45 @@ public class ClientFrame extends JFrame
 
 		bugItem.addActionListener(event ->
 		{
-			bugReportDialog = new BugReportDialog(ClientFrame.this);
-			bugReportDialog.setVisible(true);
-			if(bugReportDialog.isReportPressed())
+			if(client.getMyParty().isRegisteredWithCDR())
 			{
-				bugReportDialog.clearData();
-				client.cdrReportBug(bugReportDialog.getBugReport());
+				bugReportDialog = new BugReportDialog(ClientFrame.this);
+				bugReportDialog.setVisible(true);
+				if(bugReportDialog.isReportPressed())
+				{
+					bugReportDialog.clearData();
+					client.cdrReportBug(bugReportDialog.getBugReport());
+				}
+			}
+			else
+			{
+				appendToConsole("Bug report cannot been issued by non-registered parties."
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 			}
 		});
+
+		cdrSynchPartyItem.addActionListener(event ->
+		{
+			MyParty myParty = client.getMyParty();
+			if(myParty.getSecretKey() != null) // My Party has passed first phase of registration
+			{
+				if(((MyParty)myParty).isDirtyMyParty())
+				{
+					disablePartyMenuItems();
+					new Thread(() ->
+					{
+						client.cdrSynchroniseMyParty();
+
+					}).start();
+				}
+				else
+					appendToConsole("My Party is already synchronized with the CDR service!", Color.BLUE);
+			}
+			else
+				appendToConsole("Request for the synchronisation of My Party has not been sent to the CDR service."
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
+		});
+
 
 		fileItem.addActionListener(event ->
 		{
