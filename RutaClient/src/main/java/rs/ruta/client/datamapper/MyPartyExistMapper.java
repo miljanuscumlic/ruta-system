@@ -63,7 +63,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 		return parties;*/
 	}
 
-	@Override
+/*	@Override
 	public MyParty find(String id) throws DetailException
 	{
 		MyParty party = loadedParties.get(id);
@@ -74,7 +74,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 				loadedParties.put((String) id,  party);
 		}
 		return party;
-	}
+	}*/
 
 	@Override
 	protected void clearCachedObjects()
@@ -89,7 +89,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	}
 
 	@Override
-	protected void doCacheObject(String id, MyParty object)
+	protected void putCacheObject(String id, MyParty object)
 	{
 		loadedParties.put(id, object);
 	}
@@ -132,7 +132,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	}
 
 	@Override
-	protected String doGetOrCreateID(Collection collection, MyParty object, String username, DSTransaction transaction)
+	protected String doPrepareAndGetID(Collection collection, MyParty object, String username, DSTransaction transaction)
 			throws DetailException
 	{
 		String id = null;

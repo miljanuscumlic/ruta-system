@@ -51,8 +51,8 @@ public class BugReport
 	private String description;
 	@XmlElement(name = "Reported")
 	private XMLGregorianCalendar reported;
-	@XmlElement(name = "Created")
-	private XMLGregorianCalendar created;
+/*	@XmlElement(name = "Created")
+	private XMLGregorianCalendar created;*/
 	@XmlElement(name = "Modified")
 	private XMLGregorianCalendar modified;
 	@XmlElement(name = "Priority")
@@ -61,8 +61,14 @@ public class BugReport
 	private String severity;
 	@XmlElement(name = "Attachment")
 	private List<ReportAttachment> attachments;
+	@XmlElement(name = "Comment")
+	private List<ReportComment> comments;
 
-	public BugReport()
+	public BugReport() { }
+
+	/**Initialize some {@code BugReport} fiedls to default values
+	 */
+	public void initialize()
 	{
 		product = "Ruta";
 		platform = platform();
@@ -101,7 +107,7 @@ public class BugReport
 		this.modified = modified;
 	}
 
-	public XMLGregorianCalendar getCreated()
+/*	public XMLGregorianCalendar getCreated()
 	{
 		return created;
 	}
@@ -109,7 +115,7 @@ public class BugReport
 	public void setCreated(XMLGregorianCalendar created)
 	{
 		this.created = created;
-	}
+	}*/
 
 	public String getSummary()
 	{
@@ -177,7 +183,7 @@ public class BugReport
 	}
 
 	/**Gets the list of appended {@link ReportAttachment}s to the {@code BugReport}.
-	 * If the list has not been created at the moment of invocation, this method creates an empty list.
+	 * If the list has not been created before the moment of invocation, this method creates an empty list.
 	 * @return list of attachemnts
 	 */
 	public List<ReportAttachment> getAttachments()
@@ -190,6 +196,22 @@ public class BugReport
 	public void setAttachments(List<ReportAttachment> attachments)
 	{
 		this.attachments = attachments;
+	}
+
+	/**Gets the list of appended {@link ReportComment}s to the {@code BugReport}.
+	 * If the list has not been created before the moment of invocation, this method creates an empty list.
+	 * @return list of comments
+	 */
+	public List<ReportComment> getComments()
+	{
+		if(comments == null)
+			comments = new ArrayList<>();
+		return comments;
+	}
+
+	public void setComments(List<ReportComment> comments)
+	{
+		this.comments = comments;
 	}
 
 	public String getReportedBy()

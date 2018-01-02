@@ -32,7 +32,7 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	@Override
 	protected String getObjectPackageName() { return objectPackageName; }
 
-	@Override
+/*	@Override
 	public ExistTransaction find(String id) throws DetailException
 	{
 		ExistTransaction txn = loadedTransactions.get(id);
@@ -43,7 +43,7 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 				loadedTransactions.put(id, txn);
 		}
 		return txn;
-	}
+	}*/
 
 	@Override
 	public ArrayList<ExistTransaction> findAll() throws DetailException
@@ -125,6 +125,12 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	protected ExistTransaction getCachedObject(String id)
 	{
 		return loadedTransactions.get(id);
+	}
+
+	@Override
+	protected void putCacheObject(String id, ExistTransaction object)
+	{
+		loadedTransactions.put(id, object);
 	}
 
 	@Override

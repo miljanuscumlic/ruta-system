@@ -1,6 +1,10 @@
 package rs.ruta.client;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,11 +14,30 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextPane;
+import javax.swing.JTree;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
@@ -36,13 +59,14 @@ import org.slf4j.LoggerFactory;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
+import rs.ruta.common.BugReport;
 
 public class ClientFrame extends JFrame
 {
 	private static final long serialVersionUID = 7189003953286046899L;
 	private static final String DEFAULT_WIDTH = "1000";
 	private static final String DEFAULT_HEIGHT = "800";
-	//private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 
 	private Client client;
 	private JTabbedPane tabbedPane;
@@ -56,6 +80,7 @@ public class ClientFrame extends JFrame
 	private CDRSettingsDialog settingsDialog;
 	private NotifyDialog notifyDialog;
 	private BugReportDialog bugReportDialog;
+	private BugExploreDialog bugExploreDialog;
 //	private Component tab0RightPane;
 //	private Component tab0LeftPane;
 	private JComponent tab0Pane;
@@ -310,9 +335,6 @@ public class ClientFrame extends JFrame
 
 			client.getMyParty().followMyself();
 
-
-
-
 			loadTab(tabbedPane.getSelectedIndex());
 		});
 //		localDataMenu.add(followPartyItem);
@@ -497,8 +519,10 @@ public class ClientFrame extends JFrame
 		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
 //		MMM: Comment notifyItem before new version of Ruta Client is released
 		helpMenu.add(notifyItem);
-		JMenuItem bugItem = new JMenuItem("Report a Bug");
-		helpMenu.add(bugItem);
+		JMenuItem reportBugItem = new JMenuItem("Report a Bug");
+		helpMenu.add(reportBugItem);
+		JMenuItem exploreBugItem = new JMenuItem("Explore the Bugs");
+		helpMenu.add(exploreBugItem);
 		JMenuItem fileItem = new JMenuItem("Send a File");
 //		helpMenu.add(fileItem);
 
@@ -544,55 +568,66 @@ public class ClientFrame extends JFrame
 			}
 		});
 
-		bugItem.addActionListener(event ->
+		reportBugItem.addActionListener(event ->
+		{
+			reportBug();
+		});
+
+		exploreBugItem.addActionListener(event ->
 		{
 			if(client.getMyParty().isRegisteredWithCDR())
 			{
-				bugReportDialog = new BugReportDialog(ClientFrame.this);
-				bugReportDialog.setVisible(true);
-				if(bugReportDialog.isReportPressed())
-				{
-					bugReportDialog.clearData();
-					client.cdrReportBug(bugReportDialog.getBugReport());
-				}
+				//if(bugExploreDialog == null)
+					bugExploreDialog = new BugExploreDialog(ClientFrame.this);
+				bugExploreDialog.setVisible(true);
 			}
 			else
 			{
-				appendToConsole("Bug report cannot been issued by non-registered parties."
-						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
+				appendToConsole("Bugs cannot be explored by non-registered parties.", Color.RED);
 			}
 		});
-
-		cdrSynchPartyItem.addActionListener(event ->
-		{
-			MyParty myParty = client.getMyParty();
-			if(myParty.getSecretKey() != null) // My Party has passed first phase of registration
-			{
-				if(((MyParty)myParty).isDirtyMyParty())
-				{
-					disablePartyMenuItems();
-					new Thread(() ->
-					{
-						client.cdrSynchroniseMyParty();
-
-					}).start();
-				}
-				else
-					appendToConsole("My Party is already synchronized with the CDR service!", Color.BLUE);
-			}
-			else
-				appendToConsole("Request for the synchronisation of My Party has not been sent to the CDR service."
-						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
-		});
-
 
 		fileItem.addActionListener(event ->
 		{
 			client.cdrInsertAttachment();
 		});
 
-
 		menuBar.add(helpMenu);
+	}
+
+	/**Checks if MyParty is registered with the CDR, then opens {@link BugReportDialog}
+	 * and sends {@link BugReport} to the CDR by calling apropriate method in the {@link Client}
+	 * class. This method is extracted from the {@code ActionListener} because it is used in
+	 * one other place.
+	 */
+	public void reportBug()
+	{
+		if(client.getMyParty().isRegisteredWithCDR())
+		{
+			bugReportDialog = new BugReportDialog(ClientFrame.this);
+			bugReportDialog.setVisible(true);
+			if(bugReportDialog.isReportPressed())
+			{
+				bugReportDialog.clearData();
+				client.cdrReportBug(bugReportDialog.getBugReport());
+			}
+		}
+		else
+			appendToConsole("Bug report cannot be issued by non-registered parties.", Color.RED);
+	}
+
+	/**Checks if MyParty is registered with the CDR, then sends a request for the list of all
+	 * {@link BugReport bugs reported} to the CDR.
+	 * @return {@link Future} object representing the response.
+	 */
+	public Future<?> findAllBugs()
+	{
+		Future<?> future = null;
+		if(client.getMyParty().isRegisteredWithCDR())
+			future = client.cdrFindAllBugs();
+		else
+			appendToConsole("Bug report list be issued by non-registered parties.", Color.RED);
+		return future;
 	}
 
 	/**Enables menu items regarding Search after client gets the response from the CDR service.

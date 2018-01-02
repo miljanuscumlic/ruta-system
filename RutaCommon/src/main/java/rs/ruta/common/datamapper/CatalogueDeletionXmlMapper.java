@@ -35,37 +35,22 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	@Override
 	protected String getObjectPackageName() { return objectPackageName; }
 
-	@Override
+/*	@Override
 	public CatalogueDeletionType find(String id) throws DetailException
 	{
 		CatalogueDeletionType catalogue = loadedCatalogueDeletions.get(id);
 		if(catalogue == null)
 		{
 			catalogue = super.find(id);
-
-/*			try
-			{
-				JAXBContext jc = JAXBContext.newInstance(CatalogueDeletionType.class);
-				Unmarshaller u = jc.createUnmarshaller();
-
-				// unmarshal instance document into a tree of Java content
-				@SuppressWarnings("unchecked")
-				JAXBElement<?> jaxbElement = (JAXBElement<?>) u.unmarshal(new StringReader(result.toString()));
-				catalogue = jaxbElement.getValue();
-			}
-			catch (JAXBException e)
-			{
-				logger.error(Exception is ", e);;
-			}*/
 			if(catalogue != null)
 				loadedCatalogueDeletions.put(id, catalogue);
 		}
 		return catalogue;
-	}
+	}*/
 
 	@Override
-	protected String doGetOrCreateID(Collection collection, CatalogueDeletionType catalogueDeletion, String username, DSTransaction transaction)
-			throws DetailException
+	protected String doPrepareAndGetID(Collection collection, CatalogueDeletionType catalogueDeletion, String username,
+			DSTransaction transaction) throws DetailException
 	{
 		String id = null;
 		if(username != null)
@@ -115,6 +100,12 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	protected CatalogueDeletionType getCachedObject(String id)
 	{
 		return loadedCatalogueDeletions.get(id);
+	}
+
+	@Override
+	protected void putCacheObject(String id, CatalogueDeletionType object)
+	{
+		loadedCatalogueDeletions.put(id, object);
 	}
 
 	@Override

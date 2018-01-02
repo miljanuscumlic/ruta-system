@@ -36,9 +36,9 @@ public abstract class MapperRegistry
 		return registry;
 	}
 
-	/**Initialize to a passed instance object of {@link MapperRegistry} subclass.
+	/**Sets a registry object to a passed concrete instance object of {@link MapperRegistry} subclass.
 	 */
-	public static void initialize(MapperRegistry aRegistry)
+	public static void setRegistry(MapperRegistry aRegistry)
 	{
 		registry = aRegistry;
 	}
@@ -86,6 +86,16 @@ public abstract class MapperRegistry
 	 */
 	public static boolean isDatastoreAccessible()
 	{
-		return connector.isDatabaseAccessible();
+		try
+		{
+			//tries to connect to the database because maybe it was not tried before
+			connector.connectToDatabase();
+			return true;
+		}
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

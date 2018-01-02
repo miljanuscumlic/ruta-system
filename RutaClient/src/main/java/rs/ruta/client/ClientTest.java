@@ -38,7 +38,7 @@ public class ClientTest
 		{
 			fos = new FileOutputStream(file);
 			PrintStream ps = new PrintStream(fos);
-			System.setErr(ps);
+//			System.setErr(ps); //MMM: this sould be uncommented if is wanted to redirect error stream to err.txt
 		}
 		catch (FileNotFoundException e1)
 		{
@@ -118,8 +118,10 @@ public class ClientTest
 		}
 		catch(Exception e)
 		{
-			JOptionPane.showMessageDialog(null, /*"Data from the local data store is corrupted!\n" +*/ e.getMessage(), "Critical error",
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, /*"Data from the local data store is corrupted!\n" +*/ "Unable to open Ruta Client application.\n" + e.getMessage(), "Critical error",
 					JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
 		}
 	}
 

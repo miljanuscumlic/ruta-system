@@ -58,6 +58,7 @@ public class Client implements RutaNode
 	private static RutaVersion version = new RutaVersion("Client", "0.1.0-SNAPSHOT", "0.0.1", null);
 	private Properties properties;
 	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
+	private List<BugReport> bugReports;
 
 	public Client() throws DetailException
 	{
@@ -65,9 +66,9 @@ public class Client implements RutaNode
 		CDRParty = getCDRParty();
 		//partyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
 		//MMM: temporary connector and mapper - would be replaced with MapperRegistry
-		ExistConnector connector = new ExistConnector();
+		ExistConnector connector = new LocalExistConnector();
 		connector.setLocalAPI();
-		new ClientMapperRegistry(); // just to initialize the registry. No reference needed later.
+		new ClientMapperRegistry(); //just to initialize the registry. No reference needed later.
 //		MapperRegistry.initialize(mapperRegistry);
 		partyDataMapper = new MyPartyExistMapper(Client.this, connector);
 		properties = new Properties();
@@ -176,6 +177,23 @@ public class Client implements RutaNode
 	 */
 	public static void setVersion(RutaVersion version) { Client.version = version; }
 
+	public List<BugReport> getBugReports()
+	{
+		if(bugReports == null)
+			bugReports = new ArrayList<BugReport>();
+		return bugReports;
+	}
+
+	/**Populates the list of {@link BugReport}s in a way that if some {@code BugReport} already exists in the list
+	 * it is overridden only if its modification date is older than that of his newly retrived counterpart.
+	 * @param bugReports list of {@code BugReport}s
+	 */
+	public void setBugReports(List<BugReport> bugReports)
+	{
+		//TODO functionality stated in the documentation comment should be implemented here
+		this.bugReports = bugReports;
+	}
+
 	/**Inserts My Party data to the local data store.
 	 * @throws Exception if data could not be inserted in the data store
 	 */
@@ -187,7 +205,7 @@ public class Client implements RutaNode
 		//MapperRegistry.getMapper(MyParty.class);
 	}
 
-	/**Sends request for registration to the Central Data Repository.
+	/**Sends request for registration with the Central Data Repository.
 	 * @param party Party object that should be registered
 	 * @param username username of the party
 	 * @param password password of the party
@@ -1401,6 +1419,65 @@ public class Client implements RutaNode
 		}
 	}
 
+/*	public void cdrFindAllBugs()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.findAllBugReportsAsync(futureResult ->
+			{
+				StringBuilder msg = new StringBuilder("Bug report list could not be retrieved! ");
+				try
+				{
+					FindAllBugReportsResponse res = futureResult.get();
+					frame.appendToConsole("Bug report list has been successfully retrieved from the CDR service.", Color.GREEN);
+					setBugReports(res.getReturn());
+				}
+				catch (Exception e)
+				{
+					msg.append("Server responds: ");
+					Throwable cause = e.getCause();
+					if(cause instanceof RutaException)
+						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+					else
+						msg.append(trimSOAPFaultMessage(cause.getMessage()));
+					frame.appendToConsole(msg.toString(), Color.RED);
+				}
+			});
+			frame.appendToConsole("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Bug list not be retrived from the CDR service! Server is not accessible. Please try again later.", Color.RED);
+		}
+	}*/
+
+	/**Sends a request for the list of all {@link BugReport bugs reported} to the CDR. Method returns
+	 * a {@link Future} object which can be inspected for the result of the returned request from the CDR.
+	 * @return {@code Future} object representing the response.
+	 */
+	public Future<?> cdrFindAllBugs()
+	{
+		Future<?> future = null;
+		try
+		{
+			Server port = getCDRPort();
+			future = port.findAllBugReportsAsync(futureResult -> { });
+			frame.appendToConsole("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response...",
+					Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Bug list not be retrived from the CDR service! Server is not accessible. Please try again later.",
+					Color.RED);
+		}
+		return future;
+	}
+
+	/**Temporary method. Should be deleted.
+	 *
+	 */
 	public void cdrInsertFile()
 	{
 		try
@@ -1530,6 +1607,7 @@ public class Client implements RutaNode
 	{
 		partyDataMapper.getConnector().shutdownDatabase();
 	}
+
 
 
 }

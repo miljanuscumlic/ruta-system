@@ -4,9 +4,10 @@ import java.util.function.*;
 
 import javax.swing.table.*;
 
-@SuppressWarnings("serial")
 public class PartyTableModel extends AbstractTableModel
 {
+	private static final long serialVersionUID = -6097474546942059715L;
+
 	private String[] rowNames =
 		{
 				"Party name", "Registration name", "Company ID", "Registration date", "Registration address",

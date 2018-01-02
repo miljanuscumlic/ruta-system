@@ -24,7 +24,7 @@ import rs.ruta.common.User;
 public class ExistTransaction implements DSTransaction
 {
 	@XmlTransient
-	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.server.datamapper");
+	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.common.datamapper");
 	@XmlElement(name = "TransactionID", required = true)
 	private String transactionID;
 	@XmlElement(name = "Timestamp")

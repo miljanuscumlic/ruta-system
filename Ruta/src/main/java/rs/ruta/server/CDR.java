@@ -31,6 +31,7 @@ import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.User;
 import rs.ruta.common.datamapper.*;
+import rs.ruta.server.datamapper.ServiceMapperRegistry;
 
 //handlers.xml should be inside ResourceRoot directory /WEB-INF/classes because WildFly is searching for it on that path
 //ResourceRoot [root=\"/C:/Program Files/wildfly-10.1.0.Final/bin/content/Ruta-SNAPSHOT-0.0.1.war/WEB-INF/classes\"]
@@ -431,10 +432,45 @@ public class CDR implements Server
 	}
 
 	@Override
-	public List<BugReport> findBugReport(int start, int count) throws RutaException
+	public BugReport findBugReport(String id) throws RutaException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		BugReport bugReport = null;
+		try
+		{
+			init();
+			bugReport = MapperRegistry.getInstance().getMapper(BugReport.class).find(id);
+			return bugReport;
+		}
+		catch(Exception e)
+		{
+			String exceptionMsg = "Bug report could not be retrieved from the database!";
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+	}
+
+	@Override
+	public List<BugReport> findAllBugReports() throws RutaException
+	{
+		List<BugReport> bugReports = null;
+		try
+		{
+			init();
+			bugReports = MapperRegistry.getInstance().getMapper(BugReport.class).findAll();
+			return bugReports;
+		}
+		catch(Exception e)
+		{
+			String exceptionMsg = "List of bug reports could not be retrieved from the database!";
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
 	}
 
 	@Deprecated //MMM: and does not work: transaction is null
@@ -514,4 +550,5 @@ public class CDR implements Server
 				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 	}
+
 }

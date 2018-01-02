@@ -15,15 +15,23 @@ import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.ExistTransactionMapper;
+import rs.ruta.common.datamapper.DatabaseAdmin;
 
 public class ClientMapperRegistry extends MapperRegistry
 {
+	/**Constructs {@link MapperRegistry} object setting this concrete instace of
+	 * {@code ClientMapperRegistry} as a registry. Also, it initializes {@link ExistConnector} object
+	 * with {@link LocalExistConnector} instance.
+	 */
 	public ClientMapperRegistry()
 	{
-		initialize(this);
+		setRegistry(this);
+		/*DatabaseAdmin.newInstance("admin", null);
 		ExistConnector connector = new ExistConnector();
 		connector.setLocalAPI();
-		setConnector(connector);
+		setConnector(connector);*/
+
+		setConnector(new LocalExistConnector());
 	}
 
 	@Override

@@ -12,14 +12,17 @@ import rs.ruta.common.SearchCriterion;
 /**DataMapper interface declares methods responsible for mappings between objects from the domain model
  * and persistance interpretation of that data in the data store. To be able to connect to
  * some particular database one should implement DataMapper interface and its methods.
+ * @param <T> type of the object
+ * @param <ID> type of the object's id
  */
-public interface DataMapper<T, ID> //MMM: DataMapper<T, ID> ID is a type of the id in the database
+public interface DataMapper<T, ID>
 {
-	/**Retrieves object from the data store with passed id.
+	/**Retrieves object with passed id from the data store.
 	 * @param id id of the object to be retrieved
 	 * @return found object or <code>null</code> if object doesn't exist
+	 * @throws DetailException if object could not be retrived
 	 */
-	public T find(ID id) throws Exception;
+	public T find(ID id) throws DetailException;
 
 	/**Retrieves object from the data store. Object is identified by the user's ID.
 	 * @param id user's ID

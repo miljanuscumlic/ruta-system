@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -48,7 +49,7 @@ public class BugReportDialog extends JDialog
 	private ReportAttachment att1;
 	private ReportAttachment att2;
 
-	public BugReportDialog(ClientFrame owner)
+	public BugReportDialog(JFrame owner)
 	{
 		super(owner, "Report a Bug", true);
 		setResizable(false);
@@ -56,6 +57,7 @@ public class BugReportDialog extends JDialog
 		setLocationRelativeTo(owner);
 
 		bugReport = new BugReport();
+		bugReport.initialize();
 
 		int width = 30;
 		componentBox = new JComboBox<>();
@@ -96,10 +98,6 @@ public class BugReportDialog extends JDialog
 		{
 			reportPressed = true;
 			String s = (String) componentBox.getSelectedItem();
-/*			bugReport = new BugReport(summaryField.getText(), null, productLabel.getText(),
-					(String) componentBox.getSelectedItem(), versionField.getText(), platformField.getText(),
-					osField.getText(), descriptionArea.getText(), javaField.getText(), null, null);*/
-
 			bugReport.setSummary(summaryField.getText());
 			bugReport.setComponent((String) componentBox.getSelectedItem());
 			bugReport.setVersion(versionField.getText());
@@ -140,13 +138,10 @@ public class BugReportDialog extends JDialog
 		Insets insets1 = new Insets(10, 5, 0, 0);
 		Insets insets2 = new Insets(5, 5, 0, 0);
 		Insets insets3 = new Insets(5, 5, 0, 0);
-/*		JLabel att1Filename = new JLabel("", SwingConstants.SOUTH_EAST);
-		JLabel att2Filename = new JLabel("", SwingConstants.SOUTH_EAST);*/
 		JButton addAtt1Button = new JButton("Add");
 		JButton addAtt2Button = new JButton("Add");
 		JButton remAtt1Button = new JButton("Remove");
 		JButton remAtt2Button = new JButton("Remove");
-
 
 		ActionListener addAction = new ActionListener()
 		{

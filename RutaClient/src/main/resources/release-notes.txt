@@ -1,15 +1,25 @@
 Ruta Client 0.1.0-SNAPSHOT
 This is the first minor release of Ruta Client Application. From now on Ruta will mostly follow semantic versioning scheme.
 
+Feature:
+
+- Embedded eXist database is used as a local data store instead of xml files.
+
+Bug fixes:
+
+- Fixed bug that was allowing non-registered users to send a bug report.
+
 --------------------
 
 Ruta Client 0.0.3
 This is the patch release of the Ruta Client Application.
 
 Feature:
+
 - Error stream is redirected to err.txt file
 
 Bug fixes:
+
 - Fixed bug not showing that My Party has been deregistered after successfully finished deregistration
 
 --------------------

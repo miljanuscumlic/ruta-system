@@ -35,7 +35,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	}
 
 	@Override
-	public User find(String id)
+	public User find(String id) throws DetailException
 	{
 		// TODO Auto-generated method stub
 		return null;

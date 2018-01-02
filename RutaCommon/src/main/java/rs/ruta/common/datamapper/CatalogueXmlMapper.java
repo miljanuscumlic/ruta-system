@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.exist.xmldb.XQueryService;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
@@ -35,33 +36,18 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	@Override
 	protected String getObjectPackageName() { return objectPackageName; }
 
-	@Override
+/*	@Override
 	public CatalogueType find(String id) throws DetailException
 	{
 		CatalogueType catalogue = loadedCatalogues.get(id);
 		if(catalogue == null)
 		{
 			catalogue =  super.find(id);
-
-/*			try
-			{
-				JAXBContext jc = JAXBContext.newInstance(CatalogueType.class);
-				Unmarshaller u = jc.createUnmarshaller();
-
-				// unmarshal instance document into a tree of Java content
-				@SuppressWarnings("unchecked")
-				JAXBElement<?> jaxbElement = (JAXBElement<?>) u.unmarshal(new StringReader(result.toString()));
-				catalogue = jaxbElement.getValue();
-			}
-			catch (JAXBException e)
-			{
-				logger.error("Exception is ", e);;
-			}*/
 			if(catalogue != null)
 				loadedCatalogues.put(id, catalogue);
 		}
 		return catalogue;
-	}
+	}*/
 
 	@Override
 	public void insert(CatalogueType catalogue, String id, DSTransaction transaction) throws DetailException
@@ -157,7 +143,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	protected void doCacheObject(String id, CatalogueType object)
+	protected void putCacheObject(String id, CatalogueType object)
 	{
 		loadedCatalogues.put(id, object);
 	}
@@ -233,6 +219,65 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 					(new StringBuilder("item-all := false")).toString());
 
 		return preparedQuery;
+	}
+
+	@Override
+	protected String prepareQuery2(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
+	{
+		String partyName = criterion.getPartyName();
+		String partyCompanyID = criterion.getPartyCompanyID();
+		String partyClassCode = criterion.getPartyClassCode();
+		String partyCity = criterion.getPartyCity();
+		String partyCountry = criterion.getPartyCountry();
+		boolean partyAll = criterion.isPartyAll();
+
+		String itemName = criterion.getItemName();
+		String itemDescription = criterion.getItemDescription();
+		String itemBarcode = criterion.getItemBarcode();
+		String itemCommCode = criterion.getItemCommCode();
+		String itemKeyword = criterion.getItemKeyword();
+		boolean itemAll = criterion.isItemAll();
+
+		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);
+		if(query == null)
+			return query;
+		try
+		{
+			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+			queryService.declareVariable("path", queryPath.toString());
+			if(partyName != null)
+				queryService.declareVariable("party-name", partyName);
+			if(partyCompanyID != null)
+				queryService.declareVariable("party-company-id", partyCompanyID);
+			if(partyClassCode != null)
+				queryService.declareVariable("party-class-code", partyClassCode);
+			if(partyCity != null)
+				queryService.declareVariable("party-city", partyCity);
+			if(partyCountry != null)
+				queryService.declareVariable("party-country", partyCountry);
+			if(!partyAll)
+				queryService.declareVariable("party-all", false);
+
+			if(itemName != null)
+				queryService.declareVariable("item-name", itemName);
+			if(itemDescription != null)
+				queryService.declareVariable("item-description", itemDescription);
+			if(itemBarcode != null)
+				queryService.declareVariable("item-barcode", itemBarcode);
+			if(itemCommCode != null)
+				queryService.declareVariable("item-comm-code", itemCommCode);
+			if(itemKeyword != null)
+				queryService.declareVariable("item-keyword", itemKeyword);
+			if(!itemAll)
+				queryService.declareVariable("item-all", false);
+		}
+		catch(XMLDBException e)
+		{
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+		}
+
+		return query;
 	}
 
 }

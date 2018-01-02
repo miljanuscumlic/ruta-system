@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import javax.xml.bind.JAXBElement;
 
+import org.exist.xmldb.XQueryService;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
@@ -37,7 +38,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	@Override
 	protected String getObjectPackageName() { return objectPackageName; }
 
-	@Override
+/*	@Override
 	public PartyType find(String id) throws DetailException
 	{
 		PartyType party = loadedParties.get(id);
@@ -48,7 +49,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 				loadedParties.put((String) id,  party);
 		}
 		return party;
-	}
+	}*/
 
 	@Override
 	public ArrayList<PartyType> findAll() throws DetailException
@@ -96,13 +97,14 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected void doCacheObject(String id, PartyType object)
+	protected void putCacheObject(String id, PartyType object)
 	{
 		loadedParties.put(id, object);
 	}
 
 	@Override
-	protected String doGetOrCreateID(Collection collection, PartyType party, String username, DSTransaction transaction) throws DetailException
+	protected String doPrepareAndGetID(Collection collection, PartyType party, String username, DSTransaction transaction)
+			throws DetailException
 	{
 		String id = null;
 		//object that should be stored doesn't have an ID and User has no Document ID metadata set
@@ -220,16 +222,6 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		return PartyType.class;
 	}
 
-	//@Deprecated //MMM: delete it
-/*	@Override
-	public String update(String username, PartyType party, DSTransaction transaction) throws DetailException
-	{
-		//update not going through the insert method because Party object has its unique ID, and insert method creates new one
-		String id = (String) super.update(username, party, transaction);
-		loadedParties.put(id, party);
-		return id;
-	}*/
-
 	@Override
 	protected String getSearchQueryName()
 	{
@@ -242,7 +234,6 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		String query = openDocument(getQueryPath(), queryNameSearchParty);
 		if(query == null)
 			return query;
-		//MMM: substitute strings "declare variable $name external := '';" with...
 
 		String partyName = criterion.getPartyName();
 		String partyCompanyID = criterion.getPartyCompanyID();
@@ -255,9 +246,6 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		String itemBarcode = criterion.getItemBarcode();
 		String itemCommCode = criterion.getItemCommCode();
 		boolean itemAll = criterion.isItemAll();
-
-/*		String preparedQuery = query.replaceFirst("declare variable party-name external := ''",
-				"declare variable party-name external := " + partyName);*/
 
 		String preparedQuery = query;
 		if(partyName != null)
@@ -283,12 +271,50 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
+	protected String prepareQuery2(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
+	{
+		String partyName = criterion.getPartyName();
+		String partyCompanyID = criterion.getPartyCompanyID();
+		String partyClassCode = criterion.getPartyClassCode();
+		String partyCity = criterion.getPartyCity();
+		String partyCountry = criterion.getPartyCountry();
+		boolean partyAll = criterion.isPartyAll();
+
+		String query = openDocument(getQueryPath(), queryNameSearchParty);
+		if(query == null)
+			return query;
+		try
+		{
+			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+			queryService.declareVariable("path", queryPath.toString());
+			if(partyName != null)
+				queryService.declareVariable("party-name", partyName);
+			if(partyCompanyID != null)
+				queryService.declareVariable("party-company-id", partyCompanyID);
+			if(partyClassCode != null)
+				queryService.declareVariable("party-class-code", partyClassCode);
+			if(partyCity != null)
+				queryService.declareVariable("party-city", partyCity);
+			if(partyCountry != null)
+				queryService.declareVariable("party-country", partyCountry);
+			if(!partyAll)
+				queryService.declareVariable("party-all", false);
+		}
+		catch(XMLDBException e)
+		{
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+		}
+
+		return query;
+	}
+
+	@Override
 	protected String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryName);
 		if(query == null)
 			return query;
-		//MMM: substitute strings "declare variable $name external := '';" with...
 
 		String partyName = criterion.getPartyName();
 		String partyCompanyID = criterion.getPartyCompanyID();

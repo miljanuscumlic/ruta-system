@@ -135,14 +135,21 @@ public interface Server
 	@WebMethod(operationName = "InsertBugReport")
 	public void insertBugReport(BugReport bugReport) throws RutaException;
 
-	/**Retrieves the list of {@code BugReport}s from the datastore.
-	 * @param start starting number of the bug
-	 * @param count number of bugs to retrieve
+	/**Retrieves {@code BugReport} with passed ID from the datastore.
+	 * @param ID bug report's ID
+	 * @return bug report or {@code null} if there is no bug with that ID
+	 * @throws RutaException if bug could not be retrieved from the datastore
+	 */
+	@WebMethod(operationName = "FindBugReport")
+	public BugReport findBugReport(String id) throws RutaException;
+
+	/**Retrieves the list of {@link BugReport}s from the datastore. List could be partial containg some maximum
+	 * number of {@code BugReport}s.
 	 * @return list of bugs or {@code null} if there are no bugs to retrieve
 	 * @throws RutaException if bugs could not be retrieved from the datastore
 	 */
-	@WebMethod(operationName = "FindBug")
-	public List<BugReport> findBugReport(int start, int count) throws RutaException;
+	@WebMethod(operationName = "FindAllBugReports")
+	public List<BugReport> findAllBugReports() throws RutaException;
 
 	@WebMethod(operationName = "InsertFile")
 	public void insertFile(@XmlMimeType("application/octet-stream") DataHandler dataHandler, String filename) throws RutaException;

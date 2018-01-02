@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**Attachment added to a {@link BugReport}.
+ */
 @XmlRootElement(name = "ReportAttachment", namespace = "urn:rs:ruta:common")
 @XmlType(name = "ReportAttachment")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -23,7 +25,7 @@ public class ReportAttachment
 {
 
 	@XmlTransient
-	private byte[] rawData;
+	private byte[] rawData; //MMM: this field is not used ???
 
 	@XmlMimeType("application/octet-stream")
 	@XmlElement(name = "DataHandler")
@@ -32,15 +34,18 @@ public class ReportAttachment
 	@XmlElement (name = "Name")
 	private String name;
 
+	/** attachment's id */
 	@XmlElement(name = "ID")
-	private String id; // attachment's id
+	private String id;
 
+	/** report owner's id */
 	@XmlElement(name = "OwnerID")
-	private String ownerId; // report owner's id
+	private String ownerId;
 
 	public ReportAttachment() { }
 
-	public ReportAttachment(byte[] data, String name)
+/*	MMM: NOT USED
+ 	public ReportAttachment(byte[] data, String name)
 	{
 		rawData = data;
 		this.name = name;
@@ -51,14 +56,14 @@ public class ReportAttachment
 		this(data, name);
 		this.id = id;
 		this.ownerId = ownerId;
-	}
+	}*/
 
 	/**Constructs the {@code ReportAttachment} from the {@code File}.
 	 * @param file file to be set as attachment
 	 * @param name file's name
 	 * @throws IOException if the data could not be retrieved from the file
 	 */
-	public ReportAttachment(File file, String name) throws IOException
+	public ReportAttachment(File file, String name) throws IOException //MMM: this constructor is only user for the test sending image to the CDR - delete it
 	{
 		setRawData(file);
 		setDataHandler(file);
@@ -76,19 +81,24 @@ public class ReportAttachment
 		this.name = file.getName();
 	}
 
+	/**Sets the raw data of the {@code ReportAttachment} passed as a byte array.
+	 * @param rawData raw data to be set
+	 */
 	public void setRawData(byte[] rawData)
 	{
 		this.rawData = rawData;
 	}
 
+	/**Sets the name of the {@code ReportAttachment}.
+	 * @param name
+	 */
 	public void setName(String name)
 	{
 		this.name = name;
 	}
 
-	/**Gets the raw data as byte array from the {@link File}.
+	/**Sets the raw data as byte array from the {@link File}.
 	 * @param file {@code File} which contents is examined
-	 * @return byte array representing the File contents
 	 * @throws IOException if the data could not be retrieved from the file
 	 */
 	private void setRawData(File file) throws IOException
@@ -103,9 +113,8 @@ public class ReportAttachment
         bin.close();
 	}
 
-	/**Gets the raw data as byte array from the {@link File}.
-	 * @param file {@code File} which contents is examined
-	 * @return byte array representing the File contents
+	/**Sets the {@link DataHandler} of the passed {@link File}.
+	 * @param file {@code File} to which {@code DataHandler} is hooked
 	 * @throws IOException if the data could not be retrieved from the file
 	 */
 	private void setDataHandler(File file) throws IOException
@@ -115,18 +124,13 @@ public class ReportAttachment
         dataHandler = new DataHandler(fileDataSource);
 	}
 
-
-	/**Constructs a file from the {@link DataHandler} field.
+	/**Constructs a file representing the {@code ReportAttachment}.
 	 * @return a file
 	 * @throws IOException if file coud not be constructed
 	 */
 	public File getFile() throws IOException
 	{
 		File file = new File(name);
-/*		BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(file));
-			bout.write(rawData);
-		bout.close();*/
-
 		BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(file));
 		BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
 		byte buffer[] = new byte[1024];
@@ -139,41 +143,64 @@ public class ReportAttachment
 		return file;
 	}
 
+	/**Gets {@code ReportAttachment}'s ID.
+	 * @return ID
+	 */
 	public String getId()
 	{
 		return id;
 	}
 
+	/**Sets {@code ReportAttachment}'s ID.
+	 * @param id
+	 */
 	public void setId(String id)
 	{
 		this.id = id;
 	}
 
+	/**Gets the {@code ReportAttachment}'s owner ID.
+	 * @return owner's ID
+	 */
 	public String getOwnerId()
 	{
 		return ownerId;
 	}
 
+	/**Sets the {@code ReportAttachment}'s owner ID.
+	 * @param ownerId owner's ID
+	 */
 	public void setOwnerId(String ownerId)
 	{
 		this.ownerId = ownerId;
 	}
 
+	/**Gets the raw data as byte array.
+	 * @return byte array representing the {@code Attachment} contents
+	 */
 	public byte[] getRawData()
 	{
 		return rawData;
 	}
 
+	/**Gets the name of the {@code ReportAttachment}.
+	 * @return the name
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**Gets the {@link DataHandler} object representing the raw data of the {@code ReportAttachment} file.
+	 * @return {@link DataHandler} object
+	 */
 	public DataHandler getDataHandler()
 	{
 		return dataHandler;
 	}
 
+	/**Sets the {@link DataHandler} object representing the raw data of the {@code ReportAttachment} file.
+	 */
 	public void setDataHandler(DataHandler dataHandler)
 	{
 		this.dataHandler = dataHandler;

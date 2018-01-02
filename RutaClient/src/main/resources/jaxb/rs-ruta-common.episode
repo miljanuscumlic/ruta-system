@@ -32,5 +32,11 @@
 			<class ref="rs.ruta.common.ReportAttachment" />
 		</bindings>
 	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
+		<bindings scd="~tns:ReportComment">
+			<class ref="rs.ruta.common.ReportComment" />
+		</bindings>
+	</bindings>
 
 </bindings>

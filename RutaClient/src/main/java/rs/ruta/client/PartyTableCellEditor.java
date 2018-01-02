@@ -37,8 +37,8 @@ public class PartyTableCellEditor extends DefaultCellEditor
 	}
 
 	/**
-	 * Cheks if the table cell content has changed
-	 * @return true if the cell content has changed
+	 * Checks if the table cell content has been changed.
+	 * @return true if the cell content has been changed
 	 */
 	public boolean hasChanged()
 	{

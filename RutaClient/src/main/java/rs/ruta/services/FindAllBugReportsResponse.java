@@ -11,12 +11,12 @@ import rs.ruta.common.BugReport;
 
 
 /**
- * <p>Java class for FindBugResponse complex type.
+ * <p>Java class for FindAllBugReportsResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="FindBugResponse">
+ * &lt;complexType name="FindAllBugReportsResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -30,10 +30,10 @@ import rs.ruta.common.BugReport;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FindBugResponse", propOrder = {
+@XmlType(name = "FindAllBugReportsResponse", propOrder = {
     "_return"
 })
-public class FindBugResponse {
+public class FindAllBugReportsResponse {
 
     @XmlElement(name = "return")
     protected List<BugReport> _return;

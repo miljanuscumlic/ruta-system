@@ -322,6 +322,43 @@ public interface Server {
 
     /**
      * 
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllBugReportsResponse>
+     */
+    @WebMethod(operationName = "FindAllBugReports")
+    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReports")
+    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReportsResponse")
+    public Response<FindAllBugReportsResponse> findAllBugReportsAsync();
+
+    /**
+     * 
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FindAllBugReports")
+    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReports")
+    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReportsResponse")
+    public Future<?> findAllBugReportsAsync(
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FindAllBugReportsResponse> asyncHandler);
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<rs.ruta.common.BugReport>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FindAllBugReports")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReports")
+    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReportsResponse")
+    public List<BugReport> findAllBugReports()
+        throws RutaException
+    ;
+
+    /**
+     * 
      * @param arg1
      * @param arg0
      * @return
@@ -369,61 +406,6 @@ public interface Server {
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         CatalogueType arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FindBugResponse>
-     */
-    @WebMethod(operationName = "FindBug")
-    @RequestWrapper(localName = "FindBug", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBug")
-    @ResponseWrapper(localName = "FindBugResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugResponse")
-    public Response<FindBugResponse> findBugAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        int arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        int arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "FindBug")
-    @RequestWrapper(localName = "FindBug", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBug")
-    @ResponseWrapper(localName = "FindBugResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugResponse")
-    public Future<?> findBugAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        int arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        int arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FindBugResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns java.util.List<rs.ruta.common.BugReport>
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "FindBug")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindBug", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBug")
-    @ResponseWrapper(localName = "FindBugResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugResponse")
-    public List<BugReport> findBug(
-        @WebParam(name = "arg0", targetNamespace = "")
-        int arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        int arg1)
         throws RutaException
     ;
 
@@ -918,6 +900,52 @@ public interface Server {
     @RequestWrapper(localName = "DeleteUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUser")
     @ResponseWrapper(localName = "DeleteUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUserResponse")
     public void deleteUser(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindBugReportResponse>
+     */
+    @WebMethod(operationName = "FindBugReport")
+    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReport")
+    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReportResponse")
+    public Response<FindBugReportResponse> findBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FindBugReport")
+    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReport")
+    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReportResponse")
+    public Future<?> findBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FindBugReportResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns rs.ruta.common.BugReport
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FindBugReport")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReport")
+    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReportResponse")
+    public BugReport findBugReport(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0)
         throws RutaException

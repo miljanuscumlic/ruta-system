@@ -1,4 +1,4 @@
-package rs.ruta.common.datamapper;
+package rs.ruta.server.datamapper;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
@@ -7,6 +7,20 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.User;
+import rs.ruta.common.datamapper.BugReportXmlMapper;
+import rs.ruta.common.datamapper.CatalogueDeletionXmlMapper;
+import rs.ruta.common.datamapper.CatalogueXmlMapper;
+import rs.ruta.common.datamapper.DSTransaction;
+import rs.ruta.common.datamapper.DataManipulationException;
+import rs.ruta.common.datamapper.DataMapper;
+import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.ExistConnector;
+import rs.ruta.common.datamapper.ExistTransactionMapper;
+import rs.ruta.common.datamapper.MapperRegistry;
+import rs.ruta.common.datamapper.PartyIDXmlMapper;
+import rs.ruta.common.datamapper.PartyXmlMapper;
+import rs.ruta.common.datamapper.RutaVersionXmlMapper;
+import rs.ruta.common.datamapper.UserXmlMapper;
 
 /**Class that holds global variables accountable for the connection to the classes responsible for the
  * database manipulation. One field is the map containing all <code>DataMapper</code>s that maps domain
@@ -16,12 +30,13 @@ import rs.ruta.common.User;
  */
 public class ServiceMapperRegistry extends MapperRegistry
 {
-
+	/**Constructs {@link MapperRegistry} object setting this concrete instace of
+	 * {@code ServiceMapperRegistry} as a registry. Also, it sets {@link ExistConnector} object.
+	 */
 	public ServiceMapperRegistry()
 	{
-		initialize(this);
-		ExistConnector connector = new ExistConnector();
-		setConnector(connector);
+		setRegistry(this);
+		setConnector(new RemoteExistConnector());
 	}
 
 	/**Gets the {@link DataMapper} for connection to the data store based on the <code>Class</code> paramater.
@@ -62,5 +77,4 @@ public class ServiceMapperRegistry extends MapperRegistry
 			throw new DataManipulationException("There is no mapper for the class " + clazz.toString() + ".");
 		return dataMapper;
 	}
-
 }
