@@ -60,6 +60,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BugReportSearchCriterion;
 
 public class ClientFrame extends JFrame
 {
@@ -570,7 +571,7 @@ public class ClientFrame extends JFrame
 
 		reportBugItem.addActionListener(event ->
 		{
-			reportBug();
+			sendBugReport();
 		});
 
 		exploreBugItem.addActionListener(event ->
@@ -598,9 +599,9 @@ public class ClientFrame extends JFrame
 	/**Checks if MyParty is registered with the CDR, then opens {@link BugReportDialog}
 	 * and sends {@link BugReport} to the CDR by calling apropriate method in the {@link Client}
 	 * class. This method is extracted from the {@code ActionListener} because it is used in
-	 * one other place.
+	 * more than one place.
 	 */
-	public void reportBug()
+	public void sendBugReport()
 	{
 		if(client.getMyParty().isRegisteredWithCDR())
 		{
@@ -616,6 +617,21 @@ public class ClientFrame extends JFrame
 			appendToConsole("Bug report cannot be issued by non-registered parties.", Color.RED);
 	}
 
+	/**Checks if MyParty is registered with the CDR, then sends a request to the CDR for the list of
+	 * {@link BugReport}s based on some search criterion.
+	 * @param criterion search criterion
+	 * @return {@link Future} object representing the response.
+	 */
+	public Future<?> searchBugReport(BugReportSearchCriterion criterion)
+	{
+		Future<?> future = null;
+		if(client.getMyParty().isRegisteredWithCDR())
+			future = client.cdrSearchBugReport(criterion);
+		else
+			appendToConsole("Bug report list cannot be issued by non-registered parties.", Color.RED);
+		return future;
+	}
+
 	/**Checks if MyParty is registered with the CDR, then sends a request for the list of all
 	 * {@link BugReport bugs reported} to the CDR.
 	 * @return {@link Future} object representing the response.
@@ -626,7 +642,7 @@ public class ClientFrame extends JFrame
 		if(client.getMyParty().isRegisteredWithCDR())
 			future = client.cdrFindAllBugs();
 		else
-			appendToConsole("Bug report list be issued by non-registered parties.", Color.RED);
+			appendToConsole("Bug report list cannot be issued by non-registered parties.", Color.RED);
 		return future;
 	}
 

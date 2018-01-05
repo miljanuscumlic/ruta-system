@@ -34,9 +34,11 @@ import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.*;
 import rs.ruta.client.datamapper.*;
 import rs.ruta.common.ReportAttachment;
+import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.RutaVersion;
-import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.MapperRegistry;
@@ -50,10 +52,10 @@ public class Client implements RutaNode
 	private static String cdrEndPoint = defaultEndPoint;
 	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.1.0-SNAPSHOT/CDR";
 	private MyParty myParty;
-//	private MyPartyXMLFileMapper<MyParty> partyDataMapper; //former store to myparty.xml
+	//	private MyPartyXMLFileMapper<MyParty> partyDataMapper; //former store to myparty.xml
 	private MyPartyExistMapper partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
 	private Party CDRParty;
-//	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper; //MMM: not used anymore
+	//	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper; //MMM: not used anymore
 	private ClientFrame frame;
 	private static RutaVersion version = new RutaVersion("Client", "0.1.0-SNAPSHOT", "0.0.1", null);
 	private Properties properties;
@@ -69,7 +71,7 @@ public class Client implements RutaNode
 		ExistConnector connector = new LocalExistConnector();
 		connector.setLocalAPI();
 		new ClientMapperRegistry(); //just to initialize the registry. No reference needed later.
-//		MapperRegistry.initialize(mapperRegistry);
+		//		MapperRegistry.initialize(mapperRegistry);
 		partyDataMapper = new MyPartyExistMapper(Client.this, connector);
 		properties = new Properties();
 	}
@@ -502,7 +504,7 @@ public class Client implements RutaNode
 				});
 				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 
-/*				//creating XML document - for test purpose only
+				/*				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
 				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
 				try
@@ -583,7 +585,7 @@ public class Client implements RutaNode
 
 				frame.appendToConsole("My Catalogue has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 
-/*				//creating XML document - for test purpose only
+				/*				//creating XML document - for test purpose only
 				ObjectFactory objFactory = new ObjectFactory();
 				JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
 				try
@@ -641,7 +643,7 @@ public class Client implements RutaNode
 						frame.appendToConsole("Catalogue has been successfully retrieved from the CDR service.", Color.GREEN);
 						myParty.getFollowingParties().get(0).setProducts(catalogue);
 
-/*						//creating XML document - for test purpose only
+						/*						//creating XML document - for test purpose only
 						ObjectFactory objFactory = new ObjectFactory();
 						JAXBElement<CatalogueType> catalogueElement = objFactory.createCatalogue(catalogue);
 						try
@@ -866,7 +868,7 @@ public class Client implements RutaNode
 		((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, cdrEndPoint);
 	}
 
-/*	public OLDDataMapper getPartyDataMapper()
+	/*	public OLDDataMapper getPartyDataMapper()
 	{
 		return partyDataMapper;
 	}*/
@@ -966,12 +968,12 @@ public class Client implements RutaNode
 
 	//Method may be used for some testing purposes
 	@Deprecated
-	public void cdrSearchParty(SearchCriterion criterion)
+	public void cdrSearchParty(CatalogueSearchCriterion criterion)
 	{
 		try
 		{
 			Server port = getCDRPort();
-			port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
+			port.searchCatalogueAsync(criterion, futureResult ->
 			{
 				StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 				try
@@ -1001,14 +1003,14 @@ public class Client implements RutaNode
 	}
 
 	@Deprecated
-	public void cdrSearch(String searchName, SearchCriterion criterion)
+	public void cdrSearch(String searchName, CatalogueSearchCriterion criterion)
 	{
 		try
 		{
 			Server port = getCDRPort();
 			if(criterion.isCatalogueSearchedFor()) //querying parties and catalogues
 			{
-				port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
+				port.searchCatalogueAsync(criterion, futureResult ->
 				{
 					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
@@ -1088,7 +1090,7 @@ public class Client implements RutaNode
 							(new StringBuilder("party-all := false")).toString());*/
 
 				//*******************TEST*************************
-				port.searchPartyAsync(myParty.getUsername(), criterion, futureResult ->
+				port.searchPartyAsync(criterion, futureResult ->
 				{
 					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
@@ -1143,10 +1145,10 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			SearchCriterion criterion = search.getCriterion();
+			CatalogueSearchCriterion criterion = search.getCriterion();
 			if(criterion.isCatalogueSearchedFor()) //querying parties and catalogues
 			{
-				port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
+				port.searchCatalogueAsync(criterion, futureResult ->
 				{
 					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
@@ -1182,7 +1184,7 @@ public class Client implements RutaNode
 			}
 			else // querying only parties
 			{
-				port.searchPartyAsync(myParty.getUsername(), criterion, futureResult ->
+				port.searchPartyAsync(criterion, futureResult ->
 				{
 					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
@@ -1230,10 +1232,10 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			SearchCriterion criterion = search.getCriterion();
+			CatalogueSearchCriterion criterion = search.getCriterion();
 			if(criterion.isCatalogueSearchedFor()) //querying parties and catalogues
 			{
-				port.searchCatalogueAsync(myParty.getUsername(), criterion, futureResult ->
+				port.searchCatalogueAsync(criterion, futureResult ->
 				{
 					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
@@ -1278,7 +1280,7 @@ public class Client implements RutaNode
 			}
 			else // querying only parties
 			{
-				port.searchPartyAsync(myParty.getUsername(), criterion, futureResult ->
+				port.searchPartyAsync(criterion, futureResult ->
 				{
 					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
@@ -1419,7 +1421,7 @@ public class Client implements RutaNode
 		}
 	}
 
-/*	public void cdrFindAllBugs()
+	/*	public void cdrFindAllBugs()
 	{
 		try
 		{
@@ -1453,7 +1455,7 @@ public class Client implements RutaNode
 		}
 	}*/
 
-	/**Sends a request for the list of all {@link BugReport bugs reported} to the CDR. Method returns
+	/**Sends a request to the CDR for the list of all {@link BugReport reported bugs}. Method returns
 	 * a {@link Future} object which can be inspected for the result of the returned request from the CDR.
 	 * @return {@code Future} object representing the response.
 	 */
@@ -1475,6 +1477,73 @@ public class Client implements RutaNode
 		return future;
 	}
 
+	/**Sends a request to the CDR for the list of {@link BugReport}s based on some search criterion. Method returns
+	 * a {@link Future} object which can be inspected for the result of the returned request from the CDR.
+	 * @param criterion
+	 * @return {@code Future} object representing the response
+	 */
+	public Future<?> cdrSearchBugReport(BugReportSearchCriterion criterion)
+	{
+		Future<?> future = null;
+		try
+		{
+			Server port = getCDRPort();
+			future = port.searchBugReportAsync(criterion, futureResult -> { });
+			frame.appendToConsole("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response...",
+					Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Bug list could not be retrived from the CDR service! Server is not accessible. Please try again later.",
+					Color.RED);
+		}
+		return future;
+	}
+
+	/**Send a request to the CDR for the {@link BugReport}.
+	 * @param id {@code BugReport}'s id
+	 * @return {@code Future} object representing the response
+	 */
+	public Future<?> cdrFindBug(String id)
+	{
+		Future<?> future = null;
+		try
+		{
+			Server port = getCDRPort();
+			future = port.findBugReportAsync(id, futureResult -> { });
+			frame.appendToConsole("Request for the bug report has been sent to the CDR service. Waiting for a response...",
+					Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Bug report could not be retrived from the CDR service! Server is not accessible. Please try again later.",
+					Color.RED);
+		}
+		return future;
+	}
+
+	/**Send a request to the CDR for adding a {@link ReportComment} to the {@link BugReport}.
+	 * @param id {@code BugReport}'s id
+	 * @param comment comment to be added
+	 * @return {@code Future} object representing the response
+	 */
+	public Future<?> cdrAddBugReportComment(String id, ReportComment comment)
+	{
+		Future<?> future = null;
+		try
+		{
+			Server port = getCDRPort();
+			future = port.addBugReportCommentAsync(id, comment, futureREsult -> { });
+			frame.appendToConsole("Comment has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("Comment could not be sent to the CDR service! Server is not accessible. Please try again later.",
+					Color.RED);
+		}
+		return future;
+	}
+
 	/**Temporary method. Should be deleted.
 	 *
 	 */
@@ -1487,10 +1556,10 @@ public class Client implements RutaNode
 			File image = new File("test.jpg");
 			long length = image.length();
 			String path = image.getPath();
-	        FileDataSource fileDataSource = new FileDataSource(path);
-	        DataHandler dataHandler = new DataHandler(fileDataSource);
+			FileDataSource fileDataSource = new FileDataSource(path);
+			DataHandler dataHandler = new DataHandler(fileDataSource);
 
-/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
+			/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
 	        byte buffer[] = new byte[(int)length];
 	        bin.read(buffer);
 	        bin.close();*/
@@ -1532,13 +1601,13 @@ public class Client implements RutaNode
 		{
 			Server port = getCDRPort();
 			File image = new File("test.jpg");
-/*			long length = image.length();
+			/*			long length = image.length();
 			String path = image.getPath();
 	        FileDataSource fileDataSource = new FileDataSource(path);
 	        DataHandler dataHandler = new DataHandler(fileDataSource);*/
-	        ReportAttachment att = new ReportAttachment(image, image.getName());
+			ReportAttachment att = new ReportAttachment(image, image.getName());
 
-/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
+			/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
 	        byte buffer[] = new byte[(int)length];
 	        bin.read(buffer);
 	        bin.close();*/
@@ -1607,7 +1676,5 @@ public class Client implements RutaNode
 	{
 		partyDataMapper.getConnector().shutdownDatabase();
 	}
-
-
 
 }

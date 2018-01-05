@@ -12,7 +12,10 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.ReportAttachment;
+import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.RutaException;
@@ -89,22 +92,31 @@ public interface Server
 	public void updateParty(String username, PartyType party) throws RutaException;
 
 	/**Searches the database for all parties that conforms to the search criterion.
-	 * @param username username of user sending the search request
 	 * @param criterion search criterion
 	 * @return list of parties conforming the criterion
 	 * @throws RutaException if search query could not be processed
 	 */
 	@WebMethod(operationName = "SearchParty")
-	public List<PartyType> searchParty(String username, SearchCriterion criterion) throws RutaException;
+	public List<PartyType> searchParty(CatalogueSearchCriterion criterion) throws RutaException;
 
 	/**Searches the database for all catalogue items that conforms to the search criterion.
-	 * @param username username of user sending the search request
 	 * @param criterion search criterion
 	 * @return list of catalogues with only the catalogue items conforming the criterion
 	 * @throws RutaException if search query could not be processed
 	 */
 	@WebMethod(operationName = "SearchCatalogue")
-	public List<CatalogueType> searchCatalogue(String username, SearchCriterion criterion) throws RutaException;
+	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException;
+
+	/**Searches the database for all {@link BugReport}s that conforms to the search criterion.
+	 * @param criterion search criterion
+	 * @return list of {@code BugReport}s conforming the criterion or {@code null} if no {@code BugReport} has been found
+	 * @throws RutaException if search query could not be processed
+	 */
+	@WebMethod(operationName = "SearchBugReport")
+	public List<BugReport> searchBugReport(BugReportSearchCriterion criterion) throws RutaException;
+
+	@WebMethod(operationName = "AddBugReportComment")
+	public void addBugReportComment(String id, ReportComment comment) throws RutaException;
 
 	/**Temporary web method for testing the jaxb.
 	 * @return
@@ -148,6 +160,7 @@ public interface Server
 	 * @return list of bugs or {@code null} if there are no bugs to retrieve
 	 * @throws RutaException if bugs could not be retrieved from the datastore
 	 */
+	@Deprecated
 	@WebMethod(operationName = "FindAllBugReports")
 	public List<BugReport> findAllBugReports() throws RutaException;
 

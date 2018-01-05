@@ -25,7 +25,10 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.ReportAttachment;
+import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
@@ -258,7 +261,7 @@ public class CDR implements Server
 	}
 
 	@Override
-	public List<PartyType> searchParty(String username, SearchCriterion criterion) throws RutaException
+	public List<PartyType> searchParty(CatalogueSearchCriterion criterion) throws RutaException
 	{
 		//		logger.info(criterion.getPartyName());
 		List<PartyType> searchResult = new ArrayList<>();
@@ -325,14 +328,34 @@ public class CDR implements Server
 	}
 
 	@Override
-	public List<CatalogueType> searchCatalogue(String username, SearchCriterion criterion) throws RutaException
+	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException
 	{
-		logger.info(criterion.getItemName());
 		List<CatalogueType> searchResult = new ArrayList<>();
 		try
 		{
 			init();
 			searchResult = MapperRegistry.getInstance().getMapper(CatalogueType.class).findMany(criterion);
+			return searchResult.size() != 0 ? searchResult : null;
+		}
+		catch(Exception e)
+		{
+			String exceptionMsg = "Query could not be processed by CDR service!";
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+	}
+
+	@Override
+	public List<BugReport> searchBugReport(BugReportSearchCriterion criterion) throws RutaException
+	{
+		List<BugReport> searchResult = new ArrayList<>();
+		try
+		{
+			init();
+			searchResult = MapperRegistry.getInstance().getMapper(BugReport.class).findMany(criterion);
 			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
@@ -375,7 +398,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			RutaVersion latestVersion = MapperRegistry.getInstance().getMapper(RutaVersion.class).findClientVersion();
+			RutaVersion latestVersion = MapperRegistry.getInstance().getMapper(RutaVersion.class).find(null);
 			if(latestVersion.getVersion().compareTo(currentVersion) <= 0) //there is no new version
 				latestVersion = null;
 			return latestVersion;
@@ -452,6 +475,27 @@ public class CDR implements Server
 		}
 	}
 
+	@Override
+	public void addBugReportComment(String id, ReportComment comment) throws RutaException
+	{
+		try
+		{
+			init();
+			BugReport bugReport = MapperRegistry.getInstance().getMapper(BugReport.class).find(id);
+			bugReport.addComment(comment);
+			MapperRegistry.getInstance().getMapper(BugReport.class).update(null, bugReport);
+		}
+		catch(Exception e)
+		{
+			String exceptionMsg = "Comment could not be added to the Bug report!";
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+	}
+	@Deprecated
 	@Override
 	public List<BugReport> findAllBugReports() throws RutaException
 	{

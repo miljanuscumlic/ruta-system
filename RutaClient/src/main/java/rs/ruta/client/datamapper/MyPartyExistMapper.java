@@ -21,13 +21,14 @@ import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.XmlMapper;
 
+/**Temporary {@link XmlMapper} class until I develop complete solution for the local database collection organisation.
+ */
 public class MyPartyExistMapper extends XmlMapper<MyParty>
 {
 	private Client client;
 	final private static String collectionPath = "/my-party";
 	final private static String objectPackageName = "rs.ruta.client";
 	final private static String queryNameSearchParty = "search-my-party.xq"; //MMM: not defined
-	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, MyParty> loadedParties;
 
 	public MyPartyExistMapper(Client client, ExistConnector connector) throws DetailException
@@ -115,7 +116,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	}
 
 	//MMM: this could be more elegantly solved if the MyParty object has an id field - then just retrieve it
-	//MMM: but this class is only temporary, so I shall no bother
+	//MMM: but this class is only temporary, so I shall no bother with elegancy
 	@Override
 	public String getID(MyParty object) throws DetailException
 	{
@@ -148,5 +149,4 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 		}
 		return id;
 	}
-
 }

@@ -20,6 +20,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	final private static String collectionPath = "/version";
 	final private static String objectPackageName = "rs.ruta.common";
 	final private static String queryNameVersion = "search-version.xq";
+	private RutaVersion loadedVersion = null;
 
 	public RutaVersionXmlMapper(ExistConnector connector) throws DetailException
 	{
@@ -47,9 +48,20 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 		return queryNameVersion;
 	}
 
-	//MMM: maybe this method can be called find(id) where id could be always null or whatever
 	@Override
-	public RutaVersion findClientVersion() throws DetailException
+	protected RutaVersion getCachedObject(String id)
+	{
+		return loadedVersion;
+	}
+
+	@Override
+	protected void putCacheObject(String id, RutaVersion version)
+	{
+		loadedVersion = version;
+	}
+
+	@Override
+	protected RutaVersion retrieve(String id) throws DetailException
 	{
 		Collection coll = null;
 		RutaVersion searchResult = null;
@@ -69,10 +81,10 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
 
-//			final File queryFile = null;
+			//			final File queryFile = null;
 			if(/*queryFile != null ||*/ query != null)
 			{
-/*				final StringBuilder queryBuilder = new StringBuilder();
+				/*				final StringBuilder queryBuilder = new StringBuilder();
 				fileContents(queryFile, queryBuilder);
 				CompiledExpression compiled = queryService.compile(queryBuilder.toString());*/
 				CompiledExpression compiled = queryService.compile(query);

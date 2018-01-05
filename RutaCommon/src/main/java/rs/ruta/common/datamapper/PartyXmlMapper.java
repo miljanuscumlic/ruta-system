@@ -18,6 +18,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 
 public class PartyXmlMapper extends XmlMapper<PartyType>
 {
@@ -74,7 +75,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U> List<U> findGeneric(SearchCriterion criterion) throws DetailException
+	public <U> List<U> findGeneric(CatalogueSearchCriterion criterion) throws DetailException
 	{
 		ArrayList<U> searchResult;
 		searchResult = (ArrayList<U>) super.findGeneric(criterion);
@@ -229,7 +230,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected String prepareQuery(SearchCriterion criterion) throws DatabaseException
+	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryNameSearchParty);
 		if(query == null)
@@ -271,14 +272,15 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected String prepareQuery2(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
+	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		String partyName = criterion.getPartyName();
-		String partyCompanyID = criterion.getPartyCompanyID();
-		String partyClassCode = criterion.getPartyClassCode();
-		String partyCity = criterion.getPartyCity();
-		String partyCountry = criterion.getPartyCountry();
-		boolean partyAll = criterion.isPartyAll();
+		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
+		String partyName = sc.getPartyName();
+		String partyCompanyID = sc.getPartyCompanyID();
+		String partyClassCode = sc.getPartyClassCode();
+		String partyCity = sc.getPartyCity();
+		String partyCountry = sc.getPartyCountry();
+		boolean partyAll = sc.isPartyAll();
 
 		String query = openDocument(getQueryPath(), queryNameSearchParty);
 		if(query == null)
@@ -310,7 +312,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException
+	protected String prepareQuery(String queryName, CatalogueSearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryName);
 		if(query == null)

@@ -17,7 +17,9 @@ import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.SearchCriterion;
 
 public class BugReportXmlMapper extends XmlMapper<BugReport>
 {
@@ -100,20 +102,50 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	protected String doPrepareAndGetID(Collection collection, BugReport bugReport, String username, DSTransaction transaction)
 			throws DetailException
 	{
-		XMLGregorianCalendar now = InstanceFactory.getDate();
-		bugReport.setReported(now);
-		bugReport.setModified(now);
 		String id = null;
+		XMLGregorianCalendar now = InstanceFactory.getDate();
+		bugReport.setModified(now);
+		id = bugReport.getId();
+		if(id == null) // this is creation, not an update of the bug report
+		{
+			bugReport.setReported(now);
+			try
+			{
+				id = createID(collection);
+				bugReport.setId(id);
+			}
+			catch(XMLDBException e)
+			{
+				throw new DetailException("Could not create Bug Report ID", e.getCause());
+			}
+		}
+		return id;
+	}
+
+	@Override
+	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
+	{
+		BugReportSearchCriterion sc = (BugReportSearchCriterion) criterion;
+
+		String query = openDocument(getQueryPath(), queryBugReport);
+		if(query == null)
+			return query;
 		try
 		{
-			id = createID(collection);
-			bugReport.setId(id);
+			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+			queryService.declareVariable("path", queryPath.toString());
+
+			/* here should be put the code for binding the variables like this:
+			 * if(partyName != null)
+				queryService.declareVariable("party-name", partyName);*/
 		}
 		catch(XMLDBException e)
 		{
-			throw new DetailException("Could not create Bug Report ID", e.getCause());
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
 		}
-		return id;
+
+		return query;
 	}
 
 /*	@Override

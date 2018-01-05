@@ -11,7 +11,7 @@ import javax.xml.datatype.*;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 
-public final class InstanceFactory
+public final class DeprecatedInstanceFactory
 {
 
 	/**Instatiate new instance object of the ItemType, setting all properties used in the Ruta application on not null.
@@ -495,7 +495,7 @@ public final class InstanceFactory
 				property = propClazz.newInstance();
 				Class<T> refClazz = (Class<T>) ref.getClass();
 				String propClazzName = propClazz.getSimpleName();
-				Method refM = refClazz.getMethod(InstanceFactory.synthesizeMethodName2("set", propClazzName), propClazz);
+				Method refM = refClazz.getMethod(DeprecatedInstanceFactory.synthesizeMethodName2("set", propClazzName), propClazz);
 				refM.invoke(ref, property);
 			} catch (Exception e)
 			{

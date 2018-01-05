@@ -4,20 +4,20 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.BugReportSearchCriterion;
 
 
 /**
- * <p>Java class for SearchParty complex type.
+ * <p>Java class for SearchBugReport complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SearchParty">
+ * &lt;complexType name="SearchBugReport">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="arg0" type="{http://ruta.rs/services}CatalogueSearchCriterion" minOccurs="0"/>
+ *         &lt;element name="arg0" type="{http://ruta.rs/services}BugReportSearchCriterion" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -27,22 +27,22 @@ import rs.ruta.common.CatalogueSearchCriterion;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SearchParty", propOrder = {
+@XmlType(name = "SearchBugReport", propOrder = {
     "arg0"
 })
-public class SearchParty {
+public class SearchBugReport {
 
-    protected CatalogueSearchCriterion arg0;
+    protected BugReportSearchCriterion arg0;
 
     /**
      * Gets the value of the arg0 property.
      * 
      * @return
      *     possible object is
-     *     {@link CatalogueSearchCriterion }
+     *     {@link BugReportSearchCriterion }
      *     
      */
-    public CatalogueSearchCriterion getArg0() {
+    public BugReportSearchCriterion getArg0() {
         return arg0;
     }
 
@@ -51,10 +51,10 @@ public class SearchParty {
      * 
      * @param value
      *     allowed object is
-     *     {@link CatalogueSearchCriterion }
+     *     {@link BugReportSearchCriterion }
      *     
      */
-    public void setArg0(CatalogueSearchCriterion value) {
+    public void setArg0(BugReportSearchCriterion value) {
         this.arg0 = value;
     }
 

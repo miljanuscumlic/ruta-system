@@ -3,31 +3,19 @@
 	xmlns:env="http://www.w3.org/2003/05/soap-envelope">
 	<env:Header>
 		<Credentials xmlns="http://ruta.rs/credentials">
-			<Username xmlns="">suma</Username>
-			<Timestamp xmlns="">29-12-2017T18:49:12Z</Timestamp>
-			<Signature xmlns="">J+Bh/eWKwxHuTtXwYUij+/0/JwOQaTfhNPpAWACtD+w=
+			<Username xmlns="">ruta</Username>
+			<Timestamp xmlns="">02-01-2018T15:43:33Z</Timestamp>
+			<Signature xmlns="">8U3CSEH8pF+I7cnLwKLkM47B6amXXCRmffHJxOiUB+Q=
 			</Signature>
 		</Credentials>
 	</env:Header>
 	<S:Body>
-		<ns6:InsertBugReport xmlns:ns2="urn:rs:ruta:common"
+		<ns7:SearchBugReport xmlns:ns2="urn:rs:ruta:common"
 			xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
 			xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
 			xmlns:ns5="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
-			xmlns:ns6="http://ruta.rs/services">
-			<arg0>
-				<ReportedBy>suma</ReportedBy>
-				<Status>UNCONFIRMED</Status>
-				<Product>Ruta</Product>
-				<Component>Client</Component>
-				<Version>0.1.0-SNAPSHOT</Version>
-				<Platform>x86 Family 15 Model 107 Stepping 1, AuthenticAMD | x86 |
-					null | 2</Platform>
-				<OperatingSystem>Windows XP | x86 | 5.1</OperatingSystem>
-				<JavaVersion>Oracle Corporation | 1.8.0_141 | 32bit</JavaVersion>
-				<Summary>BugReport ID</Summary>
-				<Description>Is it saved?</Description>
-			</arg0>
-		</ns6:InsertBugReport>
+			xmlns:ns6="urn:rs:ruta:services" xmlns:ns7="http://ruta.rs/services">
+			<arg0 />
+		</ns7:SearchBugReport>
 	</S:Body>
 </S:Envelope>

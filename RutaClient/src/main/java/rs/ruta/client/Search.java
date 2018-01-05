@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Search<T>
@@ -18,7 +18,7 @@ public class Search<T>
 	@XmlTransient
 	private static long num; // number of the next search
 	@XmlElement(name = "SearchCriterion")
-	private SearchCriterion criterion;
+	private CatalogueSearchCriterion criterion;
 	@XmlElement(name= "SearchResult")
 	private List<T> results;
 
@@ -29,7 +29,7 @@ public class Search<T>
 		this.searchName = searchName;
 	}
 
-	public Search(String searchName, SearchCriterion criterion, List<T> results)
+	public Search(String searchName, CatalogueSearchCriterion criterion, List<T> results)
 	{
 		this.searchName = searchName;
 		this.criterion = criterion;
@@ -76,12 +76,12 @@ public class Search<T>
 		return num++;
 	}
 
-	public SearchCriterion getCriterion()
+	public CatalogueSearchCriterion getCriterion()
 	{
 		return criterion;
 	}
 
-	public void setCriterion(SearchCriterion criterion)
+	public void setCriterion(CatalogueSearchCriterion criterion)
 	{
 		this.criterion = criterion;
 	}

@@ -14,8 +14,8 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 	private static final long serialVersionUID = -2704312134331885642L;
 	private static String[] columnNames =
 		{
-			"No.", "Party name", "Company ID", "Street", "Building number", "City", "Country",
-			"Classification code", "Telephone", "Email", "Website", "Industry Classification Code"
+				"No.", "Party name", "Company ID", "Street", "Building number", "City", "Country",
+				"Classification code", "Telephone", "Email", "Website", "Industry Classification Code"
 		};
 
 	public PartySearchTableModel(boolean editable)
@@ -50,40 +50,49 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
 		PartyType party = search.getResults().get(rowIndex);
-		switch(columnIndex)
+		try
 		{
-		case 0:
-			return rowIndex + 1;
-		case 1:
-			return party.getPartyNameCount() == 0 ? null : party.getPartyNameAtIndex(0).getNameValue();
-		case 2:
-			return party.getPartyLegalEntityCount() == 0
-					 ? null : party.getPartyLegalEntityAtIndex(0).getCompanyIDValue();
-		case 3:
-			return party.getPartyLegalEntityCount() == 0 ? null :
-				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getStreetName(), StreetNameType::getValue);
-		case 4:
-			return party.getPartyLegalEntityCount() == 0 ? null :
-				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getBuildingNumber(), BuildingNumberType::getValue);
-		case 5:
-			return party.getPartyLegalEntityCount() == 0 ? null :
-				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getCityName(), CityNameType::getValue);
-		case 6:
-			return party.getPartyLegalEntityCount() == 0 ? null :
-				InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getCountry().getName(), NameType::getValue);
-		case 7:
-			return party.getIndustryClassificationCodeValue();
-		case 8:
-			return party.getContact() == null ? null : party.getContact().getTelephoneValue();
+			switch(columnIndex)
+			{
+			case 0:
+				return rowIndex + 1;
+			case 1:
+				return party.getPartyNameCount() == 0 ? null : party.getPartyNameAtIndex(0).getNameValue();
+			case 2:
+				return party.getPartyLegalEntityCount() == 0
+				? null : party.getPartyLegalEntityAtIndex(0).getCompanyIDValue();
+			case 3:
+				return party.getPartyLegalEntityCount() == 0 ? null :
+					InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getStreetName(), StreetNameType::getValue);
+			case 4:
+				return party.getPartyLegalEntityCount() == 0 ? null :
+					InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getBuildingNumber(), BuildingNumberType::getValue);
+			case 5:
+				return party.getPartyLegalEntityCount() == 0 ? null :
+					InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getCityName(), CityNameType::getValue);
+			case 6:
+				return party.getPartyLegalEntityCount() == 0 ? null :
+					InstanceFactory.getPropertyOrNull(party.getPartyLegalEntityAtIndex(0).getRegistrationAddress().getCountry().getName(), NameType::getValue);
+			case 7:
+				return party.getIndustryClassificationCodeValue();
+			case 8:
+				return party.getContact() == null ? null : party.getContact().getTelephoneValue();
 				//InstanceFactory.getPropertyOrNull(party.getContact().getTelephone(), TelephoneType::getValue);
-		case 9:
-			return party.getContact() == null ? null : party.getContact().getElectronicMailValue();
+				//MMM: could put some speed measuring test to see which one is faster
+			case 9:
+				return party.getContact() == null ? null : party.getContact().getElectronicMailValue();
 				//InstanceFactory.getPropertyOrNull(party.getContact().getElectronicMail(), ElectronicMailType::getValue);
-		case 10:
-			return party.getWebsiteURIValue();
-		case 11:
-			return party.getIndustryClassificationCodeValue();
-		default:
+			case 10:
+				return party.getWebsiteURIValue();
+			case 11:
+				return party.getIndustryClassificationCodeValue();
+			default:
+				return null;
+			}
+		}
+		catch(Exception e) // i.e when party.getPartyLegalEntityAtIndex(0).getRegistrationAddress() = null
+		{
+			//e.printStackTrace();
 			return null;
 		}
 	}

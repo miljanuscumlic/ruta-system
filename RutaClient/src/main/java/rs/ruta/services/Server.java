@@ -17,9 +17,11 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.ReportAttachment;
+import rs.ruta.common.ReportComment;
 import rs.ruta.common.RutaVersion;
-import rs.ruta.common.SearchCriterion;
 
 
 /**
@@ -89,7 +91,6 @@ public interface Server {
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.SearchPartyResponse>
@@ -99,13 +100,10 @@ public interface Server {
     @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
     public Response<SearchPartyResponse> searchPartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        SearchCriterion arg1);
+        CatalogueSearchCriterion arg0);
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @param asyncHandler
      * @return
@@ -116,15 +114,12 @@ public interface Server {
     @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
     public Future<?> searchPartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        SearchCriterion arg1,
+        CatalogueSearchCriterion arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
         AsyncHandler<SearchPartyResponse> asyncHandler);
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @return
      *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
@@ -136,9 +131,59 @@ public interface Server {
     @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
     public List<PartyType> searchParty(
         @WebParam(name = "arg0", targetNamespace = "")
+        CatalogueSearchCriterion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.AddBugReportCommentResponse>
+     */
+    @WebMethod(operationName = "AddBugReportComment")
+    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportComment")
+    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportCommentResponse")
+    public Response<AddBugReportCommentResponse> addBugReportCommentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
-        SearchCriterion arg1)
+        ReportComment arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "AddBugReportComment")
+    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportComment")
+    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportCommentResponse")
+    public Future<?> addBugReportCommentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        ReportComment arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<AddBugReportCommentResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "AddBugReportComment")
+    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportComment")
+    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportCommentResponse")
+    public void addBugReportComment(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        ReportComment arg1)
         throws RutaException
     ;
 
@@ -411,7 +456,6 @@ public interface Server {
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.SearchCatalogueResponse>
@@ -421,13 +465,10 @@ public interface Server {
     @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogueResponse")
     public Response<SearchCatalogueResponse> searchCatalogueAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        SearchCriterion arg1);
+        CatalogueSearchCriterion arg0);
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @param asyncHandler
      * @return
@@ -438,15 +479,12 @@ public interface Server {
     @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogueResponse")
     public Future<?> searchCatalogueAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        SearchCriterion arg1,
+        CatalogueSearchCriterion arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
         AsyncHandler<SearchCatalogueResponse> asyncHandler);
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @return
      *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType>
@@ -458,9 +496,7 @@ public interface Server {
     @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogueResponse")
     public List<CatalogueType> searchCatalogue(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        SearchCriterion arg1)
+        CatalogueSearchCriterion arg0)
         throws RutaException
     ;
 
@@ -761,6 +797,52 @@ public interface Server {
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.SearchBugReportResponse>
+     */
+    @WebMethod(operationName = "SearchBugReport")
+    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReport")
+    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReportResponse")
+    public Response<SearchBugReportResponse> searchBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReportSearchCriterion arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "SearchBugReport")
+    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReport")
+    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReportResponse")
+    public Future<?> searchBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReportSearchCriterion arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<SearchBugReportResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns java.util.List<rs.ruta.common.BugReport>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "SearchBugReport")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReport")
+    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReportResponse")
+    public List<BugReport> searchBugReport(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReportSearchCriterion arg0)
         throws RutaException
     ;
 

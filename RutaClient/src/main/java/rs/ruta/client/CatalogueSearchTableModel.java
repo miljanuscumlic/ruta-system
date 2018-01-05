@@ -12,7 +12,9 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 		{
 			"No.", "Name", "Description", "Barcode", "Commodity Code", "Keywords", "Party"
 		};
-	private int[] catalogueLineCount; // i-th element contains number of cat. lines in i-th catalogue of the list
+	/**i-th element contains number of catatalogue lines in i-th catalogue of the list.
+	 */
+	private int[] catalogueLineCount;
 
 	public CatalogueSearchTableModel(boolean editable)
 	{

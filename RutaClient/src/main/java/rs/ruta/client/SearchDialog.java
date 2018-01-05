@@ -13,7 +13,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 
 public class SearchDialog extends JDialog
 {
@@ -38,7 +38,7 @@ public class SearchDialog extends JDialog
 	private JRadioButton iAny;
 
 	private Search<?> search;
-	private SearchCriterion criterion;
+	private CatalogueSearchCriterion criterion;
 	private String searchName;
 
 	private boolean searchPressed; // true if the sign up button were pressed
@@ -50,7 +50,7 @@ public class SearchDialog extends JDialog
 		searchPressed = false;
 		//partyName = partyCompanyID = partyClassCode = partyCity = partyCountry = null;
 
-		criterion = new SearchCriterion();
+		criterion = new CatalogueSearchCriterion();
 		setSize(500, 420);
 		setLocationRelativeTo(owner);
 
@@ -240,7 +240,7 @@ public class SearchDialog extends JDialog
 		this.searchPressed = registerPressed;
 	}
 
-	public SearchCriterion getCriterion()
+	public CatalogueSearchCriterion getCriterion()
 	{
 		return criterion;
 	}

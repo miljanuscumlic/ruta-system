@@ -8,6 +8,7 @@ import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 
 /**DataMapper interface declares methods responsible for mappings between objects from the domain model
  * and persistance interpretation of that data in the data store. To be able to connect to
@@ -53,7 +54,7 @@ public interface DataMapper<T, ID>
 	 * @return list of objects of type {@code<T>}
 	 * @throws DetailException if search request could not be processed
 	 */
-	default public List<T> findManyID(SearchCriterion criterion) throws DetailException { return null; }
+	default public List<T> findManyID(CatalogueSearchCriterion criterion) throws DetailException { return null; }
 
 	/**Queries the data store based on the search criterion. Result is a list of objects that are of type {@code<U>}
 	 * which is a type parameter of the method.
@@ -62,13 +63,7 @@ public interface DataMapper<T, ID>
 	 * @param <U> type og the object in the result list
 	 * @throws DetailException if search request could not be processed
 	 */
-	default public <U> List<U> findGeneric(SearchCriterion criterion) throws DetailException { return null; }
-
-	/**Retrieves the {@link RutaVersion} object describing the last version of the {@code Ruta Client} application.
-	 * @return {@code RutaVersion} object
-	 * @throws DetailException if version object does not exist or could not be retrieved from the data store
-	 */
-	default public RutaVersion findClientVersion() throws DetailException { return null; }
+	default public <U> List<U> findGeneric(CatalogueSearchCriterion criterion) throws DetailException { return null; }
 
 	/** Writes all objects to the data store.
 	 * @throws DetailException TODO
@@ -84,6 +79,7 @@ public interface DataMapper<T, ID>
 	 */
 	public void insert(T object, ID id, DSTransaction transaction) throws DetailException;
 
+	//MMM: maybe this method should be excluded from the interface, and use only the variant with the username(=null)
 	public void insert(T object) throws DetailException;
 
 	/**Inserts object to the data store. If necessary unique id of the object may be created.
@@ -117,9 +113,9 @@ public interface DataMapper<T, ID>
 
 	public ID update(String username, T object) throws DetailException;
 
-	//MMM: maybe unnecessary method
-	/**Retrieves object's id from the data store. ID is the result of the querying the data store
-	 * based of the passed argument.
+	//MMM: maybe unnecessary method ???
+	/**Retrieves object's id from the data store. Id is the result of the querying the data store
+	 * based on the passed argument.
 	 * @param userID user's ID
 	 * @return id of the object in the datastore
 	 * @throws DetailException if the object cannot be found in the data store

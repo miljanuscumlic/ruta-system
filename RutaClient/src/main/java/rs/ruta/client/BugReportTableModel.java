@@ -3,6 +3,8 @@ package rs.ruta.client;
 import javax.swing.table.*;
 
 import rs.ruta.common.BugReport;
+import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.ReportComment;
 
 public class BugReportTableModel extends AbstractTableModel
 {
@@ -34,6 +36,11 @@ public class BugReportTableModel extends AbstractTableModel
 		numComms = bugReport.getComments().size();
 	}
 
+	public BugReport getBugReport()
+	{
+		return bugReport;
+	}
+
 	@Override
 	public int getRowCount()
 	{
@@ -47,10 +54,15 @@ public class BugReportTableModel extends AbstractTableModel
 		return 2;
 	}
 
+	public int getFixedRowCount()
+	{
+		return rowNames.length - 2;
+	}
+
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		int fixedRowCnt = rowNames.length - 2; //number of rows every model has i.e. everything except atts and comments
+		int fixedRowCnt = getFixedRowCount(); //number of rows every model has i.e. everything except atts and comments
 		if(columnIndex == 0)
 			if(rowIndex < fixedRowCnt)
 				return rowNames[rowIndex];
@@ -70,11 +82,11 @@ public class BugReportTableModel extends AbstractTableModel
 			switch(rowIndex)
 			{
 			case 0:
-				return  bugReport.getId();
+				return bugReport.getId();
 			case 1:
-				return  bugReport.getSummary();
+				return bugReport.getSummary();
 			case 2:
-				return  bugReport.getDescription();
+				return bugReport.getDescription();
 			case 3:
 				return bugReport.getReportedBy();
 			case 4:
@@ -94,19 +106,19 @@ public class BugReportTableModel extends AbstractTableModel
 			case 11:
 				return bugReport.getJavaVersion();
 			case 12:
-				return bugReport.getReported(); //MMM: should be called method like Party.getRegistrationDate() - place it in InstanceFactory
+				return InstanceFactory.getLocalDateTimeAsString(bugReport.getReported());
 			case 13:
-				return bugReport.getModified(); //MMM: should be called method like Party.getRegistrationDate() - place it in InstanceFactory
+				return InstanceFactory.getLocalDateTimeAsString(bugReport.getModified());
 			case 14:
 				return bugReport.getPriority();
 			case 15:
 				return bugReport.getSeverity();
-			default:
+			default: // >= 16
 			{
 				int relative = rowIndex - fixedRowCnt + 1; // = 1,2,3...
 
 				if(relative <= numAtts)
-					return bugReport.getAttachments().get(relative - 1).getName(); //MMM: put here popumenu with Open and Save options: FileChooser
+					return bugReport.getAttachments().get(relative - 1).getName();
 				else
 					return bugReport.getComments().get(relative - numAtts - 1).getText();
 			}
@@ -114,7 +126,7 @@ public class BugReportTableModel extends AbstractTableModel
 		}
 	}
 
-	//MMM: method not used because the table is not editable
+	//MMM: method not used because the table is not editable - might be used later
 /*	@Override
 	public void setValueAt(Object obj, int rowIndex, int columnIndex)
 	{
@@ -179,13 +191,12 @@ public class BugReportTableModel extends AbstractTableModel
 		}
 	}
 
-	//MMM: method not used because the table is not editable - th default return false
+	//MMM: method not used because the table is not editable - th default return false - might be used later
 /*	@Override
 	public boolean isCellEditable(int row, int column)
 	{
 		return (!tableEditable) || (column == 0 || row == 4 || row == 16 || row == 27) ? false : true;
 	}*/
-
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
@@ -199,5 +210,19 @@ public class BugReportTableModel extends AbstractTableModel
 		}
 	}
 
-}
+	/**Checks whether passed row index contains the {@link ReportComment} and gets it if it does.
+	 * @param rowIndex index of the table row
+	 * @return comment or null if row does not contain it
+	 */
+	public ReportComment getComment(int rowIndex)
+	{
+		ReportComment comment = null;
+		int index = rowIndex - getFixedRowCount() - numAtts; // comment index
 
+		if(index >= 0)
+			comment = bugReport.getComments().get(index);
+
+		return comment;
+	}
+
+}

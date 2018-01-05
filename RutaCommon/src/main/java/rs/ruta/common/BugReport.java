@@ -51,8 +51,6 @@ public class BugReport
 	private String description;
 	@XmlElement(name = "Reported")
 	private XMLGregorianCalendar reported;
-/*	@XmlElement(name = "Created")
-	private XMLGregorianCalendar created;*/
 	@XmlElement(name = "Modified")
 	private XMLGregorianCalendar modified;
 	@XmlElement(name = "Priority")
@@ -63,6 +61,8 @@ public class BugReport
 	private List<ReportAttachment> attachments;
 	@XmlElement(name = "Comment")
 	private List<ReportComment> comments;
+	@XmlElement(name = "NextCommentNumber")
+	private int nextCommentNum;
 
 	public BugReport() { }
 
@@ -75,6 +75,17 @@ public class BugReport
 		os = os();
 		javaVersion = java();
 		status = "UNCONFIRMED";
+		nextCommentNum = 0;
+	}
+
+	public int getCommentCount()
+	{
+		return nextCommentNum;
+	}
+
+	public void setCommentCount(int commentCount)
+	{
+		this.nextCommentNum = commentCount;
 	}
 
 	public String getJavaVersion()
@@ -212,6 +223,17 @@ public class BugReport
 	public void setComments(List<ReportComment> comments)
 	{
 		this.comments = comments;
+	}
+
+	public void addComment(ReportComment comment)
+	{
+		comment.setId(nextCommentId());
+		getComments().add(comment);
+	}
+
+	public synchronized int nextCommentId()
+	{
+		return nextCommentNum++;
 	}
 
 	public String getReportedBy()

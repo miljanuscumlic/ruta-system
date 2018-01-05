@@ -1,6 +1,9 @@
 package rs.ruta.common;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.GregorianCalendar;
 import java.util.function.Function;
 
@@ -34,6 +37,38 @@ public final class InstanceFactory
 		}
 		//System.out.println(date);
 		return date;
+	}
+
+	public static LocalDateTime getLocalDateTime(XMLGregorianCalendar xgc)
+	{
+		LocalDateTime date = null;
+		if(xgc != null)
+		{
+			date = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(), xgc.getMinute(), xgc.getSecond());
+		}
+		//System.out.println(date);
+		return date;
+	}
+
+	/**Transforms {@link XMLGregorianCalendar} to a {@code String} that is in the form of {@link LocalDate} object.
+	 * @param xgc date and time
+	 * @return string representation of a date
+	 */
+	public static String getLocalDateAsString(XMLGregorianCalendar xgc)
+	{
+		LocalDate date = InstanceFactory.getLocalDate(xgc);
+		return date != null ? DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(date) : null;
+	}
+
+	/**Transforms {@link XMLGregorianCalendar} to a {@code String} that is in the form of {@link LocalDate} object.
+	 * @param xgc date and time
+	 * @return string representation of a date
+	 */
+	public static String getLocalDateTimeAsString(XMLGregorianCalendar xgc)
+	{
+		LocalDateTime date = InstanceFactory.getLocalDateTime(xgc);
+		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.MEDIUM);
+		return date != null ? formatter.format(date) : null;
 	}
 
 	public static XMLGregorianCalendar getDate()

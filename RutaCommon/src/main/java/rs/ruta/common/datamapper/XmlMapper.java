@@ -44,6 +44,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.User;
 import rs.ruta.common.datamapper.DataMapper;
 
@@ -201,7 +202,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		T object = getCachedObject(id);
 		if(object == null)
 		{
-			object = retrive(id);
+			object = retrieve(id);
 			if(object != null)
 				putCacheObject(id, object);
 		}
@@ -213,7 +214,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @return retrived  object or null if object doesn't exist
 	 * @throws DetailException
 	 */
-	private T retrive(String id) throws DetailException
+	protected T retrieve(String id) throws DetailException
 	{
 		String document = id + getDocumentSufix();
 		String col = getCollectionPath();
@@ -257,12 +258,6 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 				logger.error("Exception is ", e);;
 			}
 		}
-	}
-
-	@Override
-	public RutaVersion findClientVersion() throws DetailException
-	{
-		return MapperRegistry.getInstance().getMapper(RutaVersion.class).findClientVersion();
 	}
 
 	@Override
@@ -351,7 +346,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	/**Loads resource in proper object if a resource is a complete xml document. At the beggining
-	 * it checks weather the object is already in the memory. At the end puts the object in the memory.
+	 * it checks whether the object is already in the memory. At the end puts the object in the memory.
 	 * @param resource resource which contents are to be loaded in the object
 	 * @return object or null if the resource is a result of a query and not a complete document
 	 * @throws XMLDBException if contents or id of the resource could not be retrieved
@@ -362,7 +357,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		String id = resource.getDocumentId(); //id of the resource's parent document
 
 		//MMM: this boolean testing is implementation specific, and it might be changed. So this is not
-		//MMM: so good way of testing weather the resource is a complete document or not.
+		//MMM: so good way of testing whether the resource is a complete document or not.
 		//MMM: The problem is that resource.getId() should return null if the resource is a result of a query,
 		//MMM: and not a whole document, but it returns exactly what returns resource.getDocumentId()
 		//MMM: and that is ID without ".xml" at the end
@@ -463,7 +458,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			//loading the .xq query file from the database
 			//prepare query String adding criteria for the search from SearchCriterion object
 //			query = prepareQuery(criterion);
-			query = prepareQuery2(criterion, queryService);
+			query = prepareQuery(criterion, queryService);
 
 //			final File queryFile = null;
 			if(/*queryFile != null ||*/ query != null)
@@ -523,7 +518,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	@Override
-	public ArrayList<T> findManyID(SearchCriterion criterion) throws DetailException
+	public ArrayList<T> findManyID(CatalogueSearchCriterion criterion) throws DetailException
 		{
 			Collection coll = null;
 			ArrayList<T> results = new ArrayList<T>();
@@ -592,7 +587,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			}
 		}
 
-	/**Populates query string with search keywords from the {@link SearchCriterion} object. Query to be
+	/**Populates query string with search keywords from the {@link CatalogueSearchCriterion} object. Query to be
 	 * populated is defined in the subclass of {@code XmlMapper}.
 	 * @param criterion defines the search criterion
 	 * @return query as {@code String} ready for execution by xQuery processor or {@code null} if
@@ -600,12 +595,19 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @throws DatabaseException if collection or query file could not be opened
 	 */
 	@Deprecated
-	protected String prepareQuery(SearchCriterion criterion) throws DatabaseException { return null; }
+	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException { return null; }
 
-	//Testing new method implementation with variable binding
-	protected String prepareQuery2(SearchCriterion criterion, XQueryService queryService) throws DatabaseException { return null; }
+	/**Binds query with search keywords from the {@link SearchCriterion} object. Query to be
+	 * populated is defined in the subclass of {@code XmlMapper}.
+	 * @param criterion search criterion
+	 * @return query as {@code String} ready for execution by xQuery processor or {@code null} if
+	 * query file does not exist
+	 * @throws DatabaseException if query for particular subclass is not defined or collection or
+	 * query file could not be opened
+	 */
+	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException { return null; }
 
-	/**Populates query string with search keywords from the {@link SearchCriterion} object. Name of the query
+	/**Populates query string with search keywords from the {@link CatalogueSearchCriterion} object. Name of the query
 	 * to be populated is sent as a argument.
 	 * @param queryName query's name
 	 * @param criterion defines the search criterion
@@ -613,7 +615,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * query file does not exist
 	 * @throws DatabaseException if collection or query file could not be opened
 	 */
-	protected String prepareQuery(String queryName, SearchCriterion criterion) throws DatabaseException { return null; }
+	protected String prepareQuery(String queryName, CatalogueSearchCriterion criterion) throws DatabaseException { return null; }
 
 	/**Unmarshall object from XML document represented as string.
 	 * @param xml XML as String object to be transformed to the object
@@ -1775,7 +1777,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	@Override
-	public <U> List<U> findGeneric(SearchCriterion criterion) throws DetailException
+	public <U> List<U> findGeneric(CatalogueSearchCriterion criterion) throws DetailException
 	{
 		Collection coll = null;
 		ArrayList<U> searchResult = new ArrayList<U>();

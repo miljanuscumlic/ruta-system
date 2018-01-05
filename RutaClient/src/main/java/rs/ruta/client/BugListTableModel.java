@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.table.*;
 
 import rs.ruta.common.BugReport;
+import rs.ruta.common.InstanceFactory;
 
 public class BugListTableModel extends AbstractTableModel
 {
@@ -71,7 +72,7 @@ public class BugListTableModel extends AbstractTableModel
 			case 4:
 				return bugReport.getStatus();
 			case 5:
-				return bugReport.getModified(); //MMM: should be called method like Party.getRegistrationDate() - place it in InstanceFactory
+				return InstanceFactory.getLocalDateTimeAsString(bugReport.getModified());
 			default:
 				return null;
 			}

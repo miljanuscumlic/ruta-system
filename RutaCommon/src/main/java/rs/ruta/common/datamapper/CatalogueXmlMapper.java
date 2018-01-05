@@ -15,6 +15,7 @@ import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.ObjectFactory;
+import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.SearchCriterion;
 
 public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
@@ -155,7 +156,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	protected String prepareQuery(SearchCriterion criterion) throws DatabaseException
+	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);
 		if(query == null)
@@ -222,21 +223,22 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	protected String prepareQuery2(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
+	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		String partyName = criterion.getPartyName();
-		String partyCompanyID = criterion.getPartyCompanyID();
-		String partyClassCode = criterion.getPartyClassCode();
-		String partyCity = criterion.getPartyCity();
-		String partyCountry = criterion.getPartyCountry();
-		boolean partyAll = criterion.isPartyAll();
+		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
+		String partyName = sc.getPartyName();
+		String partyCompanyID = sc.getPartyCompanyID();
+		String partyClassCode = sc.getPartyClassCode();
+		String partyCity = sc.getPartyCity();
+		String partyCountry = sc.getPartyCountry();
+		boolean partyAll = sc.isPartyAll();
 
-		String itemName = criterion.getItemName();
-		String itemDescription = criterion.getItemDescription();
-		String itemBarcode = criterion.getItemBarcode();
-		String itemCommCode = criterion.getItemCommCode();
-		String itemKeyword = criterion.getItemKeyword();
-		boolean itemAll = criterion.isItemAll();
+		String itemName = sc.getItemName();
+		String itemDescription = sc.getItemDescription();
+		String itemBarcode = sc.getItemBarcode();
+		String itemCommCode = sc.getItemCommCode();
+		String itemKeyword = sc.getItemKeyword();
+		boolean itemAll = sc.isItemAll();
 
 		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);
 		if(query == null)

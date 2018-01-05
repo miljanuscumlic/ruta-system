@@ -4,7 +4,7 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import rs.ruta.common.SearchCriterion;
+import rs.ruta.common.CatalogueSearchCriterion;
 
 
 /**
@@ -17,8 +17,7 @@ import rs.ruta.common.SearchCriterion;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="arg0" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="arg1" type="{http://ruta.rs/services}SearchCriterion" minOccurs="0"/>
+ *         &lt;element name="arg0" type="{http://ruta.rs/services}CatalogueSearchCriterion" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,23 +28,21 @@ import rs.ruta.common.SearchCriterion;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SearchCatalogue", propOrder = {
-    "arg0",
-    "arg1"
+    "arg0"
 })
 public class SearchCatalogue {
 
-    protected String arg0;
-    protected SearchCriterion arg1;
+    protected CatalogueSearchCriterion arg0;
 
     /**
      * Gets the value of the arg0 property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link CatalogueSearchCriterion }
      *     
      */
-    public String getArg0() {
+    public CatalogueSearchCriterion getArg0() {
         return arg0;
     }
 
@@ -54,35 +51,11 @@ public class SearchCatalogue {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link CatalogueSearchCriterion }
      *     
      */
-    public void setArg0(String value) {
+    public void setArg0(CatalogueSearchCriterion value) {
         this.arg0 = value;
-    }
-
-    /**
-     * Gets the value of the arg1 property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link SearchCriterion }
-     *     
-     */
-    public SearchCriterion getArg1() {
-        return arg1;
-    }
-
-    /**
-     * Sets the value of the arg1 property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link SearchCriterion }
-     *     
-     */
-    public void setArg1(SearchCriterion value) {
-        this.arg1 = value;
     }
 
 }
