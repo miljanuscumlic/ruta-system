@@ -1,13 +1,16 @@
 Ruta Client 0.1.0-SNAPSHOT
 This is the first minor release of Ruta Client Application. From now on Ruta will mostly follow semantic versioning scheme.
 
-Feature:
+Features:
 
-- Embedded eXist database is used as a local data store instead of xml files.
+- Embedded eXist database is used as a local data store instead of files.
+- Implemented support for exploration of reported bugs and sending comments on those reports.
+- Secured local data in some cases of JVM shutdown prior the program termination by the user. 
 
 Bug fixes:
 
 - Fixed bug that was allowing non-registered users to send a bug report.
+- Fixed other minor bugs.
 
 --------------------
 

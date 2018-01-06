@@ -44,8 +44,7 @@ public class BugReportTableModel extends AbstractTableModel
 	@Override
 	public int getRowCount()
 	{
-		int rowCnt = rowNames.length - 2 + numAtts + numComms;
-		return rowCnt;
+		return rowNames.length - 2 + numAtts + numComms;
 	}
 
 	@Override
@@ -54,6 +53,9 @@ public class BugReportTableModel extends AbstractTableModel
 		return 2;
 	}
 
+	/**Gets the number of rows that are always present i.e. not counting attachment and comment rows.
+	 * @return number of allways displayed rows
+	 */
 	public int getFixedRowCount()
 	{
 		return rowNames.length - 2;
@@ -62,7 +64,7 @@ public class BugReportTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		int fixedRowCnt = getFixedRowCount(); //number of rows every model has i.e. everything except atts and comments
+		int fixedRowCnt = getFixedRowCount();
 		if(columnIndex == 0)
 			if(rowIndex < fixedRowCnt)
 				return rowNames[rowIndex];
@@ -191,7 +193,7 @@ public class BugReportTableModel extends AbstractTableModel
 		}
 	}
 
-	//MMM: method not used because the table is not editable - th default return false - might be used later
+	//MMM: method not used because the table is not editable: default implementation returns false - might be used later
 /*	@Override
 	public boolean isCellEditable(int row, int column)
 	{
@@ -201,13 +203,14 @@ public class BugReportTableModel extends AbstractTableModel
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
 	{
-		switch(columnIndex)
+		return String.class;
+/*		switch(columnIndex)
 		{
 		case 0:
 			return String.class;
 		default:
 			return Object.class;
-		}
+		}*/
 	}
 
 	/**Checks whether passed row index contains the {@link ReportComment} and gets it if it does.
@@ -218,7 +221,6 @@ public class BugReportTableModel extends AbstractTableModel
 	{
 		ReportComment comment = null;
 		int index = rowIndex - getFixedRowCount() - numAtts; // comment index
-
 		if(index >= 0)
 			comment = bugReport.getComments().get(index);
 

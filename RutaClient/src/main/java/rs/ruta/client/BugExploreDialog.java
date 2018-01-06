@@ -59,7 +59,7 @@ public class BugExploreDialog extends JDialog
 	private List<BugReport> bugReports;
 	private AbstractTableModel bugListModel;
 	private AbstractTableModel bugReportModel;
-	private ClientFrame owner;
+	private ClientFrame parent;
 	private Future<?> future = null;
 	private BugReportSearchCriterion criterion;
 	private JTextArea commentArea;
@@ -68,17 +68,17 @@ public class BugExploreDialog extends JDialog
 	 */
 	private int selectedIndex = -1; //none is selected by default
 
-	public BugExploreDialog(ClientFrame owner)
+	public BugExploreDialog(ClientFrame parent)
 	{
-		super(owner, true);
-		this.owner = owner;
+		super(parent, true);
+		this.parent = parent;
 		setTitle("Explore the bugs");
 		setResizable(false);
 		setSize(750, 810);
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(parent);
 		setLayout(new BorderLayout());
 		commentArea = new JTextArea(5,50);
-		bugReports = owner.getClient().getBugReports();
+		bugReports = parent.getClient().getBugReports();
 		criterion = new BugReportSearchCriterion();
 
 		bugListModel = new BugListTableModel(bugReports);
@@ -94,7 +94,7 @@ public class BugExploreDialog extends JDialog
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				owner.getClient().setBugReports(bugReports);
+				parent.getClient().setBugReports(bugReports);
 				super.windowClosing(e);
 			}
 		});
@@ -116,8 +116,7 @@ public class BugExploreDialog extends JDialog
 		TableColumn tableColumn = tableColumnModel.getColumn(0);
 		tableColumn.setResizable(false);
 		tableColumn.setPreferredWidth(40);
-		tableColumn = tableColumnModel.getColumn(1);
-		tableColumn.setPreferredWidth(200);
+		tableColumnModel.getColumn(1).setPreferredWidth(200);
 		tableColumnModel.getColumn(2).setPreferredWidth(30);
 		tableColumnModel.getColumn(3).setPreferredWidth(25);
 		tableColumnModel.getColumn(5).setPreferredWidth(85);
@@ -150,13 +149,13 @@ public class BugExploreDialog extends JDialog
 			private void checkBugRecency(int index)
 			{
 				BugReport bugReport = bugReports.get(index);
-				if(bugReport.getReportedBy() == null)
+				if(bugReport.getReportedBy() == null) //BugReport has not been retrieved from the CDR yet
 				{
 					Future<?> future = null;
 					WaitingDialog waitingDialog = new WaitingDialog(BugExploreDialog.this, future);
 					EventQueue.invokeLater(() -> waitingDialog.setVisible(true));
 
-					future = owner.getClient().cdrFindBug(bugReport.getId());
+					future = parent.getClient().cdrFindBug(bugReport.getId());
 					try
 					{
 						FindBugReportResponse res = (FindBugReportResponse) future.get();
@@ -165,23 +164,24 @@ public class BugExploreDialog extends JDialog
 						if(newBugReport != null)
 						{
 							bugReports.set(index, newBugReport);
-							//bugListTable.repaint();
 							bugListModel.fireTableDataChanged();
-							bugListTable.setRowSelectionInterval(selectedIndex, selectedIndex); //select previously selected row
-							owner.appendToConsole("Bug report has been successfully retrieved from the CDR service.", Color.GREEN);
+							//due to repaint selection will be lost, so select previously selected row
+							bugListTable.setRowSelectionInterval(selectedIndex, selectedIndex);
+							parent.appendToConsole("Bug report with ID: " + bugReport.getId() +
+									" has been successfully retrieved from the CDR service.", Color.GREEN);
 						}
 						else
 						{
-							owner.appendToConsole("Bug report with ID: " + bugReport.getId() + " does not exist on the CDR service anymore.",
-									Color.BLACK);
+							parent.appendToConsole("Bug report with ID: " + bugReport.getId() +
+									" does not exist on the CDR service anymore.", Color.BLACK);
 							EventQueue.invokeLater( () ->
 							{
 								JOptionPane.showMessageDialog(BugExploreDialog.this,
-										"Bug report with ID: " + bugReport.getId() + " does not exist anymore. It wiil be deleted from the bug report list.",
+										"Bug report with ID: " + bugReport.getId() +
+										" does not exist anymore. It wiil be deleted from the bug report list.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 								bugReports.remove(index);
 								bugListModel.fireTableDataChanged();
-								//bugListTable.repaint();
 							});
 						}
 					}
@@ -191,7 +191,7 @@ public class BugExploreDialog extends JDialog
 						JOptionPane.showMessageDialog(BugExploreDialog.this,
 								"There has been an error during the retrieval of the bug report.\nPlease try again later.",
 								"Error", JOptionPane.ERROR_MESSAGE));
-						owner.appendToConsole("There has been an error. Bug report has not been retrieved from the CDR service.", Color.RED);
+						parent.appendToConsole("There has been an error. Bug report has not been retrieved from the CDR service.", Color.RED);
 					}
 				}
 			}
@@ -199,7 +199,6 @@ public class BugExploreDialog extends JDialog
 
 		Insets insets1 = new Insets(10, 5, 0, 0);
 		Insets insets2 = new Insets(5, 5, 0, 0);
-		Insets insets3 = new Insets(5, 5, 0, 0);
 		JButton reloadListButton = new JButton("Reload bug report list");
 
 		reloadListButton.addActionListener(event ->
@@ -208,7 +207,7 @@ public class BugExploreDialog extends JDialog
 			{
 				WaitingDialog waitingDialog = new WaitingDialog(this, future);
 				EventQueue.invokeLater(() -> waitingDialog.setVisible(true));
-				future = owner.searchBugReport(criterion);
+				future = parent.searchBugReport(criterion);
 
 				try
 				{
@@ -221,11 +220,9 @@ public class BugExploreDialog extends JDialog
 						bugListModel.fireTableDataChanged();
 						//bugListTable.repaint();
 						//"Search request for the bug reports has been sent to the CDR service. Waiting for a response..."
-						owner.appendToConsole("Bug report list has been successfully retrieved from the CDR service.", Color.GREEN);
-						//							bugListModel.fireTableDataChanged();
+						parent.appendToConsole("Bug report list has been successfully retrieved from the CDR service.", Color.GREEN);
 					}
-					else
-						//zarro boogs found
+					else //zarro boogs found
 						EventQueue.invokeLater( () ->
 							JOptionPane.showMessageDialog(this, "Zarro boogs found!", "Information", JOptionPane.INFORMATION_MESSAGE));
 				}
@@ -248,35 +245,6 @@ public class BugExploreDialog extends JDialog
 		return bugListPanel;
 	}
 
-	private class WaitingDialog extends JDialog
-	{
-		private static final long serialVersionUID = 8796227873338377731L;
-
-		public WaitingDialog(JDialog parent, Future<?> future)
-		{
-			super(parent, true);
-			setLocationRelativeTo(parent);
-			setSize(300, 100);
-			setTitle("Waiting");
-
-			JLabel label = new JLabel("\nWaiting CDR service for a response...");
-			JPanel panel = new JPanel();
-			panel.add(label);
-			add(panel, BorderLayout.CENTER);
-
-			addWindowListener(new WindowAdapter()
-			{
-				@Override
-				public void windowClosing(WindowEvent event)
-				{
-					if(future != null)
-						future.cancel(true);
-					super.windowClosing(event);
-				}
-			});
-		}
-	};
-
 	private Component createBugReportPanel()
 	{
 		JPanel bugReportPanel = new JPanel();
@@ -285,7 +253,7 @@ public class BugExploreDialog extends JDialog
 
 		JTable bugReportTable = new JTable(bugReportModel);
 		bugReportTable.setFillsViewportHeight(true);
-		bugReportTable.getTableHeader().setReorderingAllowed(false); //disables column reordering
+		bugReportTable.getTableHeader().setReorderingAllowed(false);
 		bugReportTable.setRowSelectionAllowed(false);
 		bugReportTable.setColumnSelectionAllowed(false);
 
@@ -293,7 +261,7 @@ public class BugExploreDialog extends JDialog
 		TableColumnModel tableColumnModel = bugReportTable.getColumnModel();
 		TableColumn tableColumn = tableColumnModel.getColumn(0);
 		tableColumn.setResizable(false);
-		tableColumn.setMinWidth(125);
+		tableColumn.setMinWidth(125); //tableColumn.setPreferredWidth doesn't work
 		tableColumn.setMaxWidth(125);
 
 		//setting cell renderer
@@ -305,6 +273,7 @@ public class BugExploreDialog extends JDialog
 		tableColumnModel.getColumn(1).setCellRenderer(cellRenderer);
 		tableColumnModel.getColumn(0).setCellRenderer(cellRenderer);
 
+		//right mouse click for saving attachment
 		bugReportTable.addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -318,7 +287,7 @@ public class BugExploreDialog extends JDialog
 					String rowName = bugReportModel.getValueAt(row, 0).toString();
 					if(rowName.contains("Attach")) //attachment row
 					{
-						int attchNum = -1; // ordered umber of an attachment
+						int attchNum = -1; // ordered number of an attachment
 						attchNum += Integer.parseInt(rowName.replaceFirst("Attachment ", ""));
 						JFileChooser chooser = new JFileChooser();
 						chooser.setCurrentDirectory(new File("."));
@@ -341,7 +310,7 @@ public class BugExploreDialog extends JDialog
 									e.printStackTrace();
 									EventQueue.invokeLater( () ->
 									JOptionPane.showMessageDialog(BugExploreDialog.this,
-											"There has been an error during the saving of the attachment to a file system.",
+											"There has been an error during the saving of a attachment to the file system.",
 											"Error", JOptionPane.ERROR_MESSAGE));
 								}
 							}
@@ -351,7 +320,7 @@ public class BugExploreDialog extends JDialog
 							e1.printStackTrace();
 							EventQueue.invokeLater( () ->
 							JOptionPane.showMessageDialog(BugExploreDialog.this,
-									"There has been an error during the extraction of the attachment from the bug report.",
+									"There has been an error during the extraction of a attachment from the bug report.",
 									"Error", JOptionPane.ERROR_MESSAGE));
 						}
 					}
@@ -361,7 +330,6 @@ public class BugExploreDialog extends JDialog
 
 		Insets insets1 = new Insets(10, 5, 0, 0);
 		Insets insets2 = new Insets(5, 5, 0, 0);
-		Insets insets3 = new Insets(5, 5, 0, 0);
 		JButton sendButton = new JButton("Send comment");
 		JButton reloadButton = new JButton("Reload bug report");
 		JButton sendReloadButton = new JButton("Send and reload");
@@ -390,12 +358,12 @@ public class BugExploreDialog extends JDialog
 						WaitingDialog waitingDialog = new WaitingDialog(BugExploreDialog.this, future);
 						EventQueue.invokeLater(() -> waitingDialog.setVisible(true));
 
-						future = owner.getClient().cdrAddBugReportComment(bugReport.getId(), comment);
+						future = parent.getClient().cdrAddBugReportComment(bugReport.getId(), comment);
 						try
 						{
-							AddBugReportCommentResponse res = (AddBugReportCommentResponse) future.get();
+							future.get();
 							EventQueue.invokeLater(() -> waitingDialog.setVisible(false));
-							owner.appendToConsole("Bug report comment has been successfully deposited to the CDR service.", Color.GREEN);
+							parent.appendToConsole("Bug report comment has been successfully deposited to the CDR service.", Color.GREEN);
 							commentArea.setText(null);
 
 							EventQueue.invokeLater( () ->
@@ -408,9 +376,9 @@ public class BugExploreDialog extends JDialog
 						{
 							EventQueue.invokeLater( () ->
 							JOptionPane.showMessageDialog(BugExploreDialog.this,
-									"There has been an error during sending of the bug comment.\n Please try again later.",
+									"There has been an error during the sending of the bug comment.\n Please try again later.",
 									"Error", JOptionPane.ERROR_MESSAGE));
-							owner.appendToConsole("There has been an error. Bug report comment has not been deposited to the CDR service.",
+							parent.appendToConsole("There has been an error. Bug report comment has not been deposited to the CDR service.",
 									Color.RED);
 						}
 					}).start();
@@ -429,7 +397,7 @@ public class BugExploreDialog extends JDialog
 		{
 			if(((BugReportTableModel) bugReportModel).getBugReport() != null)
 			{
-				//starting new thread so that waitingDialig could be invoked through EventQueue thread
+				//starting new thread so that waitingDialig could be invoked through Event Dispatch Thread
 				new Thread( () ->
 				{
 					Future<?> future = null;
@@ -439,26 +407,26 @@ public class BugExploreDialog extends JDialog
 					BugReport bugReport = ((BugReportTableModel) bugReportModel).getBugReport();
 					String bugId = bugReport.getId();
 					int index = selectedIndex;
-					future = owner.getClient().cdrFindBug(bugReport.getId());
+					future = parent.getClient().cdrFindBug(bugId);
 					try
 					{
 						FindBugReportResponse res = (FindBugReportResponse) future.get();
 						EventQueue.invokeLater(() -> waitingDialog.setVisible(false));
-						//				waitingDialog.setVisible(false);
 						BugReport newBugReport = res.getReturn();
 						if(newBugReport != null)
 						{
 							bugReports.set(index, newBugReport);
 							((BugReportTableModel) bugReportModel).setBugReport(newBugReport);
+							//bugReportTable.repaint(); //repaint doesn't work automaticaly when the list is scrolled down to the bottom
 							bugReportModel.fireTableDataChanged();
-							//bugReportTable.repaint(); //MMM: repaint doesn't work automaticaly when the list is scrolled down to the bottom
 							bugListModel.fireTableDataChanged();
 							bugListTable.setRowSelectionInterval(selectedIndex, selectedIndex);
-							owner.appendToConsole("Bug report with ID: " + bugId + " has been successfully retrieved from the CDR service.", Color.GREEN);
+							parent.appendToConsole("Bug report with ID: " + bugId +
+									" has been successfully retrieved from the CDR service.", Color.GREEN);
 						}
 						else
 						{
-							owner.appendToConsole("Bug report with ID: " + bugId + " does not exist on the CDR service anymore.",
+							parent.appendToConsole("Bug report with ID: " + bugId + " does not exist on the CDR service anymore.",
 									Color.BLACK);
 							EventQueue.invokeLater( () ->
 							{
@@ -468,7 +436,6 @@ public class BugExploreDialog extends JDialog
 								bugReports.remove(index);
 								((BugReportTableModel) bugReportModel).setBugReport(null);
 								bugReportModel.fireTableDataChanged();
-								//bugReportTable.repaint();
 								bugListModel.fireTableDataChanged();
 							});
 						}
@@ -479,7 +446,7 @@ public class BugExploreDialog extends JDialog
 						JOptionPane.showMessageDialog(BugExploreDialog.this,
 								"There has been an error during the retrieval of the bug report.\n Please try again later.",
 								"Error", JOptionPane.ERROR_MESSAGE));
-						owner.appendToConsole("There has been an error. Bug report has not been retrieved from the CDR service.", Color.RED);
+						parent.appendToConsole("There has been an error. Bug report has not been retrieved from the CDR service.", Color.RED);
 					}
 				}).start();
 			}
@@ -491,7 +458,7 @@ public class BugExploreDialog extends JDialog
 			}
 		});
 
-		//		sendReloadButton.addActionListener(addAction);
+		//sendReloadButton.addActionListener(addAction);
 
 		JScrollPane bugReportPane = new JScrollPane(bugReportTable);
 		bugReportPane.setPreferredSize(new Dimension(700, 360));
@@ -500,7 +467,7 @@ public class BugExploreDialog extends JDialog
 		putGridCell(bugReportPanel, 1, 1, 2, 1, insets2, new JScrollPane(commentArea));
 		putGridCell(bugReportPanel, 2, 0, 1, 1, insets2, sendButton);
 		putGridCell(bugReportPanel, 2, 1, 1, 1, insets2, reloadButton);
-		//		putGridCell(bugReportPanel, 3, 2, 1, 1, insets2, sendReloadButton);
+		//putGridCell(bugReportPanel, 2, 2, 1, 1, insets2, sendReloadButton);
 
 		bugReportPanel.setBorder(new TitledBorder("Selected bug report"));
 		return bugReportPanel;
@@ -523,24 +490,39 @@ public class BugExploreDialog extends JDialog
 			BugReport bugReport = tableModel.getBugReport();
 			Object cellContent = tableModel.getValueAt(row, column);
 			ReportComment comment = null;
-			if(cellContent != null && column == 1 /*&& row >= tableModel.getFixedRowCount()*/ //optimizations: rows 0-15 are certainly not comment rows
-					&& (comment = tableModel.getComment(row)) != null) //only comment rows
+			boolean nondefault = false; //whether the renderer is default one
+			int lineWidth = 80;
+			String text = null;
+			if(cellContent != null && column == 1)
+			{
+				if((comment = tableModel.getComment(row)) != null) //comment rows
+				{
+					nondefault = true;
+					text = formatText(comment.getText(), lineWidth);
+				}
+				else if(row == 2) //description row
+				{
+					nondefault = true;
+					text = formatText(bugReport.getDescription(), lineWidth);
+				}
+			}
+			if(nondefault)
 			{
 				JTextArea area = new JTextArea();
-				String text = formatTextArea(comment.getText(), 80);
-				area.setText(text);
+				String aText = text; //lamda epression in EventQueue requires a final or effectively final variable
+				area.setText(aText);
 
 				//setting row height
 				EventQueue.invokeLater( () ->
 				{
 					int fontHeight = this.getFontMetrics(this.getFont()).getHeight();
-					int lines = rowCount(text);
+					int lines = rowCount(aText);
 					int height = fontHeight * lines;
 					table.setRowHeight(row, height);
 				});
-				return area;
+				return area; // nondefault renderer
 			}
-			else // all cells but with comment text
+			else // all cells but ones with comment or description contents gets default renderer
 			{
 				DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)
 						super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -554,7 +536,7 @@ public class BugExploreDialog extends JDialog
 		 * @param width text line's length
 		 * @return formatted text
 		 */
-		private String formatTextArea(String text, int width)
+		private String formatText(String text, int width)
 		{
 			StringBuilder output = new StringBuilder();
 			String lines[] = text.split("\n");
@@ -577,7 +559,6 @@ public class BugExploreDialog extends JDialog
 			int cnt = 1;
 			String lines[] = text.split("\n");
 			cnt += lines.length;
-
 			return cnt;
 		}
 	}
@@ -590,7 +571,8 @@ public class BugExploreDialog extends JDialog
 
 		newBugButton.addActionListener(event ->
 		{
-			if(! commentArea.getText().trim().isEmpty())
+			//MMM: commented code below is relevant only if this dialog is closed after newBug button has been clicked
+/*			if(! commentArea.getText().trim().isEmpty())
 			{
 				EventQueue.invokeLater( () ->
 				{
@@ -598,17 +580,11 @@ public class BugExploreDialog extends JDialog
 							"Comment area is not empty. If you proceed the contents will be discarded.",
 							"Warning", JOptionPane.OK_CANCEL_OPTION);
 					if(option == JOptionPane.OK_OPTION)
-					{
-						//						setVisible(false);
-						owner.sendBugReport();
-					}
+						parent.sendBugReport();
 				});
 			}
-			else
-			{
-				//				setVisible(false);
-				owner.sendBugReport();
-			}
+			else*/
+				parent.sendBugReport();
 		});
 
 		closeButton.addActionListener(event ->
@@ -622,12 +598,16 @@ public class BugExploreDialog extends JDialog
 							"Warning", JOptionPane.OK_CANCEL_OPTION);
 					if(option == JOptionPane.OK_OPTION)
 					{
-						owner.getClient().setBugReports(bugReports);
+						parent.getClient().setBugReports(bugReports);
+						setVisible(false);
 					}
 				});
 			}
-			owner.getClient().setBugReports(bugReports);
-			setVisible(false);
+			else
+			{
+				parent.getClient().setBugReports(bugReports);
+				setVisible(false);
+			}
 		});
 		bottomPanel.add(newBugButton);
 		bottomPanel.add(closeButton);
@@ -650,4 +630,33 @@ public class BugExploreDialog extends JDialog
 		con.fill = GridBagConstraints.NONE;
 		panel.add(comp, con);
 	}
+
+	private class WaitingDialog extends JDialog
+	{
+		private static final long serialVersionUID = 8796227873338377731L;
+
+		public WaitingDialog(JDialog parent, Future<?> future)
+		{
+			super(parent, true);
+			setLocationRelativeTo(parent);
+			setSize(300, 100);
+			setTitle("Waiting");
+
+			JLabel label = new JLabel("<html>Request has been sent to the CDR service.<br>Waiting for a response...</html>");
+			JPanel panel = new JPanel();
+			panel.add(label);
+			add(panel, BorderLayout.CENTER);
+
+			addWindowListener(new WindowAdapter()
+			{
+				@Override
+				public void windowClosing(WindowEvent event)
+				{
+					if(future != null)
+						future.cancel(true);
+					super.windowClosing(event);
+				}
+			});
+		}
+	};
 }

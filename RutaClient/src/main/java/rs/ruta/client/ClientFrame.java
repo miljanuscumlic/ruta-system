@@ -130,42 +130,8 @@ public class ClientFrame extends JFrame
 			@Override
 			public void windowClosing(WindowEvent event)
 			{
-				boolean exit = true; //  = false when window should not be closed after exception is thrown
-				//client.closeDataStreams();
-				/*savePreferences();
-				client.savePreferences();*/
-				saveProperties();
-				client.storeProperties();
-
-				try
-				{
-					client.insertMyParty();
-				}
-				catch(Exception e)
-				{
-					String[] options = {"YES", "NO"};
-					int choice = JOptionPane.showOptionDialog(ClientFrame.this, "Data could not be saved to the local data store! "
-							+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
-							JOptionPane.ERROR_MESSAGE, null, options, options[0]);
-					if(choice == 1)
-						exit = false;
-				}
-				if(exit)
-				{
-					try
-					{
-						client.shutdownDataStore();
-					}
-					catch(Exception e)
-					{
-						String[] options = {"YES", "NO"};
-						int choice = JOptionPane.showOptionDialog(ClientFrame.this, "Data store could not be disconnected from! "
-								+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
-								JOptionPane.ERROR_MESSAGE, null, options, options[0]);
-						if(choice == 1)
-							System.exit(0);
-					}
-				}
+				client.shutdownApplication();
+//				System.exit(1); // testing shutdownhook
 			}
 		});
 
@@ -714,7 +680,7 @@ public class ClientFrame extends JFrame
 
 	/**Saves properties from {@code ClientFrame} class fields to {@link Properties} object.
 	 */
-	private void saveProperties()
+	public void saveProperties()
 	{
 		Properties properties = client.getProperties();
 		properties.put("mainFrame.left", String.valueOf(getX()));
@@ -1135,7 +1101,7 @@ public class ClientFrame extends JFrame
 		return client;
 	}
 
-	/**Appends current date and time and coloured the passed string to the console. All this is done inside the
+	/**Appends current date and time and coloured passed string to the console. All this is done inside the
 	 * {@link EventQueue}.
 	 * @param str string to be shown on the console
 	 * @param c colour of the string
@@ -1272,7 +1238,6 @@ public class ClientFrame extends JFrame
 	{
 		this.setTitle("Ruta Client - " + partyName);
 	}
-
 
 	/**Shuts down the eXist database, its application program and jetty server as its container.
 	 * @throws Exception thrown if database could not be stopped

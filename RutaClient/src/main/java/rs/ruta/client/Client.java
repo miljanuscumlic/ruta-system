@@ -1677,4 +1677,43 @@ public class Client implements RutaNode
 		partyDataMapper.getConnector().shutdownDatabase();
 	}
 
+	/**Gracefully shuts down Ruta Client application.
+	 */
+	public void shutdownApplication()
+	{
+		boolean exit = true; //  = false when window should not be closed after exception is thrown
+		saveProperties();
+		frame.saveProperties();
+		storeProperties();
+
+		try
+		{
+			insertMyParty();
+		}
+		catch(Exception e)
+		{
+			String[] options = {"YES", "NO"};
+			int choice = JOptionPane.showOptionDialog(frame, "Data could not be saved to the local data store! "
+					+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
+					JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+			if(choice == 1)
+				exit = false;
+		}
+		if(exit)
+		{
+			try
+			{
+				shutdownDataStore();
+			}
+			catch(Exception e)
+			{
+				String[] options = {"YES", "NO"};
+				int choice = JOptionPane.showOptionDialog(frame, "Data store could not be disconnected from! "
+						+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
+						JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+				if(choice == 1)
+					System.exit(0);
+			}
+		}
+	}
 }

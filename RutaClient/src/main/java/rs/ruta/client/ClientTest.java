@@ -115,6 +115,25 @@ public class ClientTest
 				frame.setVisible(true);
 				client.initialize();
 			});
+
+			//adding JVM shutdown hook
+//			Thread clientThread = Thread.currentThread();
+			Runtime.getRuntime().addShutdownHook(new Thread()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						client.shutdownApplication();
+						//clientThread.join();
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 		catch(Exception e)
 		{
