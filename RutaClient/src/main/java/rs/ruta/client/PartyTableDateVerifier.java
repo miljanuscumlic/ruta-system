@@ -17,7 +17,8 @@ public class PartyTableDateVerifier extends InputVerifier
 			DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
 		    format.setLenient(false);
 		    format.parse(text);
-		} catch (ParseException e)
+		}
+		catch (ParseException e)
 		{
 			return false;
 		}
@@ -28,9 +29,8 @@ public class PartyTableDateVerifier extends InputVerifier
 	public boolean shouldYieldFocus(JComponent input)
 	{
 		boolean valid = verify(input);
-		if (!valid) {
-			JOptionPane.showMessageDialog(null, "Invalid Date");
-		}
+		if (!valid)
+			JOptionPane.showMessageDialog(null, "Invalid Date. Date should be in the form: dd.mm.yyyy.");
 		return valid;
 	}
 }

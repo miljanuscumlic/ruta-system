@@ -11,6 +11,7 @@ Features:
 Bug fixes:
 
 - Fixed bug that was allowing non-registered users to send a bug report.
+- Fixed bug My Party dialog not showing what is the requested format of the Registration date.
 - Fixed other minor bugs.
 
 --------------------
