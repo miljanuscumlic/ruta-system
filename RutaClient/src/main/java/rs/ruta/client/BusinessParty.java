@@ -18,7 +18,7 @@ public class BusinessParty
 {
 //	@XmlTransient
 	@XmlElement(name = "Products")
-	private ArrayList<ItemType> products; //database alternative - MMM: to be replaced with the real database
+	private ArrayList<ItemType> products; //MMM: should be CatalogueType instead of list of ItemTypes????
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
@@ -79,6 +79,11 @@ public class BusinessParty
 		if (products == null)
 			products = new ArrayList<ItemType>();
 		return products;
+	}
+
+	public void clearProducts()
+	{
+		this.products = null;
 	}
 
 	public void setProducts(ArrayList<ItemType> products)

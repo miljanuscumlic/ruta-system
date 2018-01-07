@@ -715,7 +715,15 @@ public class Client implements RutaNode
 						}*/
 					}
 					else
-						frame.appendToConsole("Could not retrieve the catalogue from the CDR service!. Catalogue does not exist.", Color.RED);
+					{
+						StringBuilder consoleMsg = new StringBuilder("Catalogue does not exist.");
+						if(myParty.getFollowingParties().size() != 0)
+						{
+							myParty.getFollowingParties().get(0).clearProducts();
+							consoleMsg.append(" My Catalogue has been removed from My Party in the Following parties.");
+						}
+						frame.appendToConsole(consoleMsg.toString(), Color.GREEN);
+					}
 				}
 				catch (Exception e)
 				{

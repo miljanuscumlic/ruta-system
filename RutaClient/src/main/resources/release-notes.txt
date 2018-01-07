@@ -14,6 +14,7 @@ Bug fixes:
 - Fixed bug My Party dialog not showing what is the requested format of the Registration date.
 - Fixed bug not being able to close My Party dialog by pressing the Cancel button after incorrect date had been entered.
 - Fixed bug not verifying input username and password during My Party registration process.
+- Fixed bug not removing My Catalogue from My Party in the Following parties, after Catalogue could not be found on the CDR service.
 - Fixed other minor bugs.
 
 --------------------
