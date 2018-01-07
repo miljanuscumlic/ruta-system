@@ -52,6 +52,7 @@ public class PartyDialog extends JDialog
 		});
 
 		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setVerifyInputWhenFocusTarget(false);//do not verify previously focused element when Cancel is clicked
 		buttonPanel.add(cancelButton);
 		cancelButton.addActionListener(event ->
 		{

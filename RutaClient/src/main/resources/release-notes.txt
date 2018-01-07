@@ -3,7 +3,7 @@ This is the first minor release of Ruta Client Application. From now on Ruta wil
 
 Features:
 
-- Embedded eXist database is used as a local data store instead of files.
+- Embedded eXist database is used as a local data store instead of the files.
 - Implemented support for exploration of reported bugs and sending comments on those reports.
 - Secured local data in some cases of JVM shutdown.
 - Implemented check during program startup that tries to found out whether the program has been already started. Only one instance of the program (residing in the same OS directory) is allowed. 
@@ -12,6 +12,8 @@ Bug fixes:
 
 - Fixed bug that was allowing non-registered users to send a bug report.
 - Fixed bug My Party dialog not showing what is the requested format of the Registration date.
+- Fixed bug not being able to close My Party dialog by pressing the Cancel button after incorrect date had been entered.
+- Fixed bug not verifying input username and password during My Party registration process.
 - Fixed other minor bugs.
 
 --------------------

@@ -1,5 +1,6 @@
 package rs.ruta.client;
 
+import java.awt.EventQueue;
 import java.text.*;
 
 import javax.swing.*;
@@ -30,7 +31,7 @@ public class PartyTableDateVerifier extends InputVerifier
 	{
 		boolean valid = verify(input);
 		if (!valid)
-			JOptionPane.showMessageDialog(null, "Invalid Date. Date should be in the form: dd.mm.yyyy.");
+			EventQueue.invokeLater(() -> JOptionPane.showMessageDialog(null, "Invalid Date. Date should be in the form: dd.mm.yyyy."));
 		return valid;
 	}
 }
