@@ -125,7 +125,7 @@ public class ClientFrame extends JFrame
 		chooser.setFileFilter(filter);
 
 		//save properties and local data on exit
-		addWindowListener(new WindowAdapter()
+/*		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent event)
@@ -133,7 +133,7 @@ public class ClientFrame extends JFrame
 				client.shutdownApplication();
 //				System.exit(1); // testing shutdownhook
 			}
-		});
+		});*/
 
 		//setting tabs
 		tabbedPane = new JTabbedPane();

@@ -2,11 +2,16 @@ package rs.ruta.client;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.prefs.Preferences;
 
 import org.exist.util.MimeTable;
 import org.exist.util.MimeType;
@@ -26,6 +31,8 @@ import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XPathQueryService;
 
+import rs.ruta.common.datamapper.DetailException;
+
 public class ClientTest
 {
 
@@ -38,7 +45,7 @@ public class ClientTest
 		{
 			fos = new FileOutputStream(file);
 			PrintStream ps = new PrintStream(fos);
-//			System.setErr(ps); //MMM: this sould be uncommented if is wanted to redirect error stream to err.txt
+			//			System.setErr(ps); //MMM: this sould be uncommented if is wanted to redirect error stream to err.txt
 		}
 		catch (FileNotFoundException e1)
 		{
@@ -49,7 +56,7 @@ public class ClientTest
 		final String EXIST_HOME = System.getProperty("user.dir");
 		System.setProperty("exist.home", EXIST_HOME);
 
-		//TEST START - write to eXist embedded database
+		/*		//TEST START - write to eXist embedded database
 		//initialise the database driver
 		@SuppressWarnings("unchecked")
 		final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
@@ -95,52 +102,80 @@ public class ClientTest
 				}
 			}
 		}
-
 		//TEST END
+		 */
 
-		//RutaNode client = new Client();
-		Client client;
+
+		Client client = null;
+		boolean secondTry = false;
+		CountDownLatch latch = new CountDownLatch(1);
+
+		final JOptionPane awhilePane = new JOptionPane("Trying to open Ruta Client application. This could take a while. Please wait...",
+				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+		final JDialog awhileDialog = awhilePane.createDialog(null, "Ruta Client");
+		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
 		try
 		{
-			client = new Client();
+			AtomicBoolean again = new AtomicBoolean();
+			try
+			{
+				client = new Client(false);
+			}
+			catch(DetailException e)
+			{
+				secondTry = true;
+				EventQueue.invokeLater(() ->
+				{
+					int option = JOptionPane.showConfirmDialog(null, "It seems there already has been started one instance of Ruta Client "
+							+ "application.\nIt might not succeed, but do you still want to try to open a new one?",
+							"Ruta Client - Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if(option == JOptionPane.YES_OPTION)
+						again.set(true);
+					else
+						again.set(false);
+					latch.countDown();
+				});
+			}
+
+			if(secondTry)
+			{
+				latch.await();
+				if(again.get() == true)
+				{
+					EventQueue.invokeLater(() -> awhileDialog.setVisible(true));
+					client = new Client(true);
+					EventQueue.invokeLater(() -> awhileDialog.setVisible(false));
+				}
+				else
+					System.exit(0);
+			}
+
 			Locale myLocale = Locale.forLanguageTag("sr-RS");
 			Locale.setDefault(myLocale);
 
 			client.preInitialize();
-
+			Client aClient = client;
 			EventQueue.invokeLater(() ->
 			{
-				JFrame frame = new ClientFrame(client);
+
+				JFrame frame = new ClientFrame(aClient);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setVisible(true);
-				client.initialize();
-			});
-
-			//adding JVM shutdown hook
-//			Thread clientThread = Thread.currentThread();
-			Runtime.getRuntime().addShutdownHook(new Thread()
-			{
-				@Override
-				public void run()
-				{
-					try
-					{
-						client.shutdownApplication();
-						//clientThread.join();
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
+				aClient.initialize();
 			});
 		}
 		catch(Exception e)
 		{
+			awhileDialog.setVisible(false);
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, /*"Data from the local data store is corrupted!\n" +*/ "Unable to open Ruta Client application.\n" + e.getMessage(), "Critical error",
-					JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
+
+			EventQueue.invokeLater( () ->
+			{
+				JOptionPane.showMessageDialog(null, "Unable to open Ruta Client application.\n" + e.getMessage(),
+						"Ruta Client - Critical error", JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			});
 		}
 	}
 
@@ -168,7 +203,6 @@ public class ClientTest
 
 	/**
 	 * Creates a collection at a path from the parent collection
-	 *
 	 * i.e. if the parent collection is "/db" and the pathSegments are ['a', 'b', c']
 	 * we will create and return the collection /db/a/b/c
 	 *

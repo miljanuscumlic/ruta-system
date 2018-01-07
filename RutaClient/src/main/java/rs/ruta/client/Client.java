@@ -62,10 +62,30 @@ public class Client implements RutaNode
 	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 	private List<BugReport> bugReports;
 
-	public Client() throws DetailException
+	/**Constructs a {@code Client} object.
+	 * @param force if true it tells the constructor to try to create an object despite the fact that
+	 * one instance of it invoked by {@code Ruta Client application} from the same OS directory had been already created
+	 * @throws DetailException if object could not be created or, when {@code force} is true and one instance of it already exists
+	 */
+	public Client(boolean force) throws DetailException
 	{
+		properties = new Properties();
+		loadProperties();
+		try
+		{
+			isClientInstantiated();
+			properties.setProperty("started", "true");
+			storeProperties(false);
+		}
+		catch(DetailException e)
+		{
+			if(!force)
+				throw e;
+		}
+
 		myParty = new MyParty();
 		CDRParty = getCDRParty();
+
 		//partyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
 		//MMM: temporary connector and mapper - would be replaced with MapperRegistry
 		ExistConnector connector = new LocalExistConnector();
@@ -73,7 +93,8 @@ public class Client implements RutaNode
 		new ClientMapperRegistry(); //just to initialize the registry. No reference needed later.
 		//		MapperRegistry.initialize(mapperRegistry);
 		partyDataMapper = new MyPartyExistMapper(Client.this, connector);
-		properties = new Properties();
+
+		addShutDownHook();
 	}
 
 	/** Initializes fields of Client object from local data store.
@@ -88,7 +109,6 @@ public class Client implements RutaNode
 		//		myParty = InstanceFactory.newInstancePartyType(); // instatiation of new partialy empty PartyType object with not null fields used in this version of the Ruta
 		//		myParty = InstanceFactory.newInstance(PartyType.class, 1);
 
-		loadProperties();
 		if(parties != null && parties.size() != 0)
 		{
 			myParty = parties.get(0);
@@ -117,6 +137,28 @@ public class Client implements RutaNode
 		}*/
 	}
 
+	private void addShutDownHook()
+	{
+		Runtime.getRuntime().addShutdownHook(new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					System.out.println("Shutdown hook started.");
+					shutdownApplication();
+					properties.put("started", false);
+					System.out.println("Shutdown hook ended.");
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public Properties getProperties()
 	{
 		return properties;
@@ -140,16 +182,18 @@ public class Client implements RutaNode
 		{
 			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
 					"Information", JOptionPane.INFORMATION_MESSAGE);
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 		Client.cdrEndPoint = properties.getProperty("cdrEndPoint", Client.defaultEndPoint);
 	}
 
 	/**Stores {@link Properties} field object to the {@code .properties} file.
+	 * @param end true if this method is invoked just before the program termination
 	 */
-	public void storeProperties()
+	public void storeProperties(boolean end)
 	{
-		saveProperties();
+		if(end)
+			saveProperties();
 		try(OutputStream output = new FileOutputStream("ruta.properties"))
 		{
 			properties.store(output, "Ruta Client properties");
@@ -167,6 +211,20 @@ public class Client implements RutaNode
 	private void saveProperties()
 	{
 		properties.put("cdrEndPoint", Client.cdrEndPoint);
+		properties.put("started", "false");
+	}
+
+	/**Checks whether the instance of {@code Client} has been already created within the same OS directory.
+	 * @throws DetailException if the {@code Client} has been already created
+	 */
+	private void isClientInstantiated() throws DetailException
+	{
+		String prop = "started";
+		boolean started = false;
+		if(properties.get(prop) != null)
+			started = Boolean.parseBoolean((properties.get(prop).toString()));
+		if(started)
+			throw new DetailException("Ruta Client application has been already started.");
 	}
 
 	/**Gets the {@link Version} object describing the version of the {@code Ruta Client} application
@@ -1684,7 +1742,7 @@ public class Client implements RutaNode
 		boolean exit = true; //  = false when window should not be closed after exception is thrown
 		saveProperties();
 		frame.saveProperties();
-		storeProperties();
+		storeProperties(true);
 
 		try
 		{
