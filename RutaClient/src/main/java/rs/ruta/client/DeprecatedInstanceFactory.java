@@ -8,11 +8,15 @@ import java.util.function.Function;
 
 import javax.xml.datatype.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
 
 public final class DeprecatedInstanceFactory
 {
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 
 	/**Instatiate new instance object of the ItemType, setting all properties used in the Ruta application on not null.
 	 * Properties not used in the Ruta remain null.
@@ -201,7 +205,7 @@ public final class DeprecatedInstanceFactory
 		catch (Exception e)
 		{
 			System.out.println("Something went wrong. Can not do the reflection of the object!");
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 		return object;
 	}
@@ -256,7 +260,7 @@ public final class DeprecatedInstanceFactory
 		catch (Exception e)
 		{
 			System.out.println("Something went wrong. Can not do the reflection of the object!");
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 		return object;
 	}
@@ -393,7 +397,7 @@ public final class DeprecatedInstanceFactory
 		catch (Exception e)
 		{
 			System.out.println("Something went wrong. Can not do the reflection of the object!");
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 		return copyObject;
 	}
@@ -457,7 +461,7 @@ public final class DeprecatedInstanceFactory
 		catch (Exception e)
 		{
 			System.out.println("Something went wrong. Can not do the reflection of the object!");
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 	}
 
@@ -499,7 +503,7 @@ public final class DeprecatedInstanceFactory
 				refM.invoke(ref, property);
 			} catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 		return property;
@@ -528,7 +532,7 @@ public final class DeprecatedInstanceFactory
 				refM.invoke(ref, property);
 			} catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 		return property;
@@ -555,7 +559,7 @@ public final class DeprecatedInstanceFactory
 			propM.invoke(property, value);
 		} catch (Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 		return property;
 	}
@@ -583,7 +587,7 @@ public final class DeprecatedInstanceFactory
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					logger.error("Exception is ", e);
 				}
 			}
 		Method elM;
@@ -594,7 +598,7 @@ public final class DeprecatedInstanceFactory
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 		return listElement;
 	}
@@ -643,7 +647,7 @@ public final class DeprecatedInstanceFactory
 				return (T) property.getClass().getMethod("getValue").invoke(property);
 			} catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 		return null;

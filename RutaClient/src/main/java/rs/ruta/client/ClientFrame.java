@@ -109,6 +109,9 @@ public class ClientFrame extends JFrame
 		this.client = client;
 		this.client.setFrame(this);
 
+		//TESTING LOGGER
+		logger.warn("No warning, just testing the logger.");
+
 		//get frame related properties
 		Properties properties = client.getProperties();
 		int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));
@@ -1123,7 +1126,7 @@ public class ClientFrame extends JFrame
 			}
 			catch (BadLocationException e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 			consolePane.setCaretPosition(consolePane.getDocument().getLength());
 		});
@@ -1192,7 +1195,7 @@ public class ClientFrame extends JFrame
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 				//throw e;
 			}
 		}).start();

@@ -6,15 +6,16 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<name>RutaClient</name>
 	<packaging>jar</packaging>
- 
+
 	<properties>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target</ruta.common.path>
+		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski
+			rad/git/RutaCommon/target</ruta.common.path>
 	</properties>
-	
+
 	<!-- repository for aspectj -->
 	<repositories>
 		<repository>
@@ -56,7 +57,7 @@
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.2.10</version>
 		</dependency>
-		<!-- MMM: Temporary working solution before installing it in nexus repository-->
+		<!-- MMM: Temporary working solution before installing it in nexus repository -->
 		<dependency>
 			<groupId>rs.ruta</groupId>
 			<artifactId>ruta-common</artifactId>
@@ -219,8 +220,8 @@
 						<version>1.0.1</version>
 						<executions>
 							<execution>
-								<id>copy-file-Amanas</id>
-								<phase>verify</phase> <!-- must be some phase after package -->
+								<id>copy-snapshot</id>
+								<phase>verify</phase> <!-- must be some phase of the lifecycle after package phase-->
 								<goals>
 									<goal>copy</goal>
 								</goals>
@@ -234,10 +235,21 @@
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
 											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Suma\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
-								<!-- 	<fileSet>
+									</fileSets>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy-release</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<fileSets>
+										<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
 											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Release\${project.artifactId}-${project.version}.jar</destinationFile>
-										</fileSet> -->
+										</fileSet>
 									</fileSets>
 								</configuration>
 							</execution>

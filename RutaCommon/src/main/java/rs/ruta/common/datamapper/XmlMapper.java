@@ -947,7 +947,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		catch(XMLDBException e)
 		{
 			logger.error("Could not save the document " + documentName + " to the location " + colPath);
-			logger.error("Exception is ", e);;
+			logger.error("Exception is ", e);
 			throw new DatabaseException("The document could not be saved to the database.", e);
 		}
 		catch(DataManipulationException e)

@@ -6,7 +6,8 @@ Features:
 - Embedded eXist database is used as a local data store instead of the files.
 - Implemented support for exploration of reported bugs and sending comments on those reports.
 - Secured local data in some cases of JVM shutdown.
-- Implemented check during program startup that tries to found out whether the program has been already started. Only one instance of the program (residing in the same OS directory) is allowed. 
+- Implemented check during program startup that tries to found out whether the program has been already started. Only one instance of the program (residing in the same OS directory) is allowed.
+- Added logging capability.
 
 Bug fixes:
 

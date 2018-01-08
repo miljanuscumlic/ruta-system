@@ -44,6 +44,9 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.ReportComment;
@@ -56,6 +59,7 @@ import rs.ruta.services.SearchBugReportResponse;
 public class BugExploreDialog extends JDialog
 {
 	private static final long serialVersionUID = -1075911023849983930L;
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private List<BugReport> bugReports;
 	private AbstractTableModel bugListModel;
 	private AbstractTableModel bugReportModel;
@@ -307,7 +311,7 @@ public class BugExploreDialog extends JDialog
 								}
 								catch (Exception e)
 								{
-									e.printStackTrace();
+									logger.error("Exception is ", e);
 									EventQueue.invokeLater( () ->
 									JOptionPane.showMessageDialog(BugExploreDialog.this,
 											"There has been an error during the saving of a attachment to the file system.",

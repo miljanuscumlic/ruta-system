@@ -3,6 +3,9 @@ package rs.ruta.common.datamapper;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
@@ -19,6 +22,7 @@ import rs.ruta.common.User;
  */
 public abstract class MapperRegistry
 {
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 	private static MapperRegistry registry;
 	private ConcurrentMap<Class<?>, DataMapper<?, String>> mapRegistry;
 	private static ExistConnector connector;
@@ -94,7 +98,7 @@ public abstract class MapperRegistry
 		}
 		catch (DatabaseException e)
 		{
-			e.printStackTrace();
+			logger.info("Database is not accessible. Exception is ", e);
 			return false;
 		}
 	}

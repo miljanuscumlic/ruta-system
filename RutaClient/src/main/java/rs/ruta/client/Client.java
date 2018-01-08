@@ -18,6 +18,9 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.state.ESuccess;
 import com.helger.ubl21.UBL21Writer;
 
@@ -61,6 +64,7 @@ public class Client implements RutaNode
 	private Properties properties;
 	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 	private List<BugReport> bugReports;
+	private static Logger logger = LoggerFactory.getLogger(Client.class.getName());
 
 	/**Constructs a {@code Client} object.
 	 * @param force if true it tells the constructor to try to create an object despite the fact that
@@ -69,6 +73,7 @@ public class Client implements RutaNode
 	 */
 	public Client(boolean force) throws DetailException
 	{
+		logger.info("Constructing Client");
 		properties = new Properties();
 		loadProperties();
 		try
@@ -153,7 +158,7 @@ public class Client implements RutaNode
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					logger.error("Exception is ", e);
 				}
 			}
 		});
@@ -182,7 +187,7 @@ public class Client implements RutaNode
 		{
 			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
 					"Information", JOptionPane.INFORMATION_MESSAGE);
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 		}
 		Client.cdrEndPoint = properties.getProperty("cdrEndPoint", Client.defaultEndPoint);
 	}
@@ -202,7 +207,7 @@ public class Client implements RutaNode
 		{
 			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
 					"Error", JOptionPane.ERROR_MESSAGE);
-			//e.printStackTrace();
+			//logger.error("Exception is ", e);
 		}
 	}
 
@@ -317,7 +322,7 @@ public class Client implements RutaNode
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					logger.error("Exception is ", e);
 					msg.append("Server responds: ");
 					Throwable cause = e.getCause();
 					if(cause instanceof RutaException)
@@ -336,7 +341,7 @@ public class Client implements RutaNode
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 			frame.appendToConsole("My Party has not been registered with the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 			frame.enablePartyMenuItems();
@@ -585,7 +590,7 @@ public class Client implements RutaNode
 		}
 		catch (JAXBException e)
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 			frame.enableCatalogueMenuItems();
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
@@ -626,7 +631,7 @@ public class Client implements RutaNode
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						logger.error("Exception is ", e);
 						msg.append("Server responds: ");
 						Throwable cause = e.getCause();
 						if(cause instanceof RutaException)
@@ -665,12 +670,12 @@ public class Client implements RutaNode
 		}
 		catch (JAXBException e)
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 			frame.enableCatalogueMenuItems();
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 			frame.appendToConsole("My Catalogue has not been updated by the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 			frame.enableCatalogueMenuItems();
@@ -745,7 +750,7 @@ public class Client implements RutaNode
 		}
 		catch (JAXBException e)
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 			frame.enableCatalogueMenuItems();
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
@@ -841,7 +846,7 @@ public class Client implements RutaNode
 							((RutaException)e.getCause()).getFaultInfo().getDetail(), Color.MAGENTA);
 				else
 					frame.appendToConsole(msg + e.getCause().getMessage(), Color.MAGENTA);
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		});*/
 	}
@@ -968,7 +973,7 @@ public class Client implements RutaNode
 
 			} catch (JAXBException e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 	}
@@ -1027,7 +1032,7 @@ public class Client implements RutaNode
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 			throw e;
 		}
 	}

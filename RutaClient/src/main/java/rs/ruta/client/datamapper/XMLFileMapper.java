@@ -52,7 +52,7 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 			}
 			catch (JAXBException e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 		return result;
@@ -97,7 +97,7 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 			}
 			catch (JAXBException e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 	}
@@ -118,7 +118,7 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Exception is ", e);
 			}
 		}
 		return element;

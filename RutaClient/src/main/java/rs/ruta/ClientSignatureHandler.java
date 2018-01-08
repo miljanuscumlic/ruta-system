@@ -18,6 +18,8 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -26,6 +28,7 @@ import rs.ruta.client.MyParty;
 
 public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 {
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private MyParty myParty;
 
 	public ClientSignatureHandler(MyParty myParty)
@@ -65,7 +68,7 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 				}
 				catch (SOAPException e)
 				{
-					e.printStackTrace();
+					logger.error("Exception is ", e);
 				}
 			}
 		}

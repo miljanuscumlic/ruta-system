@@ -14,6 +14,14 @@
             <PatternLayout pattern="%d{DATE} [%t] %-5p (%F [%M]:%L) - %m %n"/>
         </Console>
         
+        <RollingRandomAccessFile name="ruta.client" filePattern="${logs}/exist.${rollover.file.pattern}.log.gz" fileName="${logs}/ruta-core.log">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${rollover.max}"/>
+            <PatternLayout pattern="${exist.file.pattern}"/>
+        </RollingRandomAccessFile>
+        
         <RollingRandomAccessFile name="exist.core" filePattern="${logs}/exist.${rollover.file.pattern}.log.gz" fileName="${logs}/exist.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
@@ -70,13 +78,13 @@
             <PatternLayout pattern="${exist.file.pattern}"/>
         </RollingRandomAccessFile>
         
-        <RollingRandomAccessFile name="exist.betterform" filePattern="${logs}/betterform.${rollover.file.pattern}.log.gz" fileName="${logs}/betterform.log">
+<!--         <RollingRandomAccessFile name="exist.betterform" filePattern="${logs}/betterform.${rollover.file.pattern}.log.gz" fileName="${logs}/betterform.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
             </Policies>
             <DefaultRolloverStrategy max="${rollover.max}"/>
             <PatternLayout pattern="${exist.file.pattern}"/>
-        </RollingRandomAccessFile>
+        </RollingRandomAccessFile> -->
         
         <RollingRandomAccessFile name="exist.restxq" filePattern="${logs}/restxq.${rollover.file.pattern}.log.gz" fileName="${logs}/restxq.log">
             <Policies>
@@ -102,21 +110,21 @@
             <PatternLayout pattern="${exist.file.pattern}"/>
         </RollingRandomAccessFile>
         
-        <RollingRandomAccessFile name="exist.statistics" filePattern="${logs}/statistics.${rollover.file.pattern}.log.gz" fileName="${logs}/statistics.log">
+<!--         <RollingRandomAccessFile name="exist.statistics" filePattern="${logs}/statistics.${rollover.file.pattern}.log.gz" fileName="${logs}/statistics.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
             </Policies>
             <DefaultRolloverStrategy max="${rollover.max}"/>
             <PatternLayout pattern="${exist.file.pattern}"/>
-        </RollingRandomAccessFile>
+        </RollingRandomAccessFile> -->
 
-        <RollingRandomAccessFile name="expath.repo" filePattern="${logs}/expath-repo.${rollover.file.pattern}.log.gz" fileName="${logs}/expath-repo.log">
+<!--         <RollingRandomAccessFile name="expath.repo" filePattern="${logs}/expath-repo.${rollover.file.pattern}.log.gz" fileName="${logs}/expath-repo.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
             </Policies>
             <DefaultRolloverStrategy max="${rollover.max}"/>
             <PatternLayout pattern="${exist.file.pattern}"/>
-        </RollingRandomAccessFile>
+        </RollingRandomAccessFile> -->
         
         <RollingRandomAccessFile name="exist.launcher" filePattern="${logs}/launcher.${rollover.file.pattern}.log.gz" fileName="${logs}/launcher.log">
             <Policies>
@@ -129,6 +137,18 @@
     </Appenders>
     
     <Loggers>
+    
+    	<!-- Ruta client loggers -->
+    	<Logger name="rs.ruta.client" additivity="false" level="warn">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ruta.client"/>
+        </Logger>
+        
+        <Logger name="rs.ruta.common" additivity="false" level="warn">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ruta.client"/>
+        </Logger>
+        <!-- END Ruta client loggers -->
         
         <Logger name="org.exist.jetty.JettyStart" additivity="false" level="trace">
             <AppenderRef ref="STDOUT"/>
@@ -144,10 +164,10 @@
             <AppenderRef ref="exist.profiling"/>
         </Logger>
         
-        <Logger name="org.exist.statistics" additivity="false" level="debug">
+<!--         <Logger name="org.exist.statistics" additivity="false" level="debug">
             <AppenderRef ref="exist.core"/>
             <AppenderRef ref="exist.statistics"/> 
-        </Logger>
+        </Logger> -->
         
         <Logger name="org.exist.backup.SystemExport" additivity="false" level="trace">
             <AppenderRef ref="exist.backup"/>
@@ -206,22 +226,22 @@
         </Logger>
         
         <!-- betterFORM extension -->
-        <Logger name="de.betterform" additivity="false" level="warn">
+<!--         <Logger name="de.betterform" additivity="false" level="warn">
             <AppenderRef ref="exist.betterform"/>
         </Logger>
-        
+         -->
         <!-- Metadata Storage extension -->
         <Logger name="mdStorage" additivity="false" level="warn">
             <AppenderRef ref="exist.mdStorage"/>
         </Logger>
 
         <!-- expath pkg repo -->
-        <Logger name="org.expath.pkg" additivity="false" level="trace">
+<!--         <Logger name="org.expath.pkg" additivity="false" level="trace">
             <AppenderRef ref="expath.repo"/>
         </Logger>
         <Logger name="org.exist.repo" additivity="false" level="trace">
             <AppenderRef ref="expath.repo"/>
-        </Logger>
+        </Logger> -->
         <Logger name="org.exist.launcher" additivity="false" level="warn">
             <AppenderRef ref="exist.launcher"/>
         </Logger>

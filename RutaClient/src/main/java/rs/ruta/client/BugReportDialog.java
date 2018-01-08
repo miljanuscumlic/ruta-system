@@ -181,7 +181,7 @@ public class BugReportDialog extends JDialog
 					{
 						JOptionPane.showMessageDialog(BugReportDialog.this, "Attachment could not be appended to a Bug Report!",
 								"Error Message", JOptionPane.ERROR_MESSAGE);
-						//e.printStackTrace();
+						//logger.error("Exception is ", e);
 					}
 				}
 			}

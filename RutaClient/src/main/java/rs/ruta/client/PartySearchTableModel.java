@@ -92,7 +92,7 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 		}
 		catch(Exception e) // i.e when party.getPartyLegalEntityAtIndex(0).getRegistrationAddress() = null
 		{
-			//e.printStackTrace();
+			//logger.error("Exception is ", e);
 			return null;
 		}
 	}

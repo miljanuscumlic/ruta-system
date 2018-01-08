@@ -35,6 +35,7 @@ import rs.ruta.common.datamapper.DetailException;
 
 public class ClientTest
 {
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 
 	public static void main(String[] args) throws Exception
 	{
@@ -168,7 +169,7 @@ public class ClientTest
 		catch(Exception e)
 		{
 			awhileDialog.setVisible(false);
-			e.printStackTrace();
+			logger.error("Exception is ", e);
 
 			EventQueue.invokeLater( () ->
 			{
