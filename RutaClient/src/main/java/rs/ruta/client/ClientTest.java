@@ -40,7 +40,7 @@ public class ClientTest
 	public static void main(String[] args) throws Exception
 	{
 		//redirecting error stream to a file
-		File file = new File("err.txt");
+/*		File file = new File("err.txt");
 		FileOutputStream fos;
 		try
 		{
@@ -51,7 +51,7 @@ public class ClientTest
 		catch (FileNotFoundException e1)
 		{
 			e1.printStackTrace();
-		}
+		}*/
 
 		//setting EXIST_HOME
 		final String EXIST_HOME = System.getProperty("user.dir");
@@ -128,7 +128,7 @@ public class ClientTest
 				secondTry = true;
 				EventQueue.invokeLater(() ->
 				{
-					int option = JOptionPane.showConfirmDialog(null, "It seems there already has been started one instance of Ruta Client "
+					int option = JOptionPane.showConfirmDialog(null, "It seems there has been already started one instance of Ruta Client "
 							+ "application.\nIt might not succeed, but do you still want to try to open a new one?",
 							"Ruta Client - Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)

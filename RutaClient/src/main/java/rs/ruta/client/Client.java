@@ -51,16 +51,16 @@ import rs.ruta.common.InstanceFactory;
 public class Client implements RutaNode
 {
 	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_21"; // colon separated package list
-	final private static String defaultEndPoint = "http://ruta.sytes.net:9009/ruta-server-0.1.0-SNAPSHOT/CDR";
+	final private static String defaultEndPoint = "http://ruta.sytes.net:9010/ruta-server-0.1.0/CDR";
 	private static String cdrEndPoint = defaultEndPoint;
-	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.1.0-SNAPSHOT/CDR";
+	final private static String eclipseMonitorEndPoint = "http://localhost:7710/ruta-server-0.1.0/CDR";
 	private MyParty myParty;
 	//	private MyPartyXMLFileMapper<MyParty> partyDataMapper; //former store to myparty.xml
 	private MyPartyExistMapper partyDataMapper;//MMM: it should be one data mapper - for the database, and many finders - extended classes for each database table
 	private Party CDRParty;
 	//	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper; //MMM: not used anymore
 	private ClientFrame frame;
-	private static RutaVersion version = new RutaVersion("Client", "0.1.0-SNAPSHOT", "0.0.1", null);
+	private static RutaVersion version = new RutaVersion("Client", "0.1.0", "0.1.0", null);
 	private Properties properties;
 	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 	private List<BugReport> bugReports;

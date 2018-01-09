@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.ruta</groupId>
 	<artifactId>ruta-client</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version> <!-- -SNAPSHOT -->
 	<name>RutaClient</name>
 	<packaging>jar</packaging>
 
@@ -12,8 +12,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski
-			rad/git/RutaCommon/target</ruta.common.path>
+		<ruta.common.path>D:/Fakultet/_Diplomski/_diplomski rad/git/RutaCommon/target</ruta.common.path>
 	</properties>
 
 	<!-- repository for aspectj -->
@@ -93,7 +92,7 @@
 									<!-- <wsdlDirectory>${basedir}/src/main/resources/WEB-INF/wsdl</wsdlDirectory>
 										<wsdlFiles> <wsdlFile>CDR.wsdl</wsdlFile> </wsdlFiles> <wsdlLocation>/WEB-INF/wsdl/CDR.wsdl</wsdlLocation> -->
 									<wsdlUrls>
-										<wsdlUrl>http://localhost:9009/ruta-server-${project.version}/CDR?wsdl</wsdlUrl>
+										<wsdlUrl>http://localhost:9010/ruta-server-${project.version}/CDR?wsdl</wsdlUrl>
 									</wsdlUrls>
 									<packageName>rs.ruta.services</packageName>
 								</configuration>
@@ -220,7 +219,7 @@
 						<version>1.0.1</version>
 						<executions>
 							<execution>
-								<id>copy-snapshot</id>
+								<id>snapshot</id>
 								<phase>verify</phase> <!-- must be some phase of the lifecycle after package phase-->
 								<goals>
 									<goal>copy</goal>
@@ -239,7 +238,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>copy-release</id>
+								<id>local-release</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>copy</goal>
@@ -248,7 +247,26 @@
 									<fileSets>
 										<fileSet>
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
-											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Release\${project.artifactId}-${project.version}.jar</destinationFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client\Kuzmantrisovic\${project.artifactId}-${project.version}.jar</destinationFile>
+										</fileSet>
+										<fileSet>
+											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client\Cackalica\${project.artifactId}-${project.version}.jar</destinationFile>
+										</fileSet>
+									</fileSets>
+								</configuration>
+							</execution>
+							<execution>
+								<id>release</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<fileSets>
+										<fileSet>
+											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client\Release\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
 									</fileSets>
 								</configuration>

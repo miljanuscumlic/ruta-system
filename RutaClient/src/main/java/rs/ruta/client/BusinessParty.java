@@ -17,7 +17,7 @@ import rs.ruta.client.datamapper.*;
 public class BusinessParty
 {
 //	@XmlTransient
-	@XmlElement(name = "Products")
+	@XmlElement(name = "Product")
 	private ArrayList<ItemType> products; //MMM: should be CatalogueType instead of list of ItemTypes????
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;

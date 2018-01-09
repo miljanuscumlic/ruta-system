@@ -9,3 +9,6 @@
   <virtual-host>develop-host</virtual-host>
   <server-instance>develop-server</server-instance>
 </jboss-web>
+<!-- this document: jboss-web.xml is only used in development phase 
+for uploading snapshot versions of war to different port on the server
+than the release version is uploaded to. -->

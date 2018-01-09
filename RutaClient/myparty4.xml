@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns5:MyParty xmlns:ns2="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ns4="urn:rs:ruta:common" xmlns:ns5="urn:rs:ruta:client" xmlns:ns6="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
-    <MyProduct>
+    <Product>
         <ns3:Description>kako biti veseo</ns3:Description>
         <ns3:PackSizeNumeric>3</ns3:PackSizeNumeric>
         <ns3:Name>Veselje</ns3:Name>
@@ -16,8 +16,8 @@
             <ns3:CommodityCode>78</ns3:CommodityCode>
             <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
         </ns2:CommodityClassification>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>kako biti radostan</ns3:Description>
         <ns3:PackSizeNumeric>4</ns3:PackSizeNumeric>
         <ns3:Name>Radost</ns3:Name>
@@ -30,8 +30,8 @@
             <ns3:CommodityCode>78</ns3:CommodityCode>
             <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
         </ns2:CommodityClassification>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>kako biti ushićen :)</ns3:Description>
         <ns3:PackSizeNumeric>5</ns3:PackSizeNumeric>
         <ns3:Name>Ushićenje</ns3:Name>
@@ -43,8 +43,8 @@
             <ns3:CommodityCode>78</ns3:CommodityCode>
             <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
         </ns2:CommodityClassification>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>marljiv sam    </ns3:Description>
         <ns3:PackSizeNumeric>10</ns3:PackSizeNumeric>
         <ns3:Name>Marljivost</ns3:Name>
@@ -52,8 +52,8 @@
         <ns2:CommodityClassification>
             <ns3:CommodityCode>14</ns3:CommodityCode>
         </ns2:CommodityClassification>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>kako biti radostan 2</ns3:Description>
         <ns3:PackSizeNumeric/>
         <ns3:Name>Radost 2</ns3:Name>
@@ -67,82 +67,82 @@
         <ns2:CommodityClassification>
             <ns3:CommodityCode></ns3:CommodityCode>
         </ns2:CommodityClassification>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>   </ns3:Description>
         <ns3:Name>uyiu</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>  </ns3:Description>
         <ns3:Name>ertier </ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description> </ns3:Description>
         <ns3:Name>dddddddddddddddddddddddddddd</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>     </ns3:Description>
         <ns3:Name>wew</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>   v</ns3:Description>
         <ns3:Name>SDGS</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description> </ns3:Description>
         <ns3:Name>TSETG</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>ASDF</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>876RUdyh</ns3:Description>
         <ns3:Name>XFGXFZG2</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>WQEQWE</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description></ns3:Description>
         <ns3:Name>TYIUTYI</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>YRUR</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>sdfsd</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>fgdsfgds</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>asedfs</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Description>waerfwa</ns3:Description>
         <ns3:Name>sada</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>asd</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>asd </ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>dsfsdfsdfd</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>asdasdas </ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>sadffa</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>tryrty</ns3:Name>
-    </MyProduct>
-    <MyProduct>
+    </Product>
+    <Product>
         <ns3:Name>rtyrt</ns3:Name>
-    </MyProduct>
+    </Product>
     <CoreParty>
         <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
         <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>
@@ -193,14 +193,6 @@
             <ns3:Note>super</ns3:Note>
         </ns2:Contact>
     </CoreParty>
-    <Following>true</Following>
-    <Partner>false</Partner>
-    <CatalogueID>2</CatalogueID>
-    <CatalogueDeletionID>0</CatalogueDeletionID>
-    <CatalogueIssueDate>2017-11-15T15:15:57.468+01:00</CatalogueIssueDate>
-    <Password>ruta</Password>
-    <Username>ruta</Username>
-    <SecretKey>7b4642f1</SecretKey>
     <BusinessPartner>
         <CoreParty>
             <ns3:WebsiteURI></ns3:WebsiteURI>
@@ -772,7 +764,7 @@
         <CatalogueDeletionID>0</CatalogueDeletionID>
     </BusinessPartner>
     <FollowingPartner>
-        <MyProduct>
+        <Product>
             <ns3:Description>kako biti veseo</ns3:Description>
             <ns3:PackSizeNumeric>3</ns3:PackSizeNumeric>
             <ns3:Name>Veselje</ns3:Name>
@@ -788,8 +780,8 @@
                 <ns3:CommodityCode>78</ns3:CommodityCode>
                 <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
             </ns2:CommodityClassification>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>kako biti radostan</ns3:Description>
             <ns3:PackSizeNumeric>4</ns3:PackSizeNumeric>
             <ns3:Name>Radost</ns3:Name>
@@ -802,8 +794,8 @@
                 <ns3:CommodityCode>78</ns3:CommodityCode>
                 <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
             </ns2:CommodityClassification>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>kako biti ushićen :)</ns3:Description>
             <ns3:PackSizeNumeric>5</ns3:PackSizeNumeric>
             <ns3:Name>Ushićenje</ns3:Name>
@@ -815,8 +807,8 @@
                 <ns3:CommodityCode>78</ns3:CommodityCode>
                 <ns3:ItemClassificationCode></ns3:ItemClassificationCode>
             </ns2:CommodityClassification>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>marljiv sam    </ns3:Description>
             <ns3:PackSizeNumeric>10</ns3:PackSizeNumeric>
             <ns3:Name>Marljivost</ns3:Name>
@@ -824,8 +816,8 @@
             <ns2:CommodityClassification>
                 <ns3:CommodityCode>14</ns3:CommodityCode>
             </ns2:CommodityClassification>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>kako biti radostan 2</ns3:Description>
             <ns3:PackSizeNumeric/>
             <ns3:Name>Radost 2</ns3:Name>
@@ -839,82 +831,82 @@
             <ns2:CommodityClassification>
                 <ns3:CommodityCode></ns3:CommodityCode>
             </ns2:CommodityClassification>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>   </ns3:Description>
             <ns3:Name>uyiu</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>  </ns3:Description>
             <ns3:Name>ertier </ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description> </ns3:Description>
             <ns3:Name>dddddddddddddddddddddddddddd</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>     </ns3:Description>
             <ns3:Name>wew</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description> </ns3:Description>
             <ns3:Name>SDGS</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description> </ns3:Description>
             <ns3:Name>TSETG</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>ASDF</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>876RUdyh</ns3:Description>
             <ns3:Name>XFGXFZG2</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>WQEQWE</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description></ns3:Description>
             <ns3:Name>TYIUTYI</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>YRUR</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>sdfsd</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>fgdsfgds</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>asedfs</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Description>waerfwa</ns3:Description>
             <ns3:Name>sada</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>asd</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>asd </ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>dsfsdfsdfd</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>asdasdas </ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>sadffa</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>tryrty</ns3:Name>
-        </MyProduct>
-        <MyProduct>
+        </Product>
+        <Product>
             <ns3:Name>rtyrt</ns3:Name>
-        </MyProduct>
+        </Product>
         <CoreParty>
             <ns3:WebsiteURI>ruta.rs</ns3:WebsiteURI>
             <ns3:IndustryClassificationCode>4.589.569</ns3:IndustryClassificationCode>

@@ -488,7 +488,7 @@ public class ClientFrame extends JFrame
 		helpMenu.add(updateItem);
 		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
 //		MMM: Comment notifyItem before new version of Ruta Client is released
-		helpMenu.add(notifyItem);
+//		helpMenu.add(notifyItem);
 		JMenuItem reportBugItem = new JMenuItem("Report a Bug");
 		helpMenu.add(reportBugItem);
 		JMenuItem exploreBugItem = new JMenuItem("Explore the Bugs");
