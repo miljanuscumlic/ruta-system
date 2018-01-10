@@ -139,13 +139,13 @@
     <Loggers>
     
     	<!-- Ruta client loggers -->
-    	<Logger name="rs.ruta.client" additivity="false" level="warn">
-            <!-- <AppenderRef ref="STDOUT"/> -->
+    	<Logger name="rs.ruta.client" additivity="false" level="info">
+            <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ruta.client"/>
         </Logger>
         
-        <Logger name="rs.ruta.common" additivity="false" level="warn">
-            <!-- <AppenderRef ref="STDOUT"/> -->
+        <Logger name="rs.ruta.common" additivity="false" level="info">
+            <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ruta.client"/>
         </Logger>
         <!-- END Ruta client loggers -->

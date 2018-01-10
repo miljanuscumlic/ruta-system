@@ -5,7 +5,7 @@
       http://www.jboss.com/xml/ns/javaee
       http://www.jboss.org/j2ee/schema/jboss-web_10_0.xsd"
       version="10.0">
-  <context-root>/ruta-server-0.1.0-SNAPSHOT</context-root>
+  <context-root>/ruta-server-0.2.0-SNAPSHOT</context-root>
   <virtual-host>develop-host</virtual-host>
   <server-instance>develop-server</server-instance>
 </jboss-web>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.ruta</groupId>
 	<artifactId>ruta-common</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<name>RutaCommon</name>
 	<packaging>jar</packaging>
 	<description>Common shared classes between client and server projects</description>

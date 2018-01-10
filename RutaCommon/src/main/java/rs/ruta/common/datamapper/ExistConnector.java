@@ -24,7 +24,7 @@ public class ExistConnector implements DatastoreConnector
 	private static String existRootCollectionPath = "/db";
 	private static String rutaDevelopCollectionPath = existRootCollectionPath + "/ruta-develop"; // path of the application's base collection in snapshot version
 	private static String rutaReleaseCollectionPath = existRootCollectionPath + "/ruta"; // path of the application's base collection in release version
-	private static String rutaCollectionPath = rutaReleaseCollectionPath; // path of the application's base collection
+	private static String rutaCollectionPath = rutaDevelopCollectionPath; //rutaReleaseCollectionPath; // path of the application's base collection
 	private static String uriSufix = "/exist/xmlrpc";
 	private static String server = "localhost";
 	private static String port = "8888";

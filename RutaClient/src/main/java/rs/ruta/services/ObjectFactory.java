@@ -42,8 +42,8 @@ public class ObjectFactory {
     private final static QName _User_QNAME = new QName("urn:rs:ruta:services", "User");
     private final static QName _SearchCriterion_QNAME = new QName("urn:rs:ruta:common", "SearchCriterion");
     private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
-    private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/services", "FindAllBugReports");
     private final static QName _ReportAttachment_QNAME = new QName("urn:rs:ruta:common", "ReportAttachment");
+    private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/services", "FindAllBugReports");
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
     private final static QName _InsertImageResponse_QNAME = new QName("http://ruta.rs/services", "InsertImageResponse");
     private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
@@ -71,8 +71,8 @@ public class ObjectFactory {
     private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
-    private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
     private final static QName _ExistTransaction_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
+    private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
     private final static QName _RutaVersion_QNAME = new QName("urn:rs:ruta:common", "RutaVersion");
     private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/services", "InsertBugReport");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
@@ -86,6 +86,30 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link ExistTransaction }
+     * 
+     */
+    public ExistTransaction createExistTransaction() {
+        return new ExistTransaction();
+    }
+
+    /**
+     * Create an instance of {@link User }
+     * 
+     */
+    public User createUser() {
+        return new User();
+    }
+
+    /**
+     * Create an instance of {@link PartyID }
+     * 
+     */
+    public PartyID createPartyID() {
+        return new PartyID();
     }
 
     /**
@@ -433,30 +457,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ExistTransaction }
-     * 
-     */
-    public ExistTransaction createExistTransaction() {
-        return new ExistTransaction();
-    }
-
-    /**
-     * Create an instance of {@link PartyID }
-     * 
-     */
-    public PartyID createPartyID() {
-        return new PartyID();
-    }
-
-    /**
-     * Create an instance of {@link User }
-     * 
-     */
-    public User createUser() {
-        return new User();
-    }
-
-    /**
      * Create an instance of {@link Operation }
      * 
      */
@@ -591,21 +591,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReports }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllBugReports")
-    public JAXBElement<FindAllBugReports> createFindAllBugReports(FindAllBugReports value) {
-        return new JAXBElement<FindAllBugReports>(_FindAllBugReports_QNAME, FindAllBugReports.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ReportAttachment }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "ReportAttachment")
     public JAXBElement<ReportAttachment> createReportAttachment(ReportAttachment value) {
         return new JAXBElement<ReportAttachment>(_ReportAttachment_QNAME, ReportAttachment.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReports }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllBugReports")
+    public JAXBElement<FindAllBugReports> createFindAllBugReports(FindAllBugReports value) {
+        return new JAXBElement<FindAllBugReports>(_FindAllBugReports_QNAME, FindAllBugReports.class, null, value);
     }
 
     /**
@@ -852,21 +852,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
-    public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
-        return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ExistTransaction }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "ExistTransaction")
     public JAXBElement<ExistTransaction> createExistTransaction(ExistTransaction value) {
         return new JAXBElement<ExistTransaction>(_ExistTransaction_QNAME, ExistTransaction.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
+    public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
+        return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
     }
 
     /**
