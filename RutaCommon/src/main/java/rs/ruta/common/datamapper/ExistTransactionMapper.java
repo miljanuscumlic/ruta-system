@@ -83,17 +83,10 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
 	 */
 	@Override
-	public String createID(Collection collection) throws XMLDBException
+	public synchronized String createID(Collection collection) throws XMLDBException
 	{
 		String id = trimID(collection.createId());
 		return id;
-	}
-
-	@Override
-	public void delete(String id, DSTransaction transaction) throws DetailException
-	{
-		super.delete(id, transaction);
-		loadedTransactions.remove(id);
 	}
 
 	@Override
@@ -125,6 +118,12 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	protected ExistTransaction getCachedObject(String id)
 	{
 		return loadedTransactions.get(id);
+	}
+
+	@Override
+	protected ExistTransaction removeCachedObject(String id)
+	{
+		return loadedTransactions.remove(id);
 	}
 
 	@Override

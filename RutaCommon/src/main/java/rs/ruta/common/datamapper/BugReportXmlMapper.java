@@ -24,14 +24,14 @@ import rs.ruta.common.SearchCriterion;
 public class BugReportXmlMapper extends XmlMapper<BugReport>
 {
 	final private static String collectionPath = "/bug-report";
-	final private static String objectPackageName = "rs.ruta.common";
+	final private static String objectPackageName = BugReport.class.getPackage().getName(); //"rs.ruta.common"; //MMM: if OK should be changed everywhere - it is better to retrieve package name through class object than set it as static String, in a case a class change its destinantion
 	final private static String queryBugReport = "search-bug-report.xq"; //MMM: not implemented yet
 	final private static String nextIdDocument = "nextId.xml";
 
 	public BugReportXmlMapper(ExistConnector connector) throws DetailException
 	{
 		super(connector);
-		if(openDocument(collectionPath, nextIdDocument) == null)
+		if(openDocument(collectionPath, nextIdDocument) == null) //MMM: here should be checked whether there are some BugReports in the collection and if there are retrive last used Id
 			saveDocument(collectionPath, nextIdDocument, "<nextId>0</nextId>");
 	}
 

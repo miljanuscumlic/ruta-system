@@ -22,6 +22,7 @@ public class ObjectFactory
 	public final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
 	public final static QName _PartyID_QNAME = new QName("urn:rs:ruta:services", "PartyID");
 	public final static QName _User_QNAME = new QName("urn:rs:ruta:services", "User");
+	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:services", "Followers");
 
 	/**Creates an instance of {@link RutaVersion}.
 	 * @return created {@code RutaVersion} object and never {@code null}
@@ -118,6 +119,24 @@ public class ObjectFactory
 		  return new JAXBElement<User>(_User_QNAME, User.class, null, value);
 	  }
 
+	  /**Creates an instance of {@link Followers}.
+		 * @return created {@code Followers} object and never {@code null}
+		 */
+		@Nonnull
+		public Followers createFollowers()
+		{
+			return new Followers();
+		}
+
+		/** Creates an instance of {@link JAXBElement }{@code <}{@link Followers }{@code >}.
+		 * @return created JAXBElement and never {@code null}
+		 */
+		@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "Followers")
+		@Nonnull
+		public JAXBElement<Followers> createFollowers(@Nullable final Followers value)
+		{
+			return new JAXBElement<Followers>(_Followers_QNAME, Followers.class, null, value);
+		}
 
 }
 

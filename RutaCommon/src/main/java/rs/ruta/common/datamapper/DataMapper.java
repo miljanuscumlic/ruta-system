@@ -82,15 +82,24 @@ public interface DataMapper<T, ID>
 	//MMM: maybe this method should be excluded from the interface, and use only the variant with the username(=null)
 	public void insert(T object) throws DetailException;
 
-	/**Inserts object to the data store. If necessary unique id of the object may be created.
+	/**Inserts object to the data store. If necessary unique id of the object may be created. This method is supposed
+	 * to be used only inside {@code DataMapper} class hierarchy because {@link DSTransaction} object is an
+	 * argument, and objects of that class are created only in {@code DataMapper}s subclasses.
 	 * @param username username of the user whose object is to be stored in the datastore
 	 * @param object object to be stored
 	 * @param transaction data store transaction which insert is part of
 	 * @return object's id
 	 * @throws DetailException if object cannot be insert in the store
 	 */
-	public ID insert(String username, T object, DSTransaction transaction) throws DetailException;
+//	@Deprecated // MMM: used as protected method in XmlMapper
+//	public ID insert(String username, T object, DSTransaction transaction) throws DetailException;
 
+	/**Inserts object to the data store. If necessary unique id of the object may be created.
+	 * @param username username of the user whose object is to be stored in the datastore
+	 * @param object object to be stored
+	 * @return object's id
+	 * @throws DetailException if object cannot be insert in the store
+	 */
 	public ID insert(String username, T object) throws DetailException;
 
 	/**Updates object with passed id.
@@ -109,8 +118,15 @@ public interface DataMapper<T, ID>
 	 * @return object's ID
 	 * @throws DetailException if object could not be updated
 	 */
+	@Deprecated
 	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
 
+	/**Updates the object in the data store.
+	 * @param username user's username
+	 * @param object object to be updated
+	 * @return object's ID
+	 * @throws DetailException if object could not be updated
+	 */
 	public ID update(String username, T object) throws DetailException;
 
 	//MMM: maybe unnecessary method ???
@@ -146,24 +162,17 @@ public interface DataMapper<T, ID>
 	public void delete(ID id, DSTransaction transaction) throws DetailException;
 
 	/**Deletes user from the data store.
-	 * @param transaction data store transaction which user deletion is part of
 	 * @param user' username
 	 * @throws DetailException if user cannot be deleted
 	 */
-	default public void deleteUser(String username, DSTransaction transaction) throws DetailException {}
-
 	default public void deleteUser(String username) throws DetailException {}
 
 	/**Registers new user with the data store.
 	 * @param username user's username
 	 * @param password user's password
-	 * @param transaction data store transaction which registration of the user is part of
 	 * @return user's identification object
 	 * @throws DetailException if user could not be registered
 	 */
-	default public ID registerUser(String username, String password, DSTransaction transaction)
-			throws DetailException { return null; }
-
 	default public ID registerUser(String username, String password) throws DetailException { return null; }
 
 	/**Gets user's secret key from the data store.

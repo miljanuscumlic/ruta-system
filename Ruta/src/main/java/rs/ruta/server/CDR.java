@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.activation.DataHandler;
 import javax.annotation.*;
@@ -29,6 +31,7 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.Followers;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
@@ -61,10 +64,14 @@ public class CDR implements Server
 	private WebServiceContext wsCtx;
 	private ServletContext sCtx;
 	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.server");
+	private ExecutorService pool;
+	private MapperRegistry mapperRegistry;
 
 	public CDR()
 	{
+		mapperRegistry = MapperRegistry.getInstance();
 		checkDataStore();
+		createThreadPool();
 	}
 
 	private void checkDataStore()
@@ -79,6 +86,14 @@ public class CDR implements Server
 		}
 	}
 
+	/**Creates Thread pool managing threads responsible for distribution of documents between Parties.
+	 *
+	 */
+	private void createThreadPool()
+	{
+		pool = Executors.newCachedThreadPool();
+	}
+
 	private void init() throws DetailException
 	{
 		if(wsCtx == null)
@@ -90,6 +105,14 @@ public class CDR implements Server
 		}
 	}
 
+	/**Releases resources (e.g. thread pool) before the removal of this {@code CDR} instance from the container.
+	 */
+	@PreDestroy
+	private void shutdown()
+	{
+		pool.shutdown();
+	}
+
 	@Override
 	@WebMethod
 	public void insertCatalogue(String username, CatalogueType cat) throws RutaException
@@ -97,7 +120,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(CatalogueType.class).insert(username, cat);
+			mapperRegistry.getMapper(CatalogueType.class).insert(username, cat);
 		}
 		catch(Exception e)
 		{
@@ -117,7 +140,8 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(CatalogueType.class).update(username, cat);
+			mapperRegistry.getMapper(CatalogueType.class).update(username, cat);
+			pool.submit(() -> {}); //MMM: define task inside the Runnable
 		}
 		catch(Exception e)
 		{
@@ -138,7 +162,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			cat = MapperRegistry.getInstance().getMapper(CatalogueType.class).findByUserId(id);
+			cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(id);
 			return cat;
 		}
 		catch(Exception e)
@@ -159,7 +183,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(CatalogueDeletionType.class).insert(username, catDeletion);
+			mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catDeletion);
 			//			MapperRegistry.getMapper(CatalogueType.class).delete(id); //deprecated: when CatalogueDeletion is not used
 		}
 		catch(Exception e)
@@ -181,7 +205,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			secretKey = (String) MapperRegistry.getInstance().getMapper(User.class).registerUser(username, password);
+			secretKey = (String) mapperRegistry.getMapper(User.class).registerUser(username, password);
 			return secretKey;
 		}
 		catch(Exception e)
@@ -204,8 +228,8 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(PartyType.class).insert(username, party);
-			id = MapperRegistry.getInstance().getMapper(User.class).getUserID(username);
+			mapperRegistry.getMapper(PartyType.class).insert(username, party);
+			id = mapperRegistry.getMapper(User.class).getUserID(username);
 			return id;
 		}
 		catch(Exception e)
@@ -227,7 +251,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(PartyType.class).update(username, party);
+			mapperRegistry.getMapper(PartyType.class).update(username, party);
 		}
 		catch(Exception e)
 		{
@@ -247,7 +271,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(User.class).deleteUser(username);
+			mapperRegistry.getMapper(User.class).deleteUser(username);
 		}
 		catch(Exception e)
 		{
@@ -268,7 +292,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult =  MapperRegistry.getInstance().getMapper(PartyType.class).findMany(criterion);
+			searchResult =  mapperRegistry.getMapper(PartyType.class).findMany(criterion);
 
 			/*			logger.info("*****************************************************************");
 			long fm1avg = 0, fm2avg = 0, fm3avg = 0;
@@ -334,7 +358,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult = MapperRegistry.getInstance().getMapper(CatalogueType.class).findMany(criterion);
+			searchResult = mapperRegistry.getMapper(CatalogueType.class).findMany(criterion);
 			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
@@ -355,7 +379,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult = MapperRegistry.getInstance().getMapper(BugReport.class).findMany(criterion);
+			searchResult = mapperRegistry.getMapper(BugReport.class).findMany(criterion);
 			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
@@ -377,7 +401,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			searchResult = MapperRegistry.getInstance().getMapper(PartyType.class).findAll();
+			searchResult = mapperRegistry.getMapper(PartyType.class).findAll();
 			logger.info("Finished finding all parties");
 			return searchResult.size() != 0 ? searchResult : null;
 		}
@@ -398,7 +422,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			RutaVersion latestVersion = MapperRegistry.getInstance().getMapper(RutaVersion.class).find(null);
+			RutaVersion latestVersion = mapperRegistry.getMapper(RutaVersion.class).find(null);
 			if(latestVersion.getVersion().compareTo(currentVersion) <= 0) //there is no new version
 				latestVersion = null;
 			return latestVersion;
@@ -421,7 +445,7 @@ public class CDR implements Server
 		{
 			init();
 			//			String id =  MapperRegistry.getMapper(RutaVersion.class).createID();
-			MapperRegistry.getInstance().getMapper(RutaVersion.class).insert(null, version);
+			mapperRegistry.getMapper(RutaVersion.class).insert(null, version);
 		}
 		catch(Exception e)
 		{
@@ -441,7 +465,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			MapperRegistry.getInstance().getMapper(BugReport.class).insert(null, bugReport);
+			mapperRegistry.getMapper(BugReport.class).insert(null, bugReport);
 		}
 		catch(Exception e)
 		{
@@ -461,7 +485,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			bugReport = MapperRegistry.getInstance().getMapper(BugReport.class).find(id);
+			bugReport = mapperRegistry.getMapper(BugReport.class).find(id);
 			return bugReport;
 		}
 		catch(Exception e)
@@ -481,9 +505,9 @@ public class CDR implements Server
 		try
 		{
 			init();
-			BugReport bugReport = MapperRegistry.getInstance().getMapper(BugReport.class).find(id);
+			BugReport bugReport = mapperRegistry.getMapper(BugReport.class).find(id);
 			bugReport.addComment(comment);
-			MapperRegistry.getInstance().getMapper(BugReport.class).update(null, bugReport);
+			mapperRegistry.getMapper(BugReport.class).update(null, bugReport);
 		}
 		catch(Exception e)
 		{
@@ -495,6 +519,40 @@ public class CDR implements Server
 				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 	}
+
+/*	@Override
+	public void insertFollower(String username, String fId) throws RutaException
+	{
+		try
+		{
+			init();
+			String id = mapperRegistry.getMapper(User.class).getUserID(username);
+			Followers follower = mapperRegistry.getMapper(Followers.class).find(id);
+		}
+
+	}*/
+
+	@Override
+	public void addFollowers(String username, Followers followers) throws RutaException
+	{
+		try
+		{
+			init();
+			Followers f = mapperRegistry.getMapper(Followers.class).find(username);
+			f.add(followers);
+			mapperRegistry.getMapper(Followers.class).update(username, f);
+		}
+		catch(Exception e)
+		{
+			String exceptionMsg = "Follower(s) could not be added to the Party!";
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+	}
+
 	@Deprecated
 	@Override
 	public List<BugReport> findAllBugReports() throws RutaException
@@ -503,7 +561,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			bugReports = MapperRegistry.getInstance().getMapper(BugReport.class).findAll();
+			bugReports = mapperRegistry.getMapper(BugReport.class).findAll();
 			return bugReports;
 		}
 		catch(Exception e)
@@ -526,8 +584,8 @@ public class CDR implements Server
 		try
 		{
 			init();
-			String id =  MapperRegistry.getInstance().getMapper(BugReport.class).createID();
-			MapperRegistry.getInstance().getMapper(BugReport.class).insert(image, id, transaction);
+			String id =  mapperRegistry.getMapper(BugReport.class).createID();
+			mapperRegistry.getMapper(BugReport.class).insert(image, id, transaction);
 		}
 		catch(Exception e)
 		{
@@ -559,8 +617,8 @@ public class CDR implements Server
 			bin.close();
 			bout.close();
 
-			String id =  MapperRegistry.getInstance().getMapper(BugReport.class).createID();
-			MapperRegistry.getInstance().getMapper(BugReport.class).insert(file, id, transaction);
+			String id =  mapperRegistry.getMapper(BugReport.class).createID();
+			mapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
 		}
 		catch(Exception e)
 		{
@@ -582,8 +640,8 @@ public class CDR implements Server
 		{
 			init();
 			File file = attachment.getFile();
-			String id =  MapperRegistry.getInstance().getMapper(BugReport.class).createID();
-			MapperRegistry.getInstance().getMapper(BugReport.class).insert(file, id, transaction);
+			String id =  mapperRegistry.getMapper(BugReport.class).createID();
+			mapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
 		}
 		catch(Exception e)
 		{

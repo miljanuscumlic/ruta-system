@@ -98,6 +98,12 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
+	protected PartyType removeCachedObject(String id)
+	{
+		return loadedParties.remove(id);
+	}
+
+	@Override
 	protected void putCacheObject(String id, PartyType object)
 	{
 		loadedParties.put(id, object);
@@ -132,7 +138,8 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		return id;
 	}
 
-	@Deprecated
+	//MMM: not used anymore
+/*	@Deprecated
 	@Override
 	public String insert(String username, PartyType party, DSTransaction transaction) throws DetailException
 	{
@@ -173,14 +180,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 				logger.error("Exception is ", e);;
 			}
 		}
-	}
-
-	@Override
-	public void delete(String id, DSTransaction transaction) throws DetailException
-	{
-		super.delete(id, transaction);
-		loadedParties.remove(id);
-	}
+	}*/
 
 	/**Sets the unique identification number for the party.
 	 * @param party
@@ -196,10 +196,9 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		identifications.get(0).getID().setValue(id);
 	}
 
-
 	/**Gets the unique ID number for the party.
 	 * @param party
-	 * @return
+	 * @return uuid
 	 */
 	private String getPartyID(PartyType party)
 	{
@@ -230,6 +229,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
+	@Deprecated //MMM: using string replacement
 	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryNameSearchParty);
@@ -242,11 +242,6 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		String partyCity = criterion.getPartyCity();
 		String partyCountry = criterion.getPartyCountry();
 		boolean partyAll = criterion.isPartyAll();
-
-		String itemName = criterion.getItemName();
-		String itemBarcode = criterion.getItemBarcode();
-		String itemCommCode = criterion.getItemCommCode();
-		boolean itemAll = criterion.isItemAll();
 
 		String preparedQuery = query;
 		if(partyName != null)

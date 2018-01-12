@@ -1,13 +1,11 @@
 package rs.ruta.common.datamapper;
 
 import java.io.StringReader;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.exist.xmldb.XQueryService;
 import org.xmldb.api.base.Collection;
@@ -57,20 +55,14 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 		loadedCatalogues.put(id, catalogue);
 	}
 
-	@Override
+	//MMM: not used anymore
+/*	@Override
 	public String insert(String username, CatalogueType object, DSTransaction transaction) throws DetailException
 	{
 		String id = getID(username);
 		insert(object, id, transaction);
 		return id;
-	}
-
-	@Override
-	public void delete(String id, DSTransaction transaction) throws DetailException
-	{
-		super.delete(id, transaction);
-		loadedCatalogues.remove(id);
-	}
+	}*/
 
 /*	@Override
 	public void delete(Object ref, String id) throws DetailException
@@ -96,12 +88,6 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	protected Class<?> getObjectClass()
 	{
 		return CatalogueType.class;
-	}
-
-	@Override
-	protected CatalogueType getCachedObject(String id)
-	{
-		return loadedCatalogues.get(id);
 	}
 
 	//@Deprecated //MMM: delete it
@@ -150,12 +136,25 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
+	protected CatalogueType getCachedObject(String id)
+	{
+		return loadedCatalogues.get(id);
+	}
+
+	@Override
+	protected CatalogueType removeCachedObject(String id)
+	{
+		return loadedCatalogues.remove(id);
+	}
+
+	@Override
 	protected void clearCachedObjects()
 	{
 		loadedCatalogues.clear();
 	}
 
 	@Override
+	@Deprecated //MMM: using string replacement
 	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException
 	{
 		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);

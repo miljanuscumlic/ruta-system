@@ -60,7 +60,7 @@ public class Client implements RutaNode
 	private Party CDRParty;
 	//	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper; //MMM: not used anymore
 	private ClientFrame frame;
-	private static RutaVersion version = new RutaVersion("Client", "0.2.0", "0.1.0", null);
+	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);
 	private Properties properties;
 	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 	private List<BugReport> bugReports;
@@ -187,7 +187,7 @@ public class Client implements RutaNode
 		{
 			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
 					"Information", JOptionPane.INFORMATION_MESSAGE);
-			logger.error("Exception is ", e);
+			logger.warn("Exception is ", e);
 		}
 		Client.cdrEndPoint = properties.getProperty("cdrEndPoint", Client.defaultEndPoint);
 	}

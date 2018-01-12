@@ -17,6 +17,7 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.Followers;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.User;
 
@@ -55,11 +56,11 @@ public class UserXmlMapper extends XmlMapper<User>
 		try
 		{
 			String id = getID(username);
-			//deletes user's Catalogue and Catalogue Deletion documents
+			//deleting user's Catalogue and Catalogue Deletion documents
 			try
 			{
-				MapperRegistry.getInstance().getMapper(CatalogueType.class).delete(id, transaction);
-				MapperRegistry.getInstance().getMapper(CatalogueDeletionType.class).delete(id, transaction);
+				mapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
+				mapperRegistry.getMapper(CatalogueDeletionType.class).delete(id, transaction);
 			}
 			catch(DetailException e)
 			{
@@ -67,18 +68,22 @@ public class UserXmlMapper extends XmlMapper<User>
 					throw e;
 			}
 
-			//deletes Party data
-			MapperRegistry.getInstance().getMapper(PartyType.class).delete(id, transaction);
+			//deleting Party data
+			mapperRegistry.getMapper(PartyType.class).delete(id, transaction);
 
-			//deletes document from the /key collection
+			//deleting document from the /followers collection
+			//MMM: TODO notify all followers about this Party deregistration so that their Client program can move it into Archived parties
+			mapperRegistry.getMapper(Followers.class).delete(id, transaction);
+
+			//deleting document from the /key collection
 			String secretKey = findSecretKey(username);
 			super.delete(secretKey, transaction);
 
-			//deletes document from the system/party-id collection
+			//deleting document from the system/party-id collection
 			String partyID = findPartyID(username);
-			MapperRegistry.getInstance().getMapper(PartyID.class).delete(partyID, transaction);
+			mapperRegistry.getMapper(PartyID.class).delete(partyID, transaction);
 
-			//deletes user from eXist database management system
+			//deleting user from eXist database management system
 			deleteExistAccount(username);
 		}
 		catch(Exception e)
@@ -91,47 +96,6 @@ public class UserXmlMapper extends XmlMapper<User>
 		{
 			closeOperation(null, transaction);
 		}
-	}
-
-	@Deprecated
-	@Override
-	public void deleteUser(String username, DSTransaction transaction) throws DetailException
-	{
-		String id = getID(username);
-		//deletes user's Catalogue
-		try
-		{
-			MapperRegistry.getInstance().getMapper(CatalogueType.class).delete(id, transaction);
-		}
-		catch(DetailException e )
-		{
-			if(! "Document does not exist!".equals(e.getMessage()))
-				throw e;
-		}
-		//deletes user's Catalogue Deletion
-		try
-		{
-			MapperRegistry.getInstance().getMapper(CatalogueDeletionType.class).delete(id, transaction);
-		}
-		catch(DetailException e )
-		{
-			if(! "Document does not exist!".equals(e.getMessage()))
-				throw e;
-		}
-
-		//deletes Party data
-		MapperRegistry.getInstance().getMapper(PartyType.class).delete(id, transaction);
-
-		//deletes document from the /key collection
-		String secretKey = findSecretKey(username);
-		super.delete(secretKey, transaction);
-
-		//deletes document from the system/party-id collection
-		String partyID = findPartyID(username);
-		MapperRegistry.getInstance().getMapper(PartyID.class).delete(partyID, transaction);
-
-		//deletes user from eXist database management system
-		deleteExistAccount(username);
 	}
 
 	/**Deletes user account from the Exist user management system. No user related documents (e.g. catalogue)
@@ -200,12 +164,17 @@ public class UserXmlMapper extends XmlMapper<User>
 			//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
 			insertMetadata(username, SECRET_KEY, secretKey);
 			//reservation of unique id for documents in /db/ruta/party
-			String id = (String) (MapperRegistry.getInstance().getMapper(PartyType.class)).insert(username, new PartyType(), transaction);
+			String id = (String) ((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).
+					insert(username, new PartyType(), transaction);
 			insertMetadata(username, DOCUMENT_ID, id);
 			//reservation of uuid for party in /db/ruta/system/party-id
-			String uuid = (String) (MapperRegistry.getInstance().getMapper(PartyID.class)).insert(username, new PartyID(id), transaction);
+			String uuid = (String) ((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).
+					insert(username, new PartyID(id), transaction);
 			insertMetadata(username, PARTY_ID, uuid);
-
+			//setting party as a follower of himself
+			Followers followers = new Followers();
+			followers.setPartyUUID(uuid);
+			((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, followers, transaction);
 			logger.info("Finished registering of the user " + username + " with the CDR service.");
 		}
 		catch (XMLDBException e)
@@ -224,41 +193,6 @@ public class UserXmlMapper extends XmlMapper<User>
 		finally
 		{
 			 closeOperation(null, transaction);
-		}
-		return secretKey;
-	}
-
-	@Deprecated
-	@Override
-	public String registerUser(String username, String password, DSTransaction transaction) throws DetailException
-	{
-		String secretKey = null;
-		try
-		{
-			logger.info("Start of registering of the user " + username + " with the CDR service.");
-			registerUserWithExist(username, password, (ExistTransaction) transaction);
-			//reservation of unique secretKey in /db/ruta/key collection
-			secretKey = (String) insert(username, new User(), transaction);
-			//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
-			insertMetadata(username, SECRET_KEY, secretKey);
-			//reservation of unique id for documents in /db/ruta/party
-			String id = (String) (MapperRegistry.getInstance().getMapper(PartyType.class)).
-					insert(username, new PartyType(), transaction);
-			insertMetadata(username, DOCUMENT_ID, id);
-			//reservation of uuid for party in /db/ruta/system/party-id
-//			String uuid = (String) ((PartyXmlMapper) MapperRegistry.getInstance().getMapper(PartyType.class)).
-//					insertToCollection(uuidCollectionPath, new PartyType(), transaction);
-			String uuid = (String) (MapperRegistry.getInstance().getMapper(PartyID.class)).
-					insert(username, new PartyID(id), transaction);
-			insertMetadata(username, PARTY_ID, uuid);
-
-			logger.info("Finished registering of the user " + username + " with the CDR service.");
-		}
-		catch (XMLDBException e)
-		{
-			logger.error("Could not register the user " + username + " with the CDR service.");
-			logger.error("Exception is ", e);
-			throw new UserException("User has insufficient data in the database, or data could not be retrieved.");
 		}
 		return secretKey;
 	}

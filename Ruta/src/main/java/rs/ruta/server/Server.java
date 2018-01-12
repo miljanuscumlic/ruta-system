@@ -16,6 +16,7 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.Followers;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.RutaException;
@@ -91,6 +92,12 @@ public interface Server
 	@WebMethod(operationName = "UpdateParty")
 	public void updateParty(String username, PartyType party) throws RutaException;
 
+/*	@WebMethod(operationName = "InsertFollower")
+	public void insertFollower(String username, String fId) throws RutaException;*/
+
+	@WebMethod(operationName = "AddFollower")
+	public void addFollowers(String username, Followers followers) throws RutaException;
+
 	/**Searches the database for all parties that conforms to the search criterion.
 	 * @param criterion search criterion
 	 * @return list of parties conforming the criterion
@@ -115,6 +122,11 @@ public interface Server
 	@WebMethod(operationName = "SearchBugReport")
 	public List<BugReport> searchBugReport(BugReportSearchCriterion criterion) throws RutaException;
 
+	/**Appends {@link ReportComment} to {@link BugReport}.
+	 * @param id {@code BugReport}'s id
+	 * @param comment comment to append
+	 * @throws RutaException if comment could not be added to a {@code BugReport}
+	 */
 	@WebMethod(operationName = "AddBugReportComment")
 	public void addBugReportComment(String id, ReportComment comment) throws RutaException;
 

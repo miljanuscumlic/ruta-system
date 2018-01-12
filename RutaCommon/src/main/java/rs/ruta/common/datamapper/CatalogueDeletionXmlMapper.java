@@ -55,7 +55,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 		String id = null;
 		if(username != null)
 			id = getID(username);
-		MapperRegistry.getInstance().getMapper(CatalogueType.class).delete(id, transaction);
+		mapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
 		return id;
 	}
 
@@ -78,13 +78,6 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}*/
 
 	@Override
-	public void delete(String id, DSTransaction transaction) throws DetailException
-	{
-		super.delete(id, transaction);
-		loadedCatalogueDeletions.remove(id);
-	}
-
-	@Override
 	protected JAXBElement<CatalogueDeletionType> getJAXBElement(CatalogueDeletionType object)
 	{
 		return new ObjectFactory().createCatalogueDeletion(object);
@@ -100,6 +93,12 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	protected CatalogueDeletionType getCachedObject(String id)
 	{
 		return loadedCatalogueDeletions.get(id);
+	}
+
+	@Override
+	protected CatalogueDeletionType removeCachedObject(String id)
+	{
+		return loadedCatalogueDeletions.remove(id);
 	}
 
 	@Override

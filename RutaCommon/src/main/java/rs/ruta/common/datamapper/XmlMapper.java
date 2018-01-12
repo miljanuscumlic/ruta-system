@@ -59,12 +59,16 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	/** True when database transaction has failed.*/
 	private volatile boolean transactionFailure;
 	private ExistConnector connector;
+	/**Registry of all data mappers translating objects to xml documents.
+	 */
+	protected MapperRegistry mapperRegistry;
 
 	public XmlMapper(ExistConnector connector) throws DetailException
 	{
 		this.connector = connector;
 		transactionFailure = true;
 		transactionFactory = MapperRegistry.getTransactionFactory();
+		mapperRegistry = MapperRegistry.getInstance();
 		init();
 	}
 
@@ -376,6 +380,13 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			return null;
 	}
 
+	/**Puts the object in the memory. If particular subclass of {@link XmlMapper} has no map of in-memory objects
+	 * this method does nothing.
+	 * @param id object's id
+	 * @param object object to be loaded in the memory
+	 */
+	protected void putCacheObject(String id, T object) { }
+
 	/**Gets the object if it is loaded in the memory.
 	 * @param id object's id
 	 * @return loaded in-memory object or {@code null} if it is not loaded in the memory or particular subclass
@@ -383,12 +394,12 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 */
 	protected T getCachedObject(String id) { return null; }
 
-	/**Puts the object in the memory. If particular subclass of {@link XmlMapper} has no map of in-memory objects
-	 * this method does nothing.
+	/**Removes the object if it is loaded in the memory.
 	 * @param id object's id
-	 * @param object object to be loaded in the memory
+	 * @return loaded in-memory object or {@code null} if it is not loaded in the memory or particular subclass
+	 * does not have a map of in-memory objects
 	 */
-	protected void putCacheObject(String id, T object) { }
+	protected T removeCachedObject(String id) { return null; }
 
 	@Override
 	public ArrayList<T> findAll() throws DetailException
@@ -664,8 +675,9 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 
 	/**Hook method called from other methods from {@code XmlMapper} class.
 	 * Creates unique ID for an object along doing some subclass specific checks, preparations or modifications.
-	 * This method defines default behaviour but is overidden by any subclass that has a need for specific
-	 * procedures before or after it creates/retrieves an ID.
+	 * This method defines default behaviour which is obtaining the ID by retriving it based on the user's username
+	 * or creating the new one if the username is {@code null}. This behaviour is overidden by subclass if
+	 * it has a need for a specific procedures before or after it creates/retrieves an ID.
 	 * @param collection object's collection
 	 * @param object object which ID should be generated
 	 * @param username user's username which is the object
@@ -691,7 +703,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return id;
 	}
 
-	@Override
+/*	@Override
 	public String insert(String username, T object) throws DetailException
 	{
 		DSTransaction transaction = openOperation();
@@ -721,12 +733,75 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			 closeOperation(collection, transaction);
 		}
 		return id;
-	}
+	}*/
 
 	@Override
-	public String insert(String username, T object, DSTransaction transaction) throws DetailException
+	public String insert(String username, T object) throws DetailException
+	{
+		DSTransaction transaction = openOperation();
+		return insert(username, object, transaction);
+
+		/*Collection collection = null;
+		String id = null;
+		try
+		{
+			collection = getCollection();
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			id = doPrepareAndGetID(collection, object, username, transaction); //subclass's hook operation
+			insert(collection, object, id, (ExistTransaction) transaction);
+			putCacheObject(id, object); //subclass's hook operation
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved.", e);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw e;
+		}
+		finally
+		{
+			 closeOperation(collection, transaction);
+		}
+		return id;*/
+	}
+
+	protected String insert(String username, T object, DSTransaction transaction) throws DetailException
 	{
 		Collection collection = null;
+		String id = null;
+		try
+		{
+			collection = getCollection();
+			if(collection == null)
+				throw new DatabaseException("Collection does not exist.");
+			id = doPrepareAndGetID(collection, object, username, transaction); //subclass's hook operation
+			insert(collection, object, id, (ExistTransaction) transaction);
+			putCacheObject(id, object); //subclass's hook operation
+		}
+		catch(XMLDBException e)
+		{
+			throw new DatabaseException("The collection could not be retrieved.", e);
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			checkTransaction(transaction);
+			throw e;
+		}
+		finally
+		{
+			 closeOperation(collection, transaction);
+		}
+		return id;
+
+
+
+
+		/*Collection collection = null;
 		String id = null;
 		try
 		{
@@ -751,7 +826,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 				logger.error("Exception is ", e);
 			}
 		}
-		return id;
+		return id;*/
 	}
 
 	/**Inserts object in the arbritary collection. Path of that collection is passed as <code>String</code>
@@ -793,7 +868,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	@Override
+	@Override //MMM: not used????
 	public void insert(T object) throws DetailException
 	{
 		DSTransaction transaction = openOperation();
@@ -1166,6 +1241,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 					copyResourceToDeleted(resource, (ExistTransaction) transaction, "DELETE");
 				collection.removeResource(resource);
 				logger.info("Finished deletion of the document " + documentName + " from the location " + getCollectionPath());
+				removeCachedObject(id);
 			}
 		}
 		catch(XMLDBException e)
@@ -1487,7 +1563,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
 	 */
 	@Override
-	public String createID() throws XMLDBException
+	public synchronized String createID() throws XMLDBException
 	{
 		String id = null;
 		Collection collection = null;
@@ -1517,12 +1593,12 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @return unique ID
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
 	 */
-	protected String createID(Collection collection) throws XMLDBException
+	protected synchronized String createID(Collection collection) throws XMLDBException
 	{
 		String id;
 		do
 			id = trimID(collection.createId());
-		while(wasIDDeleted(collection, id));
+		while(isIDDeleted(collection, id));
 //		while(isIDPresentInDeleted(id)); // check deleted ids
 		return id;
 	}
@@ -1567,7 +1643,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @return true if id has been used earlier, otherwise false
 	 * @throws XMLDBException if collection cannot be retrieved from the database
 	 */
-	private boolean wasIDDeleted(Collection collection, String id) throws XMLDBException
+	private boolean isIDDeleted(Collection collection, String id) throws XMLDBException
 	{
 		Collection deleted = null;
 		String collectionPath = ((CollectionImpl) collection).getPathURI().getCollectionPath();
@@ -1740,19 +1816,19 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 */
 	protected String getID(String username) throws DetailException
 	{
-		return ((UserXmlMapper) MapperRegistry.getInstance().getMapper(User.class)).getID(username);
+		return ((UserXmlMapper) mapperRegistry.getMapper(User.class)).getID(username);
 	}
 
 	@Override
 	public String getIDByUserID(String userID) throws DetailException
 	{
-		return MapperRegistry.getInstance().getMapper(PartyID.class).getIDByUserID(userID);
+		return mapperRegistry.getMapper(PartyID.class).getIDByUserID(userID);
 	}
 
 	@Override
 	public String getUserID(String username) throws DetailException
 	{
-		return MapperRegistry.getInstance().getMapper(User.class).getUserID(username);
+		return mapperRegistry.getMapper(User.class).getUserID(username);
 	}
 
 	@Deprecated
@@ -1930,9 +2006,9 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 */
 	public void clearAllCachedObjects() throws DetailException
 	{
-		((PartyXmlMapper) MapperRegistry.getInstance().getMapper(PartyType.class)).clearCachedObjects();
-		((CatalogueXmlMapper) MapperRegistry.getInstance().getMapper(CatalogueType.class)).clearCachedObjects();
-		((CatalogueDeletionXmlMapper) MapperRegistry.getInstance().getMapper(CatalogueDeletionType.class)).clearCachedObjects();
+		((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
+		((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();
+		((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).clearCachedObjects();
 	}
 
 }
