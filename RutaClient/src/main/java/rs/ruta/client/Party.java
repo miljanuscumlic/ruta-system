@@ -25,6 +25,24 @@ public class Party extends PartyType
 
 	public Party() { super(); }
 
+	/**Copy constructor that copies passed {@link PartyType} superclass object and
+	 * retrieves new {@code Party} object.
+	 * @param party
+	 */
+	public Party(PartyType party)
+	{
+		super();
+		party.cloneTo((PartyType) this);
+	}
+
+	@Override
+	public Party clone()
+	{
+		Party ret = new Party();
+	    super.cloneTo((PartyType) ret);
+	    return ret;
+	}
+
 	public String getSimpleName()
 	{
 		try
@@ -684,25 +702,13 @@ public class Party extends PartyType
 		 identifications.get(0).getID().setValue(id);
 	}
 
-	/**Returns Party's ID or <code>null</code> if ID is not set.
-	 * @return ID or <code>null</code> if ID is  not set
+	/**Returns Party's ID or {@code null} if ID is not set.
+	 * @return ID or {@code null} if ID has not been set
 	 */
 	public String getPartyID()
 	{
-		try
-		{
-			String ID = InstanceFactory.getPropertyOrNull(super.getPartyIdentification().get(0).getID(), IDType::getValue);
-			return ID.equals("") ? null : ID;
-		}
-		catch(Exception e) { return null; }
-	}
-
-	@Override
-	public Party clone()
-	{
-		Party ret = new Party();
-	    super.cloneTo((PartyType) ret);
-	    return ret;
+		String ID = InstanceFactory.getPropertyOrNull(super.getPartyIdentification().get(0).getID(), IDType::getValue);
+		return ("").equals(ID) ? null : ID;
 	}
 
 }

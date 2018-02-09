@@ -29,18 +29,49 @@ public interface DSTransaction extends AutoCloseable
 	 */
 	public boolean isEnabled();
 
-	/**Roll backs all transactions.
+	/**Checks whether the transaction should be kept alive, and not closed.
+	 * @return true if transaction should be kept alive
+	 */
+	public boolean isKeepAlive();
+
+	/**Sets the boolean field telling whether the transaction should be kept alive i.e not closed
+	 * in the method.
+	 * @param keepAlive true if transaction should be kept alive
+	 */
+	public void setKeepAlive(boolean keepAlive);
+
+	/**Checks whether the transaction has failed.
+	 * @return true if transaction has been failed
+	 */
+	public boolean isFailed();
+
+	/**Sets the boolean field telling whether the transaction has failed.
+	 * @param failed true if transaction has been failed
+	 */
+	public void setFailed(boolean failed);
+
+	/**Gets the timestamp of the {@code DSTransaction}s creation.
+	 * @return the timestamp
+	 */
+	public long getTimestamp();
+
+	/**Sets the timestamp of the {@code DSTransaction}s creation.
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(long timestamp);
+
+	/**Roll backs all outstanding transactions.
 	 * @throws DetailException if could not connect to the database or could not to roll back the transactions
 	 */
-	public static void rollbackAll() throws DetailException
-	{
-		List<DSTransaction> transactions  = (List<DSTransaction>) MapperRegistry.getInstance().getMapper(DSTransaction.class).findAll();
-		if(transactions != null)
-			for(DSTransaction t: transactions)
-			{
-				t.rollback();
-				t.close();
-			}
-	}
+	public static void rollbackAll() throws DetailException {}
 
+	/**Gets the transaction's ID.
+	 * @return transaction's ID
+	 */
+	public String getID();
+
+	/**Sets the transaction's ID.
+	 * @param transactionID ID to set
+	 */
+	public void setID(String transactionID);
 }

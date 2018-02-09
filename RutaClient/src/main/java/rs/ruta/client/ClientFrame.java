@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +16,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -50,6 +53,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBException;
 
@@ -57,10 +61,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.Followers;
+import rs.ruta.common.InstanceFactory;
 
 public class ClientFrame extends JFrame
 {
@@ -84,10 +92,15 @@ public class ClientFrame extends JFrame
 	private BugExploreDialog bugExploreDialog;
 //	private Component tab0RightPane;
 //	private Component tab0LeftPane;
+	private Component leftPane;
+	private Component rightPane;
 	private JComponent tab0Pane;
+	private JPopupMenu partyTreePopupMenu;
 	private JPopupMenu searchTreePopupMenu;
 	private JPopupMenu cataloguePopupMenu;
 	private JFileChooser chooser;
+	private JTree partyTree;
+	private JTree searchTree;
 
 	private JMenuItem myPartyItem = new JMenuItem("My Party");
 	private JMenuItem myCatalogueItem = new JMenuItem("My Products");
@@ -108,9 +121,6 @@ public class ClientFrame extends JFrame
 	{
 		this.client = client;
 		this.client.setFrame(this);
-
-		//TESTING LOGGER
-		logger.warn("No warning, just testing the logger.");
 
 		//get frame related properties
 		Properties properties = client.getProperties();
@@ -225,7 +235,7 @@ public class ClientFrame extends JFrame
 					{
 						myParty = parties.get(0);
 						Search.setSearchNumber(myParty.getSearchNumber());
-						updateTitle(myParty.getCoreParty().getSimpleName());
+						updateTitle(myParty.getPartyName());
 						client.setMyParty(myParty);
 						//client.insertMyParty();
 						repaintTabbedPane(); // frame update
@@ -413,7 +423,7 @@ public class ClientFrame extends JFrame
 			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
-				if(client.getMyParty().getFollowingParties().size() != 0)
+				if(client.getMyParty().getMyFollowingParty() != null)
 				{
 					disableCatalogueMenuItems();
 					//pulling Catalogue from CDR
@@ -615,6 +625,25 @@ public class ClientFrame extends JFrame
 		return future;
 	}
 
+	public void followParty(String followingName, String followingID, boolean partner)
+	{
+		BusinessParty following = client.getMyParty().getFollowingParty(followingID);
+		if(following == null)
+		{
+			client.cdrFollowParty(followingName, followingID, partner);
+		}
+		else if(partner && !following.isPartner())
+		{
+			//move following to the business partner list
+			following.setPartner(true);
+			client.getMyParty().addFollowingParty(following);
+			appendToConsole("Party " + followingName + " is already in the following list. But from now it is marked as a business partner.", Color.GREEN);
+			repaintTabbedPane();
+		}
+		else
+			appendToConsole("Party " + followingName + " is already in the following list.", Color.BLACK);
+	};
+
 	/**Enables menu items regarding Search after client gets the response from the CDR service.
 	 * All method calls are made through the {@link EventQueue}.
 	 */
@@ -705,17 +734,17 @@ public class ClientFrame extends JFrame
 		case 0:
 			//constructing the left pane
 			DefaultTreeModel partyTreeModel = new PartyTreeModel(new DefaultMutableTreeNode("Followings"), client.getMyParty());
-			JTree partyTree = new JTree(partyTreeModel);
+			partyTree = new JTree(partyTreeModel);
 			DefaultTreeModel searchTreeModel = new SearchTreeModel(new DefaultMutableTreeNode("Searches"), client.getMyParty());
-			JTree searchTree = new JTree(searchTreeModel);
+			searchTree = new JTree(searchTreeModel);
 			JPanel treePanel = new JPanel(new BorderLayout());
 			treePanel.add(partyTree, BorderLayout.NORTH);
 			treePanel.add(searchTree, BorderLayout.CENTER);
 
-			Component leftPane = new JScrollPane(treePanel);
+			leftPane = new JScrollPane(treePanel);
 			leftPane.setPreferredSize(new Dimension(250, 500));
 
-			Component rightPane = new JLabel();
+			rightPane = new JLabel();
 
 			JLabel blankPane = new JLabel();
 /*			blankPane.setOpaque(true);
@@ -731,16 +760,29 @@ public class ClientFrame extends JFrame
 				Object selectedParty = selectedNode.getUserObject();
 				if (selectedParty instanceof BusinessParty)
 				{
-					AbstractTableModel partnerTableModel = new ProductTableModel(false);
-					JTable partnerTable = createCatalogueTable(partnerTableModel);
-					((ProductTableModel) partnerTableModel).setBusinessParty((BusinessParty) selectedParty);
-					arrangeTab0(leftPane, new JScrollPane(partnerTable));
+					ProductTableModel partnerTableModel = new ProductTableModel(false);
+					JTable partnerTable = createCatalogueTable(partnerTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
+					partnerTableModel.setBusinessParty((BusinessParty) selectedParty);
+					rightPane = new JScrollPane(partnerTable);
+					arrangeTab0(leftPane, rightPane);
 				}
 				else //String
-					arrangeTab0(leftPane, blankPane);
+				{
+					PartyListTableModel partiesTableModel = new PartyListTableModel();
+					JTable partiesTable = createPartyListTable(partiesTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
+
+					if("Business Partners".equals((String)selectedParty))
+						partiesTableModel.setParties(client.getMyParty().getBusinessPartners());
+					else if("Other Parties".equals((String)selectedParty))
+						partiesTableModel.setParties(client.getMyParty().getOtherParties());
+					else if("Archived Parties".equals((String)selectedParty))
+						partiesTableModel.setParties(client.getMyParty().getArchivedParties());
+					rightPane = new JScrollPane(partiesTable);
+					arrangeTab0(leftPane, rightPane);
+				}
 			});
 
-			//setting action listener for tab repaint on selection of the searche nodes
+			//setting action listener for tab repaint on selection of the search nodes
 			searchTree.addTreeSelectionListener(event ->
 			{
 				TreePath path = searchTree.getSelectionPath();
@@ -748,29 +790,51 @@ public class ClientFrame extends JFrame
 				partyTree.clearSelection();
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 				Object selectedSearch = selectedNode.getUserObject();
-				Class<?> nodeClass = null; // Class object of the node in the tree
-				if(!(selectedSearch instanceof String))
-					nodeClass = ((Search<?>) selectedSearch).getResultClass();
-				else
-					arrangeTab0(leftPane, blankPane);
-				if(nodeClass == PartyType.class)
+				if(selectedSearch instanceof Search)
 				{
-					AbstractTableModel searchPartyTableModel = new PartySearchTableModel(false);
-					((PartySearchTableModel) searchPartyTableModel).setSearch((Search<PartyType>) selectedSearch);
-					JTable searchTable = createSearchPartyTable(searchPartyTableModel);
-					arrangeTab0(leftPane, new JScrollPane(searchTable));
+					Class<?> searchClazz = ((Search<?>) selectedSearch).getResultClass();
+					if(searchClazz == PartyType.class)
+					{
+						AbstractTableModel searchPartyTableModel = new PartySearchTableModel(false);
+						((PartySearchTableModel) searchPartyTableModel).setSearch((Search<PartyType>) selectedSearch);
+						JTable searchTable = createSearchPartyTable(searchPartyTableModel);
+						rightPane = new JScrollPane(searchTable);
+						arrangeTab0(leftPane, rightPane);
+					}
+					else if(searchClazz == CatalogueType.class)
+					{
+						AbstractTableModel searchCatalogueTableModel = new CatalogueSearchTableModel(false);
+						((CatalogueSearchTableModel) searchCatalogueTableModel).setSearch((Search<CatalogueType>) selectedSearch);
+						JTable searchTable = createSearchCatalogueTable(searchCatalogueTableModel);
+						rightPane = new JScrollPane(searchTable);
+						arrangeTab0(leftPane, rightPane);
+					}
 				}
-				else if(nodeClass == CatalogueType.class)
+				else //String
 				{
-					AbstractTableModel searchCatalogueTableModel = new CatalogueSearchTableModel(false);
-					((CatalogueSearchTableModel) searchCatalogueTableModel).setSearch((Search<CatalogueType>) selectedSearch);
-					JTable searchTable = createSearchCatalogueTable(searchCatalogueTableModel);
-					arrangeTab0(leftPane, new JScrollPane(searchTable));
+					SearchListTableModel searchesTableModel = null;
+					JTable searchesTable;
+
+					if("Parties".equals((String)selectedSearch))
+					{
+						searchesTableModel = new SearchListTableModel<PartyType>();
+						searchesTableModel.setSearches(client.getMyParty().getPartySearches());
+					}
+					else if("Catalogues".equals((String)selectedSearch))
+					{
+						searchesTableModel = new SearchListTableModel<CatalogueType>();
+						searchesTableModel.setSearches(client.getMyParty().getCatalogueSearches());
+					}
+
+					searchesTable = createSearchListTable(searchesTableModel);
+					rightPane = new JScrollPane(searchesTable);
+					arrangeTab0(leftPane, rightPane);
 				}
 			});
 
 			//mouse listener for the right click
-			searchTree.addMouseListener(new MouseAdapter() {
+			searchTree.addMouseListener(new MouseAdapter()
+			{
 				@Override
 				public void mouseClicked(MouseEvent event)
 				{
@@ -790,6 +854,91 @@ public class ClientFrame extends JFrame
 			});
 
 			//popup menus
+			partyTreePopupMenu = new JPopupMenu();
+			JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
+			JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
+			JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
+
+			unfollowPartyItem.addActionListener(event ->
+			{
+				final TreePath path = partyTree.getSelectionPath();
+				if(path == null) return;
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final Object selectedParty = selectedNode.getUserObject();
+				if(selectedParty instanceof String)
+					return;
+				else // BusinessParty
+					client.cdrUnfollowParty((BusinessParty) selectedParty);
+			});
+
+			addPartnerItem.addActionListener(event ->
+			{
+				final TreePath path = partyTree.getSelectionPath();
+				if(path == null) return;
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final Object selectedParty = selectedNode.getUserObject();
+				if(selectedParty instanceof String)
+					return;
+				else //BusinessParty
+				{
+					BusinessParty otherParty = ((BusinessParty) selectedParty);
+					otherParty.setPartner(true);
+					client.getMyParty().addFollowingParty(otherParty);
+					appendToConsole("Party " + otherParty.getPartyName() + " has been moved from Other Parties to Business Partners. "
+							+ "Party is still followed by My Party.", Color.GREEN);
+					repaintTabbedPane();
+				}
+			});
+
+			removePartnerItem.addActionListener(event ->
+			{
+				final TreePath path = partyTree.getSelectionPath();
+				if(path == null) return;
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final Object selectedParty = selectedNode.getUserObject();
+				if(selectedParty instanceof String)
+					return;
+				else //BusinessParty
+				{
+					BusinessParty otherParty = ((BusinessParty) selectedParty);
+					otherParty.setPartner(false);
+					client.getMyParty().addFollowingParty(otherParty);
+					appendToConsole("Party " + otherParty.getPartyName() + " has been moved from Business Partners to Other Parties. "
+							+ "Party is still followed by My Party.", Color.GREEN);
+					repaintTabbedPane();
+				}
+			});
+
+			partyTree.addMouseListener(new MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(MouseEvent event)
+				{
+					if(SwingUtilities.isRightMouseButton(event))
+					{
+						TreePath path = partyTree.getPathForLocation(event.getX(), event.getY());
+						partyTree.setSelectionPath(path);
+						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+						Object selectedParty = selectedNode.getUserObject();
+						if(!(selectedParty instanceof String))
+						{
+							if(((BusinessParty) selectedParty).isPartner())
+							{
+								partyTreePopupMenu.remove(unfollowPartyItem);
+								partyTreePopupMenu.add(removePartnerItem);
+							}
+							else
+							{
+								partyTreePopupMenu.remove(removePartnerItem);
+								partyTreePopupMenu.add(addPartnerItem);
+								partyTreePopupMenu.add(unfollowPartyItem);
+							}
+							partyTreePopupMenu.show(partyTree, event.getX(), event.getY());
+						}
+					}
+				}
+			});
+
 			searchTreePopupMenu = new JPopupMenu();
 			JMenuItem againSearchItem = new JMenuItem("Search Again");
 			searchTreePopupMenu.add(againSearchItem);
@@ -798,15 +947,14 @@ public class ClientFrame extends JFrame
 			searchTreePopupMenu.add(renameSearchItem);
 			JMenuItem deleteSearchItem = new JMenuItem("Delete");
 			searchTreePopupMenu.add(deleteSearchItem);
-
 //			((JComponent) searchTree).setComponentPopupMenu(searchTreePopupMenu);
 
 			againSearchItem.addActionListener(event ->
 			{
-				TreePath path = searchTree.getSelectionPath();
+				final TreePath path = searchTree.getSelectionPath();
 				if(path == null) return;
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-				Object selectedSearch = selectedNode.getUserObject();
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final Object selectedSearch = selectedNode.getUserObject();
 				if(selectedSearch instanceof String)
 					return;
 				else
@@ -816,27 +964,18 @@ public class ClientFrame extends JFrame
 			renameSearchItem.addActionListener(event ->
 			{
 				//MMM: should be in a new method of the new class for TabbedPane
-				TreePath path = searchTree.getSelectionPath();
+				final  TreePath path = searchTree.getSelectionPath();
 				if(path == null) return;
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-				Object selectedSearch = selectedNode.getUserObject();
-
-				Class<?> nodeClass = null; // Class object of the node in the tree
-				if(!(selectedSearch instanceof String))
-					nodeClass = ((Search<?>) selectedSearch).getResultClass();
-				else
-					return;
-				MyParty myParty = client.getMyParty();
-				if(nodeClass == PartyType.class)
-				{
-					JOptionPane.showMessageDialog
-					(this, "Should be implemented in the next version of Ruta Client. :)", "Disappointment!", JOptionPane.PLAIN_MESSAGE);
-				}
-				else if(nodeClass == CatalogueType.class)
-				{
-					JOptionPane.showMessageDialog
-					(this, "Should be implemented in the next version of Ruta Client. :)", "Disappointment!", JOptionPane.PLAIN_MESSAGE);
-				}
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final Search<?> selectedSearch = (Search<?>) selectedNode.getUserObject();
+				String newName = (String) JOptionPane.showInputDialog(this, "Enter new name: ", "Rename a search",
+						JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
+				if(newName != null)
+					selectedSearch.setSearchName(newName);
+				searchTree.invalidate();
+				searchTree.revalidate();
+				searchTree.repaint();
+				//arrangeTab0(leftPane, rightPane);
 			});
 
 			deleteSearchItem.addActionListener( event ->
@@ -874,7 +1013,8 @@ public class ClientFrame extends JFrame
 			JTable table = createCatalogueTable(tableModel);
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-			table.addMouseListener(new MouseAdapter() {
+			table.addMouseListener(new MouseAdapter()
+			{
 				@Override
 				public void mouseClicked(MouseEvent event)
 				{
@@ -901,7 +1041,6 @@ public class ClientFrame extends JFrame
 				int col = table.getSelectedColumn();
 
 				MyParty myParty = client.getMyParty();
-//				myParty.getMyProducts().remove(row);
 				myParty.removeProduct(row);
 				loadTab(tabbedPane.getSelectedIndex());
 			});
@@ -917,17 +1056,18 @@ public class ClientFrame extends JFrame
 		tabbedPane.setComponentAt(tabIndex, component);
 	}
 
-	@SuppressWarnings("serial")
 	private JTable createCatalogueTable(AbstractTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel)
 		{
+			private static final long serialVersionUID = -2879401192820075582L;
 			//implementing column header's tooltip
 			@Override
 			protected JTableHeader createDefaultTableHeader()
 			{
 				return new JTableHeader(columnModel)
 				{
+					private static final long serialVersionUID = -2681152311259025964L;
 					@Override
 					public String getToolTipText(MouseEvent e)
 					{
@@ -959,9 +1099,14 @@ public class ClientFrame extends JFrame
 		return table;
 	}
 
-	private JTable createSearchPartyTable(AbstractTableModel tableModel)
+	/**Creates and formats the view of empty table that would contain data from the list of parties.
+	 * @param tableModel model representing list of parties
+	 * @return created table
+	 */
+	private JTable newEmptyPartyListTable(AbstractTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		TableColumnModel colModel = table.getColumnModel();
 		colModel.getColumn(0).setPreferredWidth(20);
 		colModel.getColumn(1).setPreferredWidth(150);
@@ -976,6 +1121,327 @@ public class ClientFrame extends JFrame
 		colModel.getColumn(10).setPreferredWidth(100);
 		colModel.getColumn(11).setPreferredWidth(100);
 		table.setFillsViewportHeight(true);
+		return table;
+	}
+
+	/**Creates table for showing list of parties e.g. Business Partnres, Other Parties etc.
+	 * @param tableModel model containing party data to display
+	 * @param search true if the table displays search results, and false if it displays list of parties
+	 * @return constructed table object
+	 */
+	private JTable createPartyListTable(AbstractTableModel tableModel)
+	{
+		final JTable table = newEmptyPartyListTable(tableModel);
+
+		final JPopupMenu partyTablePopupMenu = new JPopupMenu();
+		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
+		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
+		final JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
+
+		unfollowPartyItem.addActionListener(event ->
+		{
+			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
+			client.cdrUnfollowParty(selectedParty);
+		});
+
+		addPartnerItem.addActionListener(event ->
+		{
+			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
+			{
+				selectedParty.setPartner(true);
+				client.getMyParty().addFollowingParty(selectedParty);
+				appendToConsole("Party " + selectedParty.getPartyName() + " has been moved from Other Parties to Business Partners. "
+						+ "Party is still followed by My Party.", Color.GREEN);
+				repaintTabbedPane();
+//				((AbstractTableModel) table.getModel()).fireTableDataChanged();
+			}
+		});
+
+		removePartnerItem.addActionListener(event ->
+		{
+			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
+			{
+				selectedParty.setPartner(false);
+				client.getMyParty().addFollowingParty(selectedParty);
+				appendToConsole("Party " + selectedParty.getPartyName() + " has been moved from Business Partners to Other Parties. "
+						+ "Party is still followed by My Party.", Color.GREEN);
+				repaintTabbedPane();
+				//((AbstractTableModel) table.getModel()).fireTableDataChanged();
+			}
+		});
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				EventQueue.invokeLater(() ->
+				{
+					final int rowIndex = table.rowAtPoint(event.getPoint());
+					if(SwingUtilities.isRightMouseButton(event))
+					{
+						table.setRowSelectionInterval(rowIndex, rowIndex);
+
+						final TreePath path = partyTree.getSelectionPath();
+						final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+						final Object selectedParty = selectedNode.getUserObject();
+						if(selectedParty instanceof String)
+						{
+							final String nodeTitle = (String) selectedParty;
+							if("Business Partners".equals(nodeTitle))
+							{
+								partyTablePopupMenu.remove(unfollowPartyItem);
+								partyTablePopupMenu.add(removePartnerItem);
+							}
+							else if("Other Parties".equals(nodeTitle))
+							{
+								partyTablePopupMenu.remove(removePartnerItem);
+								partyTablePopupMenu.add(addPartnerItem);
+								partyTablePopupMenu.add(unfollowPartyItem);
+							}
+							partyTablePopupMenu.show(table, event.getX(), event.getY());
+						}
+					}
+					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+					{
+						final CatalogueTableModel catalogueTableModel = new CatalogueTableModel();
+						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
+						final BusinessParty party = partyListTableModel.getParty(rowIndex);
+						catalogueTableModel.setParty(party);
+						final JTable catalogueTable = createCatalogueTable(catalogueTableModel);
+						selectPartyNode(party);
+						rightPane =  new JScrollPane(catalogueTable);
+						arrangeTab0(leftPane, rightPane);
+					}
+				});
+			}
+		});
+
+		return table;
+	}
+
+	/**Selects party's node in the party tree.
+	 * @param party party which node should be selected
+	 */
+	private void selectPartyNode(final BusinessParty party)
+	{
+		final DefaultMutableTreeNode nodeToSelect = searchPartyNode(party);
+		if(nodeToSelect != null)
+		{
+			final TreeNode[] nodes = ((DefaultTreeModel) partyTree.getModel()).getPathToRoot(nodeToSelect);
+			final TreePath treePath = new TreePath(nodes);
+			partyTree.scrollPathToVisible(treePath);
+			partyTree.setSelectionPath(treePath);
+		}
+	}
+
+	/**Gets the {@link DefaultMutableTreeNode node} from the tree for the {@link BusinessParty} user object.
+	 * @param party node's user object
+	 * @return tree node
+	 */
+	private DefaultMutableTreeNode searchPartyNode(BusinessParty party)
+	{
+		DefaultMutableTreeNode node = null;
+		final Enumeration enumeration = ((DefaultMutableTreeNode) partyTree.getModel().getRoot()).breadthFirstEnumeration();
+		while(enumeration.hasMoreElements())
+		{
+			node = (DefaultMutableTreeNode) enumeration.nextElement();
+			if(party == node.getUserObject())
+				break;
+		}
+		return node;
+	}
+
+	private void selectNode(final JTree tree, final Object object)
+	{
+		final DefaultMutableTreeNode nodeToSelect = searchNode(tree, object);
+		if(nodeToSelect != null)
+		{
+			final TreeNode[] nodes = ((DefaultTreeModel) tree.getModel()).getPathToRoot(nodeToSelect);
+			final TreePath treePath = new TreePath(nodes);
+			tree.scrollPathToVisible(treePath);
+			tree.setSelectionPath(treePath);
+		}
+	}
+
+	private DefaultMutableTreeNode searchNode(JTree tree, Object object)
+	{
+		DefaultMutableTreeNode node = null;
+		final Enumeration enumeration = ((DefaultMutableTreeNode) tree.getModel().getRoot()).breadthFirstEnumeration();
+		while(enumeration.hasMoreElements())
+		{
+			node = (DefaultMutableTreeNode) enumeration.nextElement();
+			if(object == node.getUserObject())
+				break;
+		}
+		return node;
+	}
+
+	/**Creates table for showing list of parties that are the result of quering the CDR service data store.
+	 * @param tableModel model containing party data to display
+	 * @param search true if the table displays search results, and false if it displays list of parties
+	 * @return constructed table object
+	 */
+	private JTable createSearchPartyTable(AbstractTableModel tableModel)
+	{
+		final JTable table = newEmptyPartyListTable(tableModel);
+
+		final JPopupMenu popupMenu = new JPopupMenu();
+		final JMenuItem followBusinessPartner = new JMenuItem("Follow as Business Partner");
+		final JMenuItem followParty = new JMenuItem("Follow as Party");
+		popupMenu.add(followBusinessPartner);
+		popupMenu.add(followParty);
+
+		followBusinessPartner.addActionListener(event ->
+		{
+			int rowIndex = table.getSelectedRow();
+			final PartyType followingParty = ((PartySearchTableModel) table.getModel()).getParty(rowIndex);
+			final String followingName = InstanceFactory.getPropertyOrNull(followingParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(followingParty.getPartyIdentificationAtIndex(0),
+					PartyIdentificationType::getIDValue);
+			followParty(followingName, followingID, true);
+		});
+
+		followParty.addActionListener(event ->
+		{
+			int rowIndex = table.getSelectedRow();
+			final PartyType followingParty = ((PartySearchTableModel) table.getModel()).getParty(rowIndex);
+			final String followingName = InstanceFactory.getPropertyOrNull(followingParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(followingParty.getPartyIdentificationAtIndex(0),
+					PartyIdentificationType::getIDValue);
+			followParty(followingName, followingID, false);
+		});
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				EventQueue.invokeLater(() ->
+				{
+					if(SwingUtilities.isRightMouseButton(event))
+					{
+						final int rowIndex = table.rowAtPoint(event.getPoint());
+						table.setRowSelectionInterval(rowIndex, rowIndex);
+						popupMenu.show(table, event.getX(), event.getY());
+					}
+				});
+			}
+		});
+
+		return table;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JTable createSearchListTable(AbstractTableModel tableModel)
+	{
+		if(tableModel == null) return null;
+		final JTable table =  new JTable(tableModel);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		TableColumnModel colModel = table.getColumnModel();
+		colModel.getColumn(0).setPreferredWidth(20);
+		colModel.getColumn(1).setPreferredWidth(150);
+		colModel.getColumn(2).setPreferredWidth(200);
+		colModel.getColumn(3).setPreferredWidth(100);
+		table.setFillsViewportHeight(true);
+
+		JPopupMenu searchTablePopupMenu = new JPopupMenu();
+		JMenuItem againSearchItem = new JMenuItem("Search Again");
+		searchTablePopupMenu.add(againSearchItem);
+		searchTablePopupMenu.addSeparator();
+		JMenuItem renameSearchItem = new JMenuItem("Rename");
+		searchTablePopupMenu.add(renameSearchItem);
+		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		searchTablePopupMenu.add(deleteSearchItem);
+
+		againSearchItem.addActionListener(event ->
+		{
+			int rowIndex = table.getSelectedRow();
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
+			client.cdrSearch(selectedSearch, true);
+			arrangeTab0(leftPane, rightPane);
+		});
+
+		renameSearchItem.addActionListener(event ->
+		{
+			int rowIndex = table.getSelectedRow();
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
+			String newName = (String) JOptionPane.showInputDialog(this, "Enter new name: ", "Rename a search",
+					JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
+			if(newName != null)
+				selectedSearch.setSearchName(newName);
+			arrangeTab0(leftPane, rightPane);
+		});
+
+		deleteSearchItem.addActionListener( event ->
+		{
+			int rowIndex = table.getSelectedRow();
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
+
+			Class<?> searchClazz = selectedSearch.getResultClass();
+			final MyParty myParty = client.getMyParty();
+			if(searchClazz == PartyType.class)
+			{
+				if (myParty.getPartySearches().remove((Search<CatalogueType>) selectedSearch))
+					loadTab(tabbedPane.getSelectedIndex());
+			}
+			else if(searchClazz == CatalogueType.class)
+			{
+				if (myParty.getCatalogueSearches().remove((Search<CatalogueType>) selectedSearch))
+					loadTab(tabbedPane.getSelectedIndex());
+			}
+			arrangeTab0(leftPane, rightPane);
+		});
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				final int rowIndex = table.rowAtPoint(event.getPoint());
+				if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+				{
+					final TreePath path = searchTree.getSelectionPath();
+					final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+					final Object selectedSearch = selectedNode.getUserObject();
+					if(selectedSearch instanceof String)
+					{
+						final String nodeTitle = (String) selectedSearch;
+						if("Parties".equals(nodeTitle))
+						{
+							final PartySearchTableModel tableModel = new PartySearchTableModel(false);
+							final Search<PartyType> search = client.getMyParty().getPartySearches().get(rowIndex);
+							tableModel.setSearch(search);
+							final JTable searchTable = createSearchPartyTable(tableModel);
+							selectNode(searchTree, search);
+							rightPane = new JScrollPane(searchTable);
+							arrangeTab0(leftPane, rightPane);
+						}
+						else if("Catalogues".equals(nodeTitle))
+						{
+							final CatalogueSearchTableModel tableModel = new CatalogueSearchTableModel(false);
+							final Search<CatalogueType> search = client.getMyParty().getCatalogueSearches().get(rowIndex);
+							tableModel.setSearch(search);
+							final JTable searchTable = createSearchCatalogueTable(tableModel);
+							selectNode(searchTree, search);
+							rightPane = new JScrollPane(searchTable);
+							arrangeTab0(leftPane, rightPane);
+						}
+					}
+				}
+				else
+					if(SwingUtilities.isRightMouseButton(event))
+					{
+						table.setRowSelectionInterval(rowIndex, rowIndex);
+						searchTablePopupMenu.show(table, event.getX(), event.getY());
+
+					}
+			}
+		});
+
 		return table;
 	}
 
@@ -998,7 +1464,7 @@ public class ClientFrame extends JFrame
 	 * @param left
 	 * @param right
 	 */
-	private void arrangeTab0(Component left, Component right)
+	private void arrangeTab0(Component left, Component right) //MMM: Does not colapse the tree views :)
 	{
 		if(tab0Pane == null)
 			tab0Pane = new JSplitPane();
@@ -1217,7 +1683,7 @@ public class ClientFrame extends JFrame
 		{
 			while((line = in.readLine()) != null)
 				System.err.println(line);
-			throw new Exception("Error in starting the database.");
+			throw new Exception("Error while starting the database.");
 		}
 		else
 			throw new Exception("Invalid type of the input stream.");
@@ -1226,7 +1692,22 @@ public class ClientFrame extends JFrame
 	//MMM: should be implemented to update view of trees with no path collapsing as it is now
 	public void repaintTabbedPane()
 	{
-		loadTab(tabbedPane.getSelectedIndex());
+		int selectedTab = tabbedPane.getSelectedIndex();
+		loadTab(selectedTab);
+
+/*		if(selectedTab == 0)
+		{
+			leftPane.revalidate();
+			leftPane.repaint();
+			rightPane.revalidate();
+			rightPane.repaint();
+
+			arrangeTab0(leftPane, rightPane);
+		}
+		else
+			loadTab(selectedTab);*/
+
+
 /*		Component treeContainer = ((JComponent) ((JComponent)((JComponent) tab0Pane.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
 		JTree partyTree = (JTree) ((JComponent) treeContainer).getComponent(0);
 		JTree searchTree = (JTree) ((JComponent) treeContainer).getComponent(1);

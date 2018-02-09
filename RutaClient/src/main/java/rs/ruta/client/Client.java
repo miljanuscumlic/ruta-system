@@ -7,6 +7,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.activation.DataHandler;
@@ -32,6 +33,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Cus
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.MonetaryTotalType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.*;
@@ -42,6 +44,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.Followers;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.MapperRegistry;
@@ -156,7 +159,7 @@ public class Client implements RutaNode
 					properties.put("started", false);
 					System.out.println("Shutdown hook ended.");
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
 					logger.error("Exception is ", e);
 				}
@@ -282,7 +285,6 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.registerUserAsync(username, password, futureUser ->
 			{
-				StringBuilder msg = new StringBuilder("My Party has not been registered with the CDR service! ");
 				try
 				{
 					RegisterUserResponse response = futureUser.get();
@@ -303,7 +305,7 @@ public class Client implements RutaNode
 							myParty.getCoreParty().setPartyID(partyID);
 							myParty.setDirtyMyParty(false);
 						}
-						catch (Exception e)
+						catch(Exception e)
 						{
 														//delete set properties after registerUserAsync call
 							myParty.setUsername(null);
@@ -320,16 +322,9 @@ public class Client implements RutaNode
 						}
 					});*/
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					logger.error("Exception is ", e);
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "My Party has not been registered with the CDR service!");
 				}
 				finally
 				{
@@ -356,7 +351,7 @@ public class Client implements RutaNode
 		if(myParty.isRegisteredWithCDR()) // update
 		{
 			cdrUpdateMyParty();
-			myParty.updateMyself();
+			myParty.updateMyself();  //MMM: check this after the registration process has changed
 			frame.repaintTabbedPane();
 		}
 		else // first time input
@@ -373,7 +368,6 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.insertPartyAsync(myParty.getUsername(), myParty.getCoreParty(), futureParty ->
 			{
-				StringBuilder msg = new StringBuilder("My Party has not been registered with the CDR service! ");
 				try
 				{
 					InsertPartyResponse res = futureParty.get();
@@ -382,15 +376,9 @@ public class Client implements RutaNode
 					myParty.setDirtyMyParty(false);
 					frame.appendToConsole("My Party has been successfully synchronised with the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "My Party has not been registered with the CDR service!");
 				}
 				finally
 				{
@@ -416,22 +404,15 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.updatePartyAsync(myParty.getUsername(), myParty.getCoreParty(), future ->
 			{
-				String msg = "My Party has not been synchronised with the CDR service! ";
 				try
 				{
 					UpdatePartyResponse response = future.get();
 					myParty.setDirtyMyParty(false);
 					frame.appendToConsole("My Party has been successfully updated with the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg += "Server responds: ";
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg += cause.getMessage() + " " + ((RutaException) cause).getFaultInfo().getDetail();
-					else
-						msg += trimSOAPFaultMessage(cause.getMessage());
-					frame.appendToConsole(msg, Color.RED);
+					processException(e, "My Party has not been synchronised with the CDR service!");
 				}
 				finally
 				{
@@ -458,7 +439,6 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.deleteUserAsync(myParty.getUsername(), future ->
 			{
-				StringBuilder msg = new StringBuilder("My Party has not been deleted from the CDR service! ");
 				try
 				{
 					DeleteUserResponse response = future.get();
@@ -473,18 +453,13 @@ public class Client implements RutaNode
 					myParty.setCatalogueDeletionID(0);
 					myParty.removeCatalogueIssueDate();
 					myParty.unfollowMyself();
-					frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
+					myParty.setFollowingParties(null);
 					frame.appendToConsole("My Party has been successfully deregistered from the CDR service.", Color.GREEN);
+					frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "My Party has not been deregistered from the CDR service! ");
 				}
 				finally
 				{
@@ -539,7 +514,6 @@ public class Client implements RutaNode
 				//port.putDocument(catalogue);
 				port.insertCatalogueAsync(username, catalogue, future ->
 				{
-					StringBuilder msg = new StringBuilder("My Catalogue has not been deposited to the CDR service! ");
 					try
 					{
 						InsertCatalogueResponse response = future.get();
@@ -550,15 +524,9 @@ public class Client implements RutaNode
 						frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
 						frame.appendToConsole("My Party has been added to the Following parties.", Color.BLACK);
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "My Catalogue has not been deposited to the CDR service! ");
 					}
 					finally
 					{
@@ -622,23 +590,15 @@ public class Client implements RutaNode
 
 				port.updateCatalogueAsync(username, catalogue, future ->
 				{
-					StringBuilder msg = new StringBuilder("My Catalogue has not been updated by the CDR service! ");
 					try
 					{
 						UpdateCatalogueResponse response = future.get();
 						myParty.setDirtyCatalogue(false);
 						frame.appendToConsole("My Catalogue has been successfully updated by the CDR service.", Color.GREEN);
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						logger.error("Exception is ", e);
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "My Catalogue has not been updated by the CDR service! ");
 					}
 					finally
 					{
@@ -699,12 +659,13 @@ public class Client implements RutaNode
 			{
 				try
 				{
-					FindCatalogueResponse response = future.get();
-					CatalogueType catalogue = response.getReturn();
+					final FindCatalogueResponse response = future.get();
+					final CatalogueType catalogue = response.getReturn();
+					final BusinessParty myFollowingParty = myParty.getMyFollowingParty();
 					if(catalogue != null)
 					{
 						frame.appendToConsole("Catalogue has been successfully retrieved from the CDR service.", Color.GREEN);
-						myParty.getFollowingParties().get(0).setProducts(catalogue);
+						myFollowingParty.setProducts(catalogue);
 
 						/*						//creating XML document - for test purpose only
 						ObjectFactory objFactory = new ObjectFactory();
@@ -722,23 +683,17 @@ public class Client implements RutaNode
 					else
 					{
 						StringBuilder consoleMsg = new StringBuilder("Catalogue does not exist.");
-						if(myParty.getFollowingParties().size() != 0)
+						if(myFollowingParty.getProductCount() != 0)
 						{
-							myParty.getFollowingParties().get(0).clearProducts();
+							myFollowingParty.clearProducts();
 							consoleMsg.append(" My Catalogue has been removed from My Party in the Following parties.");
 						}
 						frame.appendToConsole(consoleMsg.toString(), Color.GREEN);
 					}
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					StringBuilder msg = new StringBuilder("Catalogue could not be retrieved from the CDR service! Server responds:");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "Catalogue could not be retrieved from the CDR service! Server responds:");
 				}
 				finally
 				{
@@ -778,7 +733,6 @@ public class Client implements RutaNode
 			String username = myParty.getUsername();
 			port.deleteCatalogueAsync(username, catalogueDeletion, future ->
 			{
-				StringBuilder msg = new StringBuilder("Catalogue has not been deleted from the CDR service! ");
 				try
 				{
 					DeleteCatalogueResponse response = future.get();
@@ -787,15 +741,9 @@ public class Client implements RutaNode
 					myParty.removeCatalogueIssueDate();
 					frame.appendToConsole("Catalogue has been successfully deleted from the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "Catalogue has not been deleted from the CDR service! Server responds: ");
 				}
 				finally
 				{
@@ -812,11 +760,112 @@ public class Client implements RutaNode
 		}
 	}
 
+	/**Sends a follow request to the CDR service.
+	 * @param followingName TODO
+	 * @param followingID Id of the party to follow
+	 * @param partner true when party to be followed is set to be a business partner
+	 */
+	public void cdrFollowParty(String followingName, String followingID, boolean partner)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			String myPartyId = myParty.getPartyID();
+
+			port.followPartyAsync(myPartyId, followingID, future ->
+			{
+				try
+				{
+					FollowPartyResponse response = future.get();
+					PartyType party = response.getReturn();
+					myParty.addFollowingParty(party, partner);
+					StringBuilder msg = new StringBuilder("Party " + followingName + " has been successfully added to the following parties");
+					if(partner)
+						msg.append(" as a business partner.");
+					else
+						msg.append(".");
+					frame.appendToConsole(msg.toString(), Color.GREEN);
+					frame.repaintTabbedPane();
+				}
+				catch(Exception e)
+				{
+					processException(e, "Party " + followingName + " could not be added to the following parties!");
+				}
+			});
+			frame.appendToConsole("Follow request has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("Follow request has not been sent to the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Sends a unfollow request to the CDR service.
+	 * @param myPartyId MyParty's ID
+	 * @param followingID Id of the party to follow
+	 */
+	public void cdrUnfollowParty(BusinessParty followingParty)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			final String myPartyId = myParty.getPartyID();
+			final String followingName = followingParty.getPartyName();
+			final String followingID = followingParty.getPartyID();
+
+			port.unfollowPartyAsync(myPartyId, followingID, future ->
+			{
+				try
+				{
+					future.get();
+					myParty.removeFollowingParty(followingParty);
+					StringBuilder msg = new StringBuilder("Party " + followingName + " has been successfully removed from the following parties.");
+					frame.appendToConsole(msg.toString(), Color.GREEN);
+					frame.repaintTabbedPane();
+				}
+				catch(Exception e)
+				{
+					processException(e, "Party " + followingName + " could not be removed from the following parties!");
+				}
+			});
+			frame.appendToConsole("Unfollow request has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("Unfollow request has not been sent to the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Process exception thrown by called webmethod or some local one and displays
+	 * exception message on the console.
+	 * @param e exception to be processed
+	 * @param msg message to be displayed on the console
+	 */
+	private void processException(Exception e, String msg)
+	{
+		logger.error("Exception is ", e);
+		StringBuilder msgBuilder = new StringBuilder(msg).append(" ");
+		Throwable cause = e.getCause();
+		if(cause == null)
+			msgBuilder.append(e.getMessage());
+		else
+		{
+			msgBuilder.append("Server responds: ");
+			if(cause instanceof RutaException)
+				msgBuilder.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+			else
+				msgBuilder.append(trimSOAPFaultMessage(cause.getMessage()));
+		}
+		frame.appendToConsole(msgBuilder.toString(), Color.RED);
+	}
+
 	/**Removes automatically prepended and appended portion of the SOAPFault detail string.
 	 * @param message string to be processed
 	 * @return trimmed string
 	 */
-	public static String trimSOAPFaultMessage(String message)
+	private static String trimSOAPFaultMessage(String message)
 	{
 		return message.replaceFirst("Client received SOAP Fault from server: (.+) "
 				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$1");
@@ -838,7 +887,7 @@ public class Client implements RutaNode
 				msg = "TEST has succeded.";
 				frame.appendToConsole(msg, Color.MAGENTA);
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				msg += "Server responds: ";
 				if(e.getCause() instanceof RutaException)
@@ -1046,22 +1095,15 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.searchCatalogueAsync(criterion, futureResult ->
 			{
-				StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 				try
 				{
 					SearchCatalogueResponse res = futureResult.get();
 					//handle the Catalogue list
 					frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "Search request could not be processed! ");
 				}
 			});
 			frame.appendToConsole("Search request has been sent to the CDR service. Waiting for a response...", Color.BLACK);
@@ -1083,7 +1125,6 @@ public class Client implements RutaNode
 			{
 				port.searchCatalogueAsync(criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
 					{
 						SearchCatalogueResponse res = futureResult.get();
@@ -1105,15 +1146,9 @@ public class Client implements RutaNode
 							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
 						}
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "Search request could not be processed! ");
 					}
 				});
 				frame.appendToConsole("Search request \"" + searchName + "\" has been sent to the CDR service. Waiting for a response...", Color.BLACK);
@@ -1163,7 +1198,6 @@ public class Client implements RutaNode
 				//*******************TEST*************************
 				port.searchPartyAsync(criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
 					{
 						SearchPartyResponse res = futureResult.get();
@@ -1185,15 +1219,9 @@ public class Client implements RutaNode
 							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
 						}
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "Search request could not be processed! ");
 					}
 					finally
 					{
@@ -1221,7 +1249,6 @@ public class Client implements RutaNode
 			{
 				port.searchCatalogueAsync(criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
 					{
 						SearchCatalogueResponse res = futureResult.get();
@@ -1236,15 +1263,9 @@ public class Client implements RutaNode
 						else
 							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "Search request could not be processed! ");
 					}
 					finally
 					{
@@ -1257,7 +1278,6 @@ public class Client implements RutaNode
 			{
 				port.searchPartyAsync(criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
 					{
 						SearchPartyResponse res = futureResult.get();
@@ -1272,15 +1292,9 @@ public class Client implements RutaNode
 						else
 							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "Search request could not be processed! ");
 					}
 					finally
 					{
@@ -1297,18 +1311,22 @@ public class Client implements RutaNode
 		}
 	}
 
+	/**Sends search request to the CDR service.
+	 * @param search {@link Search} object representing the search and results
+	 * @param exist true if the search is repeated, i.e. it is not a new one
+	 */
 	@SuppressWarnings("unchecked")
 	public void cdrSearch(Search<?> search, boolean exist)
 	{
 		try
 		{
 			Server port = getCDRPort();
+			search.setTimestamp();
 			CatalogueSearchCriterion criterion = search.getCriterion();
 			if(criterion.isCatalogueSearchedFor()) //querying parties and catalogues
 			{
 				port.searchCatalogueAsync(criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
 					{
 						SearchCatalogueResponse res = futureResult.get();
@@ -1331,15 +1349,9 @@ public class Client implements RutaNode
 							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
 						}
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "Search request could not be processed! Server responds: ");
 					}
 					finally
 					{
@@ -1353,7 +1365,6 @@ public class Client implements RutaNode
 			{
 				port.searchPartyAsync(criterion, futureResult ->
 				{
-					StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 					try
 					{
 						SearchPartyResponse res = futureResult.get();
@@ -1376,15 +1387,9 @@ public class Client implements RutaNode
 							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
 						}
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
-						msg.append("Server responds: ");
-						Throwable cause = e.getCause();
-						if(cause instanceof RutaException)
-							msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-						else
-							msg.append(trimSOAPFaultMessage(cause.getMessage()));
-						frame.appendToConsole(msg.toString(), Color.RED);
+						processException(e, "Search request could not be processed! Server responds: ");
 					}
 					finally
 					{
@@ -1434,21 +1439,14 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.notifyUpdateAsync(version, futureResult ->
 			{
-				StringBuilder msg = new StringBuilder("CDR service could not be notified! ");
 				try
 				{
 					NotifyUpdateResponse res = futureResult.get();
 					frame.appendToConsole("CDR service has been successfully notified about new Ruta Client version.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "CDR service could not be notified! ");
 				}
 			});
 			frame.appendToConsole("Update notification has been sent to the CDR service. Waiting for a response...", Color.BLACK);
@@ -1467,21 +1465,14 @@ public class Client implements RutaNode
 			Server port = getCDRPort();
 			port.insertBugReportAsync(bug, futureResult ->
 			{
-				StringBuilder msg = new StringBuilder("Bug could not be reported! ");
 				try
 				{
 					InsertBugReportResponse res = futureResult.get();
 					frame.appendToConsole("Bug report has been successfully deposited to the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "Bug could not be reported! ");
 				}
 			});
 			frame.appendToConsole("Bug report has been sent to the CDR service. Waiting for a response...", Color.BLACK);
@@ -1506,7 +1497,7 @@ public class Client implements RutaNode
 					frame.appendToConsole("Bug report list has been successfully retrieved from the CDR service.", Color.GREEN);
 					setBugReports(res.getReturn());
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
 					msg.append("Server responds: ");
 					Throwable cause = e.getCause();
@@ -1637,21 +1628,14 @@ public class Client implements RutaNode
 
 			port.insertFileAsync(dataHandler, "test.jpg", futureResult ->
 			{
-				StringBuilder msg = new StringBuilder("File could not be inserted! ");
 				try
 				{
 					InsertFileResponse res = futureResult.get();
 					frame.appendToConsole("File has been successfully deposited to the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "File could not be inserted! ");
 				}
 			});
 			frame.appendToConsole("File has been sent to the CDR service. Waiting for a response...", Color.BLACK);
@@ -1685,21 +1669,14 @@ public class Client implements RutaNode
 
 			port.insertAttachmentAsync(att, "test.jpg", futureResult ->
 			{
-				StringBuilder msg = new StringBuilder("File could not be inserted! ");
 				try
 				{
 					InsertAttachmentResponse res = futureResult.get();
 					frame.appendToConsole("File has been successfully deposited to the CDR service.", Color.GREEN);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(trimSOAPFaultMessage(cause.getMessage()));
-					frame.appendToConsole(msg.toString(), Color.RED);
+					processException(e, "File could not be inserted! ");
 				}
 			});
 			frame.appendToConsole("File has been sent to the CDR service. Waiting for a response...", Color.BLACK);
@@ -1719,22 +1696,15 @@ public class Client implements RutaNode
 		Server port = getCDRPort();
 		port.findAllPartiesAsync(futureResult ->
 		{
-			StringBuilder msg = new StringBuilder("Search request could not be processed! ");
 			try
 			{
 				FindAllPartiesResponse res = futureResult.get();
 				//handle the Catalogue list
 				frame.appendToConsole("Search results have been successfully retrieved from the CDR service.", Color.GREEN);
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
-				msg.append("Server responds: ");
-				Throwable cause = e.getCause();
-				if(cause instanceof RutaException)
-					msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-				else
-					msg.append(trimSOAPFaultMessage(cause.getMessage()));
-				frame.appendToConsole(msg.toString(), Color.RED);
+				processException(e, "Search request could not be processed! ");
 			}
 		});
 		frame.appendToConsole("Search request has been sent to the CDR service.", Color.BLACK);

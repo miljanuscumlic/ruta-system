@@ -18,18 +18,18 @@ public class BusinessParty
 {
 //	@XmlTransient
 	@XmlElement(name = "Product")
-	private ArrayList<ItemType> products; //MMM: should be CatalogueType instead of list of ItemTypes????
+	private ArrayList<ItemType> products; //MMM: this should be moved to MyParty class or delete altogether and catalogue field used instead
+	@XmlElement(name ="Catalogue")
+	private CatalogueType catalogue; //MMM: maybe CatalogueType should be changed with Catalogue like a Party is instead of PartyType
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
 //	@XmlTransient
 	private Party coreParty;
 	@XmlElement(name = "Following")
-//	@XmlTransient
-	private boolean following; // MMM: ?
+	private boolean following; // is it followed by MyPary MMM: is it necessary - at this point of development no - maybe in the future.
 	@XmlElement(name = "Partner")
-//	@XmlTransient
-	private boolean partner; //MMM: ?
+	private boolean partner; //is it business partner of MyParty MMM: is it necessary? - yes if I stay with the compound list of all following parties
 
 	public BusinessParty()
 	{
@@ -37,24 +37,61 @@ public class BusinessParty
 		coreParty = null;
 	}
 
+	@Override
+	protected BusinessParty clone()
+	{
+		BusinessParty bp = new BusinessParty();
+		bp.itemDataMapper = itemDataMapper;
+		bp.following = following;
+		bp.partner = partner;
+		if(coreParty != null)
+			bp.coreParty = coreParty.clone();
+		if(catalogue != null)
+			bp.catalogue = catalogue.clone();
+		bp.products = new ArrayList<>(); // overriding old list by creating a new one of cloned products
+		for(ItemType item : products)
+			bp.products.add(item != null? item.clone() : null);
+		return bp;
+	}
+
 	public boolean isFollowing()
 	{
 		return following;
 	}
-
+/*	//MMM:commented to see whether JAXB is going to complain about it
 	public void setFollowing(Boolean following) // Boolean not boolean because of JAXB
 	{
 		this.following = following;
 	}
+
+	public void setPartner(Boolean partner)
+	{
+		this.partner = partner;
+	}*/
 
 	public boolean isPartner()
 	{
 		return partner;
 	}
 
-	public void setPartner(Boolean partner)
+	public void setFollowing(boolean following)
+	{
+		this.following = following;
+	}
+
+	public void setPartner(boolean partner)
 	{
 		this.partner = partner;
+	}
+
+	public CatalogueType getCatalogue()
+	{
+		return catalogue;
+	}
+
+	public void setCatalogue(CatalogueType catalogue)
+	{
+		this.catalogue = catalogue;
 	}
 
 	public Party getCoreParty()
@@ -69,9 +106,30 @@ public class BusinessParty
 		this.coreParty = coreParty;
 	}
 
+	public void setCoreParty(PartyType coreParty)
+	{
+		this.coreParty = new Party(coreParty);
+	}
+
 	public boolean hasCoreParty()
 	{
 		return coreParty == null ? false : true;
+	}
+
+	/**Gets Party's ID or {@code null} if ID is not set.
+	 * @return ID or {@code null} if ID has not been set
+	 */
+	public String getPartyID()
+	{
+		return getCoreParty().getPartyID();
+	}
+
+	/**Gets the simple name of the party.
+	 * @return party's name
+	 */
+	public String getPartyName()
+	{
+		return getCoreParty().getSimpleName();
 	}
 
 	public ArrayList<ItemType> getProducts()
@@ -103,7 +161,7 @@ public class BusinessParty
 			catalogueID = 0;
 		}*/
 		List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
-		if(catalogueLines.size() != 0)
+		if(catalogueLines.size() != 0) //MMM: could be done with the streams
 		{
 			products.clear();
 			for(CatalogueLineType line : catalogueLines)
@@ -314,16 +372,6 @@ public class BusinessParty
 	public OLDDataMapper getItemDataMapper()
 	{
 		return itemDataMapper;
-	}
-
-	public void setFollowing(boolean following)
-	{
-		this.following = following;
-	}
-
-	public void setPartner(boolean partner)
-	{
-		this.partner = partner;
 	}
 
 	/**This methods do nothing, because this base class is not supposed to change the values of properties

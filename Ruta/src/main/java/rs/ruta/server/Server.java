@@ -58,7 +58,7 @@ public interface Server
 	@WebMethod(operationName = "DeleteCatalogue")
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException;
 
-	/**Registers user with the service.
+	/**Registers user with the CDR service.
 	 * @param username user's username
 	 * @param password user's password
 	 * @return user's secret key
@@ -67,12 +67,12 @@ public interface Server
 	@WebMethod(operationName = "RegisterUser")
 	public String registerUser(String username, String password) throws RutaException;
 
-	/**Deletes user from the database.
+	/**Deregister the user from the CDR service.
 	 * @param username user's username to be deleted
 	 * @throws RutaException if the user cannot be deleted
 	 */
 	@WebMethod(operationName = "DeleteUser")
-	public void deleteUser(String username) throws RutaException;
+	public void deregisterUser(String username) throws RutaException;
 
 	/**Inserts party object in the database.
 	 * @param username party's username
@@ -92,11 +92,22 @@ public interface Server
 	@WebMethod(operationName = "UpdateParty")
 	public void updateParty(String username, PartyType party) throws RutaException;
 
-/*	@WebMethod(operationName = "InsertFollower")
-	public void insertFollower(String username, String fId) throws RutaException;*/
+	/**Adds Party as another's Party follower.
+	 * @param partyID party's ID
+	 * @param followID following party's ID
+	 * @return follower's {@link PartyType} object
+	 * @throws RutaException if party could not be added as a follower
+	 */
+	@WebMethod(operationName = "FollowParty")
+	public PartyType followParty(String partyID, String followID) throws RutaException;
 
-	@WebMethod(operationName = "AddFollower")
-	public void addFollowers(String username, Followers followers) throws RutaException;
+	/**Removes Party from another's Party follower list.
+	 * @param partyID party's ID
+	 * @param followID following party's ID
+	 * @throws RutaException if party could not be added as a follower
+	 */
+	@WebMethod(operationName = "UnfollowParty")
+	public void unfollowParty(String partyID, String followID) throws RutaException;
 
 	/**Searches the database for all parties that conforms to the search criterion.
 	 * @param criterion search criterion

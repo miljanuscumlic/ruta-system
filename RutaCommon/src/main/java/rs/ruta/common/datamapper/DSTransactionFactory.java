@@ -6,7 +6,7 @@ package rs.ruta.common.datamapper;
  */
 public class DSTransactionFactory
 {
-	public DSTransaction openTransaction() throws TransactionException
+	public DSTransaction newTransaction() throws TransactionException
 	{
 		return null;
 	}

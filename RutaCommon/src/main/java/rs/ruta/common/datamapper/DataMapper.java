@@ -32,6 +32,9 @@ public interface DataMapper<T, ID>
 	 */
 	public T findByUserId(ID id) throws DetailException;
 
+	//MMM: check whether this method is necessary
+	public T findByUsername(String username) throws DetailException;
+
 	/**Retrieves all objects from the data store or <code>null</code> if no object exists.
 	 * @return list of all the objects, or null if no objects are found
 	 * @throws DetailException if object could not be retrieved
@@ -74,12 +77,12 @@ public interface DataMapper<T, ID>
 	 * @param object object to be stored
 	 * @param id id of the object
 	 * @param transaction data store transaction which insert is part of
-	 * @throws DetailException if object cannot be insert in the store
+	 * @throws DetailException if object cannot be inserted in the data store
 	 * @param <T> transaction class that is subclass of <code>DSTransaction</code>
 	 */
 	public void insert(T object, ID id, DSTransaction transaction) throws DetailException;
 
-	//MMM: maybe this method should be excluded from the interface, and use only the variant with the username(=null)
+	//MMM: maybe this method should be excluded from the interface, and be used only the variant with the username(=null)
 	public void insert(T object) throws DetailException;
 
 	/**Inserts object to the data store. If necessary unique id of the object may be created. This method is supposed
@@ -109,7 +112,8 @@ public interface DataMapper<T, ID>
 	 * @throws DetailException if object cannot be updated
 	 * @param <T> transaction class that is subclass of <code>DSTransaction</code>
 	 */
-	default public void update(T object, ID id, DSTransaction transaction) throws DetailException { }
+//	@Deprecated // MMM: used as protected method in XmlMapper
+//	default public void update(T object, ID id, DSTransaction transaction) throws DetailException { }
 
 	/**Updates the object in the data store.
 	 * @param username user's username
@@ -118,8 +122,8 @@ public interface DataMapper<T, ID>
 	 * @return object's ID
 	 * @throws DetailException if object could not be updated
 	 */
-	@Deprecated
-	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
+//	@Deprecated // MMM: used as protected method in XmlMapper
+//	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
 
 	/**Updates the object in the data store.
 	 * @param username user's username
@@ -128,15 +132,6 @@ public interface DataMapper<T, ID>
 	 * @throws DetailException if object could not be updated
 	 */
 	public ID update(String username, T object) throws DetailException;
-
-	//MMM: maybe unnecessary method ???
-	/**Retrieves object's id from the data store. Id is the result of the querying the data store
-	 * based on the passed argument.
-	 * @param userID user's ID
-	 * @return id of the object in the datastore
-	 * @throws DetailException if the object cannot be found in the data store
-	 */
-	default public ID getIDByUserID(ID userID) throws DetailException { return null; }
 
 	//MMM: maybe this method should always return String, because insert WebMethod returns String
 	/**Retrieves unique ID of the user of the CDR service.
@@ -159,7 +154,7 @@ public interface DataMapper<T, ID>
 	 * @param transaction data store transaction which deletion is part of
 	 * @throws DetailException if object cannot be deleted
 	 */
-	public void delete(ID id, DSTransaction transaction) throws DetailException;
+	public void delete(ID id) throws DetailException;
 
 	/**Deletes user from the data store.
 	 * @param user' username
@@ -194,6 +189,7 @@ public interface DataMapper<T, ID>
 	 * @param id
 	 * @param transaction
 	 */
+	@Deprecated
 	default public void insert(File file, String id, DSTransaction transaction) throws DetailException { }
 
 	/**Inserts image in the datastore.
@@ -201,6 +197,7 @@ public interface DataMapper<T, ID>
 	 * @param id
 	 * @param transaction
 	 */
+	@Deprecated
 	default public void insert(Image file, String id, DSTransaction transaction) throws DetailException { }
 
 }

@@ -7,16 +7,20 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.InstanceFactory;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Search<T>
 {
-	@XmlElement(name = "SearchName")
-	private String searchName;
 	@XmlTransient
 	private static long num; // number of the next search
+	@XmlElement(name = "SearchName")
+	private String searchName;
+	@XmlElement(name = "Timestamp")
+	private XMLGregorianCalendar timestamp;
 	@XmlElement(name = "SearchCriterion")
 	private CatalogueSearchCriterion criterion;
 	@XmlElement(name= "SearchResult")
@@ -96,6 +100,9 @@ public class Search<T>
 		this.results = results;
 	}
 
+	/**Gets the {@link Class} object of the containing search result.
+	 * @return search result's {@code Class} object
+	 */
 	public Class<?> getResultClass()
 	{
 		return results.get(0).getClass();
@@ -136,7 +143,32 @@ public class Search<T>
 	@Override
 	public String toString()
 	{
-		return searchName; //MMM: temporary solution with "Search" string
+		return searchName;
+	}
+
+	public XMLGregorianCalendar getTimestamp()
+	{
+		return timestamp;
+	}
+
+	public void setTimestamp(XMLGregorianCalendar timestamp)
+	{
+		this.timestamp = timestamp;
+	}
+
+	/**Sets the time of the search to now.
+	 */
+	public void setTimestamp()
+	{
+		timestamp = InstanceFactory.getDate();
+	}
+
+	/**Gets the String represantation of the search timestamp.
+	 * @return
+	 */
+	public String getTimestampAsString()
+	{
+		return InstanceFactory.getLocalDateTimeAsString(timestamp);
 	}
 
 }

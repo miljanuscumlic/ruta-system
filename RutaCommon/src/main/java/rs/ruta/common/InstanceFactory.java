@@ -14,7 +14,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 public final class InstanceFactory
 {
-
 	/**Returns null or the value property of the object. Value of the property called value can be of the type String, BigDecimal,
 	 * or some other type.
 	 * @param <T> type of the object which metod getValue is being called
@@ -93,7 +92,7 @@ public final class InstanceFactory
 		}
 	}
 
-	/**Dissect the passed string in day, month and year and construct new XMLGregorianCalendar object
+	/**Dissect the passed string in day, month and year and constructs the new {@link XMLGregorianCalendar} object.
 	 * @param str string representation of the datum
 	 * @return XMLGregorianCalendar object representing datum
 	 * @throws Exception if something goes wrong within the call of static factory method that constructs the XMLGregorianCalendar object
@@ -103,8 +102,7 @@ public final class InstanceFactory
 //		System.out.println(str);
 		String[] datum = str.split("\\.");
 		return DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
-				Integer.parseInt(datum[2]), Integer.parseInt(datum[1]), Integer.parseInt(datum[0]), DatatypeConstants.FIELD_UNDEFINED
-				);
+				Integer.parseInt(datum[2]), Integer.parseInt(datum[1]), Integer.parseInt(datum[0]), DatatypeConstants.FIELD_UNDEFINED);
 	}
 
 }

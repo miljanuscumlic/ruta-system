@@ -65,7 +65,7 @@ public class BugListTableModel extends AbstractTableModel
 			switch(columnIndex)
 			{
 			case 0:
-				return bugReport.getId();
+				return bugReport.getID();
 			case 1:
 				return bugReport.getSummary();
 			case 2:

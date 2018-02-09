@@ -63,15 +63,15 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	@Override
 	protected RutaVersion retrieve(String id) throws DetailException
 	{
-		Collection coll = null;
+		Collection collection = null;
 		RutaVersion searchResult = null;
 		try
 		{
-			coll = getCollection();
-			if(coll == null)
+			collection = getCollection();
+			if(collection == null)
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
-			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
+			final XQueryService queryService = (XQueryService) collection.getService("XQueryService", "1.0");
 			logger.info("Start of the query of the " + uri);
 			queryService.setProperty("indent", "yes");
 
@@ -96,13 +96,10 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 					{
 						Resource resource = null;
 						try
-						{
+						{	//MMM: this should be tested whether do the job how it should be done
 							resource = iterator.nextResource();
-							//System.out.println((String) resource.getContent());
-							RutaVersion result = load((XMLResource) resource);
-							/*		if(result == null) //resource is not whole document rather part of it
-							result = (RutaVersion) unmarshalFromXML((String) resource.getContent());*/
-							searchResult = result;
+							String result = (String) resource.getContent();
+							searchResult = unmarshalFromXML(result);;
 						}
 						finally
 						{
@@ -126,11 +123,11 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 		}
 		finally
 		{
-			if(coll != null)
+			if(collection != null)
 			{
 				try
 				{
-					coll.close();
+					collection.close();
 				}
 				catch(XMLDBException e)
 				{

@@ -1,8 +1,11 @@
 package rs.ruta.common.datamapper;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.exist.xmldb.EXistResource;
@@ -19,19 +22,26 @@ import org.xmldb.api.modules.XMLResource;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.ReportComment;
 import rs.ruta.common.SearchCriterion;
 
 public class BugReportXmlMapper extends XmlMapper<BugReport>
 {
 	final private static String collectionPath = "/bug-report";
-	final private static String objectPackageName = BugReport.class.getPackage().getName(); //"rs.ruta.common"; //MMM: if OK should be changed everywhere - it is better to retrieve package name through class object than set it as static String, in a case a class change its destinantion
+	final private static String objectPackageName = BugReport.class.getPackage().getName(); //"rs.ruta.common"; //MMM: if this is OK should be changed everywhere - it is better to retrieve package name through class object than set it as static String, in a case a class change its destinantion
 	final private static String queryBugReport = "search-bug-report.xq"; //MMM: not implemented yet
 	final private static String nextIdDocument = "nextId.xml";
+	/**
+	 * Cache of in-memory {@code BugReport}s objects. This cache map is mandatory for all classes that deals with the
+	 * concurrent writes to their documents.
+	 */
+	private Map<String, BugReport> loadedBugReports;
 
 	public BugReportXmlMapper(ExistConnector connector) throws DetailException
 	{
 		super(connector);
-		if(openDocument(collectionPath, nextIdDocument) == null) //MMM: here should be checked whether there are some BugReports in the collection and if there are retrive last used Id
+		loadedBugReports = new ConcurrentHashMap<>();
+		if(openDocument(collectionPath, nextIdDocument) == null) //MMM: here should be checked whether there are some BugReports in the collection and if there are retrive last used Id and redirect it to the saveDocument method
 			saveDocument(collectionPath, nextIdDocument, "<nextId>0</nextId>");
 	}
 
@@ -43,6 +53,31 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 
 	@Override
 	protected String getCollectionPath() { return collectionPath; }
+
+
+	@Override
+	protected BugReport getCachedObject(String id)
+	{
+		return loadedBugReports.get(id);
+	}
+
+	@Override
+	protected BugReport removeCachedObject(String id)
+	{
+		return loadedBugReports.remove(id);
+	}
+
+	@Override
+	protected void clearCachedObjects()
+	{
+		loadedBugReports.clear();
+	}
+
+	@Override
+	protected void putCacheObject(String id, BugReport object)
+	{
+		loadedBugReports.put(id, object);
+	}
 
 	@Override
 	protected JAXBElement<BugReport> getJAXBElement(BugReport object)
@@ -79,40 +114,67 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 
 	/** Creates unique id which is the increment of the last created id. Passed {@code Collection}
 	 * argument is never used because there is a {@code collectionPath} field wich is used instead.
-	 * @see rs.ruta.common.datamapper.XmlMapper#createID()
+	 * @see rs.ruta.common.datamapper.XmlMapper#createCollectionID()
 	 */
 	@Override
-	public synchronized String createID(Collection collection) throws XMLDBException
+	public synchronized String createCollectionID(Collection collection) throws XMLDBException
 	{
 		try
 		{
 			final String doc = openDocument(collectionPath, nextIdDocument);
-			String ID = doc.replaceAll("<[/]?nextId>", "");
-			String nextID = String.valueOf(Long.parseLong(ID) + 1);
+			final String ID = doc.replaceAll("<[/]?nextId>", "");
+			final String nextID = String.valueOf(Long.parseLong(ID) + 1);
 			saveDocument(collectionPath, nextIdDocument, "<nextId>" + nextID + "</nextId>");
 			return ID;
 		}
 		catch (DatabaseException e)
-		{
+		{	//throwing XMLDBException because of the method signature
 			throw new XMLDBException(0, e.getMessage());
 		}
 	}
 
 	@Override
-	protected String doPrepareAndGetID(Collection collection, BugReport bugReport, String username, DSTransaction transaction)
+	public String update(String username, BugReport bugReport) throws DetailException
+	{
+		synchronized(bugReport)
+		{
+			return super.update(username, bugReport);
+		}
+	}
+
+	/**Updates {@link BugReport} with the {@link ReportComment}. Access to the {@code BugReport}
+	 * is synchronized because it possibly can be updated by multiple threads at a time.
+	 * @param id bug report's id
+	 * @param comment comment to be appended
+	 * @return {@code BugReport}'s id
+	 * @throws DetailException if bug report coud not be found or updated
+	 */
+	@Deprecated
+	public String update(String id, ReportComment comment) throws DetailException
+	{
+		BugReport bugReport = find(id);
+		synchronized(bugReport)
+		{
+			bugReport.addComment(comment);
+			super.update(null, bugReport);
+		}
+		return id;
+	}
+
+	@Override
+	protected String doPrepareAndGetID(BugReport bugReport, String username, DSTransaction transaction)
 			throws DetailException
 	{
-		String id = null;
-		XMLGregorianCalendar now = InstanceFactory.getDate();
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		bugReport.setModified(now);
-		id = bugReport.getId();
+		String id = bugReport.getID();
 		if(id == null) // this is creation, not an update of the bug report
 		{
 			bugReport.setReported(now);
 			try
 			{
-				id = createID(collection);
-				bugReport.setId(id);
+				id = createCollectionID(null);
+				bugReport.setID(id);
 			}
 			catch(XMLDBException e)
 			{

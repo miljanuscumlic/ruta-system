@@ -56,9 +56,6 @@ public class SearchTreeModel extends DefaultTreeModel
 //		followingPartners.retainAll(party.getFollowingParties()); // MMM: Why is this not working?
 		followingPartners.retainAll(followingOthers);
 
-
-		if(party.getFollowingParties().size() > 0) // removes My Party
-			followingOthers.remove((party.getFollowingParties().get(0)));
 		followingOthers.removeAll(party.getBusinessPartners());*/
 
 		DefaultMutableTreeNode partySearchNode = new DefaultMutableTreeNode("Parties");

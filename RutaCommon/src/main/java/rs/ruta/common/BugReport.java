@@ -220,7 +220,7 @@ public class BugReport
 		return comments;
 	}
 
-	public void setComments(List<ReportComment> comments)
+	public synchronized void setComments(List<ReportComment> comments)
 	{
 		this.comments = comments;
 	}
@@ -231,9 +231,26 @@ public class BugReport
 		getComments().add(comment);
 	}
 
+	public synchronized boolean removeComment(ReportComment comment)
+	{
+		boolean removed = false;
+		List<ReportComment> comms = getComments();
+		if(comms.size() != 0)
+		{
+			removed = comms.remove(comment);
+			previousCommentId();
+		}
+		return removed;
+	}
+
 	public synchronized int nextCommentId()
 	{
 		return nextCommentNum++;
+	}
+
+	public synchronized int previousCommentId()
+	{
+		return --nextCommentNum;
 	}
 
 	public String getReportedBy()
@@ -276,12 +293,12 @@ public class BugReport
 		this.severity = severity;
 	}
 
-	public String getId()
+	public String getID()
 	{
 		return id;
 	}
 
-	public void setId(String id)
+	public void setID(String id)
 	{
 		this.id = id;
 	}

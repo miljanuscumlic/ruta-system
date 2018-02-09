@@ -30,5 +30,9 @@ public abstract class SearchTableModel<T> extends AbstractTableModel
 		return search.size();
 	}
 
-
+	@Override
+	public boolean isCellEditable(int row, int column)
+	{
+		return editable;
+	}
 }

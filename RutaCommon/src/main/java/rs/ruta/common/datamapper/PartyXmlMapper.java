@@ -7,7 +7,6 @@ import java.util.function.Function;
 import javax.xml.bind.JAXBElement;
 
 import org.exist.xmldb.XQueryService;
-import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
@@ -110,30 +109,19 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected String doPrepareAndGetID(Collection collection, PartyType party, String username, DSTransaction transaction)
+	protected String doPrepareAndGetID(PartyType party, String username, DSTransaction transaction)
 			throws DetailException
 	{
 		String id = null;
 		//object that should be stored doesn't have an ID and User has no Document ID metadata set
-		try
+		//MMM: this will be changed - Party will get UUID on the Client side
+		if(getPartyID(party) == null && getID(username) == null)
+			id = createID();
+		else
 		{
-			if(getPartyID(party) == null && getID(username) == null)
-			{
-				collection = getCollection();
-				if(collection == null)
-					throw new DatabaseException("Could not retrieve the collection.");
-				id = createID(collection);
-			}
-			else
-			{
-				id = getID(username);
-				String uuid = (String) getUserID(username);
-				setPartyID(party, uuid);
-			}
-		}
-		catch (XMLDBException e)
-		{
-			throw new DatabaseException("Could not retrieve the collection or create unique ID.", e);
+			id = getID(username);
+			final String uuid = getUserID(username);
+			setPartyID(party, uuid);
 		}
 		return id;
 	}

@@ -456,6 +456,58 @@ public interface Server {
 
     /**
      * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.UnfollowPartyResponse>
+     */
+    @WebMethod(operationName = "UnfollowParty")
+    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowParty")
+    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowPartyResponse")
+    public Response<UnfollowPartyResponse> unfollowPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "UnfollowParty")
+    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowParty")
+    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowPartyResponse")
+    public Future<?> unfollowPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<UnfollowPartyResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "UnfollowParty")
+    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowParty")
+    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowPartyResponse")
+    public void unfollowParty(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
      * @param arg0
      * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.SearchCatalogueResponse>
@@ -793,6 +845,61 @@ public interface Server {
     @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
     @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
     public String registerUser(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FollowPartyResponse>
+     */
+    @WebMethod(operationName = "FollowParty")
+    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowParty")
+    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowPartyResponse")
+    public Response<FollowPartyResponse> followPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FollowParty")
+    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowParty")
+    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowPartyResponse")
+    public Future<?> followPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FollowPartyResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FollowParty")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowParty")
+    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowPartyResponse")
+    public PartyType followParty(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")

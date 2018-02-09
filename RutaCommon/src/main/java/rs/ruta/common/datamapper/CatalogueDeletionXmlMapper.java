@@ -10,7 +10,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.ObjectFactory;
@@ -49,13 +48,14 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}*/
 
 	@Override
-	protected String doPrepareAndGetID(Collection collection, CatalogueDeletionType catalogueDeletion, String username,
-			DSTransaction transaction) throws DetailException
+	protected String doPrepareAndGetID(CatalogueDeletionType catalogueDeletion, String username, DSTransaction transaction)
+			throws DetailException
 	{
 		String id = null;
 		if(username != null)
 			id = getID(username);
-		mapperRegistry.getMapper(CatalogueType.class).delete(id, transaction);
+		if(id != null)
+			((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).delete(id, transaction);
 		return id;
 	}
 

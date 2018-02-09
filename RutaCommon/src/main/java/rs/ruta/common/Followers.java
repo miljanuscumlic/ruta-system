@@ -3,62 +3,87 @@ package rs.ruta.common;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.xmldb.api.base.Collection;
+
+import rs.ruta.common.datamapper.DSTransaction;
+import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.MapperRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 
-/**Class containig the list of followerUUIDs of all Parties that follow the {@code Party}.
- *
+/**Class containig the list of follower UUIDs of all Parties that follow the {@code Party}.
  */
-@XmlRootElement(name = "Followers")
+@XmlRootElement(name = "Followers", namespace = "urn:rs:ruta:common")
+@XmlType(name = "Followers")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Followers
 {
 	/**UUID of the {@code Party} which followers are listed in this class.
 	 */
-	@XmlElement(name = "PartyUUID")
-	String partyUUID;
-	@XmlElement(name = "FollowerUUID")
-	List<String> followerUUIDs = null;
+	@XmlElement(name = "PartyID")
+	private String partyID;
+	@XmlElement(name = "FollowerID")
+	private List<String> followerIDs = null; //MMM: maybe as a Set
 
-	public String getPartyUUID()
+	@Override
+	public Followers clone()
 	{
-		return partyUUID;
+		Followers ret = new Followers();
+		ret.partyID = partyID;
+		ret.followerIDs = new ArrayList<>();
+		for(String fID: followerIDs)
+			ret.followerIDs.add(fID);
+		return ret;
 	}
 
-	public void setPartyUUID(String partyUUID)
+	public String getPartyID()
 	{
-		this.partyUUID = partyUUID;
+		return partyID;
 	}
 
-	public List<String> getFollowerUuids()
+	public void setPartyID(String PartyID)
 	{
-		if(followerUUIDs == null)
-			followerUUIDs = new ArrayList<>();
-		return followerUUIDs;
+		this.partyID = PartyID;
 	}
 
-	public void setFollowerUuids(List<String> uuid)
+	public List<String> getFollowerIDs()
 	{
-		this.followerUUIDs = uuid;
+		if(followerIDs == null)
+			followerIDs = new ArrayList<>();
+		return followerIDs;
 	}
 
-	/**Appends followers' ids from the {@code Followers} object to the list.
+	public void setFollowerIDs(List<String> uuid)
+	{
+		this.followerIDs = uuid;
+	}
+
+	/**Appends follower's IDs from the {@code Followers} object to the list of follower's IDs of this .
 	 * @param followers
 	 */
 	public void add(Followers followers)
 	{
-		getFollowerUuids().addAll(followers.getFollowerUuids());
+		getFollowerIDs().addAll(followers.getFollowerIDs());
 	}
 
-	/**Append follower's id to the list.
-	 * @param uuid
+	/**Appends follower's ID to the list of followers.
+	 * @param uuid follower's ID to be added
 	 */
 	public void add(String uuid)
 	{
-		followerUUIDs.add(uuid);
+		getFollowerIDs().add(uuid);
 	}
 
+	/**Removes follower's ID from the list of followers.
+	 * @param uuid follower's ID to be removed
+	 */
+	public void remove(String uuid)
+	{
+		getFollowerIDs().remove(uuid);
+	}
 }

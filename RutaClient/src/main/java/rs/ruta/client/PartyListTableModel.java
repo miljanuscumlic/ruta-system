@@ -1,32 +1,52 @@
 package rs.ruta.client;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BuildingNumberType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.CityNameType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.ElectronicMailType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.StreetNameType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.TelephoneType;
 import rs.ruta.common.InstanceFactory;
 
-public class PartySearchTableModel extends SearchTableModel<PartyType>
+public class PartyListTableModel extends AbstractTableModel
 {
-	private static final long serialVersionUID = -2704312134331885642L;
+	private static final long serialVersionUID = -1366607627023019652L;
 	private static String[] columnNames =
 		{
 				"No.", "Party name", "Company ID", "Street", "Building number", "City", "Country",
 				"Classification code", "Telephone", "Email", "Website", "Industry Classification Code"
 		};
+	private List<BusinessParty> parties = null;
 
-	public PartySearchTableModel(boolean editable)
+	public List<BusinessParty> getParties()
 	{
-		super(editable);
+		return parties;
 	}
 
-	public PartySearchTableModel(Search<PartyType> search, boolean editable)
+	public void setParties(List<BusinessParty> parties)
 	{
-		super(search, editable);
+		this.parties = parties;
+	}
+
+	/**Gets the {@link BusinessParty party} from the list of parties.
+	 * @param index party's index
+	 * @return party or {@code null} if parties field is {@code null}
+	 */
+	public BusinessParty getParty(int index)
+	{
+		return parties != null ? parties.get(index) : null;
+	}
+
+	@Override
+	public int getRowCount()
+	{
+		if (parties == null)
+			return 0;
+		else
+			return parties.size();
 	}
 
 	@Override
@@ -44,7 +64,7 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		PartyType party = search.getResults().get(rowIndex);
+		PartyType party = parties.get(rowIndex).getCoreParty();
 		try
 		{
 			switch(columnIndex)
@@ -96,14 +116,9 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 		}
 	}
 
-	public String getPartyID(int index)
+	@Override
+	public boolean isCellEditable(int row, int column)
 	{
-		return InstanceFactory.getPropertyOrNull(search.getResults().get(index).getPartyIdentificationAtIndex(0),
-				PartyIdentificationType::getIDValue);
-	}
-
-	public PartyType getParty(int index)
-	{
-		return search.getResults().get(index);
+		return false;
 	}
 }

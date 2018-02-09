@@ -84,7 +84,7 @@ public class BugReportTableModel extends AbstractTableModel
 			switch(rowIndex)
 			{
 			case 0:
-				return bugReport.getId();
+				return bugReport.getID();
 			case 1:
 				return bugReport.getSummary();
 			case 2:
@@ -116,14 +116,14 @@ public class BugReportTableModel extends AbstractTableModel
 			case 15:
 				return bugReport.getSeverity();
 			default: // >= 16
-			{
-				int relative = rowIndex - fixedRowCnt + 1; // = 1,2,3...
+				int relative = rowIndex - fixedRowCnt; // = 0,1,2,3...
 
-				if(relative <= numAtts)
-					return bugReport.getAttachments().get(relative - 1).getName();
+				if(relative < numAtts)
+					return bugReport.getAttachments().get(relative).getName();
+				else if(relative < numAtts + numComms)
+					return bugReport.getComments().get(relative - numAtts).getText();
 				else
-					return bugReport.getComments().get(relative - numAtts - 1).getText();
-			}
+					return null;
 			}
 		}
 	}

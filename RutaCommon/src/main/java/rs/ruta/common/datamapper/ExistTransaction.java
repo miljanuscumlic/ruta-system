@@ -15,9 +15,9 @@ import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.common.User;
 
-/**Represents transaction in the eXist database. At this point only Atomicity of all ACID properties
- * is implemented. Atomicity ensures that all constituent operations inside the transaction are
- * accepted or none of them is.
+/**Represents database operation transaction in the eXist database. At this point only Atomicity
+ * of all ACID properties is implemented. Atomicity ensures that all constituent operations inside
+ * the transaction are accepted or none of them is.
  */
 @XmlRootElement(name = "ExistTransaction", namespace = "urn:rs:ruta:services")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -31,6 +31,14 @@ public class ExistTransaction implements DSTransaction
 	private long timestamp;
 	@XmlTransient
 	private boolean enabled;
+	/**
+	 * True when transaction should be kept alive and not closed i.e. when one transaction has multiple
+	 * database operations.
+	 */
+	@XmlTransient
+	private boolean keepAlive; //MMM: obsolete field
+	@XmlTransient
+	private boolean failed;
 	@XmlElement(name = "Operation")
 	private List<Operation> operations;
 
@@ -38,6 +46,8 @@ public class ExistTransaction implements DSTransaction
 	{
 		operations = new ArrayList<Operation>();
 		enabled = true;
+		keepAlive = false;
+		failed = false;
 		timestamp = System.currentTimeMillis();
 	}
 
@@ -50,17 +60,17 @@ public class ExistTransaction implements DSTransaction
 	{
 		try
 		{
-			transactionID = MapperRegistry.getInstance().getMapper(DSTransaction.class).createID();
-			MapperRegistry.getInstance().getMapper(DSTransaction.class).insert(this, transactionID, null);
+			MapperRegistry.getInstance().getMapper(DSTransaction.class).insert(null, this);
 		}
-		catch (DetailException | XMLDBException e)
+		catch (DetailException e)
 		{
 			logger.error("Exception is ", e);
 			throw new TransactionException("Transaction could not be opened.", e);
 		}
 	}
 
-	/**Closes a transaction by deleting the journal document that records every interaction with the database.
+	/**Closes a transaction by deleting the journal document that records every interaction
+	 * during transaction with the database.
 	 * @throws TransactionException if journal document could not be deleted from the database
 	 * @see rs.ruta.common.datamapper.DSTransaction#close()
 	 */
@@ -69,7 +79,7 @@ public class ExistTransaction implements DSTransaction
 	{
 		try //delete transaction journal document
 		{
-			MapperRegistry.getInstance().getMapper(DSTransaction.class).delete(transactionID, null);
+			((XmlMapper<DSTransaction>) MapperRegistry.getInstance().getMapper(DSTransaction.class)).delete(transactionID, null);
 		}
 		catch (DetailException e)
 		{
@@ -95,18 +105,21 @@ public class ExistTransaction implements DSTransaction
 			logger.error("Could not rollback transaction " + transactionID + ".");
 			throw new TransactionException("Transaction could not be rolled back.", e);
 		}
-
 		logger.info("Finished rollback of the transaction " + transactionID + "."); //successful transaction rollback
+	}
 
-/*		try //delete transaction journal document
-		{
-			MapperRegistry.getMapper(DSTransaction.class).delete(transactionID, null);
-		}
-		catch (DetailException e)
-		{
-			logger.error("Could not delete transaction journal " + transactionID + " from the database.");
-			logger.error("Exception is ", e);
-		}*/
+	public synchronized static void rollbackAll() throws DetailException
+	{
+		List<DSTransaction> transactions  = (List<DSTransaction>) MapperRegistry.getInstance().getMapper(DSTransaction.class).findAll();
+		if(transactions != null)
+			for(DSTransaction t: transactions)
+			{
+				synchronized(t)
+				{
+					t.rollback();
+					t.close();
+				}
+			}
 	}
 
 	public void setEnabled(boolean enable)
@@ -118,6 +131,20 @@ public class ExistTransaction implements DSTransaction
 	public boolean isEnabled()
 	{
 		return enabled;
+	}
+
+	@Override
+	@Deprecated
+	public boolean isKeepAlive()
+	{
+		return keepAlive;
+	}
+
+	@Override
+	@Deprecated
+	public void setKeepAlive(boolean keepAlive)
+	{
+		this.keepAlive = keepAlive;
 	}
 
 	public void enableTransaction()
@@ -147,13 +174,15 @@ public class ExistTransaction implements DSTransaction
 		operations.add(0, new Operation(originalCollectionPath, originalDocumentName, operation,
 				backupCollectionPath, backupDocumentName, username));
 		timestamp = System.currentTimeMillis();
-		MapperRegistry.getInstance().getMapper(DSTransaction.class).update(this, transactionID, null);
+		//		((ExistTransactionMapper) MapperRegistry.getInstance().getMapper(DSTransaction.class)).update(this, transactionID, null);
+		MapperRegistry.getInstance().getMapper(DSTransaction.class).update(null, this);
 	}
 
 	/**
 	 * @return the transactionID
 	 */
-	public String getTransactionID()
+	@Override
+	public String getID()
 	{
 		return transactionID;
 	}
@@ -161,7 +190,8 @@ public class ExistTransaction implements DSTransaction
 	/**
 	 * @param transactionID the transactionID to set
 	 */
-	public void setTransactionID(String transactionID)
+	@Override
+	public void setID(String transactionID)
 	{
 		this.transactionID = transactionID;
 	}
@@ -189,7 +219,7 @@ public class ExistTransaction implements DSTransaction
 		private String originalCollectionPath;
 		@XmlElement(name = "OriginalDocumentName")
 		private String originalDocumentName;
-		@XmlElement(name = "Operation")
+		@XmlElement(name = "OperationType")
 		private String operation; //MMM: enum maybe?
 		@XmlElement(name = "BackupCollectionPath")
 		private String backupCollectionPath;
@@ -224,8 +254,8 @@ public class ExistTransaction implements DSTransaction
 			{
 				try
 				{
-					((XmlMapper<DSTransaction>)MapperRegistry.getInstance().getMapper(DSTransaction.class)).moveDocument(originalCollectionPath, originalDocumentName,
-							backupCollectionPath, backupDocumentName);
+					((XmlMapper<DSTransaction>)MapperRegistry.getInstance().getMapper(DSTransaction.class)).
+					moveDocument(originalCollectionPath, originalDocumentName, backupCollectionPath, backupDocumentName);
 				}
 				catch(DatabaseException e)
 				{// it's OK if the source document does not exist; in that case rollback should not be done
@@ -234,7 +264,8 @@ public class ExistTransaction implements DSTransaction
 				}
 			}
 			else if(operation.equals("INSERT")) // delete document from original collection
-				((XmlMapper<DSTransaction>)MapperRegistry.getInstance().getMapper(DSTransaction.class)).deleteDocument(originalCollectionPath, originalDocumentName);
+				((XmlMapper<DSTransaction>)MapperRegistry.getInstance().getMapper(DSTransaction.class)).
+				deleteDocument(originalCollectionPath, originalDocumentName);
 			else if(operation.equals("REGISTER")) //delete user Account from eXist database
 			{
 				try
@@ -258,6 +289,7 @@ public class ExistTransaction implements DSTransaction
 	/**
 	 * @return the timestamp
 	 */
+	@Override
 	public long getTimestamp()
 	{
 		return timestamp;
@@ -266,9 +298,21 @@ public class ExistTransaction implements DSTransaction
 	/**
 	 * @param timestamp the timestamp to set
 	 */
+	@Override
 	public void setTimestamp(long timestamp)
 	{
 		this.timestamp = timestamp;
 	}
 
+	@Override
+	public boolean isFailed()
+	{
+		return failed;
+	}
+
+	@Override
+	public void setFailed(boolean failed)
+	{
+		this.failed = failed;
+	}
 }

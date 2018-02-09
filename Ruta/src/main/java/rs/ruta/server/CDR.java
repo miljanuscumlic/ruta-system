@@ -31,8 +31,8 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
-import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.User;
@@ -64,7 +64,7 @@ public class CDR implements Server
 	private WebServiceContext wsCtx;
 	private ServletContext sCtx;
 	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.server");
-	private ExecutorService pool;
+	private ExecutorService docBoxPool;
 	private MapperRegistry mapperRegistry;
 
 	public CDR()
@@ -86,12 +86,12 @@ public class CDR implements Server
 		}
 	}
 
-	/**Creates Thread pool managing threads responsible for distribution of documents between Parties.
-	 *
+	/**
+	 * Creates Thread docBoxPool managing threads responsible for distribution of documents between Parties.
 	 */
 	private void createThreadPool()
 	{
-		pool = Executors.newCachedThreadPool();
+		docBoxPool = Executors.newCachedThreadPool();
 	}
 
 	private void init() throws DetailException
@@ -105,12 +105,21 @@ public class CDR implements Server
 		}
 	}
 
-	/**Releases resources (e.g. thread pool) before the removal of this {@code CDR} instance from the container.
+	/**Releases resources (e.g. docBoxPool pool of thread) before the removal of this {@code CDR} instance from the container.
 	 */
 	@PreDestroy
 	private void shutdown()
 	{
-		pool.shutdown();
+		docBoxPool.shutdown();
+	}
+
+	private void processException(Exception e, String exceptionMsg) throws RutaException
+	{
+		logger.error("Exception is ", e);
+		if (e instanceof DetailException)
+			throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+		else
+			throw new RutaException(exceptionMsg, e.getMessage());
 	}
 
 	@Override
@@ -124,33 +133,35 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Catalogue could not be deposited to the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Catalogue could not be deposited to the CDR service!");
 		}
 	}
 
 	@Override
 	@WebMethod
-	public void updateCatalogue(String username, CatalogueType cat) throws RutaException
+	public void updateCatalogue(String username, CatalogueType catalogue) throws RutaException
 	{
 		try
 		{
 			init();
-			mapperRegistry.getMapper(CatalogueType.class).update(username, cat);
-			pool.submit(() -> {}); //MMM: define task inside the Runnable
+			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
+			docBoxPool.submit(() ->
+			{ //catalogue distribution
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Unable to distribute catalogue for the user: " + username + " Exception is ", e);
+				}
+			});
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Catalogue could not be updated to the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Catalogue could not be updated to the CDR service!");
 		}
 	}
 
@@ -163,17 +174,12 @@ public class CDR implements Server
 		{
 			init();
 			cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(id);
-			return cat;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Catalogue could not be retrieved from the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Catalogue could not be retrieved from the CDR service!");
 		}
+		return cat;
 	}
 
 	@Override
@@ -188,12 +194,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Catalogue could not be deleted from the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Catalogue could not be deleted from the CDR service!");
 		}
 	}
 
@@ -206,19 +207,13 @@ public class CDR implements Server
 		{
 			init();
 			secretKey = (String) mapperRegistry.getMapper(User.class).registerUser(username, password);
-			return secretKey;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Party could not be registered with the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Party could not be registered with the CDR service!");
 		}
+		return secretKey;
 	}
-
 
 	@Override
 	@WebMethod
@@ -230,24 +225,18 @@ public class CDR implements Server
 			init();
 			mapperRegistry.getMapper(PartyType.class).insert(username, party);
 			id = mapperRegistry.getMapper(User.class).getUserID(username);
-			return id;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Party could not be registered with the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Party could not be registered with the CDR service!");
 		}
+		return id;
 	}
 
 	@Override
 	@WebMethod
 	public void updateParty(String username, PartyType party) throws RutaException
 	{
-		String exceptionMsg = "Party could not be updated in the CDR service!";
 		try
 		{
 			init();
@@ -255,18 +244,13 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Party could not be updated in the CDR service!");
 		}
 	}
 
-
 	@Override
 	@WebMethod
-	public void deleteUser(String username) throws RutaException
+	public void deregisterUser(String username) throws RutaException
 	{
 		try
 		{
@@ -275,12 +259,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Party could not be deleted from the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Party could not be deleted from the CDR service!");
 		}
 	}
 
@@ -338,17 +317,12 @@ public class CDR implements Server
 			logger.info("findMany: " + fm2avg / num);
 			logger.info("findManyID: " + fm3avg / num);
 			logger.info("*****************************************************************");*/
-			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Query could not be processed by CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Query could not be processed by CDR service!");
 		}
+		return searchResult.size() != 0 ? searchResult : null;
 	}
 
 	@Override
@@ -359,17 +333,12 @@ public class CDR implements Server
 		{
 			init();
 			searchResult = mapperRegistry.getMapper(CatalogueType.class).findMany(criterion);
-			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Query could not be processed by CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Query could not be processed by CDR service!");
 		}
+		return searchResult.size() != 0 ? searchResult : null;
 	}
 
 	@Override
@@ -380,17 +349,12 @@ public class CDR implements Server
 		{
 			init();
 			searchResult = mapperRegistry.getMapper(BugReport.class).findMany(criterion);
-			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Query could not be processed by CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Query could not be processed by CDR service!");
 		}
+		return searchResult.size() != 0 ? searchResult : null;
 	}
 
 	@Override
@@ -403,39 +367,30 @@ public class CDR implements Server
 			init();
 			searchResult = mapperRegistry.getMapper(PartyType.class).findAll();
 			logger.info("Finished finding all parties");
-			return searchResult.size() != 0 ? searchResult : null;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Could not retrieve all parties from the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Could not retrieve all parties from the CDR service!");
 		}
+		return searchResult.size() != 0 ? searchResult : null;
 	}
 
 	@Override
 	public RutaVersion findClientVersion(String currentVersion) throws RutaException
 	{
+		RutaVersion latestVersion = null;
 		try
 		{
 			init();
-			RutaVersion latestVersion = mapperRegistry.getMapper(RutaVersion.class).find(null);
+			latestVersion = mapperRegistry.getMapper(RutaVersion.class).find(null);
 			if(latestVersion.getVersion().compareTo(currentVersion) <= 0) //there is no new version
 				latestVersion = null;
-			return latestVersion;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Could not retrieve the current version from the CDR service!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Could not retrieve the current version from the CDR service!");
 		}
+		return latestVersion;
 	}
 
 	@Override
@@ -449,12 +404,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Could not notify CDR service about the Ruta Client update!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Could not notify CDR service about the Ruta Client update!");
 		}
 	}
 
@@ -469,12 +419,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Bug could not be inserted in the database!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Bug could not be inserted in the database!");
 		}
 	}
 
@@ -486,17 +431,12 @@ public class CDR implements Server
 		{
 			init();
 			bugReport = mapperRegistry.getMapper(BugReport.class).find(id);
-			return bugReport;
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Bug report could not be retrieved from the database!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Bug report could not be retrieved from the database!");
 		}
+		return bugReport;
 	}
 
 	@Override
@@ -506,50 +446,90 @@ public class CDR implements Server
 		{
 			init();
 			BugReport bugReport = mapperRegistry.getMapper(BugReport.class).find(id);
-			bugReport.addComment(comment);
-			mapperRegistry.getMapper(BugReport.class).update(null, bugReport);
+			synchronized(bugReport)
+			{
+				bugReport.addComment(comment);
+				mapperRegistry.getMapper(BugReport.class).update(null, bugReport);
+			}
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Comment could not be added to the Bug report!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "Comment could not be added to the Bug report!");
 		}
 	}
 
-/*	@Override
-	public void insertFollower(String username, String fId) throws RutaException
-	{
-		try
-		{
-			init();
-			String id = mapperRegistry.getMapper(User.class).getUserID(username);
-			Followers follower = mapperRegistry.getMapper(Followers.class).find(id);
-		}
-
-	}*/
-
 	@Override
-	public void addFollowers(String username, Followers followers) throws RutaException
+	public PartyType followParty(String partyID, String followID) throws RutaException
 	{
+		PartyType party = null;
 		try
 		{
 			init();
-			Followers f = mapperRegistry.getMapper(Followers.class).find(username);
-			f.add(followers);
-			mapperRegistry.getMapper(Followers.class).update(username, f);
+			Followers followers = mapperRegistry.getMapper(Followers.class).findByUserId(followID);
+			if(followers == null)
+			{
+				String msg = "Followers document is missing for the user with the ID: " + followID + ".";
+				logger.error(msg);
+				throw new DatabaseException(msg);
+			}
+			synchronized(followers)
+			{
+				followers.add(partyID);
+				mapperRegistry.getMapper(Followers.class).update(null, followers);
+			}
+
+			docBoxPool.submit(() ->
+			{
+				final Followers iFollower = new Followers();
+				iFollower.add(partyID);
+				iFollower.setPartyID(followID);
+				try
+				{
+					final CatalogueType cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(followID);
+					if(cat != null)
+					{
+						final DocumentDistribution catDistribution = new DocumentDistribution(cat, iFollower);
+						mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+					}
+				}
+				catch (DetailException e)
+				{
+					logger.error("Unable to distri"
+							+ "bute catalogue for the user with ID: " + followID + " Exception is ", e);
+				}
+			});
+
+			party = mapperRegistry.getMapper(PartyType.class).findByUserId(followID);
 		}
 		catch(Exception e)
 		{
-			String exceptionMsg = "Follower(s) could not be added to the Party!";
-			logger.error("Exception is ", e);
-			if (e instanceof DetailException)
-				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
-			else
-				throw new RutaException(exceptionMsg, e.getMessage());
+			processException(e, "My Party could not be added as a follower!");
+		}
+		return party;
+	}
+
+	@Override
+	public void unfollowParty(String partyID, String followID) throws RutaException
+	{
+		try
+		{
+			init();
+			Followers followers = mapperRegistry.getMapper(Followers.class).findByUserId(followID);
+			if(followers == null)
+			{
+				String msg = "Followers document is missing for the user with the ID: " + followID + ".";
+				logger.error(msg);
+				throw new DatabaseException(msg);
+			}
+			synchronized(followers)
+			{
+				followers.remove(partyID);
+				mapperRegistry.getMapper(Followers.class).update(null, followers);
+			}
+		}
+		catch(Exception e)
+		{
+			processException(e, "My Party could not be removed as a follower!");
 		}
 	}
 

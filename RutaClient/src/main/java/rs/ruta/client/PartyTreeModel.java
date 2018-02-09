@@ -12,6 +12,10 @@ public class PartyTreeModel extends DefaultTreeModel
 {
 	private static final long serialVersionUID = 4960608964751110674L;
 	private MyParty party;
+	//using sets because they are faster than lists when it comes to the sorting
+	private Set<BusinessParty> followingPartners; // all business partners that are followed
+	private Set<BusinessParty> followingOthers;	// all other parties that are followed
+	private Set<BusinessParty> archivedParties;
 
 	public PartyTreeModel(TreeNode root)
 	{
@@ -47,8 +51,10 @@ public class PartyTreeModel extends DefaultTreeModel
 
 		Comparator<BusinessParty> partyNameComparator = (first, second)  ->
 		{
-			String firstName = InstanceFactory.getPropertyOrNull(first.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);
-			String secondName = InstanceFactory.getPropertyOrNull(second.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);
+/*			String firstName = InstanceFactory.getPropertyOrNull(first.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);
+			String secondName = InstanceFactory.getPropertyOrNull(second.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);*/
+			final String firstName = first.getPartyName();
+			final String secondName = second.getPartyName();
 			if(firstName == null)
 				if(secondName == null)
 					return 0;
@@ -58,50 +64,54 @@ public class PartyTreeModel extends DefaultTreeModel
 				return firstName.compareToIgnoreCase(secondName);
 		};
 
-		// all business partners that are followed
-		Set<BusinessParty> followingPartners = new TreeSet<BusinessParty>(partyNameComparator);
-		// all other parties that are followed
-		Set<BusinessParty> followingOthers = new TreeSet<BusinessParty>(partyNameComparator);
-
+		followingPartners = new TreeSet<BusinessParty>(partyNameComparator);
+		followingOthers = new TreeSet<BusinessParty>(partyNameComparator);
+		archivedParties =  new TreeSet<BusinessParty>(partyNameComparator);
 		followingPartners.addAll(party.getBusinessPartners());
-		followingOthers.addAll(party.getFollowingParties());
-//		followingPartners.retainAll(party.getFollowingParties()); // MMM: Why is this not working?
-		followingPartners.retainAll(followingOthers);
-
-
-		if(party.getFollowingParties().size() > 0) // removes My Party
-			followingOthers.remove((party.getFollowingParties().get(0)));
-		followingOthers.removeAll(party.getBusinessPartners());
+		followingOthers.addAll(party.getOtherParties());
+		archivedParties.addAll(party.getArchivedParties());
 
 		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My Party");
 		((DefaultMutableTreeNode) root).add(myPartyNode);
 
-		if(party.getFollowingParties().size() > 0)
+		if(party.getMyFollowingParty() != null)
 		{
-			DefaultMutableTreeNode myParty = new DefaultMutableTreeNode(party.getFollowingParties().get(0));
+			DefaultMutableTreeNode myParty = new DefaultMutableTreeNode(party.getMyFollowingParty());
 			myParty.setAllowsChildren(false);
 			myPartyNode.add(myParty);
 		}
 
-		DefaultMutableTreeNode fPartnersNode = new DefaultMutableTreeNode("Business Partners");
-		((DefaultMutableTreeNode) root).add(fPartnersNode);
+		DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode("Business Partners");
+		((DefaultMutableTreeNode) root).add(businessPartnersNode);
 
 		for(BusinessParty fParty: followingPartners)
 		{
 			DefaultMutableTreeNode partnerNode = new DefaultMutableTreeNode(fParty);
 			partnerNode.setAllowsChildren(false);
-			fPartnersNode.add(partnerNode);
+			businessPartnersNode.add(partnerNode);
 		}
 
-		DefaultMutableTreeNode fOthersNode = new DefaultMutableTreeNode("Other Parties");
-		((DefaultMutableTreeNode) root).add(fOthersNode);
+		DefaultMutableTreeNode otherPartiesNode = new DefaultMutableTreeNode("Other Parties");
+		((DefaultMutableTreeNode) root).add(otherPartiesNode);
 
 		for(BusinessParty fOther : followingOthers)
 		{
 			DefaultMutableTreeNode otherNode = new DefaultMutableTreeNode(fOther);
 			otherNode.setAllowsChildren(false);
-			fOthersNode.add(otherNode);
+			otherPartiesNode.add(otherNode);
 		}
+
+		DefaultMutableTreeNode archivedPartiesNode = new DefaultMutableTreeNode("Archived Parties");
+		((DefaultMutableTreeNode) root).add(archivedPartiesNode);
+
+		for(BusinessParty archived : archivedParties)
+		{
+			DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(archived);
+			archivedNode.setAllowsChildren(false);
+			archivedPartiesNode.add(archivedNode);
+		}
+
+
 
 		return root;
 	}

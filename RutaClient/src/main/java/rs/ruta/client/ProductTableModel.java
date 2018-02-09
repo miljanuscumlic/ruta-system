@@ -131,8 +131,6 @@ public class ProductTableModel extends AbstractTableModel
 		default:
 			;
 		}
-//		System.out.println(p);
-//		System.out.println(clientProducts);
 	}
 
 	@Override
@@ -178,5 +176,4 @@ public class ProductTableModel extends AbstractTableModel
 	{
 		return editable ? (column != 0 ? true : false) : false;
 	}
-
 }

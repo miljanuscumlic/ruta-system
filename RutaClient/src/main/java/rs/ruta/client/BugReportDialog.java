@@ -239,7 +239,7 @@ public class BugReportDialog extends JDialog
 		putGridCell(bugPanel, 9, 1, 1, 1, insets3, att1Field);
 		putGridCell(bugPanel, 10, 0, 1, 1, insets2, addAtt2Button);
 		putGridCell(bugPanel, 10, 1, 1, 1, insets3, att2Field);
-		putGridCell(bugPanel, 11, 0, 2, 1, insets1, new JLabel("All filled fields are merely hints. Please correct them if neccessary.",
+		putGridCell(bugPanel, 11, 0, 2, 1, insets1, new JLabel("All filled fields are merely hints. Please correct them if necessary.",
 				SwingConstants.LEFT));
 		return bugPanel;
 	}

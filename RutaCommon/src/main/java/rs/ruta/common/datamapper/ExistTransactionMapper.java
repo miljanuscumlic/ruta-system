@@ -6,17 +6,13 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 {
-	final private static String collectionPath = "/system/transaction";
+	final private static String collectionPath = "/system/transaction/operation";
 	final private static String objectPackageName = "rs.ruta.common.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, ExistTransaction> loadedTransactions;
@@ -54,19 +50,24 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 		{
 			if(transactions.size() >  1)
 				Collections.sort(transactions, new Comparator<ExistTransaction>()
-						{
-							@Override
-							public int compare(ExistTransaction o1, ExistTransaction o2)
-							{
-								return (int) (o1.getTimestamp() - o2.getTimestamp());
-							}
-						});
-			for(ExistTransaction t : transactions)
-				loadedTransactions.put(getID(t), t);
+				{
+					@Override
+					public int compare(ExistTransaction o1, ExistTransaction o2)
+					{
+						return (int) (o1.getTimestamp() - o2.getTimestamp());
+					}
+				});
 		}
 		return transactions;
 	}
 
+	@Override
+	public String insert(String username, ExistTransaction object) throws DetailException
+	{
+		return insert(username, object, null); //not using transaction when writing a transaction journal
+	}
+
+	@Deprecated
 	@Override
 	public void insert(ExistTransaction txn, String id, DSTransaction transaction) throws DetailException
 	{
@@ -83,30 +84,32 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
 	 */
 	@Override
-	public synchronized String createID(Collection collection) throws XMLDBException
+	@Deprecated
+	public synchronized String createCollectionID(Collection collection) throws XMLDBException
 	{
 		String id = trimID(collection.createId());
 		return id;
 	}
 
 	@Override
+	protected String doPrepareAndGetID(ExistTransaction tx, String username, DSTransaction transaction)
+			throws DetailException
+	{
+		String id = getID(tx);
+		if(id == null) // this is creation, not an update
+		{
+			id = createID();
+			tx.setID(id);
+		}
+		return id;
+	}
+
+	@Override
 	protected JAXBElement<ExistTransaction> getJAXBElement(ExistTransaction object)
 	{
-/*		QName _TRANSACTION_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
-		JAXBElement<ExistTransaction> jaxbElement =
-				new JAXBElement<ExistTransaction>(_TRANSACTION_QNAME, ExistTransaction.class, object);
-		return jaxbElement;*/
 		return new ObjectFactory().createExistTransaction(object);
 
 	}
-
-//Unnecessary beacause the method in superclass is sufficient
-/*	@Override
-	protected JAXBContext getJAXBContext() throws JAXBException
-	{
-		return super.getJAXBContext(); //MMM: lets test this
-		//return JAXBContext.newInstance(getObjectClass());
-	}*/
 
 	@Override
 	protected Class<?> getObjectClass()
@@ -135,6 +138,6 @@ public class ExistTransactionMapper extends XmlMapper<ExistTransaction>
 	@Override
 	public String getID(ExistTransaction object) throws DetailException
 	{
-		return object.getTransactionID();
+		return object.getID();
 	}
 }

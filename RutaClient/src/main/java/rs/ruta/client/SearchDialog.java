@@ -108,6 +108,7 @@ public class SearchDialog extends JDialog
 			search = new Search<>();
 			search.setCriterion(criterion);
 			search.setSearchName(searchName);
+			search.setTimestamp();
 
 			setVisible(false);
 		});

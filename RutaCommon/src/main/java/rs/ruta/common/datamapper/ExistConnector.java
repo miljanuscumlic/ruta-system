@@ -330,7 +330,7 @@ public class ExistConnector implements DatastoreConnector
 
 	/**Gets the collection from the database as a database admin. If collection does not exist, method creates it.
 	 * @param collectionPath relative path to the collection
-	 * @return a <code>Collection</code> instance for the requested collection
+	 * @return a <code>Collection</code> instance for the requested collection path
 	 * @throws XMLDBException if the collection could not be retrieved or created
 	 */
 	public static Collection getOrCreateCollection(String collectionPath) throws XMLDBException
@@ -387,6 +387,29 @@ public class ExistConnector implements DatastoreConnector
 			//recursively creates all other subcollection on the path i.e. in the queue
 			return getOrCreateCollection(child, descendants);
 		}
+	}
+
+	/**Deletes {@link Collection}.
+	 * @param parent parent collection of the collection to be deleted
+	 * @param collectionName collection's name
+	 * @throws XMLDBException if collection could not be deleted or parent collection could not be closed
+	 */
+	protected static void deleteCollection(final Collection parent, String collectionName) throws XMLDBException
+	{
+		final CollectionManagementService mgmt =
+				(CollectionManagementService) parent.getService("CollectionManagementService", "1.0");
+		mgmt.removeCollection(collectionName);
+	}
+
+	/**Deletes {@link Collection}.
+	 * @param collection collection to be deleted
+	 * @throws XMLDBException if collection could not be deleted or parent collection could not be closed
+	 */
+	protected static void deleteCollection(final Collection collection) throws XMLDBException
+	{
+		final Collection parent = collection.getParentCollection();
+		deleteCollection(parent, collection.getName());
+		parent.close();
 	}
 
 	/**Checks if the collection exist. If not, method creates the collection with passed user credentials as an owner of the collection.

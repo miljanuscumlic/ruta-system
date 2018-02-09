@@ -8,6 +8,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 //@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:common")
+/**
+ *Class represents a {@code SearchCriterion} for {@link CatalogueType catalogue} and
+ *{@link PartyType party} searches.
+ */
 @XmlType(name = "CatalogueSearchCriterion")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CatalogueSearchCriterion extends SearchCriterion
@@ -45,7 +49,7 @@ public class CatalogueSearchCriterion extends SearchCriterion
 		partyAll = itemAll = false;
 	}
 
-	/**Cheks if the search is supposed to query Catalogues. If not the Parties are only queried.
+	/**Checks whether the search is supposed to query Catalogues. If not the Parties are only queried.
 	 * @return true if Catalogues should be queried.
 	 */
 	public boolean isCatalogueSearchedFor()

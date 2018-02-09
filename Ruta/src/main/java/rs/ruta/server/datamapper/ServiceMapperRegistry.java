@@ -4,6 +4,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
@@ -15,6 +16,9 @@ import rs.ruta.common.datamapper.DSTransaction;
 import rs.ruta.common.datamapper.DataManipulationException;
 import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.DocumentDistributionXmlMapper;
+import rs.ruta.common.datamapper.DocumentTransaction;
+import rs.ruta.common.datamapper.DocumentTransactionMapper;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.ExistTransactionMapper;
 import rs.ruta.common.datamapper.FollowersXmlMapper;
@@ -66,6 +70,8 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new UserXmlMapper(getConnector());
 			else if(clazz == DSTransaction.class)
 				dataMapper = (DataMapper<S, String>) new ExistTransactionMapper(getConnector());
+			else if(clazz == DocumentTransaction.class)
+				dataMapper = (DataMapper<S, String>) new DocumentTransactionMapper(getConnector());
 			else if(clazz == PartyID.class)
 				dataMapper = (DataMapper<S, String>) new PartyIDXmlMapper(getConnector());
 			else if(clazz == RutaVersion.class)
@@ -74,6 +80,8 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new BugReportXmlMapper(getConnector());
 			else if(clazz == Followers.class)
 				dataMapper = (DataMapper<S, String>) new FollowersXmlMapper(getConnector());
+			else if(clazz == DocumentDistribution.class)
+				dataMapper = (DataMapper<S, String>) new DocumentDistributionXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

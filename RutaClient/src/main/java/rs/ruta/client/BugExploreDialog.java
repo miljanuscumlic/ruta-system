@@ -159,7 +159,7 @@ public class BugExploreDialog extends JDialog
 					WaitingDialog waitingDialog = new WaitingDialog(BugExploreDialog.this, future);
 					EventQueue.invokeLater(() -> waitingDialog.setVisible(true));
 
-					future = parent.getClient().cdrFindBug(bugReport.getId());
+					future = parent.getClient().cdrFindBug(bugReport.getID());
 					try
 					{
 						FindBugReportResponse res = (FindBugReportResponse) future.get();
@@ -171,17 +171,17 @@ public class BugExploreDialog extends JDialog
 							bugListModel.fireTableDataChanged();
 							//due to repaint selection will be lost, so select previously selected row
 							bugListTable.setRowSelectionInterval(selectedIndex, selectedIndex);
-							parent.appendToConsole("Bug report with ID: " + bugReport.getId() +
+							parent.appendToConsole("Bug report with ID: " + bugReport.getID() +
 									" has been successfully retrieved from the CDR service.", Color.GREEN);
 						}
 						else
 						{
-							parent.appendToConsole("Bug report with ID: " + bugReport.getId() +
+							parent.appendToConsole("Bug report with ID: " + bugReport.getID() +
 									" does not exist on the CDR service anymore.", Color.BLACK);
 							EventQueue.invokeLater( () ->
 							{
 								JOptionPane.showMessageDialog(BugExploreDialog.this,
-										"Bug report with ID: " + bugReport.getId() +
+										"Bug report with ID: " + bugReport.getID() +
 										" does not exist anymore. It wiil be deleted from the bug report list.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 								bugReports.remove(index);
@@ -362,7 +362,7 @@ public class BugExploreDialog extends JDialog
 						WaitingDialog waitingDialog = new WaitingDialog(BugExploreDialog.this, future);
 						EventQueue.invokeLater(() -> waitingDialog.setVisible(true));
 
-						future = parent.getClient().cdrAddBugReportComment(bugReport.getId(), comment);
+						future = parent.getClient().cdrAddBugReportComment(bugReport.getID(), comment);
 						try
 						{
 							future.get();
@@ -409,7 +409,7 @@ public class BugExploreDialog extends JDialog
 					EventQueue.invokeLater(() -> waitingDialog.setVisible(true));
 
 					BugReport bugReport = ((BugReportTableModel) bugReportModel).getBugReport();
-					String bugId = bugReport.getId();
+					String bugId = bugReport.getID();
 					int index = selectedIndex;
 					future = parent.getClient().cdrFindBug(bugId);
 					try

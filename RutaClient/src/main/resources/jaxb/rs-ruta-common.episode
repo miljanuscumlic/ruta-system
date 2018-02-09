@@ -50,5 +50,11 @@
 			<class ref="rs.ruta.common.ReportComment" />
 		</bindings>
 	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
+		<bindings scd="~tns:Followers">
+			<class ref="rs.ruta.common.Followers" />
+		</bindings>
+	</bindings>
 
 </bindings>

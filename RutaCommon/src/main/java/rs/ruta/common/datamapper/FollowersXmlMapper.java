@@ -6,21 +6,18 @@ import java.util.concurrent.*;
 import javax.xml.bind.JAXBElement;
 
 import org.exist.xmldb.XQueryService;
-import org.xmldb.api.base.Collection;
-import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
-import org.xmldb.api.modules.XMLResource;
 
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.ObjectFactory;
-import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.Followers;
+import rs.ruta.common.FollowersSearchCriterion;
 
 public class FollowersXmlMapper extends XmlMapper<Followers>
 {
 	final private static String collectionPath = "/followers";
-	final private static String objectPackageName = Followers.class.getPackage().getName(); //"rs.ruta.server.data";
-	final private static String queryNameSearchFollowers = "search-following.xq"; // MMM: not defined yet
+	final private static String objectPackageName = "rs.ruta.common";
+	final private static String queryNameSearchFollowers = "search-followers.xq";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, Followers> loadedFollowers;
 
@@ -77,6 +74,15 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 		return queryNameSearchFollowers;
 	}
 
+	@Override
+	public String update(String username, Followers followers) throws DetailException
+	{
+		synchronized(followers)
+		{
+			return super.update(username, followers);
+		}
+	}
+
 	/*	@Override
 	public PartyType find(String id) throws DetailException
 	{
@@ -104,22 +110,52 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 		return followings.size() > 0 ? followings : null;
 	}
 
-/*	@Override
-	public String update(String username, Followers object) throws DetailException
+	@Override
+	protected void delete(String id, DSTransaction transaction) throws DetailException
 	{
-		return insert(username, object);
-	}*/
+		//deletes ID entry in Followers documents of parties that the party with id is following
+		//"search-following.xq" retrieves list of followers objects
+		final FollowersSearchCriterion criterion = new FollowersSearchCriterion();
+		final String userID = getUserIDByID(id);
+		criterion.setFollowerID(userID);
+		final ArrayList<Followers> followersList = findMany(criterion);
+		//delete myself from all objects from the list and update all objects
+		for(Followers followers : followersList)
+		{
+			synchronized(followers) //MMM: may be done in few threads
+			{
+				followers.remove(userID);
+				update(null, followers, transaction);
+			}
+		}
+
+		super.delete(id, transaction);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//TODO inform all followers that party is deregistered (e.g. send to their DocBox some kind of document - Application Response???)
+	}
+
+	@Override
+	protected String update(String username, Followers followers, DSTransaction transaction) throws DetailException
+	{
+		synchronized(followers)
+		{
+			return super.update(null, followers, transaction);
+		}
+	}
+
+	@Override
+	protected String doPrepareAndGetID(Followers followers, String username, DSTransaction transaction)
+			throws DetailException
+	{
+		return getIDByUserID(followers.getPartyID());
+	}
 
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
-		String partyName = sc.getPartyName();
-		String partyCompanyID = sc.getPartyCompanyID();
-		String partyClassCode = sc.getPartyClassCode();
-		String partyCity = sc.getPartyCity();
-		String partyCountry = sc.getPartyCountry();
-		boolean partyAll = sc.isPartyAll();
+		FollowersSearchCriterion sc = (FollowersSearchCriterion) criterion;
+		String followerID = sc.getFollowerID();
 
 		String query = openDocument(getQueryPath(), queryNameSearchFollowers);
 		if(query == null)
@@ -128,52 +164,14 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 		{
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
-			if(partyName != null)
-				queryService.declareVariable("party-name", partyName);
-			if(partyCompanyID != null)
-				queryService.declareVariable("party-company-id", partyCompanyID);
-			if(partyClassCode != null)
-				queryService.declareVariable("party-class-code", partyClassCode);
-			if(partyCity != null)
-				queryService.declareVariable("party-city", partyCity);
-			if(partyCountry != null)
-				queryService.declareVariable("party-country", partyCountry);
-			if(!partyAll)
-				queryService.declareVariable("party-all", false);
+			if(followerID != null)
+				queryService.declareVariable("follower-id", followerID);
 		}
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
 			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
 		}
-
 		return query;
 	}
-
-	@Override
-	protected String prepareQuery(String queryName, CatalogueSearchCriterion criterion) throws DatabaseException
-	{
-		String query = openDocument(getQueryPath(), queryName);
-		if(query == null)
-			return query;
-
-		String partyName = criterion.getPartyName();
-		String partyCompanyID = criterion.getPartyCompanyID();
-		String partyClassCode = criterion.getPartyClassCode();
-		String partyCity = criterion.getPartyCity();
-		String partyCountry = criterion.getPartyCountry();
-		boolean partyAll = criterion.isPartyAll();
-
-		String itemName = criterion.getItemName();
-		String itemBarcode = criterion.getItemBarcode();
-		String itemCommCode = criterion.getItemCommCode();
-		boolean itemAll = criterion.isItemAll();
-
-/*		String preparedQuery = query.replaceFirst("declare variable party-name external := ''",
-				"declare variable party-name external := " + partyName);*/
-
-		String preparedQuery = query.replaceFirst("([$]party-name external := ')'", "$1" + partyName + "'");
-		return preparedQuery;
-	}
-
 }

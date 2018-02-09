@@ -27,15 +27,33 @@ public class MyParty extends BusinessParty
 	private String username;
 	@XmlElement(name = "SecretKey")
 	private String secretKey; // for SOAP message digest encryption
-	@XmlElement(name = "BusinessPartner")
-//	@XmlTransient
-	private List<BusinessParty> businessPartners;
-	@XmlElement(name = "FollowingPartner")
-//	@XmlTransient
+	/**
+	 * MyParty data retrieved from the CDR service.
+	 */
+	@XmlElement(name = "MyFollowingParty")
+	private BusinessParty myFollowingParty;
+	/**
+	 * List of all following parties of MyParty.
+	 */
+	@XmlElement(name = "FollowingParty")
 	private List<BusinessParty> followingParties;
-//	@XmlElement(name = "FollowerPartners")
+//	@XmlElement(name = "BusinessPartner")
+	/**
+	 * Helper list containing only business partners of MyParty.
+	 */
 	@XmlTransient
-	private List<BusinessParty> followerParties;
+	private List<BusinessParty> businessPartners;
+	/**
+	 * Helper list containing only parties that are not business partners of MyParty.
+	 */
+	@XmlTransient
+	private List<BusinessParty> otherParties;
+
+	/**
+	 * List of deregistered parties from the CDR service.
+	 */
+	@XmlElement(name = "ArchivedParty")
+	private List<BusinessParty> archivedParties;
 	@XmlElement(name = "PartySearch")
 	private List<Search<PartyType>> partySearches;
 	@XmlElement(name = "CatalogueSearch")
@@ -61,12 +79,10 @@ public class MyParty extends BusinessParty
 	{
 		super();
 		setFollowing(true);
-		dirtyCatalogue = true;
-		dirtyMyParty = insertMyCatalogue = true;
+		dirtyCatalogue = dirtyMyParty = insertMyCatalogue = true;
 		username = password = secretKey = null;
-		searchNumber = 0;
-		catalogueID = 0;
-		catalogueDeletionID = 0;
+		followingParties = businessPartners = otherParties = archivedParties = null;
+		searchNumber = catalogueID = catalogueDeletionID = 0;
 		catalogueIssueDate = null;
 		jaxb = Client.getVersion().getJaxbVersion();
 	}
@@ -145,7 +161,20 @@ public class MyParty extends BusinessParty
 		return ++catalogueDeletionID;
 	}
 
-	public List<BusinessParty> getBusinessPartners()
+	/**Gets the copy of MyParty previously retrieved from the CDR service.
+	 * @return MyParty object
+	 */
+	public BusinessParty getMyFollowingParty()
+	{
+		return myFollowingParty;
+	}
+
+	public void setMyFollowingParty(BusinessParty myFollowingParty)
+	{
+		this.myFollowingParty = myFollowingParty;
+	}
+
+/*	public List<BusinessParty> getBusinessPartners()
 	{
 		if (businessPartners == null)
 			businessPartners = new ArrayList<BusinessParty>();
@@ -155,8 +184,46 @@ public class MyParty extends BusinessParty
 	public void setBusinessPartners(List<BusinessParty> businessPartners)
 	{
 		this.businessPartners = businessPartners;
+	}*/
+
+	/**Gets the {@code List} of all parties that are bussines partners of MyParty.
+	 * @return list of business partners
+	 */
+	public List<BusinessParty> getBusinessPartners()
+	{
+		if(businessPartners == null)
+			businessPartners = new ArrayList<BusinessParty>();
+		businessPartners = getFollowingParties().stream().filter(party -> party.isPartner()).collect(Collectors.toList());
+		return businessPartners;
 	}
 
+	/**Gets the {@code List} of all parties that are not bussines partners of MyParty. Those parties are just
+	 * followed by MyParty.
+	 * @return list of followed parties that are not business partners
+	 */
+	public List<BusinessParty> getOtherParties()
+	{
+		if(otherParties == null)
+			otherParties = new ArrayList<BusinessParty>();
+		otherParties = getFollowingParties().stream().filter(party -> ! party.isPartner()).collect(Collectors.toList());
+		return otherParties;
+	}
+
+	public List<BusinessParty> getArchivedParties()
+	{
+		if(archivedParties == null)
+			archivedParties = new ArrayList<>();
+		return archivedParties;
+	}
+
+	public void setArchivedParties(List<BusinessParty> archivedParties)
+	{
+		this.archivedParties = archivedParties;
+	}
+
+	/**Gets the {@code List} of all parties that are followed by MyParty.
+	 * @return list of all followed parties
+	 */
 	public List<BusinessParty> getFollowingParties()
 	{
 		if (followingParties == null)
@@ -167,18 +234,8 @@ public class MyParty extends BusinessParty
 	public void setFollowingParties(List<BusinessParty> followingParties)
 	{
 		this.followingParties = followingParties;
-	}
-
-	public List<BusinessParty> getFollowerParties()
-	{
-		if (followerParties == null)
-			followerParties = new ArrayList<BusinessParty>();
-		return followerParties;
-	}
-
-	public void setFollowerParties(List<BusinessParty> followerParties)
-	{
-		this.followerParties = followerParties;
+		businessPartners = null;
+		otherParties = null;
 	}
 
 	public List<Search<PartyType>> getPartySearches()
@@ -186,6 +243,22 @@ public class MyParty extends BusinessParty
 		if(partySearches == null)
 			partySearches = new ArrayList<Search<PartyType>>();
 		return partySearches;
+	}
+
+	/**Gets the following party with passed ID, or {@code null} if there is no party with specified ID.
+	 * @param id following's party ID
+	 * @return following party or {@code null} if there is no party with specified ID
+	 */
+	public BusinessParty getFollowingParty(String id)
+	{
+		try
+		{
+			return getFollowingParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed id
+		{
+			return null;
+		}
 	}
 
 	public void setPartySearches(List<Search<PartyType>> partySearches)
@@ -232,7 +305,7 @@ public class MyParty extends BusinessParty
 		dirtyCatalogue = dirty;
 	}
 
-	//MMM: maybe this method is not neccessery, because of the above one which might be mandatory because of the JAXB serialization
+	//MMM: maybe this method is not necessary, because of the above one which might be mandatory because of the JAXB serialization ???
 	public void setDirtyCatalogue(boolean dirtyCatalogue)
 	{
 		this.dirtyCatalogue = dirtyCatalogue;
@@ -448,16 +521,67 @@ public class MyParty extends BusinessParty
 		return changed;
 	}
 
+	/**Adds party to the list of following parties and one appropriate helper list while removes it
+	 * from the other. If party is present in the list, this method overwrites it.
+	 * @param party following party
+	 */
 	public void addFollowingParty(BusinessParty party)
 	{
-		if(party != null && !followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
+		if(party != null)
+		{
+			getFollowingParties().remove(party); //if exists MMM: better to use Sets then?
 			getFollowingParties().add(party);
+			if(party.isPartner())
+			{
+				getBusinessPartners().add(party);
+				getOtherParties().remove(party);
+			}
+			else
+			{
+				getBusinessPartners().remove(party);
+				getOtherParties().add(party);
+			}
+		}
 	}
 
+	/**Adds party to the list of following parties, and sets it as a business partner in regard with
+	 * the {@code partner} argument.
+	 * @param party following party to be added
+	 * @param partner whether the party is a business partner
+	 */
+	public void addFollowingParty(PartyType party, boolean partner)
+	{
+		if(party != null)
+		{
+			BusinessParty newParty = new BusinessParty();
+			newParty.setCoreParty(party);
+			newParty.setPartner(partner);
+			newParty.setFollowing(true);
+			addFollowingParty(newParty);
+		}
+	}
+
+	/**Removes party from the list of following parties.
+	 * @param party party to be removed
+	 */
 	public void removeFollowingParty(BusinessParty party)
 	{
-		if(party != null && followingParties.contains(party)) // MMM: this check should be based on some unique number e.g. party ID from the CDR database
+		if(party != null)
+		{
 			getFollowingParties().remove(party);
+			if(party.isPartner())
+				getBusinessPartners().remove(party);
+			else
+				getOtherParties().remove(party);
+		}
+	}
+
+	public boolean checkFollowingParty(String followingID)
+	{
+		boolean test = false;
+		if(getFollowingParty(followingID) != null)
+			test = true;
+		return test;
 	}
 
 	public String getPassword()
@@ -545,12 +669,10 @@ public class MyParty extends BusinessParty
 	 */
 	public void followMyself()
 	{
-		BusinessParty myPartyCopy = new BusinessParty();
-		//Party coreParty = InstanceFactory.newInstance(getCoreParty());
-		Party coreParty = getCoreParty().clone();
-		myPartyCopy.setCoreParty(coreParty);
-		//addFollowingParty(myPartyCopy);
-		getFollowingParties().add(0, myPartyCopy);
+		BusinessParty myPartyCopy = clone(); //new BusinessParty();
+/*		Party coreParty = getCoreParty().clone();
+		myPartyCopy.setCoreParty(coreParty);*/
+		myFollowingParty = myPartyCopy;
 	}
 
 	/**Removes My Party from the list of following parties.
@@ -558,11 +680,11 @@ public class MyParty extends BusinessParty
 	public void unfollowMyself()
 	{
 		//removeFollowingParty(followingParties.get(0));
-
-		List<BusinessParty> followings = getFollowingParties();
+		myFollowingParty = null;
+/*		List<BusinessParty> followings = getFollowingParties();
 
 		if(followings.size() != 0 && followings.get(0).getCoreParty().getSimpleName().equals(this.getCoreParty().getSimpleName()))
-			getFollowingParties().remove(0);
+			getFollowingParties().remove(0);*/
 	}
 
 	/**Updates My Party in the list of the following parties.
@@ -586,7 +708,5 @@ public class MyParty extends BusinessParty
 		super.addProduct(item);
 		dirtyCatalogue = true;
 	}
-
-
 
 }

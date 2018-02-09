@@ -11,7 +11,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.client.*;
@@ -133,20 +132,12 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	}
 
 	@Override
-	protected String doPrepareAndGetID(Collection collection, MyParty object, String username, DSTransaction transaction)
-			throws DetailException
+	protected String doPrepareAndGetID(MyParty object, String username, DSTransaction transaction)
+			throws DetailException //MMM: not thrown with UUID implementation
 	{
-		String id = null;
-		try
-		{
-			id = getID(object);
-			if (id == null)
-				id = createID(collection);
-		}
-		catch(XMLDBException e)
-		{
-			throw new DatabaseException("The collection could not be retrieved or unique ID created.", e);
-		}
+		String id = getID(object);
+		if (id == null)
+			id = createID();
 		return id;
 	}
 }

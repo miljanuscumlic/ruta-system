@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="OriginalCollectionPath" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="OriginalDocumentName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Operation" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="OperationType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="BackupCollectionPath" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="BackupDocumentName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="User" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "operation", propOrder = {
     "originalCollectionPath",
     "originalDocumentName",
-    "operation",
+    "operationType",
     "backupCollectionPath",
     "backupDocumentName",
     "user"
@@ -46,8 +46,8 @@ public class Operation {
     protected String originalCollectionPath;
     @XmlElement(name = "OriginalDocumentName")
     protected String originalDocumentName;
-    @XmlElement(name = "Operation")
-    protected String operation;
+    @XmlElement(name = "OperationType")
+    protected String operationType;
     @XmlElement(name = "BackupCollectionPath")
     protected String backupCollectionPath;
     @XmlElement(name = "BackupDocumentName")
@@ -104,27 +104,27 @@ public class Operation {
     }
 
     /**
-     * Gets the value of the operation property.
+     * Gets the value of the operationType property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getOperation() {
-        return operation;
+    public String getOperationType() {
+        return operationType;
     }
 
     /**
-     * Sets the value of the operation property.
+     * Sets the value of the operationType property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setOperation(String value) {
-        this.operation = value;
+    public void setOperationType(String value) {
+        this.operationType = value;
     }
 
     /**

@@ -34,8 +34,9 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 		calculateLineCount(catalogues);
 	}
 
-	/**
-	 * @param catalogues
+	/**Populate {@code catalogueLineCount} array so that i-th element contains number of catatalogue
+	 * lines in i-th catalogue of the {@link Search} object.
+	 * @param catalogues {@code Search} object which has the result of the search represented as list of catalogues
 	 */
 	private void calculateLineCount(Search<CatalogueType> catalogues)
 	{
@@ -63,12 +64,6 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 	public String getColumnName(int columnIndex)
 	{
 		return columnNames[columnIndex];
-	}
-
-	@Override
-	public boolean isCellEditable(int row, int column)
-	{
-		return editable;
 	}
 
 	@Override

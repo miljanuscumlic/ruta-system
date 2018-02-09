@@ -23,5 +23,4 @@ public class PartyID
 
 	public void setPartyID(String partyID) { this.documentID = partyID; }
 
-
 }

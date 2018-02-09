@@ -12,7 +12,8 @@ import rs.ruta.common.RutaVersion;
 /**{@code ObjectFactory} is a helper class in the process of mapping objects to {@code XML} elements.
  * {@code ObjectFactory} has two methods {@code createXxx} for every class which objects it is mapping.
  * One method is for instantiating the object, and the other is for instantiating the {@link JAXBElement}
- * that is an representation of the XML element to which it is mapped.
+ * that is an representation of the XML element to which it is mapped. These methods are used internally
+ * by JAXB.
  */
 @XmlRegistry
 public class ObjectFactory
@@ -21,8 +22,9 @@ public class ObjectFactory
 	public final static QName _BugReport_QNAME = new QName("urn:rs:ruta:common", "BugReport");
 	public final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
 	public final static QName _PartyID_QNAME = new QName("urn:rs:ruta:services", "PartyID");
-	public final static QName _User_QNAME = new QName("urn:rs:ruta:services", "User");
-	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:services", "Followers");
+	public final static QName _User_QNAME = new QName("urn:rs:ruta:services", "RutaUser");
+	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:common", "Followers");
+	public final static QName _DocumentDistribution_QNAME = new QName("urn:rs:ruta:services", "DocumentDistribution");
 
 	/**Creates an instance of {@link RutaVersion}.
 	 * @return created {@code RutaVersion} object and never {@code null}
@@ -82,61 +84,79 @@ public class ObjectFactory
 	}
 
 	/**Creates an instance of {@link PartyID}.
-	    * @return created {@code PartyID} object and never {@code null}
-	    */
-	   @Nonnull
-	   public PartyID createPartyID()
-	   {
-	       return new PartyID();
-	   }
+	 * @return created {@code PartyID} object and never {@code null}
+	 */
+	@Nonnull
+	public PartyID createPartyID()
+	{
+		return new PartyID();
+	}
 
-	   /** Creates an instance of {@link JAXBElement }{@code <}{@link PartyID }{@code >}.
-	   * @return created JAXBElement and never {@code null}
-	   */
-	  @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "PartyID")
-	  @Nonnull
-	  public JAXBElement<PartyID> createPartyID(@Nullable final PartyID value)
-	  {
-	      return new JAXBElement<PartyID>(_PartyID_QNAME, PartyID.class, null, value);
-	  }
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link PartyID }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "PartyID")
+	@Nonnull
+	public JAXBElement<PartyID> createPartyID(@Nullable final PartyID value)
+	{
+		return new JAXBElement<PartyID>(_PartyID_QNAME, PartyID.class, null, value);
+	}
 
-	  /**Creates an instance of {@link User}.
-	   * @return created {@code User} object and never {@code null}
-	   */
-	  @Nonnull
-	  public User createUser()
-	  {
-		  return new User();
-	  }
+	/**Creates an instance of {@link User}.
+	 * @return created {@code User} object and never {@code null}
+	 */
+	@Nonnull
+	public User createUser()
+	{
+		return new User();
+	}
 
-	  /** Creates an instance of {@link JAXBElement }{@code <}{@link User }{@code >}.
-	   * @return created JAXBElement and never {@code null}
-	   */
-	  @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "User")
-	  @Nonnull
-	  public JAXBElement<User> createUser(@Nullable final User value)
-	  {
-		  return new JAXBElement<User>(_User_QNAME, User.class, null, value);
-	  }
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link User }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "RutaUser")
+	@Nonnull
+	public JAXBElement<User> createUser(@Nullable final User value)
+	{
+		return new JAXBElement<User>(_User_QNAME, User.class, null, value);
+	}
 
-	  /**Creates an instance of {@link Followers}.
-		 * @return created {@code Followers} object and never {@code null}
-		 */
-		@Nonnull
-		public Followers createFollowers()
-		{
-			return new Followers();
-		}
+	/**Creates an instance of {@link Followers}.
+	 * @return created {@code Followers} object and never {@code null}
+	 */
+	@Nonnull
+	public Followers createFollowers()
+	{
+		return new Followers();
+	}
 
-		/** Creates an instance of {@link JAXBElement }{@code <}{@link Followers }{@code >}.
-		 * @return created JAXBElement and never {@code null}
-		 */
-		@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "Followers")
-		@Nonnull
-		public JAXBElement<Followers> createFollowers(@Nullable final Followers value)
-		{
-			return new JAXBElement<Followers>(_Followers_QNAME, Followers.class, null, value);
-		}
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link Followers }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:common", name = "Followers")
+	@Nonnull
+	public JAXBElement<Followers> createFollowers(@Nullable final Followers value)
+	{
+		return new JAXBElement<Followers>(_Followers_QNAME, Followers.class, null, value);
+	}
 
+	/**Creates an instance of {@link DocumentDistribution}.
+	 * @return created {@code DocumentDistribution} object and never {@code null}
+	 */
+	@Nonnull
+	public DocumentDistribution createDocumentDistribution()
+	{
+		return new DocumentDistribution();
+	}
+
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link DocumentDistribution }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DocumentDistribution")
+	@Nonnull
+	public JAXBElement<DocumentDistribution> createDocumentDistribution(@Nullable final DocumentDistribution value)
+	{
+		return new JAXBElement<DocumentDistribution>(_DocumentDistribution_QNAME, DocumentDistribution.class, null, value);
+	}
 }
 
