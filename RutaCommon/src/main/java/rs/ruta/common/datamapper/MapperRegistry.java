@@ -82,7 +82,7 @@ public abstract class MapperRegistry
 	 */
 	public static DSTransactionFactory getTransactionFactory()
 	{
-		return new ExistTransactionFactory();
+		return new DatabaseTransactionFactory();
 	}
 
 	/**Checks whether the datastore is accessible.

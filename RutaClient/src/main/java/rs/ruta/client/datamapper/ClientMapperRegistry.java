@@ -14,8 +14,9 @@ import rs.ruta.common.datamapper.DataManipulationException;
 import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
-import rs.ruta.common.datamapper.ExistTransactionMapper;
+import rs.ruta.common.datamapper.DatabaseTransactionMapper;
 import rs.ruta.common.datamapper.DatabaseAdmin;
+import rs.ruta.common.datamapper.DatabaseTransaction;
 
 public class ClientMapperRegistry extends MapperRegistry
 {
@@ -47,8 +48,8 @@ public class ClientMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new CatalogueDeletionXmlMapper(getConnector());
 			else if(clazz == PartyType.class)
 				dataMapper = (DataMapper<S, String>) new PartyXmlMapper(getConnector());
-			else if(clazz == DSTransaction.class)
-				dataMapper = (DataMapper<S, String>) new ExistTransactionMapper(getConnector());
+			else if(clazz == DatabaseTransaction.class)
+				dataMapper = (DataMapper<S, String>) new DatabaseTransactionMapper(getConnector());
 			else if(clazz == BugReport.class)
 				dataMapper = (DataMapper<S, String>) new BugReportXmlMapper(getConnector());
 			if(dataMapper != null)

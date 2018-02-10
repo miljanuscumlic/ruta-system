@@ -207,7 +207,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	{
 		if(transactionFailure) //check again to be sure that some other thread did not finished executing rollbackTransactions
 		{
-			ExistTransaction.rollbackAll();
+			DatabaseTransaction.rollbackAll();
 			transactionFailure = false;
 		}
 	}
@@ -668,7 +668,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			if(collection == null)
 				throw new DatabaseException("Collection does not exist.");
 			id = doPrepareAndGetID(collection, object, username, transaction); //subclass's hook operation
-			insert(collection, object, id, (ExistTransaction) transaction);
+			insert(collection, object, id, (DatabaseTransaction) transaction);
 			putCacheObject(id, object); //subclass's hook operation
 		}
 		catch(XMLDBException e)
@@ -692,6 +692,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	public String insert(String username, T object) throws DetailException
 	{
 		DSTransaction transaction = openTransaction();
+		//synchronized on transaction because some other thread could potentially invoke rollbackAll
+		//method and rollback this transaction before it is commited (closed)
 		synchronized(transaction)
 		{
 			try
@@ -724,7 +726,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			id = doPrepareAndGetID(object, username, transaction); //subclass's hook operation
 			if(id != null)
 			{
-				insert(collection, object, id, (ExistTransaction) transaction);
+				insert(collection, object, id, (DatabaseTransaction) transaction);
 				putCacheObject(id, object); //subclass's hook operation
 			}
 			else
@@ -767,7 +769,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			if(collection == null)
 				throw new DatabaseException("Collection does not exist.");
 			id = createCollectionID(collection);
-			insert(collection, object, (String)id, (ExistTransaction) transaction);
+			insert(collection, object, (String)id, (DatabaseTransaction) transaction);
 			return id;
 		}
 		catch(XMLDBException e)
@@ -796,7 +798,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 				id = doPrepareAndGetID(object, null, null); //subclass's hook operation
 				if(id != null)
 				{
-					insert(collection, object, id, (ExistTransaction) transaction);
+					insert(collection, object, id, (DatabaseTransaction) transaction);
 					putCacheObject(id, object); //subclass's hook operation
 				}
 				else
@@ -830,7 +832,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			collection = getCollection();
 			if(collection == null)
 				throw new DatabaseException("Collection does not exist.");
-			insert(collection, object, (String)id, (ExistTransaction)transaction);
+			insert(collection, object, (String)id, (DatabaseTransaction)transaction);
 		}
 		catch(XMLDBException e)
 		{
@@ -851,7 +853,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			collection = getCollection();
 			if(collection == null)
 				throw new DatabaseException("Collection does not exist.");
-			insertBinary(collection, file, (String)id, (ExistTransaction)transaction);
+			insertBinary(collection, file, (String)id, (DatabaseTransaction)transaction);
 		}
 		catch(XMLDBException e)
 		{
@@ -872,7 +874,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			collection = getCollection();
 			if(collection == null)
 				throw new DatabaseException("Collection does not exist.");
-			insertImage(collection, object, (String)id, (ExistTransaction)transaction);
+			insertImage(collection, object, (String)id, (DatabaseTransaction)transaction);
 		}
 		catch(XMLDBException e)
 		{
@@ -906,12 +908,12 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
 			resource = collection.getResource(documentName);
 			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
-				copyResourceToDeleted(resource, (ExistTransaction) transaction, "UPDATE");
+				copyResourceToDeleted(resource, (DatabaseTransaction) transaction, "UPDATE");
 			else //first time insert
 			{
 				resource = collection.createResource(documentName, resourceType);
 				if(transaction != null && transaction.isEnabled())
-					((ExistTransaction) transaction).appendOperation(colPath, documentName, "INSERT", null, null, null);
+					((DatabaseTransaction) transaction).appendOperation(colPath, documentName, "INSERT", null, null, null);
 			}
 			resource.setContent(xmlResult);
 			collection.storeResource(resource);
@@ -949,7 +951,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @return id of the file, unique in the scope of the collection
 	 * @throws DetailException if file could not be stored
 	 */
-	private void insertBinary(Collection collection, File object, String id, ExistTransaction transaction) throws DetailException
+	private void insertBinary(Collection collection, File object, String id, DatabaseTransaction transaction) throws DetailException
 	{
 		Resource resource = null;
 		String resourceType = "BinaryResource";
@@ -1007,7 +1009,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @return id of the file, unique in the scope of the collection
 	 * @throws DetailException if file could not be stored
 	 */
-	private void insertImage(Collection collection, Image object, String id, ExistTransaction transaction) throws DetailException
+	private void insertImage(Collection collection, Image object, String id, DatabaseTransaction transaction) throws DetailException
 	{
 		Resource resource = null;
 		String resourceType = "BinaryResource";
@@ -1179,7 +1181,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			{
 				logger.info("Started deletion of the document " + documentName + " from the location " + getCollectionPath());
 				if(transaction != null && transaction.isEnabled()) // copying only when there is a transaction
-					copyResourceToDeleted(resource, (ExistTransaction) transaction, "DELETE");
+					copyResourceToDeleted(resource, (DatabaseTransaction) transaction, "DELETE");
 				collection.removeResource(resource);
 				logger.info("Finished deletion of the document " + documentName + " from the location " + getCollectionPath());
 				removeCachedObject(id);
@@ -1207,9 +1209,11 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 
 	/**Copies resource representing original xml document to the pertinent subcollection of /deleted collection.
 	 * @param resource resource representing the original document to be copied
+	 * @param transaction transaction inside which this copying is happening
+	 * @param operation {@code String} representing the operation beacause of which this copying is happening
 	 * @throws DetailException if resource cannot be copied due to database connection issues.
 	 */
-	private void copyResourceToDeleted(Resource resource, ExistTransaction transaction, String operation) throws DetailException
+	private void copyResourceToDeleted(Resource resource, DatabaseTransaction transaction, String operation) throws DetailException
 	{
 		Collection deletedCollection = null;
 		String originalDocumentName = null;

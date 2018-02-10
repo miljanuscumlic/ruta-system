@@ -145,7 +145,7 @@ public class UserXmlMapper extends XmlMapper<User>
 			logger.info("Finished deletion of user account \"" + username + "\" from the database.");
 /*			There is no need to append anything to the Transaction journal because deregistration has succeeded
  			if(transaction != null)
-				((ExistTransaction)transaction).appendOperation(null, null, "DEREGISTER", null, null, username);*/
+				((DatabaseTransaction)transaction).appendOperation(null, null, "DEREGISTER", null, null, username);*/
 		}
 		catch(XMLDBException e)
 		{
@@ -170,7 +170,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	public String registerUser(String username, String password) throws DetailException
 	{
 		String secretKey = null;
-		ExistTransaction transaction = (ExistTransaction) openTransaction();
+		DatabaseTransaction transaction = (DatabaseTransaction) openTransaction();
 		synchronized(transaction)
 		{
 			try
@@ -221,7 +221,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	 * @param transaction
 	 * @throws DetailException if database collection or some information from it could not be retrieved
 	 */
-	private void registerUserWithExist(String username, String password, ExistTransaction transaction) throws DetailException
+	private void registerUserWithExist(String username, String password, DatabaseTransaction transaction) throws DetailException
 	{
 		Collection collection = null;
 		UserManagementService ums = null;

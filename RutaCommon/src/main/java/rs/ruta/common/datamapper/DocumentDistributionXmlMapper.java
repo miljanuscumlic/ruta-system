@@ -73,7 +73,7 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 		try
 		{
 			//transaction = transactionFactory.newTransaction();
-			transaction = new DocumentTransaction();
+			transaction = new DistributionTransaction();
 			transaction.open();
 		}
 		catch(TransactionException e)
@@ -97,8 +97,8 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 		final Class<?> documentClazz = document.getClass();
 		final Followers followers = docDistribution.getFollowers().clone(); //not to mess with the reference to Followers in docDistribution
 		List<String> followerIDs = followers.clone().getFollowerIDs(); //not to mess the list of follower IDs within the followers reference
-		((DocumentTransaction) transaction).setFollowers(followers);
-		mapperRegistry.getMapper(DocumentTransaction.class).insert(null, (DocumentTransaction) transaction);
+		((DistributionTransaction) transaction).setFollowers(followers);
+		mapperRegistry.getMapper(DistributionTransaction.class).insert(null, (DistributionTransaction) transaction);
 
 		for(String followerID : followerIDs)
 		{
@@ -119,7 +119,7 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 					//MMM: TODO PartyType
 
 					followers.remove(followerID);
-					mapperRegistry.getMapper(DocumentTransaction.class).update(null, (DocumentTransaction) transaction);
+					mapperRegistry.getMapper(DistributionTransaction.class).update(null, (DistributionTransaction) transaction);
 				}
 				else
 					throw new DatabaseException("Object's ID could not be found.");

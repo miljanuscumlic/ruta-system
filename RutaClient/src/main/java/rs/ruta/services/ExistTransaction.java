@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -21,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="TransactionID" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="Timestamp" type="{http://www.w3.org/2001/XMLSchema}long"/>
- *         &lt;element name="Operation" type="{http://ruta.rs/services}operation" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="ExistOperation" type="{http://ruta.rs/services}existOperation" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -34,16 +35,20 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "existTransaction", propOrder = {
     "transactionID",
     "timestamp",
-    "operation"
+    "existOperation"
 })
-public class ExistTransaction {
+@XmlSeeAlso({
+    DistributionTransaction.class,
+    DatabaseTransaction.class
+})
+public abstract class ExistTransaction {
 
     @XmlElement(name = "TransactionID", required = true)
     protected String transactionID;
     @XmlElement(name = "Timestamp")
     protected long timestamp;
-    @XmlElement(name = "Operation")
-    protected List<Operation> operation;
+    @XmlElement(name = "ExistOperation")
+    protected List<ExistOperation> existOperation;
 
     /**
      * Gets the value of the transactionID property.
@@ -86,32 +91,32 @@ public class ExistTransaction {
     }
 
     /**
-     * Gets the value of the operation property.
+     * Gets the value of the existOperation property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the operation property.
+     * This is why there is not a <CODE>set</CODE> method for the existOperation property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getOperation().add(newItem);
+     *    getExistOperation().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Operation }
+     * {@link ExistOperation }
      * 
      * 
      */
-    public List<Operation> getOperation() {
-        if (operation == null) {
-            operation = new ArrayList<Operation>();
+    public List<ExistOperation> getExistOperation() {
+        if (existOperation == null) {
+            existOperation = new ArrayList<ExistOperation>();
         }
-        return this.operation;
+        return this.existOperation;
     }
 
 }

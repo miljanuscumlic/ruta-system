@@ -18,11 +18,11 @@ import rs.ruta.common.User;
 @XmlRegistry
 public class ObjectFactory
 {
-	public final static QName _ExistTransaction_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
+	public final static QName _ExistTransaction_QNAME = new QName("urn:rs:ruta:services", "DatabaseTransaction");
 	public final static QName _MyParty_QNAME = new QName("urn:rs:ruta:client", "MyParty");
 
-	/**Creates an instance of {@link ExistTransaction}.
-     * @return created {@code ExistTransaction} object and never {@code null}
+	/**Creates an instance of {@link DatabaseTransaction}.
+     * @return created {@code DatabaseTransaction} object and never {@code null}
      */
     @Nonnull
     public MyParty createMyParty()

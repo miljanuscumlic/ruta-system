@@ -12,15 +12,16 @@ import rs.ruta.common.User;
 import rs.ruta.common.datamapper.BugReportXmlMapper;
 import rs.ruta.common.datamapper.CatalogueDeletionXmlMapper;
 import rs.ruta.common.datamapper.CatalogueXmlMapper;
+import rs.ruta.common.datamapper.DatabaseTransaction;
 import rs.ruta.common.datamapper.DSTransaction;
 import rs.ruta.common.datamapper.DataManipulationException;
 import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.DocumentDistributionXmlMapper;
-import rs.ruta.common.datamapper.DocumentTransaction;
-import rs.ruta.common.datamapper.DocumentTransactionMapper;
+import rs.ruta.common.datamapper.DistributionTransaction;
+import rs.ruta.common.datamapper.DistributionTransactionMapper;
 import rs.ruta.common.datamapper.ExistConnector;
-import rs.ruta.common.datamapper.ExistTransactionMapper;
+import rs.ruta.common.datamapper.DatabaseTransactionMapper;
 import rs.ruta.common.datamapper.FollowersXmlMapper;
 import rs.ruta.common.datamapper.MapperRegistry;
 import rs.ruta.common.datamapper.PartyIDXmlMapper;
@@ -68,10 +69,10 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new PartyXmlMapper(getConnector());
 			else if(clazz == User.class)
 				dataMapper = (DataMapper<S, String>) new UserXmlMapper(getConnector());
-			else if(clazz == DSTransaction.class)
-				dataMapper = (DataMapper<S, String>) new ExistTransactionMapper(getConnector());
-			else if(clazz == DocumentTransaction.class)
-				dataMapper = (DataMapper<S, String>) new DocumentTransactionMapper(getConnector());
+			else if(clazz == DatabaseTransaction.class)
+				dataMapper = (DataMapper<S, String>) new DatabaseTransactionMapper(getConnector());
+			else if(clazz == DistributionTransaction.class)
+				dataMapper = (DataMapper<S, String>) new DistributionTransactionMapper(getConnector());
 			else if(clazz == PartyID.class)
 				dataMapper = (DataMapper<S, String>) new PartyIDXmlMapper(getConnector());
 			else if(clazz == RutaVersion.class)

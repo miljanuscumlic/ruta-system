@@ -10,17 +10,17 @@ import javax.xml.bind.JAXBElement;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
-public class DocumentTransactionMapper extends XmlMapper<DocumentTransaction>
+public class DistributionTransactionMapper extends XmlMapper<DistributionTransaction>
 {
 	final private static String collectionPath = "/system/transaction/document";
 	final private static String objectPackageName = "rs.ruta.common.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
-	private Map<String, DocumentTransaction> loadedTransactions;
+	private Map<String, DistributionTransaction> loadedTransactions;
 
-	public DocumentTransactionMapper(ExistConnector connector) throws DetailException
+	public DistributionTransactionMapper(ExistConnector connector) throws DetailException
 	{
 		super(connector);
-		loadedTransactions = new ConcurrentHashMap<String, DocumentTransaction>();
+		loadedTransactions = new ConcurrentHashMap<String, DistributionTransaction>();
 	}
 
 	@Override
@@ -29,9 +29,9 @@ public class DocumentTransactionMapper extends XmlMapper<DocumentTransaction>
 	protected String getObjectPackageName() { return objectPackageName; }
 
 /*	@Override
-	public DocumentTransaction find(String id) throws DetailException
+	public DistributionTransaction find(String id) throws DetailException
 	{
-		DocumentTransaction txn = loadedTransactions.get(id);
+		DistributionTransaction txn = loadedTransactions.get(id);
 		if(txn == null)
 		{
 			txn = super.find(id);
@@ -42,17 +42,17 @@ public class DocumentTransactionMapper extends XmlMapper<DocumentTransaction>
 	}*/
 
 	@Override
-	public ArrayList<DocumentTransaction> findAll() throws DetailException
+	public ArrayList<DistributionTransaction> findAll() throws DetailException
 	{
-		ArrayList<DocumentTransaction> transactions;
-		transactions = (ArrayList<DocumentTransaction>) super.findAll();
+		ArrayList<DistributionTransaction> transactions;
+		transactions = (ArrayList<DistributionTransaction>) super.findAll();
 		if (transactions != null)
 		{
 			if(transactions.size() >  1)
-				Collections.sort(transactions, new Comparator<DocumentTransaction>()
+				Collections.sort(transactions, new Comparator<DistributionTransaction>()
 				{
 					@Override
-					public int compare(DocumentTransaction o1, DocumentTransaction o2)
+					public int compare(DistributionTransaction o1, DistributionTransaction o2)
 					{
 						return (int) (o1.getTimestamp() - o2.getTimestamp());
 					}
@@ -62,13 +62,13 @@ public class DocumentTransactionMapper extends XmlMapper<DocumentTransaction>
 	}
 
 	@Override
-	public String insert(String username, DocumentTransaction object) throws DetailException
+	public String insert(String username, DistributionTransaction object) throws DetailException
 	{
 		return insert(username, object, null); //not using transaction when writing a transaction journal
 	}
 
 	@Override
-	protected String doPrepareAndGetID(DocumentTransaction tx, String username, DSTransaction transaction)
+	protected String doPrepareAndGetID(DistributionTransaction tx, String username, DSTransaction transaction)
 			throws DetailException
 	{
 		String id = getID(tx);
@@ -81,37 +81,37 @@ public class DocumentTransactionMapper extends XmlMapper<DocumentTransaction>
 	}
 
 	@Override
-	protected JAXBElement<DocumentTransaction> getJAXBElement(DocumentTransaction object)
+	protected JAXBElement<DistributionTransaction> getJAXBElement(DistributionTransaction object)
 	{
-		return new ObjectFactory().createDocumentTransaction(object);
+		return new ObjectFactory().createDistributionTransaction(object);
 	}
 
 	@Override
 	protected Class<?> getObjectClass()
 	{
-		return DocumentTransaction.class;
+		return DistributionTransaction.class;
 	}
 
 	@Override
-	protected DocumentTransaction getCachedObject(String id)
+	protected DistributionTransaction getCachedObject(String id)
 	{
 		return loadedTransactions.get(id);
 	}
 
 	@Override
-	protected DocumentTransaction removeCachedObject(String id)
+	protected DistributionTransaction removeCachedObject(String id)
 	{
 		return loadedTransactions.remove(id);
 	}
 
 	@Override
-	protected void putCacheObject(String id, DocumentTransaction object)
+	protected void putCacheObject(String id, DistributionTransaction object)
 	{
 		loadedTransactions.put(id, object);
 	}
 
 	@Override
-	public String getID(DocumentTransaction object) throws DetailException
+	public String getID(DistributionTransaction object) throws DetailException
 	{
 		return object.getID();
 	}

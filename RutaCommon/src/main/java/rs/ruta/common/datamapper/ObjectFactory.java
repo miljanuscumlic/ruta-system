@@ -19,45 +19,45 @@ import rs.ruta.common.User;
 @XmlRegistry
 public class ObjectFactory
 {
-	public final static QName _ExistTransaction_QNAME = new QName("urn:rs:ruta:services", "ExistTransaction");
-	public final static QName _DocumentTransaction_QNAME = new QName("urn:rs:ruta:services", "DocumentTransaction");
+	public final static QName _DatabaseTransaction_QNAME = new QName("urn:rs:ruta:services", "DatabaseTransaction");
+	public final static QName _DistributionTransaction_QNAME = new QName("urn:rs:ruta:services", "DistributionTransaction");
 
-	/**Creates an instance of {@link ExistTransaction}.
-     * @return created {@code ExistTransaction} object and never {@code null}
+	/**Creates an instance of {@link DatabaseTransaction}.
+     * @return created {@code DatabaseTransaction} object and never {@code null}
      */
     @Nonnull
-    public ExistTransaction createExistTransaction()
+    public DatabaseTransaction createDatabaseTransaction()
     {
-        return new ExistTransaction();
+        return new DatabaseTransaction();
     }
 
-    /** Creates an instance of {@link JAXBElement }{@code <}{@link ExistTransaction }{@code >}.
+    /** Creates an instance of {@link JAXBElement }{@code <}{@link DatabaseTransaction }{@code >}.
     * @return created JAXBElement and never {@code null}
     */
-   @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "ExistTransaction")
+   @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseTransaction")
    @Nonnull
-   public JAXBElement<ExistTransaction> createExistTransaction(@Nullable final ExistTransaction value)
+   public JAXBElement<DatabaseTransaction> createDatabaseTransaction(@Nullable final DatabaseTransaction value)
    {
-       return new JAXBElement<ExistTransaction>(_ExistTransaction_QNAME, ExistTransaction.class, null, value);
+       return new JAXBElement<DatabaseTransaction>(_DatabaseTransaction_QNAME, DatabaseTransaction.class, null, value);
    }
 
-	/**Creates an instance of {@link DocumentTransaction}.
-    * @return created {@code DocumentTransaction} object and never {@code null}
+	/**Creates an instance of {@link DistributionTransaction}.
+    * @return created {@code DistributionTransaction} object and never {@code null}
     */
    @Nonnull
-   public DocumentTransaction createDocumentTransaction()
+   public DistributionTransaction createDistributionTransaction()
    {
-       return new DocumentTransaction();
+       return new DistributionTransaction();
    }
 
-   /** Creates an instance of {@link JAXBElement }{@code <}{@link DocumentTransaction }{@code >}.
+   /** Creates an instance of {@link JAXBElement }{@code <}{@link DistributionTransaction }{@code >}.
    * @return created JAXBElement and never {@code null}
    */
-  @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DocumentTransaction")
+  @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionTransaction")
   @Nonnull
-  public JAXBElement<DocumentTransaction> createDocumentTransaction(@Nullable final DocumentTransaction value)
+  public JAXBElement<DistributionTransaction> createDistributionTransaction(@Nullable final DistributionTransaction value)
   {
-      return new JAXBElement<DocumentTransaction>(_ExistTransaction_QNAME, DocumentTransaction.class, null, value);
+      return new JAXBElement<DistributionTransaction>(_DistributionTransaction_QNAME, DistributionTransaction.class, null, value);
   }
 
 }

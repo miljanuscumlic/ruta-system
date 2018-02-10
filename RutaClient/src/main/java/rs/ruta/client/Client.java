@@ -1733,6 +1733,7 @@ public class Client implements RutaNode
 		}
 		catch(Exception e)
 		{
+			logger.error(e.getMessage());
 			String[] options = {"YES", "NO"};
 			int choice = JOptionPane.showOptionDialog(frame, "Data could not be saved to the local data store! "
 					+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
@@ -1748,6 +1749,7 @@ public class Client implements RutaNode
 			}
 			catch(Exception e)
 			{
+				logger.error(e.getMessage());
 				String[] options = {"YES", "NO"};
 				int choice = JOptionPane.showOptionDialog(frame, "Data store could not be disconnected from! "
 						+ "Do yo want to close the program anyway?", "Fatal error", JOptionPane.YES_NO_OPTION,
