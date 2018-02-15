@@ -49,6 +49,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
+import rs.ruta.common.Followers;
 import rs.ruta.common.User;
 import rs.ruta.common.datamapper.DataMapper;
 
@@ -2073,10 +2074,11 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 */
 	public void clearAllCachedObjects() throws DetailException
 	{
-		((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
-		((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();
-		((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).clearCachedObjects();
 		((BugReportXmlMapper) mapperRegistry.getMapper(BugReport.class)).clearCachedObjects();
+		((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).clearCachedObjects();
+		((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();
+		((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).clearCachedObjects();
+		((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
 	}
 
 }

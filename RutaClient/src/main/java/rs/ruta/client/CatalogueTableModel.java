@@ -4,6 +4,9 @@ import javax.swing.table.AbstractTableModel;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 
+/**
+ *Reading data from BusinessParty.catalog
+ */
 public class CatalogueTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = -6952612036544033712L;
@@ -28,6 +31,8 @@ public class CatalogueTableModel extends AbstractTableModel
 	@Override
 	public int getRowCount()
 	{
+		if(party == null)
+			return 0;
 		CatalogueType catalogue = party.getCatalogue();
 		return catalogue != null ? catalogue.getCatalogueLineCount() : 0;
 	}
@@ -47,7 +52,7 @@ public class CatalogueTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		if(party != null)
+//		if(party != null)
 		{
 			switch(columnIndex)
 			{
@@ -71,7 +76,7 @@ public class CatalogueTableModel extends AbstractTableModel
 				return null;
 			}
 		}
-		else
-			return null;
+//		else
+//			return null;
 	}
 }

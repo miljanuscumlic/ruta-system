@@ -10,6 +10,7 @@ import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.Followers;
 import rs.ruta.common.DocBox;
@@ -153,6 +154,9 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 				else if(documentClazz == PartyType.class)
 					((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).
 					insert(collection, (PartyType) document, docID, null);
+				else if(documentClazz == CatalogueDeletionType.class)
+					((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).
+					insert(collection, (CatalogueDeletionType) document, docID, null);
 				//TODO other document types
 
 			}

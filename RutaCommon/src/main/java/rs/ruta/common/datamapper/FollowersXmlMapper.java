@@ -113,7 +113,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	@Override
 	protected void delete(String id, DSTransaction transaction) throws DetailException
 	{
-		//deletes ID entry in Followers documents of parties that the party with id is following
+		//deletes ID entry in Followers documents of parties that the party with passed id is following
 		//"search-following.xq" retrieves list of followers objects
 		final FollowersSearchCriterion criterion = new FollowersSearchCriterion();
 		final String userID = getUserIDByID(id);

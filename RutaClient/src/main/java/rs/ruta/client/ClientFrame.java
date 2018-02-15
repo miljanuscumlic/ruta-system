@@ -472,7 +472,7 @@ public class ClientFrame extends JFrame
 			{
 				new Thread(()->
 				{
-					client.cdrFindNewDocBoxDocumnets();
+					client.cdrFindNewDocBoxDocuments();
 				}).start();
 			}
 			else
@@ -522,6 +522,8 @@ public class ClientFrame extends JFrame
 		helpMenu.add(exploreBugItem);
 		JMenuItem fileItem = new JMenuItem("Send a File");
 //		helpMenu.add(fileItem);
+		JMenuItem clearCacheItem = new JMenuItem("Clear Service Cache");
+		helpMenu.add(clearCacheItem);
 
 		aboutItem.addActionListener(event ->
 		{
@@ -587,6 +589,11 @@ public class ClientFrame extends JFrame
 		fileItem.addActionListener(event ->
 		{
 			client.cdrInsertAttachment();
+		});
+
+		clearCacheItem.addActionListener(event ->
+		{
+			client.cdrClearCache();
 		});
 
 		menuBar.add(helpMenu);
@@ -777,9 +784,10 @@ public class ClientFrame extends JFrame
 				Object selectedParty = selectedNode.getUserObject();
 				if (selectedParty instanceof BusinessParty)
 				{
-					ProductTableModel partnerTableModel = new ProductTableModel(false);
+//					ProductTableModel partnerTableModel = new ProductTableModel(false);
+					CatalogueTableModel partnerTableModel = new CatalogueTableModel();
 					JTable partnerTable = createCatalogueTable(partnerTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
-					partnerTableModel.setBusinessParty((BusinessParty) selectedParty);
+					partnerTableModel.setParty((BusinessParty) selectedParty);
 					rightPane = new JScrollPane(partnerTable);
 					arrangeTab0(leftPane, rightPane);
 				}
@@ -787,12 +795,17 @@ public class ClientFrame extends JFrame
 				{
 					PartyListTableModel partiesTableModel = new PartyListTableModel();
 					JTable partiesTable = createPartyListTable(partiesTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
-
-					if("Business Partners".equals((String)selectedParty))
+					if("My Party".equals((String) selectedParty))
+					{
+						List<BusinessParty> myPartyList = new ArrayList<>();
+						myPartyList.add(client.getMyParty().getMyFollowingParty());
+						partiesTableModel.setParties(myPartyList);
+					}
+					else if("Business Partners".equals((String) selectedParty))
 						partiesTableModel.setParties(client.getMyParty().getBusinessPartners());
-					else if("Other Parties".equals((String)selectedParty))
+					else if("Other Parties".equals((String) selectedParty))
 						partiesTableModel.setParties(client.getMyParty().getOtherParties());
-					else if("Archived Parties".equals((String)selectedParty))
+					else if("Archived Parties".equals((String) selectedParty))
 						partiesTableModel.setParties(client.getMyParty().getArchivedParties());
 					rightPane = new JScrollPane(partiesTable);
 					arrangeTab0(leftPane, rightPane);
@@ -1224,7 +1237,8 @@ public class ClientFrame extends JFrame
 					}
 					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
-						final CatalogueTableModel catalogueTableModel = new CatalogueTableModel();
+						final CatalogueTableModel catalogueTableModel = new CatalogueTableModel(); //MMM: this is alternative to ProductTableModel
+//						final ProductTableModel catalogueTableModel = new ProductTableModel(false);
 						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
 						final BusinessParty party = partyListTableModel.getParty(rowIndex);
 						catalogueTableModel.setParty(party);

@@ -192,8 +192,20 @@ public class CDR implements Server
 		try
 		{
 			init();
-			mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catDeletion);
-			//			MapperRegistry.getMapper(CatalogueType.class).delete(id); //deprecated: when CatalogueDeletion is not used
+			final String id = mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catDeletion);
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final DocumentDistribution delDistribution = new DocumentDistribution(catDeletion, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, delDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute catalogue deletion for the user: " + username + ".\n Exception is ", e);
+				}
+			});
 		}
 		catch(Exception e)
 		{
@@ -695,4 +707,22 @@ public class CDR implements Server
 		}
 	}
 
+	@Override
+	public void clearCache() throws RutaException
+	{
+		String exceptionMsg = "CDR service cache could not be cleared!";
+		try
+		{
+			init();
+			((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception is ", e);
+			if (e instanceof DetailException)
+				throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			else
+				throw new RutaException(exceptionMsg, e.getMessage());
+		}
+	}
 }

@@ -1,6 +1,7 @@
 package rs.ruta.common;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 
 public class DocumentDistribution
@@ -44,7 +45,8 @@ public class DocumentDistribution
 	private boolean isValidDocumentType(Object document)
 	{
 		Class<?> documentClazz = document.getClass();
-		if(documentClazz == CatalogueType.class || documentClazz == PartyType.class) //TODO put all other valid document types
+		if(documentClazz == CatalogueType.class || documentClazz == PartyType.class
+				|| documentClazz == CatalogueDeletionType.class) //TODO put all other valid document types
 			return true;
 		else
 			return false;

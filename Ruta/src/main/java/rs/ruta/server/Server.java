@@ -204,6 +204,9 @@ public interface Server
 	@WebMethod(operationName = "FindBugReport")
 	public BugReport findBugReport(String id) throws RutaException;
 
+	@WebMethod(operationName = "ClearCache")
+	public void clearCache() throws RutaException;
+
 	/**Retrieves the list of {@link BugReport}s from the datastore. List could be partial containg some maximum
 	 * number of {@code BugReport}s.
 	 * @return list of bugs or {@code null} if there are no bugs to retrieve
@@ -213,12 +216,15 @@ public interface Server
 	@WebMethod(operationName = "FindAllBugReports")
 	public List<BugReport> findAllBugReports() throws RutaException;
 
+	@Deprecated
 	@WebMethod(operationName = "InsertFile")
 	public void insertFile(@XmlMimeType("application/octet-stream") DataHandler dataHandler, String filename) throws RutaException;
 
+	@Deprecated
 	@WebMethod(operationName = "InsertImage")
 	public void insertImage(@XmlMimeType("application/octet-stream") Image file) throws RutaException;
 
+	@Deprecated
 	@WebMethod(operationName = "InsertAttachment")
 	public void insertAttachment(ReportAttachment attachment, String filename) throws RutaException;
 

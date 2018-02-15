@@ -11,6 +11,7 @@ import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
@@ -79,6 +80,9 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == PartyType.class)
 					((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).
 					insert(collection, (PartyType) document, docID, null);
+				else if(documentClazz == CatalogueDeletionType.class)
+					((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).
+					insert(collection, (CatalogueDeletionType) document, docID, null);
 				//TODO other document types
 
 				((DistributionTransaction) transaction).removeOperation();
@@ -241,6 +245,8 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).unmarshalFromXML(result);
 			else if(objectClazz == PartyType.class)
 				object = ((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).unmarshalFromXML(result);
+			if(objectClazz == CatalogueDeletionType.class)
+				object = ((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).unmarshalFromXML(result);
 			document.setDocument(object);
 			return document;
 		}
@@ -251,10 +257,12 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 	private Class<?> getObjectClass(String result)
 	{
 		String start = result.substring(0, 50);
-		if(start.matches("<(.)+:Catalogue(.)+"))
+		if(start.matches("<(.)+:Catalogue (.)+"))
 			return CatalogueType.class;
-		else if(start.matches("<(.)+:Party(.)+"))
+		else if(start.matches("<(.)+:Party (.)+"))
 			return PartyType.class;
+		else if(start.matches("<(.)+:CatalogueDeletion (.)+"))
+			return CatalogueDeletionType.class;
 		else
 			return null;
 	}

@@ -320,6 +320,40 @@ public interface Server {
 
     /**
      * 
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.ClearCacheResponse>
+     */
+    @WebMethod(operationName = "ClearCache")
+    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
+    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
+    public Response<ClearCacheResponse> clearCacheAsync();
+
+    /**
+     * 
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "ClearCache")
+    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
+    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
+    public Future<?> clearCacheAsync(
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<ClearCacheResponse> asyncHandler);
+
+    /**
+     * 
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "ClearCache")
+    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
+    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
+    public void clearCache()
+        throws RutaException
+    ;
+
+    /**
+     * 
      * @param arg0
      * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.NotifyUpdateResponse>

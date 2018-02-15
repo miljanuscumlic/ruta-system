@@ -37,7 +37,7 @@ public class MyParty extends BusinessParty
 	 */
 	@XmlElement(name = "FollowingParty")
 	private List<BusinessParty> followingParties;
-//	@XmlElement(name = "BusinessPartner")
+	//	@XmlElement(name = "BusinessPartner")
 	/**
 	 * Helper list containing only business partners of MyParty.
 	 * Should always be accessed with {@link #getBusinessPartners()} method call.
@@ -176,7 +176,7 @@ public class MyParty extends BusinessParty
 		this.myFollowingParty = myFollowingParty;
 	}
 
-/*	public List<BusinessParty> getBusinessPartners()
+	/*	public List<BusinessParty> getBusinessPartners()
 	{
 		if (businessPartners == null)
 			businessPartners = new ArrayList<BusinessParty>();
@@ -672,7 +672,7 @@ public class MyParty extends BusinessParty
 	public void followMyself()
 	{
 		BusinessParty myPartyCopy = clone(); //new BusinessParty();
-/*		Party coreParty = getCoreParty().clone();
+		/*		Party coreParty = getCoreParty().clone();
 		myPartyCopy.setCoreParty(coreParty);*/
 		myFollowingParty = myPartyCopy;
 	}
@@ -683,7 +683,7 @@ public class MyParty extends BusinessParty
 	{
 		//removeFollowingParty(followingParties.get(0));
 		myFollowingParty = null;
-/*		List<BusinessParty> followings = getFollowingParties();
+		/*		List<BusinessParty> followings = getFollowingParties();
 
 		if(followings.size() != 0 && followings.get(0).getCoreParty().getSimpleName().equals(this.getCoreParty().getSimpleName()))
 			getFollowingParties().remove(0);*/
@@ -712,7 +712,7 @@ public class MyParty extends BusinessParty
 	}
 
 	//MMM: because of view update should this method be placed in Client class???
-	void placeDoxBoxCatalogue(CatalogueType catalogue, String docID)
+	void placeDocBoxCatalogue(CatalogueType catalogue, String docID)
 	{
 		PartyType provider = catalogue.getProviderParty();
 		if(sameParties(this, provider))
@@ -724,7 +724,6 @@ public class MyParty extends BusinessParty
 		else
 		{
 			for(BusinessParty bParty: getFollowingParties())
-			{
 				if(sameParties(bParty, provider))
 				{
 					bParty.setCatalogue(catalogue);
@@ -732,19 +731,15 @@ public class MyParty extends BusinessParty
 					//MMM: update the view (tree view, table....) ; bolding the name of the node in tree view
 					break;
 				}
-			}
 		}
 
 	}
 
-	public void placeDoxBoxParty(PartyType party, String docID)
+	public void placeDocBoxParty(PartyType party, String docID)
 	{
 		if(sameParties(this, party))
-		{
 			getMyFollowingParty().setCoreParty(party);
-		}
 		else
-		{
 			for(BusinessParty bParty: getFollowingParties())
 			{
 				if(sameParties(bParty, party))
@@ -753,8 +748,26 @@ public class MyParty extends BusinessParty
 					break;
 				}
 			}
-		}
+	}
 
+	public void placeDocBoxCatalogueDeletion(CatalogueDeletionType catDeletion, String docID)
+	{
+		PartyType provider = catDeletion.getProviderParty();
+		if(sameParties(this, provider))
+		{
+			getMyFollowingParty().setCatalogue(null);
+			getMyFollowingParty().clearProducts();
+		}
+		else
+			for(BusinessParty bParty: getFollowingParties())
+			{
+				if(sameParties(bParty, provider))
+				{
+					bParty.setCatalogue(null);
+					bParty.clearProducts();
+					break;
+				}
+			}
 	}
 
 }

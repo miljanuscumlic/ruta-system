@@ -35,6 +35,7 @@ public class ObjectFactory {
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _DeleteUserResponse_QNAME = new QName("http://ruta.rs/services", "DeleteUserResponse");
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
+    private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
     private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
     private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
     private final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
@@ -76,6 +77,7 @@ public class ObjectFactory {
     private final static QName _SearchPartyResponse_QNAME = new QName("http://ruta.rs/services", "SearchPartyResponse");
     private final static QName _InsertAttachmentResponse_QNAME = new QName("http://ruta.rs/services", "InsertAttachmentResponse");
     private final static QName _UnfollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "UnfollowPartyResponse");
+    private final static QName _ClearCacheResponse_QNAME = new QName("http://ruta.rs/services", "ClearCacheResponse");
     private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
@@ -181,6 +183,14 @@ public class ObjectFactory {
      */
     public SearchPartyResponse createSearchPartyResponse() {
         return new SearchPartyResponse();
+    }
+
+    /**
+     * Create an instance of {@link ClearCacheResponse }
+     * 
+     */
+    public ClearCacheResponse createClearCacheResponse() {
+        return new ClearCacheResponse();
     }
 
     /**
@@ -365,6 +375,14 @@ public class ObjectFactory {
      */
     public FaultInfo createFaultInfo() {
         return new FaultInfo();
+    }
+
+    /**
+     * Create an instance of {@link ClearCache }
+     * 
+     */
+    public ClearCache createClearCache() {
+        return new ClearCache();
     }
 
     /**
@@ -635,6 +653,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindBugReportResponse")
     public JAXBElement<FindBugReportResponse> createFindBugReportResponse(FindBugReportResponse value) {
         return new JAXBElement<FindBugReportResponse>(_FindBugReportResponse_QNAME, FindBugReportResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ClearCache }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ClearCache")
+    public JAXBElement<ClearCache> createClearCache(ClearCache value) {
+        return new JAXBElement<ClearCache>(_ClearCache_QNAME, ClearCache.class, null, value);
     }
 
     /**
@@ -1004,6 +1031,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UnfollowPartyResponse")
     public JAXBElement<UnfollowPartyResponse> createUnfollowPartyResponse(UnfollowPartyResponse value) {
         return new JAXBElement<UnfollowPartyResponse>(_UnfollowPartyResponse_QNAME, UnfollowPartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ClearCacheResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ClearCacheResponse")
+    public JAXBElement<ClearCacheResponse> createClearCacheResponse(ClearCacheResponse value) {
+        return new JAXBElement<ClearCacheResponse>(_ClearCacheResponse_QNAME, ClearCacheResponse.class, null, value);
     }
 
     /**

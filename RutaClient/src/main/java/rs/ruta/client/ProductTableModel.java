@@ -9,81 +9,90 @@ import java.util.stream.Stream;
 
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
 
+/**
+ *Reading data from BusinessParty.products
+ */
 public class ProductTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private BusinessParty businessParty;
+	private static String[] columnNames =
+		{
+			"No.", "Name", "Description", "Pack Size", "ID", "Barcode", "Commodity Code", "Keywords"
+		};
+
+
+	private BusinessParty party;
 	private boolean editable;
 
 	/**Creates new model for the product table.
-	 * @param businessParty party which products are modeled and shown
+	 * @param party party which products are modeled and shown
 	 * @param editable if true, table cells are editable
 	 */
-	public ProductTableModel(BusinessParty businessParty, boolean editable)
+	public ProductTableModel(BusinessParty party, boolean editable)
 	{
-		this.businessParty = businessParty;
+		this.party = party;
 		this.editable = editable;
 	}
 
 	/**Creates new model for the product table. Party should be set with the subsequent call to
-	 * setBusinessParty(BusinessParty businessParty)
+	 * setBusinessParty(BusinessParty party)
 	 * @param editable if true, table cells are editable
 	 * @see ProductTableModel#setBusinessParty
 	 */
 	public ProductTableModel( boolean editable)
 	{
-		this.businessParty = null;
+		this.party = null;
 		this.editable = editable;
 	}
 
-	public BusinessParty getBusinessParty()
+	public BusinessParty getParty()
 	{
-		return businessParty;
+		return party;
 	}
 
 	/**Sets the Party for the product table model.
-	 * @param businessParty Party that is going to be set
+	 * @param party Party that is going to be set
 	 */
-	public void setBusinessParty(BusinessParty businessParty)
+	public void setParty(BusinessParty party)
 	{
-		this.businessParty = businessParty;
+		this.party = party;
 	}
 
 	@Override
 	public int getRowCount()
 	{
-		return businessParty != null ? (editable ? businessParty.getProducts().size() + 1 : businessParty.getProducts().size()) : 0;
+		return party != null ? (editable ? party.getProducts().size() + 1 : party.getProducts().size()) : 0;
 	}
 
 	@Override
 	public int getColumnCount()
 	{
-		return 8;
+		return columnNames.length;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		if(rowIndex < businessParty.getProducts().size())
+		if(rowIndex < party.getProducts().size())
 		{
 			switch(columnIndex)
 			{
 			case 0:
 				return rowIndex+1;
 			case 1:
-				return businessParty.getProductNameAsString(rowIndex);
+				return party.getProductNameAsString(rowIndex);
 			case 2:
-				return businessParty.getProductDescriptionAsString(rowIndex);
+				return party.getProductDescriptionAsString(rowIndex);
 			case 3:
-				return businessParty.getProductPackSizeAsBigDecimal(rowIndex);
+				return party.getProductPackSizeAsBigDecimal(rowIndex);
 			case 4:
-				return businessParty.getProductIDAsString(rowIndex);
+				return party.getProductIDAsString(rowIndex);
 			case 5:
-				return businessParty.getProductBarcodeAsString(rowIndex);
+				return party.getProductBarcodeAsString(rowIndex);
 			case 6:
-				return businessParty.getProductCommodityCodeAsString(rowIndex);
+				return party.getProductCommodityCodeAsString(rowIndex);
 			case 7:
-				return businessParty.getProductKeywordsAsString(rowIndex);
+				return party.getProductKeywordsAsString(rowIndex);
 			default:
 				return null;
 			}
@@ -96,12 +105,12 @@ public class ProductTableModel extends AbstractTableModel
 	public void setValueAt(Object obj, int rowIndex, int columnIndex)
 	{
 		//add new product to the list if the cell value not empty
-		if(businessParty.getProductCount() == rowIndex)
+		if(party.getProductCount() == rowIndex)
 			if(("").equals((String) obj)) // do nothing
 				return;
 			else
 			{
-				businessParty.addNewEmptyProduct();
+				party.addNewEmptyProduct();
 				fireTableRowsInserted(rowIndex+1, columnIndex);
 			}
 		switch(columnIndex)
@@ -109,25 +118,25 @@ public class ProductTableModel extends AbstractTableModel
 		case 0:
 			break;
 		case 1:
-			businessParty.setProductName(rowIndex, (String) obj);
+			party.setProductName(rowIndex, (String) obj);
 			break;
 		case 2:
-			businessParty.setProductDescription(rowIndex, (String) obj);
+			party.setProductDescription(rowIndex, (String) obj);
 			break;
 		case 3:
-			businessParty.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
+			party.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
 			break;
 		case 4:
-			businessParty.setProductID(rowIndex, obj.toString());
+			party.setProductID(rowIndex, obj.toString());
 			break;
 		case 5:
-			businessParty.setProductBarcode(rowIndex, obj.toString());
+			party.setProductBarcode(rowIndex, obj.toString());
 			break;
 		case 6:
-			businessParty.setProductCommodityCode(rowIndex, obj.toString());
+			party.setProductCommodityCode(rowIndex, obj.toString());
 			break;
 		case 7:
-			businessParty.setProductKeywords(rowIndex, obj.toString());
+			party.setProductKeywords(rowIndex, obj.toString());
 		default:
 			;
 		}
@@ -148,27 +157,7 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public String getColumnName(int columnIndex)
 	{
-		switch(columnIndex)
-		{
-		case 0:
-			return "No.";
-		case 1:
-			return "Name";
-		case 2:
-			return "Description";
-		case 3:
-			return "Pack Size";
-		case 4:
-			return "ID";
-		case 5:
-			return "Barcode";
-		case 6:
-			return "Commodity Code";
-		case 7:
-			return "Keywords";
-		default:
-			return "0";
-		}
+		return columnNames[columnIndex];
 	}
 
 	@Override

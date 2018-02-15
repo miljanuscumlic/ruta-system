@@ -438,7 +438,7 @@ public class Client implements RutaNode
 	public void cdrDeregisterMyParty()
 	{
 		frame.appendToConsole("Checking whether there are new documents in the DocBox.", Color.BLACK);
-		Semaphore sequential = cdrFindNewDocBoxDocumnets();
+		Semaphore sequential = cdrFindNewDocBoxDocuments();
 		try
 		{
 			sequential.acquire();
@@ -520,6 +520,7 @@ public class Client implements RutaNode
 
 			//creating Catalogue document
 			CatalogueType catalogue = myParty.createCatalogue(CDRParty);
+			myParty.setCatalogue(catalogue);
 			if(catalogue != null)
 			{
 				Server port = getCDRPort();
@@ -857,7 +858,7 @@ public class Client implements RutaNode
 	 * orderder with other service calls. After the end of this method number of permits in
 	 * this {@code Semaphore} is 1.
 	 */
-	public Semaphore cdrFindNewDocBoxDocumnets()
+	public Semaphore cdrFindNewDocBoxDocuments()
 	{
 		Semaphore sequential = new Semaphore(0);
 		try
@@ -939,15 +940,21 @@ public class Client implements RutaNode
 	 */
 	private void placeDocBoxDocument(Object document, String docID)
 	{
-		if(document.getClass() == CatalogueType.class)
+		final Class<?> documentClazz = document.getClass();
+		if(documentClazz == CatalogueType.class)
 		{
 			frame.appendToConsole("Catalogue document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
-			myParty.placeDoxBoxCatalogue((CatalogueType) document, docID);
+			myParty.placeDocBoxCatalogue((CatalogueType) document, docID);
 		}
-		else if(document.getClass() == PartyType.class)
+		else if(documentClazz == PartyType.class)
 		{
 			frame.appendToConsole("Party document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
-			myParty.placeDoxBoxParty((PartyType) document, docID);
+			myParty.placeDocBoxParty((PartyType) document, docID);
+		}
+		else if(documentClazz == CatalogueDeletionType.class)
+		{
+			frame.appendToConsole("CatalogueDeletion document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
+			myParty.placeDocBoxCatalogueDeletion((CatalogueDeletionType) document, docID);
 		}
 		else
 			frame.appendToConsole("Document with the ID: " + docID +
@@ -1558,7 +1565,7 @@ public class Client implements RutaNode
 			{
 				try
 				{
-					NotifyUpdateResponse res = futureResult.get();
+					futureResult.get();
 					frame.appendToConsole("CDR service has been successfully notified about new Ruta Client version.", Color.GREEN);
 				}
 				catch(Exception e)
@@ -1572,6 +1579,33 @@ public class Client implements RutaNode
 		{
 			frame.appendToConsole("CDR service could not be notified! Server is not accessible. Please try again later.", Color.RED);
 		}
+	}
+
+	public void cdrClearCache()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.clearCacheAsync(future ->
+			{
+				try
+				{
+					future.get();
+					frame.appendToConsole("CDR service successfully cleared its cache.", Color.GREEN);
+				}
+				catch (Exception e)
+				{
+					processException(e, "CDR service could not clear its cache! ");
+				}
+
+			});
+			frame.appendToConsole("Request for clearing the CDR service's cache has been sent. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole("CDR service could not clear its cache! Server is not accessible. Please try again later.", Color.RED);
+		}
+
 	}
 
 	public void cdrReportBug(BugReport bug)
@@ -1876,4 +1910,5 @@ public class Client implements RutaNode
 			}
 		}
 	}
+
 }
