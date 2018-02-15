@@ -1,5 +1,6 @@
 package rs.ruta.common.datamapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -9,15 +10,18 @@ import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.Followers;
+import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.ObjectFactory;
 
 public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistribution>
 {
-	final private static String collectionPath = "/doc-box";
+	final private static String collectionPath = "/system/distribution";
+//	final private static String docBoxPath = "/doc-box";
 	final private static String objectPackageName = "rs.ruta.common.datammaper";
-	final private static boolean distributionFailure = false;
+	private volatile static boolean distributionFailure = true;
 	final private static int nThreads = 100;
 	final private static Semaphore sem = new Semaphore(nThreads);
 
@@ -28,6 +32,7 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 
 	@Override
 	protected String getCollectionPath() { return collectionPath; }
+
 	@Override
 	protected String getObjectPackageName() { return objectPackageName; }
 
@@ -50,13 +55,45 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 		return createID();
 	}
 
-	@Override
-	protected synchronized DSTransaction openTransaction() throws DetailException
+	/**Process all outstanding {@link DistributionTransaction transactions} saved in the journals if there are any.
+	 * Also, method acquires one permit on semaphore.
+	 * @throws DetailException if could not connect to the database or could not process the transactions
+	 */
+	private static synchronized void processTransactions() throws DetailException
 	{
-		if(distributionFailure)
+		if(distributionFailure) //check again to be shure that none other thread managed to process distributionFailure
 		{
 			sem.acquireUninterruptibly(nThreads);
+			try
+			{
+				DistributionTransaction.distributeAll();
+				distributionFailure = false;
+				sem.release(nThreads-1);
+			}
+			catch(DetailException e)
+			{
+				sem.release(nThreads);
+				throw e;
+			}
 		}
+		else //permit should be acquired in any case
+		{
+			try
+			{
+				sem.acquire();
+			}
+			catch (InterruptedException e)
+			{
+				throw new DatabaseException("Could not open new document transaction.", e.getCause());
+			}
+		}
+	}
+
+	@Override
+	protected DSTransaction openTransaction() throws DetailException
+	{
+		if(distributionFailure)
+			processTransactions();
 		else
 		{
 			try
@@ -95,69 +132,163 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 	{
 		final Object document = docDistribution.getDocument();
 		final Class<?> documentClazz = document.getClass();
-		final Followers followers = docDistribution.getFollowers().clone(); //not to mess with the reference to Followers in docDistribution
-		List<String> followerIDs = followers.clone().getFollowerIDs(); //not to mess the list of follower IDs within the followers reference
-		((DistributionTransaction) transaction).setFollowers(followers);
-		mapperRegistry.getMapper(DistributionTransaction.class).insert(null, (DistributionTransaction) transaction);
-
-		for(String followerID : followerIDs)
+		final Followers followers = docDistribution.getFollowers();
+		List<String> followerIDs = followers.getFollowerIDs();
+		List<String> docCollectionPaths = new ArrayList<>();
+		try
 		{
+			DocBoxXmlMapper docBoxMapper = ((DocBoxXmlMapper) mapperRegistry.getMapper(DocBox.class));
+			String docBoxPath = docBoxMapper.getCollectionPath();
+			for(String followerID : followerIDs)
+				docCollectionPaths.add( docBoxPath + "/" + getIDByUserID(followerID));
+
+			String docID = createID();
 			Collection collection = null;
-			String id = null;
 			try
 			{
-				String docBoxCollectionPath = getCollectionPath() + "/" + getIDByUserID(followerID);
-				collection = getOrCreateCollection(docBoxCollectionPath);
-				if(collection == null)
-					throw new DatabaseException("Collection does not exist.");
-				id = doPrepareAndGetID(docDistribution, username, transaction);
-				if(id != null)
-				{
-					if(documentClazz == CatalogueType.class)
-						((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).
-						insert(collection, (CatalogueType) document, id, null);
-					//MMM: TODO PartyType
+				collection = getCollection();
+				if(documentClazz == CatalogueType.class)
+					((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).
+					insert(collection, (CatalogueType) document, docID, null);
+				else if(documentClazz == PartyType.class)
+					((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).
+					insert(collection, (PartyType) document, docID, null);
+				//TODO other document types
 
-					followers.remove(followerID);
-					mapperRegistry.getMapper(DistributionTransaction.class).update(null, (DistributionTransaction) transaction);
-				}
-				else
-					throw new DatabaseException("Object's ID could not be found.");
 			}
 			catch(XMLDBException e)
 			{
-				throw new DatabaseException("The collection could not be retrieved.", e);
-			}
-			catch(DetailException e)
-			{
-				throw e;
+				throw new DatabaseException("The collection " + getCollectionPath() + " could not be retrieved.", e);
 			}
 			finally
 			{
 				closeCollection(collection);
 			}
+
+			((DistributionTransaction) transaction).addDistributionOperations(docCollectionPaths, collectionPath, docID + ".xml");
+			DocBox docBox = new DocBox(document, docCollectionPaths, docID);
+			docBoxMapper.insert(username, docBox, transaction);
+			delete(docID, (DSTransaction) null);
 		}
+		catch(Exception e)
+		{
+			distributionFailure = true;
+			transaction.setFailed(true);
+			throw e;
+		}
+
+
+
+/*		//Implementation without DocBoxMapper
+		final Object document = docDistribution.getDocument();
+		final Class<?> documentClazz = document.getClass();
+		final Followers followers = docDistribution.getFollowers();
+		List<String> followerIDs = followers.getFollowerIDs();
+		List<String> docCollectionPaths = new ArrayList<>();
+		try
+		{
+			for(String followerID : followerIDs)
+				docCollectionPaths.add(docBoxPath + "/" + getIDByUserID(followerID));
+
+			String docID = createID();
+			Collection collection = null;
+			try
+			{
+				collection = getCollection();
+				if(documentClazz == CatalogueType.class)
+					((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).
+					insert(collection, (CatalogueType) document, docID, null);
+				else if(documentClazz == PartyType.class)
+					((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).
+					insert(collection, (PartyType) document, docID, null);
+				//TODO other document types
+
+			}
+			catch(XMLDBException e)
+			{
+				throw new DatabaseException("The collection " + getCollectionPath() + " could not be retrieved.", e);
+			}
+			finally
+			{
+				closeCollection(collection);
+			}
+
+			((DistributionTransaction) transaction).setOperations(docCollectionPaths, collectionPath, docID + ".xml");
+
+			for(int i = 0; i < docCollectionPaths.size(); i++)
+			{
+				String docBoxCollectionPath = null;
+				try
+				{
+					docBoxCollectionPath = docCollectionPaths.get(i);
+					collection = getOrCreateCollection(docBoxCollectionPath);
+					if(collection == null)
+						throw new DatabaseException("Collection does not exist.");
+					if(documentClazz == CatalogueType.class)
+						((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).
+						insert(collection, (CatalogueType) document, docID, null);
+					else if(documentClazz == PartyType.class)
+						((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).
+						insert(collection, (PartyType) document, docID, null);
+					//TODO other document types
+
+					((DistributionTransaction) transaction).removeOperation();
+				}
+				catch(XMLDBException e)
+				{
+					throw new DatabaseException("The collection " + docBoxCollectionPath + " could not be retrieved.", e);
+				}
+				finally
+				{
+					closeCollection(collection);
+				}
+			}
+
+			if(documentClazz == CatalogueType.class)
+				((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).deleteDocument(collectionPath, docID + ".xml");
+			else if(documentClazz == PartyType.class)
+				((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).deleteDocument(collectionPath, docID + ".xml");
+			//TODO other document types
+		}
+		catch(Exception e)
+		{
+			distributionFailure = true;
+			transaction.setFailed(true);
+			throw e;
+		}*/
+
 		return "OK"; //dummy return value
 	}
 
 	@Override
 	protected void delete(String id, DSTransaction transaction) throws DetailException
 	{
+		//deletes document no regard with of which type it is; deleteDocument method is part of the abstract XmlMapper class
+		((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).deleteXmlDocument(collectionPath, id + ".xml");
+	}
+
+	@Override
+	@Deprecated
+	public List<String> findAllDocumentIDs(String partyID) throws DetailException
+	{
+		ArrayList<String> results = new ArrayList<>();
+		String docBoxCollectionPath = ((DocBoxXmlMapper) mapperRegistry.getMapper(DocBox.class)).getCollectionPath() +
+				"/" + getIDByUserID(partyID);
 		Collection collection = null;
-		final String collectionName = id;
-		final String collectionPath = getCollectionPath() + "/" + id;
 		try
 		{
-			collection = getCollection(collectionPath);
-			if(collection == null)
-				throw new DatabaseException("Collection does not exist!");
-			logger.info("Started deletion of the collection " + collectionName + " from the location " + getCollectionPath());
-			deleteCollection(collection);
-			logger.info("Finished deletion of the collection " + collectionName + " from the location " + getCollectionPath());
+			collection = getCollection(docBoxCollectionPath);
+			if(collection != null)
+			{
+				int count = collection.getResourceCount();
+				String[] resourceIDs = collection.listResources();
+				for(String id : resourceIDs)
+					results.add(id);
+			}
 		}
-		catch(XMLDBException e)
+		catch (XMLDBException e)
 		{
-			throw new DatabaseException("The DocBox could not be deleted.", e);
+			throw new DatabaseException("Collection or document could not be retrieved from the database.");
 		}
 		finally
 		{
@@ -166,11 +297,12 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 				if(collection != null)
 					collection.close();
 			}
-			catch (XMLDBException e)
+			catch(XMLDBException e)
 			{
 				logger.error("Exception is ", e);;
 			}
 		}
+		return results.size() != 0 ? results : null;
 	}
 
 }

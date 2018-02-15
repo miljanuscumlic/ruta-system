@@ -114,6 +114,7 @@ public class ClientFrame extends JFrame
 	private JMenuItem cdrSynchCatalogueItem = new JMenuItem("Synchronise My Catalogue");
 	private JMenuItem cdrPullCatalogueItem = new JMenuItem("Pull My Catalogue");
 	private JMenuItem cdrDeleteCatalogueItem = new JMenuItem("Delete My Catalogue");
+	private JMenuItem cdrGetDocumentsItem = new JMenuItem("Get New Documents");
 	private JMenuItem cdrSearchItem = new JMenuItem("Search");
 	private JMenuItem cdrSettingsItem = new JMenuItem("Settings");
 
@@ -330,6 +331,7 @@ public class ClientFrame extends JFrame
 		cdrMenu.add(cdrPullCatalogueItem);
 		cdrMenu.add(cdrDeleteCatalogueItem);
 		cdrMenu.addSeparator();
+		cdrMenu.add(cdrGetDocumentsItem);
 		cdrMenu.add(cdrSearchItem);
 		cdrMenu.addSeparator();
 		cdrMenu.add(cdrSettingsItem);
@@ -460,6 +462,21 @@ public class ClientFrame extends JFrame
 			}
 			else
 				appendToConsole("Deletion request of My Catalogue has not been sent to the CDR service."
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
+		});
+
+		cdrGetDocumentsItem.addActionListener(event ->
+		{
+			MyParty myParty = client.getMyParty();
+			if(myParty.isRegisteredWithCDR())
+			{
+				new Thread(()->
+				{
+					client.cdrFindDocBoxIds();
+				}).start();
+			}
+			else
+				appendToConsole("Request for new documents has not been sent to the CDR service."
 						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
 		});
 

@@ -29,10 +29,10 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 {
 	final private static String collectionPath = "/bug-report";
 	final private static String objectPackageName = BugReport.class.getPackage().getName(); //"rs.ruta.common"; //MMM: if this is OK should be changed everywhere - it is better to retrieve package name through class object than set it as static String, in a case a class change its destinantion
-	final private static String queryBugReport = "search-bug-report.xq"; //MMM: not implemented yet
+	final private static String queryBugReport = "search-bug-report.xq";
 	final private static String nextIdDocument = "nextId.xml";
 	/**
-	 * Cache of in-memory {@code BugReport}s objects. This cache map is mandatory for all classes that deals with the
+	 * Cache of in-memory {@code BugReport}s objects. This cache map is mandatory for all classes that deal with the
 	 * concurrent writes to their documents.
 	 */
 	private Map<String, BugReport> loadedBugReports;
@@ -41,8 +41,8 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	{
 		super(connector);
 		loadedBugReports = new ConcurrentHashMap<>();
-		if(openDocument(collectionPath, nextIdDocument) == null) //MMM: here should be checked whether there are some BugReports in the collection and if there are retrive last used Id and redirect it to the saveDocument method
-			saveDocument(collectionPath, nextIdDocument, "<nextId>0</nextId>");
+		if(openXmlDocument(collectionPath, nextIdDocument) == null) //MMM: here should be checked whether there are some BugReports in the collection and if there are retrive last used Id and redirect it to the saveDocument method
+			saveXmlDocument(collectionPath, nextIdDocument, "<nextId>0</nextId>");
 	}
 
 	@Override
@@ -121,10 +121,10 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	{
 		try
 		{
-			final String doc = openDocument(collectionPath, nextIdDocument);
+			final String doc = openXmlDocument(collectionPath, nextIdDocument);
 			final String ID = doc.replaceAll("<[/]?nextId>", "");
 			final String nextID = String.valueOf(Long.parseLong(ID) + 1);
-			saveDocument(collectionPath, nextIdDocument, "<nextId>" + nextID + "</nextId>");
+			saveXmlDocument(collectionPath, nextIdDocument, "<nextId>" + nextID + "</nextId>");
 			return ID;
 		}
 		catch (DatabaseException e)
@@ -187,9 +187,11 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		BugReportSearchCriterion sc = (BugReportSearchCriterion) criterion;
-
-		String query = openDocument(getQueryPath(), queryBugReport);
+		String queryName = null;
+		Class<? extends SearchCriterion> criterionClazz = criterion.getClass();
+		if(criterionClazz == BugReportSearchCriterion.class)  //MMM: at this point this is superfluous
+			queryName = queryBugReport;
+		String query = openXmlDocument(getQueryPath(), queryName);
 		if(query == null)
 			return query;
 		try
@@ -244,14 +246,14 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) collection.getService("XQueryService", "1.0");
-			logger.info("Start of the query of the " + uri);
+			logger.info("Started query of the " + uri);
 			queryService.setProperty("indent", "yes");
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
 			String query = null; // search query
 			//loading the .xq query file from the database
 			//prepare query String adding criteria for the search from SearchCriterion object
-			query = openDocument(getQueryPath(), queryBugReport);
+			query = openXmlDocument(getQueryPath(), queryBugReport);
 
 //			final File queryFile = null;
 			if(/*queryFile != null ||*/ query != null)
@@ -307,7 +309,6 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 				}
 			}
 		}
-
 		return searchResult.size() != 0 ? searchResult : null;
 	}
 

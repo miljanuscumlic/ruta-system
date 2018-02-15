@@ -67,14 +67,6 @@ public class DatabaseTransactionMapper extends XmlMapper<DatabaseTransaction>
 		return insert(username, object, null); //not using transaction when writing a transaction journal
 	}
 
-	@Deprecated
-	@Override
-	public void insert(DatabaseTransaction txn, String id, DSTransaction transaction) throws DetailException
-	{
-		super.insert(txn, id, transaction);
-		loadedTransactions.put(id, txn);
-	}
-
 	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot be the same
 	 * as one of previously used. This method is overriden because there is no need to check if id was previously used
 	 * (i.e. there was a document with the same name in the /deleted collection) because transactions are not to be backed up

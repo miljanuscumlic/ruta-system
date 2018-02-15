@@ -403,4 +403,26 @@ public class BusinessParty
 		return InstanceFactory.getPropertyOrNull(coreParty.getPartyName().get(0).getName(), NameType::getValue);
 	}
 
+	/**Checks whether two parties are the same. Check is based on equality of party IDs.
+	 * @param partyOne
+	 * @param partyTwo
+	 * @return true if parties are the same, false if they are not the same or some party has not set
+	 * its party ID.
+	 */
+	public static boolean sameParties(BusinessParty partyOne, BusinessParty partyTwo)
+	{
+		return Party.sameParties(partyOne.getCoreParty(), partyTwo.getCoreParty());
+	}
+
+	/**Checks whether two parties are the same. Check is based on equality of party IDs.
+	 * @param partyOne
+	 * @param partyTwo
+	 * @return true if parties are the same, false if they are not the same or some party has not set
+	 * its party ID.
+	 */
+	public static boolean sameParties(BusinessParty partyOne, PartyType partyTwo)
+	{
+		return Party.sameParties(partyOne.getCoreParty(), partyTwo);
+	}
+
 }

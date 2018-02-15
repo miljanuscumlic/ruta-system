@@ -19,45 +19,85 @@ import rs.ruta.common.User;
 @XmlRegistry
 public class ObjectFactory
 {
+	public final static QName _DatabaseOperation_QNAME = new QName("urn:rs:ruta:services", "DatabaseOperation");
+	public final static QName _DistributionOperation_QNAME = new QName("urn:rs:ruta:services", "DistributionOperation");
 	public final static QName _DatabaseTransaction_QNAME = new QName("urn:rs:ruta:services", "DatabaseTransaction");
 	public final static QName _DistributionTransaction_QNAME = new QName("urn:rs:ruta:services", "DistributionTransaction");
 
-	/**Creates an instance of {@link DatabaseTransaction}.
-     * @return created {@code DatabaseTransaction} object and never {@code null}
-     */
-    @Nonnull
-    public DatabaseTransaction createDatabaseTransaction()
-    {
-        return new DatabaseTransaction();
-    }
+	/**Creates an instance of {@link DatabaseOperation}.
+	 * @return created {@code DatabaseOperation} object and never {@code null}
+	 */
+	@Nonnull
+	public DatabaseOperation createDatabaseOperation()
+	{
+		return new DatabaseOperation();
+	}
 
-    /** Creates an instance of {@link JAXBElement }{@code <}{@link DatabaseTransaction }{@code >}.
-    * @return created JAXBElement and never {@code null}
-    */
-   @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseTransaction")
-   @Nonnull
-   public JAXBElement<DatabaseTransaction> createDatabaseTransaction(@Nullable final DatabaseTransaction value)
-   {
-       return new JAXBElement<DatabaseTransaction>(_DatabaseTransaction_QNAME, DatabaseTransaction.class, null, value);
-   }
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link DatabaseOperation }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseOperation")
+	@Nonnull
+	public JAXBElement<DatabaseOperation> createDatabaseOperation(@Nullable final DatabaseOperation value)
+	{
+		return new JAXBElement<DatabaseOperation>(_DatabaseOperation_QNAME, DatabaseOperation.class, null, value);
+	}
+
+	/**Creates an instance of {@link DistributionOperation}.
+	 * @return created {@code DistributionOperation} object and never {@code null}
+	 */
+	@Nonnull
+	public DistributionOperation createDistributionOperation()
+	{
+		return new DistributionOperation();
+	}
+
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link DistributionOperation }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionOperation")
+	@Nonnull
+	public JAXBElement<DistributionOperation> createDistributionOperation(@Nullable final DistributionOperation value)
+	{
+		return new JAXBElement<DistributionOperation>(_DistributionOperation_QNAME, DistributionOperation.class, null, value);
+	}
+
+	/**Creates an instance of {@link DatabaseTransaction}.
+	 * @return created {@code DatabaseTransaction} object and never {@code null}
+	 */
+	@Nonnull
+	public DatabaseTransaction createDatabaseTransaction()
+	{
+		return new DatabaseTransaction();
+	}
+
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link DatabaseTransaction }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseTransaction")
+	@Nonnull
+	public JAXBElement<DatabaseTransaction> createDatabaseTransaction(@Nullable final DatabaseTransaction value)
+	{
+		return new JAXBElement<DatabaseTransaction>(_DatabaseTransaction_QNAME, DatabaseTransaction.class, null, value);
+	}
 
 	/**Creates an instance of {@link DistributionTransaction}.
-    * @return created {@code DistributionTransaction} object and never {@code null}
-    */
-   @Nonnull
-   public DistributionTransaction createDistributionTransaction()
-   {
-       return new DistributionTransaction();
-   }
+	 * @return created {@code DistributionTransaction} object and never {@code null}
+	 */
+	@Nonnull
+	public DistributionTransaction createDistributionTransaction()
+	{
+		return new DistributionTransaction();
+	}
 
-   /** Creates an instance of {@link JAXBElement }{@code <}{@link DistributionTransaction }{@code >}.
-   * @return created JAXBElement and never {@code null}
-   */
-  @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionTransaction")
-  @Nonnull
-  public JAXBElement<DistributionTransaction> createDistributionTransaction(@Nullable final DistributionTransaction value)
-  {
-      return new JAXBElement<DistributionTransaction>(_DistributionTransaction_QNAME, DistributionTransaction.class, null, value);
-  }
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link DistributionTransaction }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionTransaction")
+	@Nonnull
+	public JAXBElement<DistributionTransaction> createDistributionTransaction(@Nullable final DistributionTransaction value)
+	{
+		return new JAXBElement<DistributionTransaction>(_DistributionTransaction_QNAME, DistributionTransaction.class, null, value);
+	}
 
 }

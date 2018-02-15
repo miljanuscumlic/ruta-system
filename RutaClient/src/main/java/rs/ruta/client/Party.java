@@ -711,4 +711,23 @@ public class Party extends PartyType
 		return ("").equals(ID) ? null : ID;
 	}
 
+	public static String getPartyID(PartyType party)
+	{
+		String ID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
+		return ("").equals(ID) ? null : ID;
+	}
+
+	/**Checks whether two parties are the same. Check is based on equality of party IDs.
+	 * @param partyOne
+	 * @param partyTwo
+	 * @return true if parties are the same, false if they are not the same or some party has not set
+	 * its party ID.
+	 */
+	public static boolean sameParties(PartyType partyOne, PartyType partyTwo)
+	{
+		String partyOneID = getPartyID(partyOne);
+		String otherPartyID = getPartyID(partyTwo);
+		return partyOneID != null ? partyOneID.equals(otherPartyID) : false;
+	}
+
 }

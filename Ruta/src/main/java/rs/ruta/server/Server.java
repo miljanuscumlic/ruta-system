@@ -16,6 +16,8 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DocBoxAllIDsSearchCriterion;
+import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.Followers;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
@@ -40,13 +42,13 @@ public interface Server
 	@WebMethod(operationName = "UpdateCatalogue")
 	public void updateCatalogue(String username, CatalogueType cat) throws RutaException;
 
-	/**Retrives catalogue with passed id from the database.
-	 * @param id catalogue's id
-	 * @return catalogue
+	/**Retrives catalogue of the user which id is passed.
+	 * @param partyID id of the user which catalogue should be retrieved
+	 * @return catalogue user's catalogue
 	 * @throws RutaException if Catalogue could not be found
 	 */
 	@WebMethod(operationName = "FindCatalogue")
-	public CatalogueType findCatalogue(String id) throws RutaException;
+	public CatalogueType findCatalogue(String partyID) throws RutaException;
 
 	/**Deletes catalogue object from the database. Catalogue is referenced with the passed
 	 * CatalogueDeletion object.
@@ -57,6 +59,14 @@ public interface Server
 	 */
 	@WebMethod(operationName = "DeleteCatalogue")
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException;
+
+	/**Searches the database for all catalogue items that conforms to the search criterion.
+	 * @param criterion search criterion
+	 * @return list of catalogues with only the catalogue items conforming the criterion
+	 * @throws RutaException if search query could not be processed
+	 */
+	@WebMethod(operationName = "SearchCatalogue")
+	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException;
 
 	/**Registers user with the CDR service.
 	 * @param username user's username
@@ -117,13 +127,29 @@ public interface Server
 	@WebMethod(operationName = "SearchParty")
 	public List<PartyType> searchParty(CatalogueSearchCriterion criterion) throws RutaException;
 
-	/**Searches the database for all catalogue items that conforms to the search criterion.
-	 * @param criterion search criterion
-	 * @return list of catalogues with only the catalogue items conforming the criterion
-	 * @throws RutaException if search query could not be processed
+	/**Finds all IDs of documents in the DocBox of the party.
+	 * @param criterion search criterion containing party's unique ID
+	 * @return list of all IDs of DocBox documents or {@code null} if there are none
+	 * @throws RutaException if list could not be retrieved
 	 */
-	@WebMethod(operationName = "SearchCatalogue")
-	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException;
+	@WebMethod(operationName = "FindAllDocBoxDocumentIDs")
+	public List<String> findAllDocBoxDocumentIDs(DocBoxAllIDsSearchCriterion criterion) throws RutaException;
+
+	/**Retrives a DocBox document.
+	 * @param criterion search criterion containing party's unique ID and ID of the document that should be retrieved
+	 * @return {@code Object} instance representing the retrieved document or {@code null} if document does not exist
+	 * @throws RutaException if document could not be retrived
+	 */
+	@WebMethod(operationName = "FindDocBoxDocument")
+	public Object findDocBoxDocument(DocBoxDocumentSearchCriterion criterion) throws RutaException;
+
+	/**Deletes a DocBox document.
+	 * @param username user's username
+	 * @param id document's id
+	 * @throws RutaException if document could not be deleted
+	 */
+	@WebMethod(operationName = "DeleteDocBoxDocument")
+	void deleteDocBoxDocument(String username, String id) throws RutaException;
 
 	/**Searches the database for all {@link BugReport}s that conforms to the search criterion.
 	 * @param criterion search criterion

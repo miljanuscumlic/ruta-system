@@ -9,6 +9,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -44,6 +45,8 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DocBoxAllIDsSearchCriterion;
+import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.Followers;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
@@ -71,7 +74,7 @@ public class Client implements RutaNode
 
 	/**Constructs a {@code Client} object.
 	 * @param force if true it tells the constructor to try to create an object despite the fact that
-	 * one instance of it invoked by {@code Ruta Client application} from the same OS directory had been already created
+	 * one instance of it invoked by {@code Ruta Client application} from the same OS directory had already been created
 	 * @throws DetailException if object could not be created or, when {@code force} is true and one instance of it already exists
 	 */
 	public Client(boolean force) throws DetailException
@@ -155,8 +158,8 @@ public class Client implements RutaNode
 				try
 				{
 					System.out.println("Shutdown hook started.");
+//					properties.put("started", false);
 					shutdownApplication();
-					properties.put("started", false);
 					System.out.println("Shutdown hook ended.");
 				}
 				catch(Exception e)
@@ -743,7 +746,7 @@ public class Client implements RutaNode
 				}
 				catch(Exception e)
 				{
-					processException(e, "Catalogue has not been deleted from the CDR service! Server responds: ");
+					processException(e, "Catalogue has not been deleted from the CDR service!");
 				}
 				finally
 				{
@@ -838,7 +841,95 @@ public class Client implements RutaNode
 		}
 	}
 
-	/**Process exception thrown by called webmethod or some local one and displays
+	/**
+	 * Sends request to the CDR service for all IDs of new DocBox documents.
+	 */
+	public void cdrFindDocBoxIds()
+	{
+		try
+		{
+			Server port = getCDRPort();
+			final String myPartyId = myParty.getPartyID();
+			final DocBoxAllIDsSearchCriterion criterion = new DocBoxAllIDsSearchCriterion();
+			criterion.setPartyID(myPartyId);
+			port.findAllDocBoxDocumentIDsAsync(criterion, future ->
+			{
+				try
+				{
+					final FindAllDocBoxDocumentIDsResponse response = future.get();
+					final List<String> docBoxIDs = response.getReturn();
+					final int docCount = docBoxIDs.size();
+					if(docBoxIDs != null && docCount != 0)
+					{
+						frame.appendToConsole("There are " + docBoxIDs.size() + " new documents in the CDR service.", Color.GREEN);
+						frame.appendToConsole("Started retrieval of " + docCount + " documents from the CDR service.", Color.BLACK);
+						Semaphore oneAtATime = new Semaphore(1);
+						for(String docID : docBoxIDs)
+						{
+							oneAtATime.acquire();
+							DocBoxDocumentSearchCriterion docCriterion = new DocBoxDocumentSearchCriterion();
+							docCriterion.setPartyID(myPartyId);
+							docCriterion.setDocumentID(docID);
+							port.findDocBoxDocumentAsync(docCriterion, docFuture ->
+							{
+								try
+								{
+									final FindDocBoxDocumentResponse res = docFuture.get();
+									final Object document = res.getReturn();
+									oneAtATime.release();
+									placeDocBoxDocument(document, docID);
+									port.deleteDocBoxDocumentAsync(myParty.getUsername(), docID, deleteFuture -> {});
+								}
+								catch (Exception e)
+								{
+									oneAtATime.release();
+									processException(e, "Document " + docID + " could not be retrieved!");
+								}
+							});
+						}
+						oneAtATime.acquire();
+						frame.appendToConsole("Finished retrieval of " + docCount + " documents from the CDR service.", Color.BLACK);
+						oneAtATime.release();
+					}
+					else
+						frame.appendToConsole("There are no new documents in the CDR service.", Color.GREEN);
+				}
+				catch(Exception e)
+				{
+					processException(e, "Request for new documents has not been successcully processed!");
+				}
+			});
+			frame.appendToConsole("Request for new documents has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+		}
+		catch(WebServiceException e) //might be thrown by getServicePort
+		{
+			frame.appendToConsole("Request for new documents has not been sent to the CDR service!"
+					+ " Server is not accessible. Please try again later.", Color.RED);
+		}
+	}
+
+	/**Place DocBox document in the proper place within local domain model.
+	 * @param document document to be processed and placed
+	 */
+	private void placeDocBoxDocument(Object document, String docID)
+	{
+		if(document.getClass() == CatalogueType.class)
+		{
+			frame.appendToConsole("Catalogue document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
+			myParty.placeDoxBoxCatalogue((CatalogueType) document, docID);
+		}
+		else if(document.getClass() == PartyType.class)
+		{
+			frame.appendToConsole("Party document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
+			myParty.placeDoxBoxParty((PartyType) document, docID);
+		}
+		else
+			frame.appendToConsole("Document with the ID: " + docID +
+					"of the unkwown type has been successfully retrieved.", Color.GREEN);
+
+	}
+
+	/**Processes exception thrown by called webmethod or some local one and displays
 	 * exception message on the console.
 	 * @param e exception to be processed
 	 * @param msg message to be displayed on the console
@@ -1351,7 +1442,7 @@ public class Client implements RutaNode
 					}
 					catch(Exception e)
 					{
-						processException(e, "Search request could not be processed! Server responds: ");
+						processException(e, "Search request could not be processed! ");
 					}
 					finally
 					{
@@ -1389,7 +1480,7 @@ public class Client implements RutaNode
 					}
 					catch(Exception e)
 					{
-						processException(e, "Search request could not be processed! Server responds: ");
+						processException(e, "Search request could not be processed!");
 					}
 					finally
 					{

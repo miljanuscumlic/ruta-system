@@ -189,9 +189,10 @@ public class UserXmlMapper extends XmlMapper<User>
 				String uuid = ((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(id), transaction);
 				insertMetadata(username, PARTY_ID, uuid);
 				//setting party as a follower of himself
-				Followers followers = new Followers();
-				followers.setPartyID(uuid);
-				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, followers, transaction);
+				Followers iFollower = new Followers();
+				iFollower.setPartyID(uuid);
+				iFollower.add(uuid);
+				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, iFollower, transaction);
 				logger.info("Finished registering of the user " + username + " with the CDR service.");
 			}
 			catch (XMLDBException e)
@@ -243,7 +244,7 @@ public class UserXmlMapper extends XmlMapper<User>
 				userGroup = new GroupAider(userGroupName);
 				ums.addGroup(userGroup);
 			}
-			transaction.appendOperation(null, null, "REGISTER", null, null, username);
+			transaction.addOperation(null, null, "REGISTER", null, null, username);
 			final UserAider account = new UserAider(username, userGroup);
 			account.setPassword(password);
 			ums.addAccount(account);

@@ -12,7 +12,7 @@ import org.xmldb.api.base.XMLDBException;
 
 public class DistributionTransactionMapper extends XmlMapper<DistributionTransaction>
 {
-	final private static String collectionPath = "/system/transaction/document";
+	final private static String collectionPath = "/system/transaction/distribution";
 	final private static String objectPackageName = "rs.ruta.common.datamapper";
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, DistributionTransaction> loadedTransactions;
@@ -65,6 +65,12 @@ public class DistributionTransactionMapper extends XmlMapper<DistributionTransac
 	public String insert(String username, DistributionTransaction object) throws DetailException
 	{
 		return insert(username, object, null); //not using transaction when writing a transaction journal
+	}
+
+	@Override
+	public String update(String username, DistributionTransaction object) throws DetailException
+	{
+		return update(username, object, null); //not using transaction when writing a transaction journal
 	}
 
 	@Override

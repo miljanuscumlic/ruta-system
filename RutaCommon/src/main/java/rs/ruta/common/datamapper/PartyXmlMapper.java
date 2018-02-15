@@ -220,7 +220,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	@Deprecated //MMM: using string replacement
 	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException
 	{
-		String query = openDocument(getQueryPath(), queryNameSearchParty);
+		String query = openXmlDocument(getQueryPath(), queryNameSearchParty);
 		if(query == null)
 			return query;
 
@@ -257,6 +257,11 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
+		String queryName = null;
+		if(criterion.getClass() == CatalogueSearchCriterion.class)  //MMM: at this point this is superfluous
+			queryName = queryNameSearchParty;
+		String query = openXmlDocument(getQueryPath(), queryName);
+
 		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
 		String partyName = sc.getPartyName();
 		String partyCompanyID = sc.getPartyCompanyID();
@@ -265,7 +270,6 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		String partyCountry = sc.getPartyCountry();
 		boolean partyAll = sc.isPartyAll();
 
-		String query = openDocument(getQueryPath(), queryNameSearchParty);
 		if(query == null)
 			return query;
 		try
@@ -297,7 +301,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	@Override
 	protected String prepareQuery(String queryName, CatalogueSearchCriterion criterion) throws DatabaseException
 	{
-		String query = openDocument(getQueryPath(), queryName);
+		String query = openXmlDocument(getQueryPath(), queryName);
 		if(query == null)
 			return query;
 

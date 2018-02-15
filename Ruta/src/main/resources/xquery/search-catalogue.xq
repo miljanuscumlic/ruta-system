@@ -5,6 +5,8 @@ declare namespace ns2 = 'urn:oasis:names:specification:ubl:schema:xsd:CommonExte
 declare namespace ns3 = 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2';
 declare namespace ns4 = 'urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2';
 
+declare variable $path external := ();
+
 declare variable $party-name external := ();
 declare variable $party-company-id external := ();
 declare variable $party-class-code external := ();
@@ -125,8 +127,10 @@ declare function local:filter-by-item-old($catalogues as node()*) as item()*
 let $catalogues := 
     if (exists($party-name) or exists($party-company-id) or exists($party-class-code) or
         exists($party-city) or exists($party-country)) then
-        local:filter-by-party(collection('/db/ruta/catalogue')/*)
+            local:filter-by-party(collection($path)/*)
+(:        local:filter-by-party(collection('/db/ruta/catalogue')/*):)
     else
-        collection('/db/ruta/catalogue')/*
+        collection($path)/*
+(:        collection('/db/ruta/catalogue')/*:)
 return
 	local:filter-by-item($catalogues)

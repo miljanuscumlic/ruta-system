@@ -31,6 +31,9 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DocBox;
+import rs.ruta.common.DocBoxAllIDsSearchCriterion;
+import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
 import rs.ruta.common.RutaVersion;
@@ -146,7 +149,7 @@ public class CDR implements Server
 			init();
 			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
 			docBoxPool.submit(() ->
-			{ //catalogue distribution
+			{
 				try
 				{
 					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
@@ -155,7 +158,7 @@ public class CDR implements Server
 				}
 				catch (DetailException e)
 				{
-					logger.error("Unable to distribute catalogue for the user: " + username + " Exception is ", e);
+					logger.error("Unable to distribute catalogue for the user: " + username + ".\n Exception is ", e);
 				}
 			});
 		}
@@ -167,13 +170,13 @@ public class CDR implements Server
 
 	@Override
 	@WebMethod
-	public CatalogueType findCatalogue(String id) throws RutaException
+	public CatalogueType findCatalogue(String partyID) throws RutaException
 	{
 		CatalogueType cat = null;
 		try
 		{
 			init();
-			cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(id);
+			cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(partyID);
 		}
 		catch(Exception e)
 		{
@@ -240,7 +243,20 @@ public class CDR implements Server
 		try
 		{
 			init();
-			mapperRegistry.getMapper(PartyType.class).update(username, party);
+			final String id = mapperRegistry.getMapper(PartyType.class).update(username, party);
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final DocumentDistribution partyDistribution = new DocumentDistribution(party, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, partyDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute Party document of the user: " + username + ".\n Exception is:", e);
+				}
+			});
 		}
 		catch(Exception e)
 		{
@@ -477,7 +493,6 @@ public class CDR implements Server
 				followers.add(partyID);
 				mapperRegistry.getMapper(Followers.class).update(null, followers);
 			}
-
 			docBoxPool.submit(() ->
 			{
 				final Followers iFollower = new Followers();
@@ -494,8 +509,7 @@ public class CDR implements Server
 				}
 				catch (DetailException e)
 				{
-					logger.error("Unable to distri"
-							+ "bute catalogue for the user with ID: " + followID + " Exception is ", e);
+					logger.error("Unable to distribute catalogue for the user with ID: " + followID + ". Exception is ", e);
 				}
 			});
 
@@ -503,7 +517,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			processException(e, "My Party could not be added as a follower!");
+			processException(e, "My Party could not be added as a follower of the user with ID: " + followID + "!");
 		}
 		return party;
 	}
@@ -530,6 +544,54 @@ public class CDR implements Server
 		catch(Exception e)
 		{
 			processException(e, "My Party could not be removed as a follower!");
+		}
+	}
+
+	@Override
+	public List<String> findAllDocBoxDocumentIDs(DocBoxAllIDsSearchCriterion criterion) throws RutaException
+	{
+		List<String> ids = null;
+		try
+		{
+			init();
+			ids = mapperRegistry.getMapper(DocBox.class).findManyIDs(criterion);
+		}
+		catch (Exception e)
+		{
+			processException(e, "DocBox document's id list could not be retrieved!");
+		}
+		return ids;
+	}
+
+	@Override
+	public Object findDocBoxDocument(DocBoxDocumentSearchCriterion criterion) throws RutaException
+	{
+		Object document = null;
+		try
+		{
+			init();
+			List<DocBox> db = mapperRegistry.getMapper(DocBox.class).findMany(criterion);
+			if(db != null)
+				document = db.get(0).getDocument();
+		}
+		catch(Exception e)
+		{
+			processException(e, "DocBox document could not be retrieved!");
+		}
+		return document;
+	}
+
+	@Override
+	public void deleteDocBoxDocument(String username, String id) throws RutaException
+	{
+		try
+		{
+			init();
+			mapperRegistry.getMapper(DocBox.class).deleteDocBoxDocument(username, id);
+		}
+		catch(Exception e)
+		{
+			processException(e, "DocBox document could not be deleted!");
 		}
 	}
 

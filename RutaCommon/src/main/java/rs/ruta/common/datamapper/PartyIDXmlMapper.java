@@ -67,7 +67,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	}
 
 	@Override
-	public String getIDByUserID(String userID) throws DetailException
+	public String getIDByUserID(String userID) throws DatabaseException
 	{
 		Collection coll = null;
 		String searchResult = null;
@@ -78,12 +78,12 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
-			logger.info("Start of the query of the " + uri);
+			logger.info("Started query of the " + uri);
 			queryService.setProperty("indent", "no");
 
 			String query = null; // search query
 			//loading and preparing the .xq query file from the database
-			query = openDocument(getQueryPath(), getSearchQueryName());
+			query = openXmlDocument(getQueryPath(), getSearchQueryName());
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath).
 					append("/").append(userID).append(getDocumentSufix());
 			queryService.declareVariable("path", queryPath.toString());
@@ -151,12 +151,12 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
-			logger.info("Start of the query of the " + uri);
+			logger.info("Started query of the " + uri);
 			queryService.setProperty("indent", "no");
 
 			String query = null; // search query
 			//loading and preparing the .xq query file from the database
-			query = openDocument(getQueryPath(), queryNameSearchPartyID);
+			query = openXmlDocument(getQueryPath(), queryNameSearchPartyID);
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
 			queryService.declareVariable("id", id);

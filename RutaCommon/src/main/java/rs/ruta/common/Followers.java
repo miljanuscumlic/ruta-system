@@ -46,6 +46,9 @@ public class Followers
 		return partyID;
 	}
 
+	/**Sets the ID of the {@code Party} which followers are listed in this class.
+	 * @param PartyID party ID
+	 */
 	public void setPartyID(String PartyID)
 	{
 		this.partyID = PartyID;

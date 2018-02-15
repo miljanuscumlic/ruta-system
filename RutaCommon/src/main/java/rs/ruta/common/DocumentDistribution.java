@@ -15,14 +15,17 @@ public class DocumentDistribution
 		setDocument(document);
 		this.followers = followers;
 	}
+
 	public Followers getFollowers()
 	{
 		return followers;
 	}
+
 	public void setFollowers(Followers followers)
 	{
 		this.followers = followers;
 	}
+
 	public Object getDocument()
 	{
 		return document;
@@ -41,7 +44,7 @@ public class DocumentDistribution
 	private boolean isValidDocumentType(Object document)
 	{
 		Class<?> documentClazz = document.getClass();
-		if(documentClazz == CatalogueType.class || documentClazz == PartyType.class)
+		if(documentClazz == CatalogueType.class || documentClazz == PartyType.class) //TODO put all other valid document types
 			return true;
 		else
 			return false;

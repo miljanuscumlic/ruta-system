@@ -35,14 +35,16 @@ public class ObjectFactory {
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _DeleteUserResponse_QNAME = new QName("http://ruta.rs/services", "DeleteUserResponse");
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
+    private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
     private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
     private final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
-    private final static QName _ExistOperation_QNAME = new QName("http://ruta.rs/services", "ExistOperation");
     private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
     private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "SearchCatalogueResponse");
     private final static QName _DeleteUser_QNAME = new QName("http://ruta.rs/services", "DeleteUser");
     private final static QName _SearchCriterion_QNAME = new QName("urn:rs:ruta:common", "SearchCriterion");
+    private final static QName _DeleteDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentResponse");
     private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
+    private final static QName _FindAllDocBoxDocumentIDsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDsResponse");
     private final static QName _ReportAttachment_QNAME = new QName("urn:rs:ruta:common", "ReportAttachment");
     private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/services", "FindAllBugReports");
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
@@ -54,6 +56,7 @@ public class ObjectFactory {
     private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
     private final static QName _SearchBugReport_QNAME = new QName("http://ruta.rs/services", "SearchBugReport");
+    private final static QName _DistributionOperation_QNAME = new QName("urn:rs:ruta:services", "DistributionOperation");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
     private final static QName _InsertFileResponse_QNAME = new QName("http://ruta.rs/services", "InsertFileResponse");
     private final static QName _SearchBugReportResponse_QNAME = new QName("http://ruta.rs/services", "SearchBugReportResponse");
@@ -63,6 +66,7 @@ public class ObjectFactory {
     private final static QName _AddBugReportComment_QNAME = new QName("http://ruta.rs/services", "AddBugReportComment");
     private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
     private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
+    private final static QName _FindDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocument");
     private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/services", "InsertBugReportResponse");
     private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClientResponse");
     private final static QName _RutaUser_QNAME = new QName("urn:rs:ruta:services", "RutaUser");
@@ -75,6 +79,7 @@ public class ObjectFactory {
     private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
+    private final static QName _FindAllDocBoxDocumentIDs_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDs");
     private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
     private final static QName _RutaVersion_QNAME = new QName("urn:rs:ruta:common", "RutaVersion");
     private final static QName _DocumentDistribution_QNAME = new QName("urn:rs:ruta:services", "DocumentDistribution");
@@ -87,6 +92,8 @@ public class ObjectFactory {
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _PartyID_QNAME = new QName("urn:rs:ruta:services", "PartyID");
     private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
+    private final static QName _DatabaseOperation_QNAME = new QName("urn:rs:ruta:services", "DatabaseOperation");
+    private final static QName _DeleteDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocument");
     private final static QName _FollowParty_QNAME = new QName("http://ruta.rs/services", "FollowParty");
 
     /**
@@ -121,6 +128,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DatabaseOperation }
+     * 
+     */
+    public DatabaseOperation createDatabaseOperation() {
+        return new DatabaseOperation();
+    }
+
+    /**
      * Create an instance of {@link DatabaseTransaction }
      * 
      */
@@ -137,11 +152,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FaultInfo }
+     * Create an instance of {@link DistributionOperation }
      * 
      */
-    public FaultInfo createFaultInfo() {
-        return new FaultInfo();
+    public DistributionOperation createDistributionOperation() {
+        return new DistributionOperation();
     }
 
     /**
@@ -185,22 +200,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DeleteUser }
-     * 
-     */
-    public DeleteUser createDeleteUser() {
-        return new DeleteUser();
-    }
-
-    /**
-     * Create an instance of {@link SearchCatalogueResponse }
-     * 
-     */
-    public SearchCatalogueResponse createSearchCatalogueResponse() {
-        return new SearchCatalogueResponse();
-    }
-
-    /**
      * Create an instance of {@link InsertAttachmentResponse }
      * 
      */
@@ -214,14 +213,6 @@ public class ObjectFactory {
      */
     public UnfollowPartyResponse createUnfollowPartyResponse() {
         return new UnfollowPartyResponse();
-    }
-
-    /**
-     * Create an instance of {@link FindCatalogue }
-     * 
-     */
-    public FindCatalogue createFindCatalogue() {
-        return new FindCatalogue();
     }
 
     /**
@@ -249,22 +240,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindAllBugReportsResponse }
-     * 
-     */
-    public FindAllBugReportsResponse createFindAllBugReportsResponse() {
-        return new FindAllBugReportsResponse();
-    }
-
-    /**
-     * Create an instance of {@link NotifyUpdateResponse }
-     * 
-     */
-    public NotifyUpdateResponse createNotifyUpdateResponse() {
-        return new NotifyUpdateResponse();
-    }
-
-    /**
      * Create an instance of {@link InsertFile }
      * 
      */
@@ -289,19 +264,163 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindBugReportResponse }
-     * 
-     */
-    public FindBugReportResponse createFindBugReportResponse() {
-        return new FindBugReportResponse();
-    }
-
-    /**
      * Create an instance of {@link UpdateRutaClientResponse }
      * 
      */
     public UpdateRutaClientResponse createUpdateRutaClientResponse() {
         return new UpdateRutaClientResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindDocBoxDocument }
+     * 
+     */
+    public FindDocBoxDocument createFindDocBoxDocument() {
+        return new FindDocBoxDocument();
+    }
+
+    /**
+     * Create an instance of {@link UpdateParty }
+     * 
+     */
+    public UpdateParty createUpdateParty() {
+        return new UpdateParty();
+    }
+
+    /**
+     * Create an instance of {@link DeleteCatalogue }
+     * 
+     */
+    public DeleteCatalogue createDeleteCatalogue() {
+        return new DeleteCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link DeleteDocBoxDocument }
+     * 
+     */
+    public DeleteDocBoxDocument createDeleteDocBoxDocument() {
+        return new DeleteDocBoxDocument();
+    }
+
+    /**
+     * Create an instance of {@link FollowParty }
+     * 
+     */
+    public FollowParty createFollowParty() {
+        return new FollowParty();
+    }
+
+    /**
+     * Create an instance of {@link RegisterUser }
+     * 
+     */
+    public RegisterUser createRegisterUser() {
+        return new RegisterUser();
+    }
+
+    /**
+     * Create an instance of {@link FindAllDocBoxDocumentIDs }
+     * 
+     */
+    public FindAllDocBoxDocumentIDs createFindAllDocBoxDocumentIDs() {
+        return new FindAllDocBoxDocumentIDs();
+    }
+
+    /**
+     * Create an instance of {@link UpdateCatalogue }
+     * 
+     */
+    public UpdateCatalogue createUpdateCatalogue() {
+        return new UpdateCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link InsertCatalogueResponse }
+     * 
+     */
+    public InsertCatalogueResponse createInsertCatalogueResponse() {
+        return new InsertCatalogueResponse();
+    }
+
+    /**
+     * Create an instance of {@link InsertCatalogue }
+     * 
+     */
+    public InsertCatalogue createInsertCatalogue() {
+        return new InsertCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link InsertBugReport }
+     * 
+     */
+    public InsertBugReport createInsertBugReport() {
+        return new InsertBugReport();
+    }
+
+    /**
+     * Create an instance of {@link FaultInfo }
+     * 
+     */
+    public FaultInfo createFaultInfo() {
+        return new FaultInfo();
+    }
+
+    /**
+     * Create an instance of {@link FindDocBoxDocumentResponse }
+     * 
+     */
+    public FindDocBoxDocumentResponse createFindDocBoxDocumentResponse() {
+        return new FindDocBoxDocumentResponse();
+    }
+
+    /**
+     * Create an instance of {@link DeleteUser }
+     * 
+     */
+    public DeleteUser createDeleteUser() {
+        return new DeleteUser();
+    }
+
+    /**
+     * Create an instance of {@link SearchCatalogueResponse }
+     * 
+     */
+    public SearchCatalogueResponse createSearchCatalogueResponse() {
+        return new SearchCatalogueResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindCatalogue }
+     * 
+     */
+    public FindCatalogue createFindCatalogue() {
+        return new FindCatalogue();
+    }
+
+    /**
+     * Create an instance of {@link FindAllBugReportsResponse }
+     * 
+     */
+    public FindAllBugReportsResponse createFindAllBugReportsResponse() {
+        return new FindAllBugReportsResponse();
+    }
+
+    /**
+     * Create an instance of {@link NotifyUpdateResponse }
+     * 
+     */
+    public NotifyUpdateResponse createNotifyUpdateResponse() {
+        return new NotifyUpdateResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindBugReportResponse }
+     * 
+     */
+    public FindBugReportResponse createFindBugReportResponse() {
+        return new FindBugReportResponse();
     }
 
     /**
@@ -329,27 +448,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link UpdateParty }
-     * 
-     */
-    public UpdateParty createUpdateParty() {
-        return new UpdateParty();
-    }
-
-    /**
      * Create an instance of {@link UpdatePartyResponse }
      * 
      */
     public UpdatePartyResponse createUpdatePartyResponse() {
         return new UpdatePartyResponse();
-    }
-
-    /**
-     * Create an instance of {@link DeleteCatalogue }
-     * 
-     */
-    public DeleteCatalogue createDeleteCatalogue() {
-        return new DeleteCatalogue();
     }
 
     /**
@@ -409,14 +512,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FollowParty }
-     * 
-     */
-    public FollowParty createFollowParty() {
-        return new FollowParty();
-    }
-
-    /**
      * Create an instance of {@link SearchBugReport }
      * 
      */
@@ -425,11 +520,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RegisterUser }
+     * Create an instance of {@link DeleteDocBoxDocumentResponse }
      * 
      */
-    public RegisterUser createRegisterUser() {
-        return new RegisterUser();
+    public DeleteDocBoxDocumentResponse createDeleteDocBoxDocumentResponse() {
+        return new DeleteDocBoxDocumentResponse();
     }
 
     /**
@@ -441,35 +536,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link UpdateCatalogue }
-     * 
-     */
-    public UpdateCatalogue createUpdateCatalogue() {
-        return new UpdateCatalogue();
-    }
-
-    /**
-     * Create an instance of {@link InsertCatalogueResponse }
-     * 
-     */
-    public InsertCatalogueResponse createInsertCatalogueResponse() {
-        return new InsertCatalogueResponse();
-    }
-
-    /**
      * Create an instance of {@link FindCatalogueResponse }
      * 
      */
     public FindCatalogueResponse createFindCatalogueResponse() {
         return new FindCatalogueResponse();
-    }
-
-    /**
-     * Create an instance of {@link InsertCatalogue }
-     * 
-     */
-    public InsertCatalogue createInsertCatalogue() {
-        return new InsertCatalogue();
     }
 
     /**
@@ -505,11 +576,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InsertBugReport }
+     * Create an instance of {@link FindAllDocBoxDocumentIDsResponse }
      * 
      */
-    public InsertBugReport createInsertBugReport() {
-        return new InsertBugReport();
+    public FindAllDocBoxDocumentIDsResponse createFindAllDocBoxDocumentIDsResponse() {
+        return new FindAllDocBoxDocumentIDsResponse();
     }
 
     /**
@@ -567,6 +638,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindDocBoxDocumentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindDocBoxDocumentResponse")
+    public JAXBElement<FindDocBoxDocumentResponse> createFindDocBoxDocumentResponse(FindDocBoxDocumentResponse value) {
+        return new JAXBElement<FindDocBoxDocumentResponse>(_FindDocBoxDocumentResponse_QNAME, FindDocBoxDocumentResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FaultInfo }{@code >}}
      * 
      */
@@ -582,15 +662,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "Attachment")
     public JAXBElement<ReportAttachment> createAttachment(ReportAttachment value) {
         return new JAXBElement<ReportAttachment>(_Attachment_QNAME, ReportAttachment.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ExistOperation }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ExistOperation")
-    public JAXBElement<ExistOperation> createExistOperation(ExistOperation value) {
-        return new JAXBElement<ExistOperation>(_ExistOperation_QNAME, ExistOperation.class, null, value);
     }
 
     /**
@@ -630,12 +701,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocumentResponse")
+    public JAXBElement<DeleteDocBoxDocumentResponse> createDeleteDocBoxDocumentResponse(DeleteDocBoxDocumentResponse value) {
+        return new JAXBElement<DeleteDocBoxDocumentResponse>(_DeleteDocBoxDocumentResponse_QNAME, DeleteDocBoxDocumentResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InsertPartyResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertPartyResponse")
     public JAXBElement<InsertPartyResponse> createInsertPartyResponse(InsertPartyResponse value) {
         return new JAXBElement<InsertPartyResponse>(_InsertPartyResponse_QNAME, InsertPartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDsResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllDocBoxDocumentIDsResponse")
+    public JAXBElement<FindAllDocBoxDocumentIDsResponse> createFindAllDocBoxDocumentIDsResponse(FindAllDocBoxDocumentIDsResponse value) {
+        return new JAXBElement<FindAllDocBoxDocumentIDsResponse>(_FindAllDocBoxDocumentIDsResponse_QNAME, FindAllDocBoxDocumentIDsResponse.class, null, value);
     }
 
     /**
@@ -738,6 +827,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DistributionOperation }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionOperation")
+    public JAXBElement<DistributionOperation> createDistributionOperation(DistributionOperation value) {
+        return new JAXBElement<DistributionOperation>(_DistributionOperation_QNAME, DistributionOperation.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InsertParty }{@code >}}
      * 
      */
@@ -816,6 +914,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllPartiesResponse")
     public JAXBElement<FindAllPartiesResponse> createFindAllPartiesResponse(FindAllPartiesResponse value) {
         return new JAXBElement<FindAllPartiesResponse>(_FindAllPartiesResponse_QNAME, FindAllPartiesResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindDocBoxDocument }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindDocBoxDocument")
+    public JAXBElement<FindDocBoxDocument> createFindDocBoxDocument(FindDocBoxDocument value) {
+        return new JAXBElement<FindDocBoxDocument>(_FindDocBoxDocument_QNAME, FindDocBoxDocument.class, null, value);
     }
 
     /**
@@ -927,6 +1034,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDs }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllDocBoxDocumentIDs")
+    public JAXBElement<FindAllDocBoxDocumentIDs> createFindAllDocBoxDocumentIDs(FindAllDocBoxDocumentIDs value) {
+        return new JAXBElement<FindAllDocBoxDocumentIDs>(_FindAllDocBoxDocumentIDs_QNAME, FindAllDocBoxDocumentIDs.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
      * 
      */
@@ -1032,6 +1148,24 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUser")
     public JAXBElement<RegisterUser> createRegisterUser(RegisterUser value) {
         return new JAXBElement<RegisterUser>(_RegisterUser_QNAME, RegisterUser.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DatabaseOperation }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseOperation")
+    public JAXBElement<DatabaseOperation> createDatabaseOperation(DatabaseOperation value) {
+        return new JAXBElement<DatabaseOperation>(_DatabaseOperation_QNAME, DatabaseOperation.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocument }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocument")
+    public JAXBElement<DeleteDocBoxDocument> createDeleteDocBoxDocument(DeleteDocBoxDocument value) {
+        return new JAXBElement<DeleteDocBoxDocument>(_DeleteDocBoxDocument_QNAME, DeleteDocBoxDocument.class, null, value);
     }
 
     /**

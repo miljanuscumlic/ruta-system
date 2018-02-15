@@ -3,6 +3,7 @@ xquery version "3.1";
 declare namespace ns1 = 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2';
 declare namespace ns2 = 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2';
 
+declare variable $path external := ();
 declare variable $party-name external := ();
 declare variable $party-company-id external := ();
 declare variable $party-class-code external := ();
@@ -10,7 +11,7 @@ declare variable $party-city external := ();
 declare variable $party-country external := ();
 declare variable $party-all external := true();
 
-for $party in collection('/db/ruta/party')/*
+for $party in collection($path)/*
 let $name := $party/ns2:PartyName/ns1:Name
 let $company-id : = $party/ns2:PartyLegalEntity/ns1:CompanyID
 let $city := $party/ns2:PartyLegalEntity/ns2:RegistrationAddress/ns1:CityName

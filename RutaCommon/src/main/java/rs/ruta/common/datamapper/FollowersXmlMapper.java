@@ -157,7 +157,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 		FollowersSearchCriterion sc = (FollowersSearchCriterion) criterion;
 		String followerID = sc.getFollowerID();
 
-		String query = openDocument(getQueryPath(), queryNameSearchFollowers);
+		String query = openXmlDocument(getQueryPath(), queryNameSearchFollowers);
 		if(query == null)
 			return query;
 		try

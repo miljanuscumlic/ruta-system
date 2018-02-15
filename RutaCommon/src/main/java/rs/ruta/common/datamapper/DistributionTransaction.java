@@ -36,7 +36,8 @@ public class DistributionTransaction extends ExistTransaction
 	@Override
 	protected void deleteTransaction() throws DetailException
 	{
-		((XmlMapper<DistributionTransaction>) MapperRegistry.getInstance().getMapper(DistributionTransaction.class)).delete(getID(), null);
+		((DistributionTransactionMapper) MapperRegistry.getInstance().getMapper(DistributionTransaction.class)).
+		delete(getID(), (DSTransaction) null);
 	}
 
 	@Override
@@ -72,24 +73,66 @@ public class DistributionTransaction extends ExistTransaction
 		this.followers = followers;
 	}
 
+	private void distribute() throws TransactionException
+	{
+		try
+		{
+			logger.info("Started distribution of the document " + getID() + ".");
+			for(ExistOperation op: getOperations())
+				op.rollback();
+			logger.info("Finished distribution of the document " + getID() + "."); //successful transaction distribution
+		}
+		catch(DetailException e)
+		{
+			logger.error("Could not distribute document " + getID() + ".");
+			throw new TransactionException("Document could not be distributed.", e);
+		}
+	}
+
 	public synchronized static void distributeAll() throws DetailException
 	{
 		List<DistributionTransaction> transactions  = MapperRegistry.getInstance().getMapper(DistributionTransaction.class).findAll();
 		if(transactions != null)
-			for(DSTransaction t: transactions)
+			for(DistributionTransaction t: transactions)
 			{
-				t.rollback(); //MMM: should be called distribute() ?
+				t.distribute();
 				t.close();
 			}
 	}
 
 	@Override
-	public void appendOperation(String originalCollectionPath, String originalDocumentName, String operation,
+	public void addOperation(String originalCollectionPath, String originalDocumentName, String operation,
 			String backupCollectionPath, String backupDocumentName, String username) throws DetailException
 	{
-		getOperations().add(0, new DatabaseOperation(originalCollectionPath, originalDocumentName, operation,
+		getOperations().add(0, new DistributionOperation(originalCollectionPath, originalDocumentName, operation,
 				backupCollectionPath, backupDocumentName, username));
-		setTimestamp(System.currentTimeMillis());
 		MapperRegistry.getInstance().getMapper(DistributionTransaction.class).update(null, this);
 	}
+
+	/**Sets distribution operations to this transaction and stores the transaction in the database.
+	 * @param docCollectionPaths list of collection paths to which the document should be distributed
+	 * @param docCollectionPath collection path of the distributed document
+	 * @param docDistributionName name of the distributed document
+	 * @throws DetailException if transaction could not be stored to the database
+	 */
+	public void addDistributionOperations(List<String> docCollectionPaths, String docCollectionPath, String docDistributionName)
+			throws DetailException
+	{
+		List<ExistOperation> operations = getOperations();
+		for(int i = 0; i < docCollectionPaths.size(); i++)
+			operations.add(0, new DistributionOperation(docCollectionPaths.get(i), docDistributionName, "INSERT",
+					docCollectionPath, docDistributionName, null));
+		operations.add(new DistributionOperation(docCollectionPath, docDistributionName, "DELETE", null, null, null));
+		MapperRegistry.getInstance().getMapper(DistributionTransaction.class).update(null, this);
+	}
+
+	/**Removes first operation from the transaction and updates the transaction in the database.
+	 * @throws DetailException if transaction could not be updated in the database
+	 */
+	public void removeOperation() throws DetailException
+	{
+		getOperations().remove(0);
+		MapperRegistry.getInstance().getMapper(DistributionTransaction.class).update(null, this);
+	}
+
 }

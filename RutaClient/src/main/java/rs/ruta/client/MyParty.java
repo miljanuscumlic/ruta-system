@@ -33,24 +33,26 @@ public class MyParty extends BusinessParty
 	@XmlElement(name = "MyFollowingParty")
 	private BusinessParty myFollowingParty;
 	/**
-	 * List of all following parties of MyParty.
+	 * List of all following parties of MyParty. Should always be accessed with {@link #getFollowingParty(String)} method call.
 	 */
 	@XmlElement(name = "FollowingParty")
 	private List<BusinessParty> followingParties;
 //	@XmlElement(name = "BusinessPartner")
 	/**
 	 * Helper list containing only business partners of MyParty.
+	 * Should always be accessed with {@link #getBusinessPartners()} method call.
 	 */
 	@XmlTransient
 	private List<BusinessParty> businessPartners;
 	/**
 	 * Helper list containing only parties that are not business partners of MyParty.
+	 * Should always be accessed with {@link #getOtherParties()} method call.
 	 */
 	@XmlTransient
 	private List<BusinessParty> otherParties;
-
 	/**
 	 * List of deregistered parties from the CDR service.
+	 * Should always be accessed with {@link #getArchivedParties()} method call.
 	 */
 	@XmlElement(name = "ArchivedParty")
 	private List<BusinessParty> archivedParties;
@@ -707,6 +709,52 @@ public class MyParty extends BusinessParty
 	{
 		super.addProduct(item);
 		dirtyCatalogue = true;
+	}
+
+	//MMM: because of view update should this method be placed in Client class???
+	void placeDoxBoxCatalogue(CatalogueType catalogue, String docID)
+	{
+		PartyType provider = catalogue.getProviderParty();
+		if(sameParties(this, provider))
+		{
+			getMyFollowingParty().setCatalogue(catalogue);
+			getMyFollowingParty().setProducts(catalogue);
+			//MMM: update the view (tree view, table....) ; bolding the name of the node in tree view
+		}
+		else
+		{
+			for(BusinessParty bParty: getFollowingParties())
+			{
+				if(sameParties(bParty, provider))
+				{
+					bParty.setCatalogue(catalogue);
+					bParty.setProducts(catalogue); //MMM: this is gonna be dealt with because this is double storeage of the same data
+					//MMM: update the view (tree view, table....) ; bolding the name of the node in tree view
+					break;
+				}
+			}
+		}
+
+	}
+
+	public void placeDoxBoxParty(PartyType party, String docID)
+	{
+		if(sameParties(this, party))
+		{
+			getMyFollowingParty().setCoreParty(party);
+		}
+		else
+		{
+			for(BusinessParty bParty: getFollowingParties())
+			{
+				if(sameParties(bParty, party))
+				{
+					bParty.setCoreParty(party);
+					break;
+				}
+			}
+		}
+
 	}
 
 }

@@ -3,8 +3,6 @@ package rs.ruta.common;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 //@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:common")
@@ -195,9 +193,9 @@ public class CatalogueSearchCriterion extends SearchCriterion
 		this.itemAll = itemAll;
 	}
 
-	/**If a string fild is equals to empty string this methods replaces its values with null.
-	 *This enables that xml serialization of <code>SearchCriterion</code> object does not have elements that
-	 *are empty strings in the model object.
+	/**If a string field is equal to empty string this method replaces its values with a null.
+	 *This enables xml serialization of <code>SearchCriterion</code> object not to have elements that
+	 *corresponds to empty strings in the model.
 	 * @return this object
 	 */
 	public CatalogueSearchCriterion nullEmptyFields()

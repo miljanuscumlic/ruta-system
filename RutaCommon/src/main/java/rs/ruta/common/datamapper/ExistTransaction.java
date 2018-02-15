@@ -104,7 +104,7 @@ public abstract class ExistTransaction implements DSTransaction
 		//MMM: system should be stoped, restarted and CDR.rollbackTransactions method should be called after restart?
 		try
 		{
-			logger.info("Started rollback of the transaction "+ transactionID + ".");
+			logger.info("Started rollback of the transaction " + transactionID + ".");
 			for(ExistOperation op: operations)
 				op.rollback();
 		}
@@ -152,7 +152,7 @@ public abstract class ExistTransaction implements DSTransaction
 	 * this parameter is not used i.e. its value should be {@code null}.
 	 * @throws DetailException if transaction object could not be saved to the database
 	 */
-	public abstract void appendOperation(String originalCollectionPath, String originalDocumentName, String operation,
+	public abstract void addOperation(String originalCollectionPath, String originalDocumentName, String operation,
 			String backupCollectionPath, String backupDocumentName, String username) throws DetailException;
 
 	/**

@@ -20,7 +20,7 @@ public final class InstanceFactory
 	 * @param <U> type of the return value of the getValue method
 	 * @param property object whose value property is get
 	 * @param extractor function which has two type parameters: of the type T or some supertype of the T, and U or some subtype of U
-	 * @return value of the type U wich is the result of the called passed method getValue
+	 * @return value of the type U which is the result of the called passed method getValue
 	 */
 	public static <T, U> U getPropertyOrNull(T property, Function<? super T, ? extends U> extractor)
 	{

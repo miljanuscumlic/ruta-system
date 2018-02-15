@@ -3,7 +3,6 @@ package rs.ruta.common.datamapper;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlAccessType;
 
@@ -29,7 +28,8 @@ public class DatabaseTransaction extends ExistTransaction
 	@Override
 	protected void deleteTransaction() throws DetailException
 	{
-		((XmlMapper<DatabaseTransaction>) MapperRegistry.getInstance().getMapper(DatabaseTransaction.class)).delete(getID(), null);
+		((DatabaseTransactionMapper) MapperRegistry.getInstance().getMapper(DatabaseTransaction.class)).
+		delete(getID(), (DSTransaction) null);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class DatabaseTransaction extends ExistTransaction
 	}
 
 	@Override
-	public void appendOperation(String originalCollectionPath, String originalDocumentName, String operation,
+	public void addOperation(String originalCollectionPath, String originalDocumentName, String operation,
 			String backupCollectionPath, String backupDocumentName, String username) throws DetailException
 	{
 		getOperations().add(0, new DatabaseOperation(originalCollectionPath, originalDocumentName, operation,

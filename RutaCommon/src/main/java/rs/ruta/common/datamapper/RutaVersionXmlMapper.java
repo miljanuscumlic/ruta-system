@@ -72,12 +72,12 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) collection.getService("XQueryService", "1.0");
-			logger.info("Start of the query of the " + uri);
+			logger.info("Started query of the " + uri);
 			queryService.setProperty("indent", "yes");
 
 			String query = null; // search query
 			//loading and preparing the .xq query file from the database
-			query = openDocument(getQueryPath(), getSearchQueryName());
+			query = openXmlDocument(getQueryPath(), getSearchQueryName());
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
 
@@ -96,7 +96,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 					{
 						Resource resource = null;
 						try
-						{	//MMM: this should be tested whether do the job how it should be done
+						{	//MMM: this should be tested whether it is doing the job how it should be done
 							resource = iterator.nextResource();
 							String result = (String) resource.getContent();
 							searchResult = unmarshalFromXML(result);;

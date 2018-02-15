@@ -48,13 +48,6 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 		return catalogue;
 	}*/
 
-	@Override
-	public void insert(CatalogueType catalogue, String id, DSTransaction transaction) throws DetailException
-	{
-		super.insert(catalogue, id, transaction);
-		loadedCatalogues.put(id, catalogue);
-	}
-
 	//MMM: not used anymore
 /*	@Override
 	public String insert(String username, CatalogueType object, DSTransaction transaction) throws DetailException
@@ -157,7 +150,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	@Deprecated //MMM: using string replacement
 	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException
 	{
-		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);
+		String query = openXmlDocument(getQueryPath(), queryNameSearchCatalogue);
 		if(query == null)
 			return null;
 
@@ -224,6 +217,11 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
+		String queryName = null;
+		if(criterion.getClass() == CatalogueSearchCriterion.class)  //MMM: at this point this is superfluous
+			queryName = queryNameSearchCatalogue;
+		String query = openXmlDocument(getQueryPath(), queryName);
+
 		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
 		String partyName = sc.getPartyName();
 		String partyCompanyID = sc.getPartyCompanyID();
@@ -239,7 +237,6 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 		String itemKeyword = sc.getItemKeyword();
 		boolean itemAll = sc.isItemAll();
 
-		String query = openDocument(getQueryPath(), queryNameSearchCatalogue);
 		if(query == null)
 			return query;
 		try

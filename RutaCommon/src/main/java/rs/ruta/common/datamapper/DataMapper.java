@@ -36,19 +36,33 @@ public interface DataMapper<T, ID>
 	public T findByUsername(String username) throws DetailException;
 
 	/**Retrieves all objects from the data store or <code>null</code> if no object exists.
-	 * @return list of all the objects, or null if no objects are found
+	 * @return list of all the objects, or {@code null} if no objects are found
 	 * @throws DetailException if object could not be retrieved
 	 */
 	default public List<T> findAll() throws DetailException { return null; }
 
-	/**Queries the data store based on the search criterion.
+	/**Retrieves all object IDs from the data store or {@code null} if no object exists.
+	 * @return list of all the objects or {@code null} if no objects are found
+	 * @throws DetailException if object could not be retrieved
+	 */
+	default public List<ID> findAllIDs() throws DetailException { return null; }
+
+	/**Queries the data store based on the {@link SearchCriterion search criterion}.
 	 * Result is a list of objects that are of type {@code<T>} which is a type parameter of the appropriate
 	 * subclass instance of {@code DataMapper<T>} interface.
 	 * @param criterion search criterion
-	 * @return list of objects of type {@code<T>}
+	 * @return list of objects of type {@code<T>} or {@code null} if no objects are found
 	 * @throws DetailException if search request could not be processed
 	 */
-	default public List<T> findMany(SearchCriterion criterion) throws DetailException {return null; }
+	default public List<T> findMany(SearchCriterion criterion) throws DetailException { return null; }
+
+	/**Queries the data store based on the {@link SearchCriterion search criterion}.
+	 * Result is a list of ids of object that conform to the search criterion.
+	 * @param criterion search criterion
+	 * @return list of object ids or {@code null} if no objects are found
+	 * @throws DetailException if search request could not be processed
+	 */
+	default public List<ID> findManyIDs(SearchCriterion criterion) throws DetailException { return null; }
 
 	/**Queries the data store based on the search criterion. Uses xQuery that returns sequence of resource's ids
 	 * that conform to the queried criterion. Result is a list of objects that are of type {@code<T>}
@@ -57,7 +71,8 @@ public interface DataMapper<T, ID>
 	 * @return list of objects of type {@code<T>}
 	 * @throws DetailException if search request could not be processed
 	 */
-	default public List<T> findManyID(CatalogueSearchCriterion criterion) throws DetailException { return null; }
+	//MMM: this method is not used; it is left just to test querying the database with IDs
+	default public List<T> findManyQueryingByID(CatalogueSearchCriterion criterion) throws DetailException { return null; }
 
 	/**Queries the data store based on the search criterion. Result is a list of objects that are of type {@code<U>}
 	 * which is a type parameter of the method.
@@ -73,30 +88,6 @@ public interface DataMapper<T, ID>
 	 */
 	public void insertAll() throws DetailException;
 
-	/**Inserts object with the passed id to the data store.
-	 * @param object object to be stored
-	 * @param id id of the object
-	 * @param transaction data store transaction which insert is part of
-	 * @throws DetailException if object cannot be inserted in the data store
-	 * @param <T> transaction class that is subclass of <code>DSTransaction</code>
-	 */
-	public void insert(T object, ID id, DSTransaction transaction) throws DetailException;
-
-	//MMM: maybe this method should be excluded from the interface, and be used only the variant with the username(=null)
-	public void insert(T object) throws DetailException;
-
-	/**Inserts object to the data store. If necessary unique id of the object may be created. This method is supposed
-	 * to be used only inside {@code DataMapper} class hierarchy because {@link DSTransaction} object is an
-	 * argument, and objects of that class are created only in {@code DataMapper}s subclasses.
-	 * @param username username of the user whose object is to be stored in the datastore
-	 * @param object object to be stored
-	 * @param transaction data store transaction which insert is part of
-	 * @return object's id
-	 * @throws DetailException if object cannot be insert in the store
-	 */
-//	@Deprecated // MMM: used as protected method in XmlMapper
-//	public ID insert(String username, T object, DSTransaction transaction) throws DetailException;
-
 	/**Inserts object to the data store. If necessary unique id of the object may be created.
 	 * @param username username of the user whose object is to be stored in the datastore
 	 * @param object object to be stored
@@ -104,26 +95,6 @@ public interface DataMapper<T, ID>
 	 * @throws DetailException if object cannot be insert in the store
 	 */
 	public ID insert(String username, T object) throws DetailException;
-
-	/**Updates object with passed id.
-	 * @param object object to be updated
-	 * @param id id of the object
-	 * @param transaction data store transaction which insert is part of
-	 * @throws DetailException if object cannot be updated
-	 * @param <T> transaction class that is subclass of <code>DSTransaction</code>
-	 */
-//	@Deprecated // MMM: used as protected method in XmlMapper
-//	default public void update(T object, ID id, DSTransaction transaction) throws DetailException { }
-
-	/**Updates the object in the data store.
-	 * @param username user's username
-	 * @param object object to be updated
-	 * @param transaction data store transaction which update is part of
-	 * @return object's ID
-	 * @throws DetailException if object could not be updated
-	 */
-//	@Deprecated // MMM: used as protected method in XmlMapper
-//	public ID update(String username, T object, DSTransaction transaction) throws DetailException;
 
 	/**Updates the object in the data store.
 	 * @param username user's username
@@ -133,7 +104,6 @@ public interface DataMapper<T, ID>
 	 */
 	public ID update(String username, T object) throws DetailException;
 
-	//MMM: maybe this method should always return String, because insert WebMethod returns String
 	/**Retrieves unique ID of the user of the CDR service.
 	 * @param username user's username
 	 * @return user's unique ID
@@ -150,17 +120,24 @@ public interface DataMapper<T, ID>
 	default public ID getID(T object) throws DetailException { return null; }
 
 	/**Deletes object with passed id from the data store.
+	 * @param username user's username
 	 * @param id id of the object that should be deleted
-	 * @param transaction data store transaction which deletion is part of
 	 * @throws DetailException if object cannot be deleted
 	 */
-	public void delete(ID id) throws DetailException;
+	public void delete(String username, ID id) throws DetailException;
 
 	/**Deletes user from the data store.
 	 * @param user' username
 	 * @throws DetailException if user cannot be deleted
 	 */
 	default public void deleteUser(String username) throws DetailException {}
+
+	/**Deletes DocBoxDocument
+	 * @param username username of the user from which DocBox document is to be deleted
+	 * @param id document's id
+	 * @throws DetailException if document could not be deleted
+	 */
+	default public void deleteDocBoxDocument(String username, ID id) throws DetailException {}
 
 	/**Registers new user with the data store.
 	 * @param username user's username
@@ -199,5 +176,9 @@ public interface DataMapper<T, ID>
 	 */
 	@Deprecated
 	default public void insert(Image file, String id, DSTransaction transaction) throws DetailException { }
+
+	//MMM: not used except with MyParty and that is only temporary. After end of its usage it should be deleted.
+	@Deprecated
+	public void insert(T object) throws DetailException;
 
 }
