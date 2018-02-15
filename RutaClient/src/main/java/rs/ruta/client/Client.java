@@ -437,6 +437,16 @@ public class Client implements RutaNode
 	 */
 	public void cdrDeregisterMyParty()
 	{
+		frame.appendToConsole("Checking whether there are new documents in the DocBox.", Color.BLACK);
+		Semaphore sequential = cdrFindNewDocBoxDocumnets();
+		try
+		{
+			sequential.acquire();
+		}
+		catch (InterruptedException e1)
+		{
+			logger.error("Unable to make sequental calls of the CDR service.", e1);
+		}
 		try
 		{
 			Server port = getCDRPort();
@@ -444,7 +454,7 @@ public class Client implements RutaNode
 			{
 				try
 				{
-					DeleteUserResponse response = future.get();
+					future.get();
 					myParty.setDirtyMyParty(true);
 					myParty.setDirtyCatalogue(true);
 					myParty.setInsertMyCatalogue(true);
@@ -843,9 +853,13 @@ public class Client implements RutaNode
 
 	/**
 	 * Sends request to the CDR service for all IDs of new DocBox documents.
+	 * @return {@link Semaphore} object that enables this CDR service call to be sequentally
+	 * orderder with other service calls. After the end of this method number of permits in
+	 * this {@code Semaphore} is 1.
 	 */
-	public void cdrFindDocBoxIds()
+	public Semaphore cdrFindNewDocBoxDocumnets()
 	{
+		Semaphore sequential = new Semaphore(0);
 		try
 		{
 			Server port = getCDRPort();
@@ -861,8 +875,15 @@ public class Client implements RutaNode
 					final int docCount = docBoxIDs.size();
 					if(docBoxIDs != null && docCount != 0)
 					{
-						frame.appendToConsole("There are " + docBoxIDs.size() + " new documents in the CDR service.", Color.GREEN);
-						frame.appendToConsole("Started retrieval of " + docCount + " documents from the CDR service.", Color.BLACK);
+						String plural = docCount + " documents";
+						String there = "There are ";
+						if(docCount == 1)
+						{
+							plural = docCount + "document";
+							there = "There is ";
+						}
+						frame.appendToConsole(there + plural + " in my DocBox.", Color.BLACK);
+						frame.appendToConsole("Started download of " + plural + ".", Color.BLACK);
 						Semaphore oneAtATime = new Semaphore(1);
 						for(String docID : docBoxIDs)
 						{
@@ -883,29 +904,34 @@ public class Client implements RutaNode
 								catch (Exception e)
 								{
 									oneAtATime.release();
-									processException(e, "Document " + docID + " could not be retrieved!");
+									processException(e, "Document " + docID + " could not be downloaded!");
 								}
 							});
 						}
 						oneAtATime.acquire();
-						frame.appendToConsole("Finished retrieval of " + docCount + " documents from the CDR service.", Color.BLACK);
+						frame.appendToConsole("Finished download of " + plural + ".", Color.BLACK);
 						oneAtATime.release();
 					}
 					else
-						frame.appendToConsole("There are no new documents in the CDR service.", Color.GREEN);
+						frame.appendToConsole("There are no new documents in my DocBox.", Color.GREEN);
 				}
 				catch(Exception e)
 				{
-					processException(e, "Request for new documents has not been successcully processed!");
+					processException(e, "Download request of new documents has not been successcully processed!");
+				}
+				finally
+				{
+					sequential.release();
 				}
 			});
-			frame.appendToConsole("Request for new documents has been sent to the CDR service. Waiting for a response...", Color.BLACK);
+			frame.appendToConsole("Download request of new documents has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e) //might be thrown by getServicePort
 		{
 			frame.appendToConsole("Request for new documents has not been sent to the CDR service!"
 					+ " Server is not accessible. Please try again later.", Color.RED);
 		}
+		return sequential;
 	}
 
 	/**Place DocBox document in the proper place within local domain model.

@@ -472,7 +472,7 @@ public class ClientFrame extends JFrame
 			{
 				new Thread(()->
 				{
-					client.cdrFindDocBoxIds();
+					client.cdrFindNewDocBoxDocumnets();
 				}).start();
 			}
 			else
