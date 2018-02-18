@@ -122,10 +122,15 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 		//delete myself from all objects from the list and update all objects
 		for(Followers followers : followersList)
 		{
-			synchronized(followers) //MMM: may be done in few threads
-			{
-				followers.remove(userID);
-				update(null, followers, transaction);
+			synchronized(followers) //MMM: might be done in few threads
+			{	//there is no need to delete followerID from its own followers object because if there is a case
+				//of this kind of deletion that means that the followers document would be deleted altogether very
+				//soon, and there is no need for this step
+				if(! userID.equals(followers.getPartyID()))
+				{
+					followers.remove(userID);
+					update(null, followers, transaction);
+				}
 			}
 		}
 

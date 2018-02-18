@@ -33,6 +33,11 @@ public interface DataMapper<T, ID>
 	public T findByUserId(ID id) throws DetailException;
 
 	//MMM: check whether this method is necessary
+	/**Retrieves object from the data store. Object is identified by the user's username
+	 * @param username user's username
+	 * @return found object or {@code null} if object doesn't exist
+	 * @throws DetailException if user is not registered, ID could not be retrieved
+	 */
 	public T findByUsername(String username) throws DetailException;
 
 	/**Retrieves all objects from the data store or <code>null</code> if no object exists.
@@ -127,10 +132,10 @@ public interface DataMapper<T, ID>
 	public void delete(String username, ID id) throws DetailException;
 
 	/**Deletes user from the data store.
-	 * @param user' username
+	 * @param user's username
 	 * @throws DetailException if user cannot be deleted
 	 */
-	default public void deleteUser(String username) throws DetailException {}
+	default public void deleteUser(String username) throws DetailException { }
 
 	/**Deletes DocBoxDocument
 	 * @param username username of the user from which DocBox document is to be deleted

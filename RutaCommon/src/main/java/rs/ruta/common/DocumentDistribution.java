@@ -32,6 +32,10 @@ public class DocumentDistribution
 		return document;
 	}
 
+	/**Sets the document.
+	 * @param document
+	 * @throws DocumentException if document's type is not permissible
+	 */
 	public void setDocument(Object document) throws DocumentException
 	{
 		if(!isValidDocumentType(document))
@@ -40,19 +44,20 @@ public class DocumentDistribution
 	}
 
 	/**Checks whether the document type is a valid one for the distribution.
-	 * @param document
+	 * @param document document which type is to be checked
 	 */
 	private boolean isValidDocumentType(Object document)
 	{
 		Class<?> documentClazz = document.getClass();
 		if(documentClazz == CatalogueType.class || documentClazz == PartyType.class
-				|| documentClazz == CatalogueDeletionType.class) //TODO put all other valid document types
+				|| documentClazz == CatalogueDeletionType.class
+				|| documentClazz == DeregistrationNotice.class) //TODO put all other valid document types
 			return true;
 		else
 			return false;
 	}
 
-	public Class<?> getDocumnetClass()
+	public Class<?> getDocumentClass()
 	{
 		return document.getClass();
 	}

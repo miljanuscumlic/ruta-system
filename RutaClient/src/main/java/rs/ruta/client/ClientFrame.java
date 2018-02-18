@@ -112,6 +112,7 @@ public class ClientFrame extends JFrame
 	private JMenuItem cdrSynchPartyItem = new JMenuItem("Synchronise My Party");
 	private JMenuItem cdrDeregisterPartyItem = new JMenuItem("Deregister My Party");
 	private JMenuItem cdrSynchCatalogueItem = new JMenuItem("Synchronise My Catalogue");
+	@Deprecated
 	private JMenuItem cdrPullCatalogueItem = new JMenuItem("Pull My Catalogue");
 	private JMenuItem cdrDeleteCatalogueItem = new JMenuItem("Delete My Catalogue");
 	private JMenuItem cdrGetDocumentsItem = new JMenuItem("Get New Documents");
@@ -323,18 +324,48 @@ public class ClientFrame extends JFrame
 		menuBar.add(localDataMenu);
 
 		menuBar.add(cdrMenu);
+		cdrMenu.add(cdrGetDocumentsItem);
+		cdrMenu.add(cdrSearchItem);
+		cdrMenu.addSeparator();
 		cdrMenu.add(cdrRegisterPartyItem);
 		cdrMenu.add(cdrSynchPartyItem);
 		cdrMenu.add(cdrDeregisterPartyItem);
 		cdrMenu.addSeparator();
 		cdrMenu.add(cdrSynchCatalogueItem);
-		cdrMenu.add(cdrPullCatalogueItem);
+		//		cdrMenu.add(cdrPullCatalogueItem);
 		cdrMenu.add(cdrDeleteCatalogueItem);
 		cdrMenu.addSeparator();
-		cdrMenu.add(cdrGetDocumentsItem);
-		cdrMenu.add(cdrSearchItem);
-		cdrMenu.addSeparator();
 		cdrMenu.add(cdrSettingsItem);
+
+		cdrGetDocumentsItem.addActionListener(event ->
+		{
+			MyParty myParty = client.getMyParty();
+			if(myParty.isRegisteredWithCDR())
+			{
+				new Thread(()->
+				{
+					client.cdrGetNewDocuments();
+				}).start();
+			}
+			else
+				appendToConsole("Request for new documents has not been sent to the CDR service."
+						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
+		});
+
+		cdrSearchItem.addActionListener(event ->
+		{
+			MyParty myParty = client.getMyParty();
+			if(myParty.isRegisteredWithCDR())
+			{
+				new Thread(() ->
+				{
+					showSearchDialog(myParty, "Search CDR");
+				}).start();
+			}
+			else
+				appendToConsole("Search request has not been sent to the CDR service."
+						+ " My Party should be both registered and synchronized with the CDR service first!", Color.RED);
+		});
 
 		cdrRegisterPartyItem.addActionListener(event ->
 		{
@@ -458,41 +489,11 @@ public class ClientFrame extends JFrame
 				}
 				else
 					appendToConsole("Deletion request of My Catalogue has not been sent to the CDR service."
-							+ " My Catalogue is not present in the CDR service!", Color.RED);
+							+ " My Catalogue is not present in the CDR!", Color.RED);
 			}
 			else
 				appendToConsole("Deletion request of My Catalogue has not been sent to the CDR service."
 						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
-		});
-
-		cdrGetDocumentsItem.addActionListener(event ->
-		{
-			MyParty myParty = client.getMyParty();
-			if(myParty.isRegisteredWithCDR())
-			{
-				new Thread(()->
-				{
-					client.cdrFindNewDocBoxDocuments();
-				}).start();
-			}
-			else
-				appendToConsole("Request for new documents has not been sent to the CDR service."
-						+ " My Party should be both registered and synchronised with the CDR service first!", Color.RED);
-		});
-
-		cdrSearchItem.addActionListener(event ->
-		{
-			MyParty myParty = client.getMyParty();
-			if(myParty.isRegisteredWithCDR())
-			{
-				new Thread(() ->
-				{
-					showSearchDialog(myParty, "Search CDR");
-				}).start();
-			}
-			else
-				appendToConsole("Search request has not been sent to the CDR service."
-						+ " My Party should be both registered and synchronized with the CDR service first!", Color.RED);
 		});
 
 		cdrSettingsItem.addActionListener(event ->
@@ -651,21 +652,26 @@ public class ClientFrame extends JFrame
 
 	public void followParty(String followingName, String followingID, boolean partner)
 	{
-		BusinessParty following = client.getMyParty().getFollowingParty(followingID);
-		if(following == null)
-		{
-			client.cdrFollowParty(followingName, followingID, partner);
-		}
-		else if(partner && !following.isPartner())
-		{
-			//move following to the business partner list
-			following.setPartner(true);
-			client.getMyParty().addFollowingParty(following);
-			appendToConsole("Party " + followingName + " is already in the following list. But from now it is marked as a business partner.", Color.GREEN);
-			repaintTabbedPane();
-		}
+		if(followingID.equals(client.getMyParty().getPartyID()))
+			appendToConsole("My Party is already in the following list.", Color.BLACK);
 		else
-			appendToConsole("Party " + followingName + " is already in the following list.", Color.BLACK);
+		{
+			BusinessParty following = client.getMyParty().getFollowingParty(followingID);
+			if(following == null)
+			{
+				client.cdrFollowParty(followingName, followingID, partner);
+			}
+			else if(partner && !following.isPartner())
+			{
+				//move following to the business partner list
+				following.setPartner(true);
+				client.getMyParty().addFollowingParty(following);
+				appendToConsole("Party " + followingName + " is already in the following list. But from now it is marked as a business partner.", Color.GREEN);
+				repaintTabbedPane();
+			}
+			else
+				appendToConsole("Party " + followingName + " is already in the following list.", Color.BLACK);
+		}
 	};
 
 	/**Enables menu items regarding Search after client gets the response from the CDR service.
@@ -797,8 +803,10 @@ public class ClientFrame extends JFrame
 					JTable partiesTable = createPartyListTable(partiesTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
 					if("My Party".equals((String) selectedParty))
 					{
-						List<BusinessParty> myPartyList = new ArrayList<>();
-						myPartyList.add(client.getMyParty().getMyFollowingParty());
+						final List<BusinessParty> myPartyList = new ArrayList<>();
+						final BusinessParty my = client.getMyParty().getMyFollowingParty();
+						if(my != null)
+							myPartyList.add(my);
 						partiesTableModel.setParties(myPartyList);
 					}
 					else if("Business Partners".equals((String) selectedParty))
@@ -807,6 +815,8 @@ public class ClientFrame extends JFrame
 						partiesTableModel.setParties(client.getMyParty().getOtherParties());
 					else if("Archived Parties".equals((String) selectedParty))
 						partiesTableModel.setParties(client.getMyParty().getArchivedParties());
+					else if("Deregistered Parties".equals((String) selectedParty))
+						partiesTableModel.setParties(client.getMyParty().getDeregisteredParties());
 					rightPane = new JScrollPane(partiesTable);
 					arrangeTab0(leftPane, rightPane);
 				}
@@ -842,18 +852,18 @@ public class ClientFrame extends JFrame
 				}
 				else //String
 				{
-					SearchListTableModel searchesTableModel = null;
+					SearchListTableModel<?> searchesTableModel = null;
 					JTable searchesTable;
 
 					if("Parties".equals((String)selectedSearch))
 					{
 						searchesTableModel = new SearchListTableModel<PartyType>();
-						searchesTableModel.setSearches(client.getMyParty().getPartySearches());
+						((SearchListTableModel<PartyType>) searchesTableModel).setSearches(client.getMyParty().getPartySearches());
 					}
 					else if("Catalogues".equals((String)selectedSearch))
 					{
 						searchesTableModel = new SearchListTableModel<CatalogueType>();
-						searchesTableModel.setSearches(client.getMyParty().getCatalogueSearches());
+						((SearchListTableModel<CatalogueType>) searchesTableModel).setSearches(client.getMyParty().getCatalogueSearches());
 					}
 
 					searchesTable = createSearchListTable(searchesTableModel);
@@ -888,6 +898,8 @@ public class ClientFrame extends JFrame
 			JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
 			JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
 			JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
+			JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
+			JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
 
 			unfollowPartyItem.addActionListener(event ->
 			{
@@ -939,6 +951,29 @@ public class ClientFrame extends JFrame
 				}
 			});
 
+			deleteArchivedItem.addActionListener(event ->
+			{
+				final TreePath path = partyTree.getSelectionPath();
+				if(path == null) return;
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final BusinessParty selectedParty = (BusinessParty) selectedNode.getUserObject();
+				client.getMyParty().removeArchivedParty(selectedParty);
+				appendToConsole("Party " + selectedParty.getPartyName() + " has been deleted from Archived Parties. ", Color.GREEN);
+				repaintTabbedPane();
+
+			});
+
+			deleteDeregisteredItem.addActionListener(event ->
+			{
+				final TreePath path = partyTree.getSelectionPath();
+				if(path == null) return;
+				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				final BusinessParty selectedParty = (BusinessParty) selectedNode.getUserObject();
+				client.getMyParty().removeDeregisteredParty(selectedParty);
+				appendToConsole("Party " + selectedParty.getPartyName() + " has been deleted from Deregistered Parties. ", Color.GREEN);
+				repaintTabbedPane();
+			});
+
 			partyTree.addMouseListener(new MouseAdapter()
 			{
 				@Override
@@ -955,11 +990,33 @@ public class ClientFrame extends JFrame
 							if(((BusinessParty) selectedParty).isPartner())
 							{
 								partyTreePopupMenu.remove(unfollowPartyItem);
+								partyTreePopupMenu.remove(deleteArchivedItem);
+								partyTreePopupMenu.remove(deleteDeregisteredItem);
+								partyTreePopupMenu.remove(addPartnerItem);
+								partyTreePopupMenu.add(unfollowPartyItem);
 								partyTreePopupMenu.add(removePartnerItem);
 							}
-							else
+							else if(((BusinessParty) selectedParty).isArchived())
+							{
+								partyTreePopupMenu.remove(addPartnerItem);
+								partyTreePopupMenu.remove(removePartnerItem);
+								partyTreePopupMenu.remove(unfollowPartyItem);
+								partyTreePopupMenu.remove(deleteDeregisteredItem);
+								partyTreePopupMenu.add(deleteArchivedItem);
+							}
+							else if(((BusinessParty) selectedParty).isDeregistered())
+							{
+								partyTreePopupMenu.remove(addPartnerItem);
+								partyTreePopupMenu.remove(removePartnerItem);
+								partyTreePopupMenu.remove(unfollowPartyItem);
+								partyTreePopupMenu.remove(deleteArchivedItem);
+								partyTreePopupMenu.add(deleteDeregisteredItem);
+							}
+							else //Other Parties
 							{
 								partyTreePopupMenu.remove(removePartnerItem);
+								partyTreePopupMenu.remove(deleteArchivedItem);
+								partyTreePopupMenu.remove(deleteDeregisteredItem);
 								partyTreePopupMenu.add(addPartnerItem);
 								partyTreePopupMenu.add(unfollowPartyItem);
 							}

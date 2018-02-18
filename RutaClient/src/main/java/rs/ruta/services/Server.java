@@ -19,6 +19,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.ReportAttachment;
@@ -488,49 +489,6 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteUserResponse>
-     */
-    @WebMethod(operationName = "DeleteUser")
-    @RequestWrapper(localName = "DeleteUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUser")
-    @ResponseWrapper(localName = "DeleteUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUserResponse")
-    public Response<DeleteUserResponse> deleteUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "DeleteUser")
-    @RequestWrapper(localName = "DeleteUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUser")
-    @ResponseWrapper(localName = "DeleteUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUserResponse")
-    public Future<?> deleteUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DeleteUserResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "DeleteUser")
-    @RequestWrapper(localName = "DeleteUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUser")
-    @ResponseWrapper(localName = "DeleteUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteUserResponse")
-    public void deleteUser(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.FindAllDocBoxDocumentIDsResponse>
      */
     @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
@@ -622,6 +580,58 @@ public interface Server {
         String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         CatalogueType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeregisterUserResponse>
+     */
+    @WebMethod(operationName = "DeregisterUser")
+    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUser")
+    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUserResponse")
+    public Response<DeregisterUserResponse> deregisterUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        DeregistrationNotice arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeregisterUser")
+    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUser")
+    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUserResponse")
+    public Future<?> deregisterUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        DeregistrationNotice arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeregisterUserResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeregisterUser")
+    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUser")
+    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUserResponse")
+    public void deregisterUser(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        DeregistrationNotice arg1)
         throws RutaException
     ;
 

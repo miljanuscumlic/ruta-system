@@ -140,4 +140,5 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 			id = createID();
 		return id;
 	}
+
 }

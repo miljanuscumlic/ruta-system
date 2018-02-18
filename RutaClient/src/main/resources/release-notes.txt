@@ -1,6 +1,24 @@
 Ruta Client 0.2.0
 This is a minor release of the Ruta Client Application.
 
+Features:
+
+- Implemented renaming of the search in the Searches 
+- Added Archived Parties section in Followings where are placed unfollowed parties.
+- Added Deregistered Parties section in Followings where are placed once followed now deregistered parties.
+- Implemented support for unfollowing the Party form Business Partners and Other Parties sections.
+- Implemented support for deleting archived Party from Archived Parties.
+- Implemented support for deleting deregistered Party from Deregistered Parties.
+- Implemented support for getting new documents from the service and their placement on the proper place within the domain model.
+
+Improvements:
+
+- Removed option for pulling of My Catalogue, which is now part of new "getting new documents" feature 
+
+Bug fixes:
+
+- Fixed bug not allowing nodes in the tree view of Parties to have a same name
+
 --------------------
 
 Ruta Client 0.1.0
@@ -11,7 +29,7 @@ Features:
 - Embedded eXist database is used as a local data store instead of the files.
 - Implemented support for exploration of reported bugs and sending comments on those reports.
 - Secured local data in some cases of JVM shutdown.
-- Implemented check during program startup that tries to found out whether the program has been already started. Only one instance of the program (residing in the same OS directory) is allowed.
+- Implemented check during program startup that tries to find out whether the program has been already started. Only one instance of the program (residing in the same OS directory) is allowed.
 - Added logging capability.
 
 Bug fixes:

@@ -68,5 +68,11 @@
 			<class ref="rs.ruta.common.Followers" />
 		</bindings>
 	</bindings>
-
+	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
+		<bindings scd="~tns:DeregistrationNotice">
+			<class ref="rs.ruta.common.DeregistrationNotice" />
+		</bindings>
+	</bindings>
+	
 </bindings>

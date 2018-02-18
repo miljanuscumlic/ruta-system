@@ -13,6 +13,7 @@ import org.xmldb.api.modules.XMLResource;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
@@ -83,6 +84,9 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == CatalogueDeletionType.class)
 					((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).
 					insert(collection, (CatalogueDeletionType) document, docID, null);
+				else if(documentClazz == DeregistrationNotice.class)
+					((DeregistrationNoticeXmlMapper) mapperRegistry.getMapper(DeregistrationNotice.class)).
+					insert(collection, (DeregistrationNotice) document, docID, null);
 				//TODO other document types
 
 				((DistributionTransaction) transaction).removeOperation();
@@ -181,8 +185,12 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			{
 				if(partyID != null)
 				{
-					StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath).
-							append("/").append(getIDByUserID(partyID));
+					StringBuilder queryPath = null;
+					final String id = getIDByUserID(partyID);
+					if(id != null)
+						queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath).append("/").append(id);
+					else
+						throw(new UserException("Party with ID: " + partyID + " is not registered in the database."));
 					queryService.declareVariable("path", queryPath.toString());
 				}
 				else
@@ -245,8 +253,11 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).unmarshalFromXML(result);
 			else if(objectClazz == PartyType.class)
 				object = ((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).unmarshalFromXML(result);
-			if(objectClazz == CatalogueDeletionType.class)
+			else if(objectClazz == CatalogueDeletionType.class)
 				object = ((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).unmarshalFromXML(result);
+			else if(objectClazz == DeregistrationNotice.class)
+				object = ((DeregistrationNoticeXmlMapper) mapperRegistry.getMapper(DeregistrationNotice.class)).unmarshalFromXML(result);
+			//TODO: other object types
 			document.setDocument(object);
 			return document;
 		}
@@ -254,15 +265,28 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return null;
 	}
 
+	/**Gets the {@link Class} object of the object that should be written in the database.
+	 * @param result xml {@code String} representation of the object
+	 * @return {@code Class} object or {@code null} if input argument is {@code null} or zero length {@code String}
+	 */
 	private Class<?> getObjectClass(String result)
 	{
-		String start = result.substring(0, 50);
+		String start = null;
+		if(result != null && result.length() != 0)
+			start = result.substring(0, 50);
+		else
+			return null;
 		if(start.matches("<(.)+:Catalogue (.)+"))
 			return CatalogueType.class;
 		else if(start.matches("<(.)+:Party (.)+"))
 			return PartyType.class;
 		else if(start.matches("<(.)+:CatalogueDeletion (.)+"))
 			return CatalogueDeletionType.class;
+		else if(start.matches("<(.)+:CatalogueDeletion (.)+"))
+			return CatalogueDeletionType.class;
+		else if(start.matches("<(.)+:DeregistrationNotice (.)+"))
+			return DeregistrationNotice.class;
+		//TODO other types of the objects
 		else
 			return null;
 	}

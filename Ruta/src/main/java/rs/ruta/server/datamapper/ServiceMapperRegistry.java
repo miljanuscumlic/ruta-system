@@ -4,6 +4,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
@@ -24,6 +25,7 @@ import rs.ruta.common.datamapper.DistributionTransactionMapper;
 import rs.ruta.common.datamapper.DocBoxXmlMapper;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.DatabaseTransactionMapper;
+import rs.ruta.common.datamapper.DeregistrationNoticeXmlMapper;
 import rs.ruta.common.datamapper.FollowersXmlMapper;
 import rs.ruta.common.datamapper.MapperRegistry;
 import rs.ruta.common.datamapper.PartyIDXmlMapper;
@@ -87,6 +89,8 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new DocumentDistributionXmlMapper(getConnector());
 			else if(clazz == DocBox.class)
 				dataMapper = (DataMapper<S, String>) new DocBoxXmlMapper(getConnector());
+			else if(clazz == DeregistrationNotice.class)
+				dataMapper = (DataMapper<S, String>) new DeregistrationNoticeXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

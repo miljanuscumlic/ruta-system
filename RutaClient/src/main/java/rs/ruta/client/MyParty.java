@@ -13,7 +13,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.*;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
-
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.InstanceFactory;
 
 @XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
@@ -45,17 +45,23 @@ public class MyParty extends BusinessParty
 	@XmlTransient
 	private List<BusinessParty> businessPartners;
 	/**
-	 * Helper list containing only parties that are not business partners of MyParty.
+	 * Helper list containing only following parties that are not business partners of MyParty.
 	 * Should always be accessed with {@link #getOtherParties()} method call.
 	 */
 	@XmlTransient
 	private List<BusinessParty> otherParties;
 	/**
-	 * List of deregistered parties from the CDR service.
+	 * List of unfollowed parties from the CDR service.
 	 * Should always be accessed with {@link #getArchivedParties()} method call.
 	 */
 	@XmlElement(name = "ArchivedParty")
 	private List<BusinessParty> archivedParties;
+	/**
+	 * List of deregistered parties from the CDR service.
+	 * Should always be accessed with {@link #getArchivedParties()} method call.
+	 */
+	@XmlElement(name = "DeregisteredParty")
+	private List<BusinessParty> deregisteredParties;
 	@XmlElement(name = "PartySearch")
 	private List<Search<PartyType>> partySearches;
 	@XmlElement(name = "CatalogueSearch")
@@ -83,7 +89,7 @@ public class MyParty extends BusinessParty
 		setFollowing(true);
 		dirtyCatalogue = dirtyMyParty = insertMyCatalogue = true;
 		username = password = secretKey = null;
-		followingParties = businessPartners = otherParties = archivedParties = null;
+		followingParties = businessPartners = otherParties = archivedParties = deregisteredParties = null;
 		searchNumber = catalogueID = catalogueDeletionID = 0;
 		catalogueIssueDate = null;
 		jaxb = Client.getVersion().getJaxbVersion();
@@ -164,7 +170,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**Gets the copy of MyParty previously retrieved from the CDR service.
-	 * @return MyParty object
+	 * @return MyParty object or {@code null}
 	 */
 	public BusinessParty getMyFollowingParty()
 	{
@@ -175,18 +181,6 @@ public class MyParty extends BusinessParty
 	{
 		this.myFollowingParty = myFollowingParty;
 	}
-
-	/*	public List<BusinessParty> getBusinessPartners()
-	{
-		if (businessPartners == null)
-			businessPartners = new ArrayList<BusinessParty>();
-		return businessPartners;
-	}
-
-	public void setBusinessPartners(List<BusinessParty> businessPartners)
-	{
-		this.businessPartners = businessPartners;
-	}*/
 
 	/**Gets the {@code List} of all parties that are bussines partners of MyParty.
 	 * @return list of business partners
@@ -223,6 +217,131 @@ public class MyParty extends BusinessParty
 		this.archivedParties = archivedParties;
 	}
 
+	/**Gets the archived party with passed Party ID.
+	 * @param id archived party's ID
+	 * @return archived party or {@code null} if there is no party with specified ID in the list of
+	 * archived parties
+	 */
+	public BusinessParty getArchivedParty(String id)
+	{
+		try
+		{
+			return getArchivedParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed id
+		{
+			return null;
+		}
+	}
+
+	/**Checks if the Party is archived. Check is based on the Party ID only extracted from passed Party argument.
+	 * So different Party objects with the same Party ID will have the same result.
+	 * @param party party in check
+	 * @return true if Party is archived, false otherwise
+	 */
+	public boolean checkArchivedParty(BusinessParty party)
+	{
+		String partyID = party.getPartyID();
+		return getArchivedParty(partyID) != null ? true : false;
+	}
+
+	/**Adds to archived party list and removes it from archived list if it is in it.
+	 * @param party party to add
+	 */
+	public void addArchivedParty(BusinessParty party)
+	{
+		if(party != null)
+		{
+			party.setArchived(true);
+			getArchivedParties().add(party);
+		}
+	}
+
+	/**Removes party from the list of archived parties.
+	 * @param party party to be removed
+	 */
+	public void removeArchivedParty(BusinessParty party)
+	{
+		if(party != null)
+		{
+			//MMM: TODO can be removed if there are no correspondence/documents with the party
+			getArchivedParties().remove(party);
+			party.setArchived(false);
+		}
+	}
+
+	public List<BusinessParty> getDeregisteredParties()
+	{
+		if(deregisteredParties == null)
+			deregisteredParties = new ArrayList<>();
+		return deregisteredParties;
+	}
+
+	public void setDeregisteredParties(List<BusinessParty> deregisteredParties)
+	{
+		this.deregisteredParties = deregisteredParties;
+	}
+
+	/**Gets the deregistered party with passed Party ID.
+	 * @param id deregistered party's ID
+	 * @return Deregistered party or {@code null} if there is no party with specified ID in the list of
+	 * Deregistered parties
+	 */
+	public BusinessParty getDeregisteredParty(String id)
+	{
+		try
+		{
+			return getDeregisteredParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed id
+		{
+			return null;
+		}
+	}
+
+	/**Checks if the Party is Deregistered. Check is based on the Party ID only extracted from passed Party argument.
+	 * So different Party objects with the same Party ID will have the same result.
+	 * @param party party in check
+	 * @return true if Party is Deregistered, false otherwise
+	 */
+	public boolean checkDeregisteredParty(BusinessParty party)
+	{
+		String partyID = party.getPartyID();
+		return getDeregisteredParty(partyID) != null ? true : false;
+	}
+
+	/**Adds to deregisterd party list and removes it from archived list if it is in it.
+	 * @param party party to add
+	 */
+	public void addDeregisteredParty(BusinessParty party)
+	{
+		if(party != null)
+		{
+			party.setDeregistered(true);
+			getDeregisteredParties().add(party);
+
+			if(checkArchivedParty(party))
+			{	//This way it is removed the object with the same Party ID, not just
+				//the same object like in this call: getArchivedParties().remove(party)
+				getArchivedParties().remove(getArchivedParty(party.getPartyID()));
+			}
+		}
+	}
+
+	/**Removes party from the list of Deregistered parties.
+	 * @param party party to be removed
+	 */
+	public void removeDeregisteredParty(BusinessParty party)
+	{
+		if(party != null)
+		{
+			//MMM: TODO can be removed if there are no correspondence/documents with the party
+			getDeregisteredParties().remove(party);
+			party.setDeregistered(false);
+		}
+	}
+
+
 	/**Gets the {@code List} of all parties that are followed by MyParty.
 	 * @return list of all followed parties
 	 */
@@ -240,16 +359,10 @@ public class MyParty extends BusinessParty
 		otherParties = null;
 	}
 
-	public List<Search<PartyType>> getPartySearches()
-	{
-		if(partySearches == null)
-			partySearches = new ArrayList<Search<PartyType>>();
-		return partySearches;
-	}
-
-	/**Gets the following party with passed ID, or {@code null} if there is no party with specified ID.
-	 * @param id following's party ID
-	 * @return following party or {@code null} if there is no party with specified ID
+	/**Gets the following party with passed ID.
+	 * @param id following party's ID
+	 * @return following party or {@code null} if there is no party with specified ID in the
+	 * list of following parties
 	 */
 	public BusinessParty getFollowingParty(String id)
 	{
@@ -261,6 +374,90 @@ public class MyParty extends BusinessParty
 		{
 			return null;
 		}
+	}
+
+	/**Adds party to the list of following parties and one appropriate helper list while removes it
+	 * from the other. If party is present in the list, this method overwrites it.
+	 * @param party following party
+	 */
+	public void addFollowingParty(BusinessParty party)
+	{
+		if(party != null)
+		{
+			party.setFollowing(true);
+			//removal is necessary when party is already in the list, but its partner status has been changed
+			//so this method is called because Party should be moved to the other helper list. Cumbersome.
+			getFollowingParties().remove(party); //if exists MMM: better to use Sets then?
+			getFollowingParties().add(party);
+			if(party.isPartner())
+			{
+				getBusinessPartners().add(party);
+				getOtherParties().remove(party);
+			}
+			else
+			{
+				getBusinessPartners().remove(party);
+				getOtherParties().add(party);
+			}
+			if(checkArchivedParty(party))
+			{	//when following party that is archived, object referenced in the archived list is
+				//different than the one passed to this method. This way ine the list it is removed the
+				//object with the same Party ID, not just the same object like in this call:
+				//getArchivedParties().remove(party)
+				getArchivedParties().remove(getArchivedParty(party.getPartyID()));
+			}
+		}
+	}
+
+	/**Adds party to the list of following parties, and sets it as a business partner in regard with
+	 * the {@code partner} argument.
+	 * @param party following party to be added
+	 * @param partner whether the party is a business partner
+	 */
+	public void addFollowingParty(PartyType party, boolean partner)
+	{
+		if(party != null)
+		{
+			BusinessParty newParty = new BusinessParty();
+			newParty.setCoreParty(party);
+			newParty.setPartner(partner);
+			addFollowingParty(newParty);
+		}
+	}
+
+	/**Removes party from the list of following parties.
+	 * @param party party to be removed
+	 */
+	public void removeFollowingParty(BusinessParty party)
+	{
+		if(party != null)
+		{
+			getFollowingParties().remove(party);
+			if(party.isPartner())
+				getBusinessPartners().remove(party);
+			else
+				getOtherParties().remove(party);
+			party.setPartner(false);
+			party.setFollowing(false);
+		}
+	}
+
+	/**Checks if the Party is followed. Check is based on the Party ID only extracted from passed Party argument.
+	 *  So different Party objects with the same Party ID will have the same result.
+	 * @param party party in check
+	 * @return true if Party is followed, false otherwise
+	 */
+	public boolean checkFollowingParty(BusinessParty party)
+	{
+		String partyID = party.getPartyID();
+		return getFollowingParty(partyID) != null ? true : false;
+	}
+
+	public List<Search<PartyType>> getPartySearches()
+	{
+		if(partySearches == null)
+			partySearches = new ArrayList<Search<PartyType>>();
+		return partySearches;
 	}
 
 	public void setPartySearches(List<Search<PartyType>> partySearches)
@@ -523,69 +720,6 @@ public class MyParty extends BusinessParty
 		return changed;
 	}
 
-	/**Adds party to the list of following parties and one appropriate helper list while removes it
-	 * from the other. If party is present in the list, this method overwrites it.
-	 * @param party following party
-	 */
-	public void addFollowingParty(BusinessParty party)
-	{
-		if(party != null)
-		{
-			getFollowingParties().remove(party); //if exists MMM: better to use Sets then?
-			getFollowingParties().add(party);
-			if(party.isPartner())
-			{
-				getBusinessPartners().add(party);
-				getOtherParties().remove(party);
-			}
-			else
-			{
-				getBusinessPartners().remove(party);
-				getOtherParties().add(party);
-			}
-		}
-	}
-
-	/**Adds party to the list of following parties, and sets it as a business partner in regard with
-	 * the {@code partner} argument.
-	 * @param party following party to be added
-	 * @param partner whether the party is a business partner
-	 */
-	public void addFollowingParty(PartyType party, boolean partner)
-	{
-		if(party != null)
-		{
-			BusinessParty newParty = new BusinessParty();
-			newParty.setCoreParty(party);
-			newParty.setPartner(partner);
-			newParty.setFollowing(true);
-			addFollowingParty(newParty);
-		}
-	}
-
-	/**Removes party from the list of following parties.
-	 * @param party party to be removed
-	 */
-	public void removeFollowingParty(BusinessParty party)
-	{
-		if(party != null)
-		{
-			getFollowingParties().remove(party);
-			if(party.isPartner())
-				getBusinessPartners().remove(party);
-			else
-				getOtherParties().remove(party);
-		}
-	}
-
-	public boolean checkFollowingParty(String followingID)
-	{
-		boolean test = false;
-		if(getFollowingParty(followingID) != null)
-			test = true;
-		return test;
-	}
-
 	public String getPassword()
 	{
 		return password;
@@ -667,17 +801,19 @@ public class MyParty extends BusinessParty
 		this.searchNumber = searchNumber;
 	}
 
-	/**Adds My Party to the list of following parties.
+	/**
+	 * Adds My Party to the list of following parties.
 	 */
 	public void followMyself()
 	{
 		BusinessParty myPartyCopy = clone(); //new BusinessParty();
-		/*		Party coreParty = getCoreParty().clone();
-		myPartyCopy.setCoreParty(coreParty);*/
+		//Catalogue would be retrieved from CDR on next Get New Documents call invocation
+		myPartyCopy.setCatalogue(null);
 		myFollowingParty = myPartyCopy;
 	}
 
-	/**Removes My Party from the list of following parties.
+	/**
+	 * Removes My Party from the list of following parties.
 	 */
 	public void unfollowMyself()
 	{
@@ -689,7 +825,8 @@ public class MyParty extends BusinessParty
 			getFollowingParties().remove(0);*/
 	}
 
-	/**Updates My Party in the list of the following parties.
+	/**
+	 * Updates My Party in the list of the following parties.
 	 */
 	public void updateMyself()
 	{
@@ -767,6 +904,18 @@ public class MyParty extends BusinessParty
 					bParty.clearProducts();
 					break;
 				}
+			}
+	}
+
+	public void placeDocBoxDeregistrationNotice(DeregistrationNotice notice, String docID)
+	{
+		PartyType party = notice.getParty();
+		for(BusinessParty bParty: getFollowingParties())
+			if(sameParties(bParty, party))
+			{
+				removeFollowingParty(bParty);
+				addDeregisteredParty(bParty);
+				break;
 			}
 	}
 

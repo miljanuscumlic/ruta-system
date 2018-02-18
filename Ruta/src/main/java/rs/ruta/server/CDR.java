@@ -31,6 +31,7 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
@@ -127,12 +128,25 @@ public class CDR implements Server
 
 	@Override
 	@WebMethod
-	public void insertCatalogue(String username, CatalogueType cat) throws RutaException
+	public void insertCatalogue(String username, CatalogueType catalogue) throws RutaException
 	{
 		try
 		{
 			init();
-			mapperRegistry.getMapper(CatalogueType.class).insert(username, cat);
+			final String id = mapperRegistry.getMapper(CatalogueType.class).insert(username, catalogue);
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Unable to distribute catalogue for the user: " + username + ".\n Exception is ", e);
+				}
+			});
 		}
 		catch(Exception e)
 		{
@@ -278,12 +292,27 @@ public class CDR implements Server
 
 	@Override
 	@WebMethod
-	public void deregisterUser(String username) throws RutaException
+	public void deregisterUser(String username, DeregistrationNotice notice) throws RutaException
 	{
 		try
 		{
 			init();
+			//MMM: temporary clearing of cache
+			//((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
+			final Followers followers = mapperRegistry.getMapper(Followers.class).findByUsername(username).clone();
 			mapperRegistry.getMapper(User.class).deleteUser(username);
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final DocumentDistribution noticeDistribution = new DocumentDistribution(notice, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, noticeDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute DeregistrationNotice document of the user: " + username + ".\n Exception is:", e);
+				}
+			});
 		}
 		catch(Exception e)
 		{
@@ -295,7 +324,7 @@ public class CDR implements Server
 	public List<PartyType> searchParty(CatalogueSearchCriterion criterion) throws RutaException
 	{
 		//		logger.info(criterion.getPartyName());
-		List<PartyType> searchResult = new ArrayList<>();
+		List<PartyType> searchResult = null;// new ArrayList<>();
 		try
 		{
 			init();
@@ -350,7 +379,7 @@ public class CDR implements Server
 		{
 			processException(e, "Query could not be processed by CDR service!");
 		}
-		return searchResult.size() != 0 ? searchResult : null;
+		return searchResult != null && searchResult.size() != 0 ? searchResult : null;
 	}
 
 	@Override

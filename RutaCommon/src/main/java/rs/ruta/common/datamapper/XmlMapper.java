@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.OutputKeys;
 
 import org.exist.xmldb.CollectionImpl;
 import org.exist.xmldb.EXistResource;
@@ -301,8 +302,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	public T findByUserId(String userID) throws DetailException
 	{
 		String id = getIDByUserID(userID);
-		T object = find(id);
-		return object;
+		return id != null ? find(id) : null;
 	}
 
 	/**Loads resource in proper object if a resource is a complete xml document. At the beggining
@@ -1737,7 +1737,12 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			//			JAXBContext jc = JAXBContext.newInstance(object.getClass());
 			JAXBElement<T> element = getJAXBElement(object);
 			Marshaller m = jc.createMarshaller();
-
+//			m.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			//MMM: check why eXist is behavioing this way
+			//property set because without it xml string for DeregistrationNotice would be generated with
+			//xml prolog line <?xml version="1.0" encoding="UTF-8" standalone="yes"?> and eXist would not
+			//write that string to the database!!!
+			m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 			//m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			//m.marshal(element, System.out);
 
@@ -1803,13 +1808,13 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	/**Returns relative path of the collection that stores documents. The path to the collection is defined in
 	 * the subclass of the {@code XMLMapper} and is relative to the {@code ExistConnector#rutaCollectionPath} field
 	 * which is the relative path of the main collection od the Ruta application.
-	 * @return {@code String} that represent relative path of the collection
+	 * @return {@code String} that represents relative path of the collection
 	 */
 	protected abstract String getCollectionPath();
 
 	/**Returns relative path of the collection. The path is relative to the base application collection.
 	 * @param collection {@code Collection} instance
-	 * @return {@code String} that represent relative path of the collection
+	 * @return {@code String} that represents relative path of the collection
 	 */
 	protected String getCollectionPath(Collection collection)
 	{
@@ -1818,16 +1823,16 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 
 	//MMM: Should be @Deprecated
 	/**Returns relative path of the base collection in which are placed deleted documents. The path to the
-	 * <code>/deleted</code> collection is defined in the subclass of the {@ code XmlMapper}. Retrived path
+	 * {@code /deleted} collection is defined in the subclass of the {@ code XmlMapper}. Retrived path
 	 * respresents base collection that stores deleted documents for particular subclass.
-	 * @return {@code String} that represent relative path of the deleted collection
+	 * @return {@code String} that represents relative path of the deleted collection
 	 */
 	protected String getDeletedCollectionPath(){ return getDeletedCollectionPath(getCollectionPath()); }
 
 	/**Returns relative path (to the root application collection) of the base collection in which are placed
 	 * deleted documents from the collection which relative path is passed as argument. The path to the
-	 * <code>/deleted</code> collection is defined the <code>ExistConnector</code> class.
-	 * @return String that represent relative path of the deleted collection
+	 * {@code /deleted} collection is defined the {@code ExistConnector} class.
+	 * @return {@code String} that represents relative path of the deleted collection
 	 */
 	protected String getDeletedCollectionPath(String collectionPath)
 	{

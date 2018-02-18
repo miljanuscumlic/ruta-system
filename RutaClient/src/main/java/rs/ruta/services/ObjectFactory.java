@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.Followers;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.RutaVersion;
@@ -33,7 +34,6 @@ public class ObjectFactory {
     private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
     private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
-    private final static QName _DeleteUserResponse_QNAME = new QName("http://ruta.rs/services", "DeleteUserResponse");
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
     private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
     private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
@@ -41,10 +41,10 @@ public class ObjectFactory {
     private final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
     private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
     private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "SearchCatalogueResponse");
-    private final static QName _DeleteUser_QNAME = new QName("http://ruta.rs/services", "DeleteUser");
     private final static QName _SearchCriterion_QNAME = new QName("urn:rs:ruta:common", "SearchCriterion");
     private final static QName _DeleteDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentResponse");
     private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
+    private final static QName _DeregisterUser_QNAME = new QName("http://ruta.rs/services", "DeregisterUser");
     private final static QName _FindAllDocBoxDocumentIDsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDsResponse");
     private final static QName _ReportAttachment_QNAME = new QName("urn:rs:ruta:common", "ReportAttachment");
     private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/services", "FindAllBugReports");
@@ -56,6 +56,7 @@ public class ObjectFactory {
     private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
     private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
+    private final static QName _DeregistrationNotice_QNAME = new QName("urn:rs:ruta:common", "DeregistrationNotice");
     private final static QName _SearchBugReport_QNAME = new QName("http://ruta.rs/services", "SearchBugReport");
     private final static QName _DistributionOperation_QNAME = new QName("urn:rs:ruta:services", "DistributionOperation");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
@@ -67,6 +68,7 @@ public class ObjectFactory {
     private final static QName _AddBugReportComment_QNAME = new QName("http://ruta.rs/services", "AddBugReportComment");
     private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
     private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
+    private final static QName _DeregisterUserResponse_QNAME = new QName("http://ruta.rs/services", "DeregisterUserResponse");
     private final static QName _FindDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocument");
     private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/services", "InsertBugReportResponse");
     private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClientResponse");
@@ -282,6 +284,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DeregisterUserResponse }
+     * 
+     */
+    public DeregisterUserResponse createDeregisterUserResponse() {
+        return new DeregisterUserResponse();
+    }
+
+    /**
      * Create an instance of {@link FindDocBoxDocument }
      * 
      */
@@ -394,14 +404,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DeleteUser }
-     * 
-     */
-    public DeleteUser createDeleteUser() {
-        return new DeleteUser();
-    }
-
-    /**
      * Create an instance of {@link SearchCatalogueResponse }
      * 
      */
@@ -447,14 +449,6 @@ public class ObjectFactory {
      */
     public FindAllParties createFindAllParties() {
         return new FindAllParties();
-    }
-
-    /**
-     * Create an instance of {@link DeleteUserResponse }
-     * 
-     */
-    public DeleteUserResponse createDeleteUserResponse() {
-        return new DeleteUserResponse();
     }
 
     /**
@@ -602,6 +596,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DeregisterUser }
+     * 
+     */
+    public DeregisterUser createDeregisterUser() {
+        return new DeregisterUser();
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReportsResponse }{@code >}}
      * 
      */
@@ -635,15 +637,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllParties")
     public JAXBElement<FindAllParties> createFindAllParties(FindAllParties value) {
         return new JAXBElement<FindAllParties>(_FindAllParties_QNAME, FindAllParties.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteUserResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteUserResponse")
-    public JAXBElement<DeleteUserResponse> createDeleteUserResponse(DeleteUserResponse value) {
-        return new JAXBElement<DeleteUserResponse>(_DeleteUserResponse_QNAME, DeleteUserResponse.class, null, value);
     }
 
     /**
@@ -710,15 +703,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteUser }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteUser")
-    public JAXBElement<DeleteUser> createDeleteUser(DeleteUser value) {
-        return new JAXBElement<DeleteUser>(_DeleteUser_QNAME, DeleteUser.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SearchCriterion }{@code >}}
      * 
      */
@@ -743,6 +727,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertPartyResponse")
     public JAXBElement<InsertPartyResponse> createInsertPartyResponse(InsertPartyResponse value) {
         return new JAXBElement<InsertPartyResponse>(_InsertPartyResponse_QNAME, InsertPartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeregisterUser }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeregisterUser")
+    public JAXBElement<DeregisterUser> createDeregisterUser(DeregisterUser value) {
+        return new JAXBElement<DeregisterUser>(_DeregisterUser_QNAME, DeregisterUser.class, null, value);
     }
 
     /**
@@ -845,6 +838,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeregistrationNotice }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "DeregistrationNotice")
+    public JAXBElement<DeregistrationNotice> createDeregistrationNotice(DeregistrationNotice value) {
+        return new JAXBElement<DeregistrationNotice>(_DeregistrationNotice_QNAME, DeregistrationNotice.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SearchBugReport }{@code >}}
      * 
      */
@@ -941,6 +943,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllPartiesResponse")
     public JAXBElement<FindAllPartiesResponse> createFindAllPartiesResponse(FindAllPartiesResponse value) {
         return new JAXBElement<FindAllPartiesResponse>(_FindAllPartiesResponse_QNAME, FindAllPartiesResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeregisterUserResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeregisterUserResponse")
+    public JAXBElement<DeregisterUserResponse> createDeregisterUserResponse(DeregisterUserResponse value) {
+        return new JAXBElement<DeregisterUserResponse>(_DeregisterUserResponse_QNAME, DeregisterUserResponse.class, null, value);
     }
 
     /**

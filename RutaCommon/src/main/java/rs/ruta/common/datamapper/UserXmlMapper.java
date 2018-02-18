@@ -15,6 +15,8 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.common.DeregistrationNotice;
+import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
 import rs.ruta.common.PartyID;
@@ -77,7 +79,7 @@ public class UserXmlMapper extends XmlMapper<User>
 				//deleting user's DocBox
 				try
 				{
-					((DocumentDistributionXmlMapper) mapperRegistry.getMapper(DocumentDistribution.class)).delete(id, transaction);
+					((DocBoxXmlMapper) mapperRegistry.getMapper(DocBox.class)).delete(id, transaction);
 				}
 				catch(DetailException e)
 				{
@@ -99,7 +101,6 @@ public class UserXmlMapper extends XmlMapper<User>
 				//deleting user from eXist database management system
 				deleteExistAccount(username);
 
-				//MMM: TODO notify all followers about this Party deregistration so that their Client program can move it into Archived parties
 			}
 			catch(Exception e)
 			{

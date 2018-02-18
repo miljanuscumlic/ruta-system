@@ -13,6 +13,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.Followers;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.ObjectFactory;
@@ -141,7 +142,13 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 			DocBoxXmlMapper docBoxMapper = ((DocBoxXmlMapper) mapperRegistry.getMapper(DocBox.class));
 			String docBoxPath = docBoxMapper.getCollectionPath();
 			for(String followerID : followerIDs)
-				docCollectionPaths.add( docBoxPath + "/" + getIDByUserID(followerID));
+			{
+				final String id = getIDByUserID(followerID);
+				if(id != null)
+					docCollectionPaths.add( docBoxPath + "/" + id);
+				else
+					logger.warn("Party with ID: " + followerID + " is not registered in the database.");
+			}
 
 			String docID = createID();
 			Collection collection = null;
@@ -157,6 +164,9 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 				else if(documentClazz == CatalogueDeletionType.class)
 					((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).
 					insert(collection, (CatalogueDeletionType) document, docID, null);
+				else if(documentClazz == DeregistrationNotice.class)
+					((DeregistrationNoticeXmlMapper) mapperRegistry.getMapper(DeregistrationNotice.class)).
+					insert(collection, (DeregistrationNotice) document, docID, null);
 				//TODO other document types
 
 			}

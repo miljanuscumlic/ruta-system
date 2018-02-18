@@ -26,10 +26,23 @@ public class BusinessParty
 	@XmlElement(name = "CoreParty")
 //	@XmlTransient
 	private Party coreParty;
+	/**
+	 * True if the party is followed by MyParty
+	 */
 	@XmlElement(name = "Following")
-	private boolean following; // is it followed by MyPary MMM: is it necessary - at this point of development no - maybe in the future.
+	private boolean following; // MMM: is it necessary - at this point of development no - maybe in the future.
+	/**
+	 * True if the party is a business partner of MyParty.
+	 */
 	@XmlElement(name = "Partner")
-	private boolean partner; //is it business partner of MyParty MMM: is it necessary? - yes if I stay with the compound list of all following parties
+	private boolean partner; //MMM: is it necessary? - yes if I stay with the compound list of all following parties
+	/**
+	 * True if the party is archived one.
+	 */
+	@XmlElement(name = "Archived")
+	private boolean archived;
+	@XmlElement(name = "Deregistered")
+	private boolean deregistered;
 
 	public BusinessParty()
 	{
@@ -44,6 +57,8 @@ public class BusinessParty
 		bp.itemDataMapper = itemDataMapper;
 		bp.following = following;
 		bp.partner = partner;
+		bp.archived = archived;
+		bp.deregistered = deregistered;
 		if(coreParty != null)
 			bp.coreParty = coreParty.clone();
 		if(catalogue != null)
@@ -54,6 +69,9 @@ public class BusinessParty
 		return bp;
 	}
 
+	/**Checks whether the party is followed by MyParty.
+	 * @return true if the party is followed by MyParty
+	 */
 	public boolean isFollowing()
 	{
 		return following;
@@ -69,19 +87,48 @@ public class BusinessParty
 		this.partner = partner;
 	}*/
 
-	public boolean isPartner()
-	{
-		return partner;
-	}
-
 	public void setFollowing(boolean following)
 	{
 		this.following = following;
 	}
 
+	/**Checks whether the party is a business partner of MyParty.
+	 * @return true if the party is a business partner of MyParty
+	 */
+	public boolean isPartner()
+	{
+		return partner;
+	}
+
 	public void setPartner(boolean partner)
 	{
 		this.partner = partner;
+	}
+
+	/**Checks whether the party is archived one.
+	 * @return true if the party is archived one
+	 */
+	public boolean isArchived()
+	{
+		return archived;
+	}
+
+	public void setArchived(boolean archived)
+	{
+		this.archived = archived;
+	}
+
+	/**Checks whether the party is deregistered.
+	 * @return true if the party is deregistered
+	 */
+	public boolean isDeregistered()
+	{
+		return deregistered;
+	}
+
+	public void setDeregistered(boolean deregistered)
+	{
+		this.deregistered = deregistered;
 	}
 
 	public CatalogueType getCatalogue()

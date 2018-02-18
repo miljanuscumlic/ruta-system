@@ -16,6 +16,7 @@ public class PartyTreeModel extends DefaultTreeModel
 	private Set<BusinessParty> followingPartners; // all business partners that are followed
 	private Set<BusinessParty> followingOthers;	// all other parties that are followed
 	private Set<BusinessParty> archivedParties;
+	private Set<BusinessParty> deregisteredParties;
 
 	public PartyTreeModel(TreeNode root)
 	{
@@ -60,6 +61,8 @@ public class PartyTreeModel extends DefaultTreeModel
 					return 0;
 				else
 					return 1;
+			else if(firstName.equals(secondName)) //to enable sets to have elements with the same String
+				return 1;
 			else
 				return firstName.compareToIgnoreCase(secondName);
 		};
@@ -67,13 +70,14 @@ public class PartyTreeModel extends DefaultTreeModel
 		followingPartners = new TreeSet<BusinessParty>(partyNameComparator);
 		followingOthers = new TreeSet<BusinessParty>(partyNameComparator);
 		archivedParties =  new TreeSet<BusinessParty>(partyNameComparator);
+		deregisteredParties = new TreeSet<BusinessParty>(partyNameComparator);
 		followingPartners.addAll(party.getBusinessPartners());
 		followingOthers.addAll(party.getOtherParties());
 		archivedParties.addAll(party.getArchivedParties());
+		deregisteredParties.addAll(party.getDeregisteredParties());
 
 		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode("My Party");
 		((DefaultMutableTreeNode) root).add(myPartyNode);
-
 		if(party.getMyFollowingParty() != null)
 		{
 			DefaultMutableTreeNode myParty = new DefaultMutableTreeNode(party.getMyFollowingParty());
@@ -83,7 +87,6 @@ public class PartyTreeModel extends DefaultTreeModel
 
 		DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode("Business Partners");
 		((DefaultMutableTreeNode) root).add(businessPartnersNode);
-
 		for(BusinessParty fParty: followingPartners)
 		{
 			DefaultMutableTreeNode partnerNode = new DefaultMutableTreeNode(fParty);
@@ -93,7 +96,6 @@ public class PartyTreeModel extends DefaultTreeModel
 
 		DefaultMutableTreeNode otherPartiesNode = new DefaultMutableTreeNode("Other Parties");
 		((DefaultMutableTreeNode) root).add(otherPartiesNode);
-
 		for(BusinessParty fOther : followingOthers)
 		{
 			DefaultMutableTreeNode otherNode = new DefaultMutableTreeNode(fOther);
@@ -103,7 +105,6 @@ public class PartyTreeModel extends DefaultTreeModel
 
 		DefaultMutableTreeNode archivedPartiesNode = new DefaultMutableTreeNode("Archived Parties");
 		((DefaultMutableTreeNode) root).add(archivedPartiesNode);
-
 		for(BusinessParty archived : archivedParties)
 		{
 			DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(archived);
@@ -111,7 +112,14 @@ public class PartyTreeModel extends DefaultTreeModel
 			archivedPartiesNode.add(archivedNode);
 		}
 
-
+		DefaultMutableTreeNode deregisteredPartiesNode = new DefaultMutableTreeNode("Deregistered Parties");
+		((DefaultMutableTreeNode) root).add(deregisteredPartiesNode);
+		for(BusinessParty deregistered : deregisteredParties)
+		{
+			DefaultMutableTreeNode deregisteredNode = new DefaultMutableTreeNode(deregistered);
+			deregisteredNode.setAllowsChildren(false);
+			deregisteredPartiesNode.add(deregisteredNode);
+		}
 
 		return root;
 	}

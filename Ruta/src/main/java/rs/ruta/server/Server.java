@@ -16,6 +16,7 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.Followers;
@@ -79,10 +80,11 @@ public interface Server
 
 	/**Deregister the user from the CDR service.
 	 * @param username user's username to be deleted
+	 * @param {{@link DeregistrationNotice} document discribing deregistration request
 	 * @throws RutaException if the user cannot be deleted
 	 */
-	@WebMethod(operationName = "DeleteUser")
-	public void deregisterUser(String username) throws RutaException;
+	@WebMethod(operationName = "DeregisterUser")
+	public void deregisterUser(String username, DeregistrationNotice notice) throws RutaException;
 
 	/**Inserts party object in the database.
 	 * @param username party's username

@@ -7,6 +7,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
@@ -45,6 +46,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.Followers;
@@ -438,7 +440,7 @@ public class Client implements RutaNode
 	public void cdrDeregisterMyParty()
 	{
 		frame.appendToConsole("Checking whether there are new documents in the DocBox.", Color.BLACK);
-		Semaphore sequential = cdrFindNewDocBoxDocuments();
+		Semaphore sequential = cdrGetNewDocuments();
 		try
 		{
 			sequential.acquire();
@@ -449,8 +451,9 @@ public class Client implements RutaNode
 		}
 		try
 		{
-			Server port = getCDRPort();
-			port.deleteUserAsync(myParty.getUsername(), future ->
+			final Server port = getCDRPort();
+			final DeregistrationNotice notice = new DeregistrationNotice(myParty.getCoreParty() /*myParty.getPartyID()*/);
+			port.deregisterUserAsync(myParty.getUsername(), notice, future ->
 			{
 				try
 				{
@@ -775,8 +778,8 @@ public class Client implements RutaNode
 	}
 
 	/**Sends a follow request to the CDR service.
-	 * @param followingName TODO
-	 * @param followingID Id of the party to follow
+	 * @param followingName name of the party to follow
+	 * @param followingID ID of the party to follow
 	 * @param partner true when party to be followed is set to be a business partner
 	 */
 	public void cdrFollowParty(String followingName, String followingID, boolean partner)
@@ -834,6 +837,7 @@ public class Client implements RutaNode
 				{
 					future.get();
 					myParty.removeFollowingParty(followingParty);
+					myParty.addArchivedParty(followingParty);
 					StringBuilder msg = new StringBuilder("Party " + followingName + " has been successfully removed from the following parties.");
 					frame.appendToConsole(msg.toString(), Color.GREEN);
 					frame.repaintTabbedPane();
@@ -855,10 +859,10 @@ public class Client implements RutaNode
 	/**
 	 * Sends request to the CDR service for all IDs of new DocBox documents.
 	 * @return {@link Semaphore} object that enables this CDR service call to be sequentally
-	 * orderder with other service calls. After the end of this method number of permits in
+	 * ordered with other service calls. After the end of this method number of permits in
 	 * this {@code Semaphore} is 1.
 	 */
-	public Semaphore cdrFindNewDocBoxDocuments()
+	public Semaphore cdrGetNewDocuments()
 	{
 		Semaphore sequential = new Semaphore(0);
 		try
@@ -880,11 +884,12 @@ public class Client implements RutaNode
 						String there = "There are ";
 						if(docCount == 1)
 						{
-							plural = docCount + "document";
+							plural = docCount + " document";
 							there = "There is ";
 						}
 						frame.appendToConsole(there + plural + " in my DocBox.", Color.BLACK);
 						frame.appendToConsole("Started download of " + plural + ".", Color.BLACK);
+						CountDownLatch finished = new CountDownLatch(docCount);
 						Semaphore oneAtATime = new Semaphore(1);
 						for(String docID : docBoxIDs)
 						{
@@ -900,6 +905,7 @@ public class Client implements RutaNode
 									final Object document = res.getReturn();
 									oneAtATime.release();
 									placeDocBoxDocument(document, docID);
+									frame.repaintTabbedPane();
 									port.deleteDocBoxDocumentAsync(myParty.getUsername(), docID, deleteFuture -> {});
 								}
 								catch (Exception e)
@@ -907,11 +913,14 @@ public class Client implements RutaNode
 									oneAtATime.release();
 									processException(e, "Document " + docID + " could not be downloaded!");
 								}
+								finally
+								{
+									finished.countDown();
+								}
 							});
 						}
-						oneAtATime.acquire();
+						finished.await();
 						frame.appendToConsole("Finished download of " + plural + ".", Color.BLACK);
-						oneAtATime.release();
 					}
 					else
 						frame.appendToConsole("There are no new documents in my DocBox.", Color.GREEN);
@@ -956,6 +965,11 @@ public class Client implements RutaNode
 			frame.appendToConsole("CatalogueDeletion document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
 			myParty.placeDocBoxCatalogueDeletion((CatalogueDeletionType) document, docID);
 		}
+		else if(documentClazz == DeregistrationNotice.class)
+		{
+			frame.appendToConsole("DeregistrationNotice document with the ID: " + docID + " has been successfully retrieved.", Color.GREEN);
+			myParty.placeDocBoxDeregistrationNotice((DeregistrationNotice) document, docID);
+		}
 		else
 			frame.appendToConsole("Document with the ID: " + docID +
 					"of the unkwown type has been successfully retrieved.", Color.GREEN);
@@ -967,7 +981,7 @@ public class Client implements RutaNode
 	 * @param e exception to be processed
 	 * @param msg message to be displayed on the console
 	 */
-	private void processException(Exception e, String msg)
+	private void processException(Exception e, String msg) //MMM: put StringBuilder instead of the String argument
 	{
 		logger.error("Exception is ", e);
 		StringBuilder msgBuilder = new StringBuilder(msg).append(" ");

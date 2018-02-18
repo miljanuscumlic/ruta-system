@@ -25,6 +25,7 @@ public class ObjectFactory
 	public final static QName _User_QNAME = new QName("urn:rs:ruta:services", "RutaUser");
 	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:common", "Followers");
 	public final static QName _DocumentDistribution_QNAME = new QName("urn:rs:ruta:services", "DocumentDistribution");
+	public final static QName _DeregistrationNotice_QNAME = new QName("urn:rs:ruta:common", "DeregistrationNotice");
 
 	/**Creates an instance of {@link RutaVersion}.
 	 * @return created {@code RutaVersion} object and never {@code null}
@@ -158,5 +159,25 @@ public class ObjectFactory
 	{
 		return new JAXBElement<DocumentDistribution>(_DocumentDistribution_QNAME, DocumentDistribution.class, null, value);
 	}
+
+	/**Creates an instance of {@link DeregistrationNotice}.
+	 * @return created {@code DeregistrationNotice} object and never {@code null}
+	 */
+	@Nonnull
+	public DeregistrationNotice createDeregistrationNotice()
+	{
+		return new DeregistrationNotice();
+	}
+
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link DeregistrationNotice }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:common", name = "DeregistrationNotice")
+	@Nonnull
+	public JAXBElement<DeregistrationNotice> createDeregistrationNotice(@Nullable final DeregistrationNotice value)
+	{
+		return new JAXBElement<DeregistrationNotice>(_DeregistrationNotice_QNAME, DeregistrationNotice.class, null, value);
+	}
+
 }
 

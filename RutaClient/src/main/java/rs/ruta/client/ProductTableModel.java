@@ -39,7 +39,7 @@ public class ProductTableModel extends AbstractTableModel
 	 * @param editable if true, table cells are editable
 	 * @see ProductTableModel#setBusinessParty
 	 */
-	public ProductTableModel( boolean editable)
+	public ProductTableModel(boolean editable)
 	{
 		this.party = null;
 		this.editable = editable;
@@ -73,6 +73,8 @@ public class ProductTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
+		/*if(party == null)
+			return null;*/
 		if(rowIndex < party.getProducts().size())
 		{
 			switch(columnIndex)
