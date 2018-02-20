@@ -114,14 +114,15 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	{
 		String id = null;
 		//object that should be stored doesn't have an ID and User has no Document ID metadata set
-		//MMM: this will be changed - Party will get UUID on the Client side
-		if(getPartyID(party) == null && getID(username) == null)
+		//MMM: this is changed - Party is getting UUID on the Client side - commented code is from the previous implementation - should be deleted
+		//User which object should be stored has no Document ID metadata set
+		if(/*getPartyID(party) == null &&*/ getID(username) == null)
 			id = createID();
 		else
 		{
 			id = getID(username);
-			final String uuid = getUserID(username);
-			setPartyID(party, uuid);
+			/*final String uuid = getUserID(username);
+			setPartyID(party, uuid);*/
 		}
 		return id;
 	}

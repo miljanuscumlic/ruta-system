@@ -1286,6 +1286,70 @@ public interface Server {
 
     /**
      * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.NewRegisterUserResponse>
+     */
+    @WebMethod(operationName = "NewRegisterUser")
+    @RequestWrapper(localName = "NewRegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NewRegisterUser")
+    @ResponseWrapper(localName = "NewRegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NewRegisterUserResponse")
+    public Response<NewRegisterUserResponse> newRegisterUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        PartyType arg2);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "NewRegisterUser")
+    @RequestWrapper(localName = "NewRegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NewRegisterUser")
+    @ResponseWrapper(localName = "NewRegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NewRegisterUserResponse")
+    public Future<?> newRegisterUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        PartyType arg2,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<NewRegisterUserResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "NewRegisterUser")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "NewRegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NewRegisterUser")
+    @ResponseWrapper(localName = "NewRegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NewRegisterUserResponse")
+    public String newRegisterUser(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        PartyType arg2)
+        throws RutaException
+    ;
+
+    /**
+     * 
      * @param arg0
      * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.FindBugReportResponse>

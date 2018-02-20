@@ -13,7 +13,7 @@ public class PartyTableDateVerifier extends InputVerifier
 		JTextField field = (JTextField) input;
 		String text = field.getText();
 
-		try //check the validity of the input string for the date
+		try //check the validity of the input string of a date
 		{
 			DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
 		    format.setLenient(false);

@@ -61,7 +61,8 @@ public interface Server
 	@WebMethod(operationName = "DeleteCatalogue")
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException;
 
-	/**Searches the database for all catalogue items that conforms to the search criterion.
+	/**
+	 * Searches the database for all catalogue items that conforms to the search criterion.
 	 * @param criterion search criterion
 	 * @return list of catalogues with only the catalogue items conforming the criterion
 	 * @throws RutaException if search query could not be processed
@@ -69,7 +70,8 @@ public interface Server
 	@WebMethod(operationName = "SearchCatalogue")
 	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException;
 
-	/**Registers user with the CDR service.
+	/**
+	 * Registers user with the CDR service.
 	 * @param username user's username
 	 * @param password user's password
 	 * @return user's secret key
@@ -78,7 +80,19 @@ public interface Server
 	@WebMethod(operationName = "RegisterUser")
 	public String registerUser(String username, String password) throws RutaException;
 
-	/**Deregister the user from the CDR service.
+	/**
+	 * Registers user with the CDR service.
+	 * @param username user's username
+	 * @param password user's password
+	 * @param party party data to register
+	 * @return user's secret key
+	 * @throws RutaException throw if it was unable to register the user
+	 */
+	@WebMethod(operationName = "NewRegisterUser")
+	public String newRegisterUser(String username, String password, PartyType party) throws RutaException;
+
+	/**
+	 * Deregister the user from the CDR service.
 	 * @param username user's username to be deleted
 	 * @param {{@link DeregistrationNotice} document discribing deregistration request
 	 * @throws RutaException if the user cannot be deleted
@@ -86,7 +100,8 @@ public interface Server
 	@WebMethod(operationName = "DeregisterUser")
 	public void deregisterUser(String username, DeregistrationNotice notice) throws RutaException;
 
-	/**Inserts party object in the database.
+	/**
+	 * Inserts party object in the database.
 	 * @param username party's username
 	 * @param party party object representing the user to be inserted into the database
 	 * @return party's unique id

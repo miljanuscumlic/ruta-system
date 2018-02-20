@@ -477,16 +477,18 @@ public class MyParty extends BusinessParty
 		this.catalogueSearches = catalogueSearches;
 	}
 
-	/**Checks if the party is completely registered with the CDR, i.e. if party has assigned unique Party ID.
-	 * @return true if party is completely registered with the CDR service, otherwise false
+	/**
+	 * Checks whether My Party is registered with the CDR service.
+	 * @return true if party is registered with the CDR service, otherwise false
 	 */
 	public boolean isRegisteredWithCDR()
 	{
-		//return secretKey != null ? true : false;
-		return getCoreParty().getPartyID() == null ? false : true;
+		//return getCoreParty().getPartyID() == null ? false : true;
+		return hasSecretKey();
 	}
 
-	/**Checks if the party has secret key.
+	/**
+	 * Checks whether My party has a secret key.
 	 * @return true if party has secret key, otherwise false
 	 */
 	public boolean hasSecretKey()
@@ -806,10 +808,16 @@ public class MyParty extends BusinessParty
 	 */
 	public void followMyself()
 	{
-		BusinessParty myPartyCopy = clone(); //new BusinessParty();
+/*		BusinessParty myPartyCopy = clone(); //new BusinessParty();
 		//Catalogue would be retrieved from CDR on next Get New Documents call invocation
 		myPartyCopy.setCatalogue(null);
-		myFollowingParty = myPartyCopy;
+		myFollowingParty = myPartyCopy;*/
+
+		myFollowingParty = new MyParty();
+		//copying name value because it is neccessary for the tre node display
+		Party myFollowingCoreParty = new Party();
+		myFollowingCoreParty.setPartySimpleName(getPartySimpleName());
+		myFollowingParty.setCoreParty(myFollowingCoreParty);
 	}
 
 	/**
@@ -817,21 +825,7 @@ public class MyParty extends BusinessParty
 	 */
 	public void unfollowMyself()
 	{
-		//removeFollowingParty(followingParties.get(0));
 		myFollowingParty = null;
-		/*		List<BusinessParty> followings = getFollowingParties();
-
-		if(followings.size() != 0 && followings.get(0).getCoreParty().getSimpleName().equals(this.getCoreParty().getSimpleName()))
-			getFollowingParties().remove(0);*/
-	}
-
-	/**
-	 * Updates My Party in the list of the following parties.
-	 */
-	public void updateMyself()
-	{
-		unfollowMyself();
-		followMyself();
 	}
 
 	@Override
@@ -864,12 +858,11 @@ public class MyParty extends BusinessParty
 				if(sameParties(bParty, provider))
 				{
 					bParty.setCatalogue(catalogue);
-					bParty.setProducts(catalogue); //MMM: this is gonna be dealt with because this is double storeage of the same data
+					bParty.setProducts(catalogue); //MMM: this is gonna be dealt with because this is double storage of the same data
 					//MMM: update the view (tree view, table....) ; bolding the name of the node in tree view
 					break;
 				}
 		}
-
 	}
 
 	public void placeDocBoxParty(PartyType party, String docID)

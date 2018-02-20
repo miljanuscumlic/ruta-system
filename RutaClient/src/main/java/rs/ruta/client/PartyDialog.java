@@ -47,8 +47,17 @@ public class PartyDialog extends JDialog
 		buttonPanel.add(okButton);
 		okButton.addActionListener(event ->
 		{
-			changed = ((PartyTable)table).hasChanged();
-			setVisible(false);
+			String missingField = party.verifyParty();
+			if(missingField == null)
+			{
+				changed = ((PartyTable)table).hasChanged();
+				setVisible(false);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(PartyDialog.this, missingField + " is mandatory.",
+						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE);
+			}
 		});
 
 		JButton cancelButton = new JButton("Cancel");
@@ -56,7 +65,6 @@ public class PartyDialog extends JDialog
 		buttonPanel.add(cancelButton);
 		cancelButton.addActionListener(event ->
 		{
-			//PartyDialog.this.setVisible(false);
 			setVisible(false);
 		});
 

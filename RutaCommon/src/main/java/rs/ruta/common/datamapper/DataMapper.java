@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.xmldb.api.base.XMLDBException;
 
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
@@ -151,6 +152,15 @@ public interface DataMapper<T, ID>
 	 * @throws DetailException if user could not be registered
 	 */
 	default public ID registerUser(String username, String password) throws DetailException { return null; }
+
+	/**Registers new user with the data store.
+	 * @param username user's username
+	 * @param password user's password
+	 * @param party party data to register
+	 * @return user's identification object
+	 * @throws DetailException if user could not be registered
+	 */
+	default public ID newRegisterUser(String username, String password, PartyType party) throws DetailException { return null; }
 
 	/**Gets user's secret key from the data store.
 	 * @param username user's username

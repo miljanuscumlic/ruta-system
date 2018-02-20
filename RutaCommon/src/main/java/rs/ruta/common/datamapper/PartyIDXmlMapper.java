@@ -58,11 +58,14 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	protected String doPrepareAndGetID(PartyID object, String username, DSTransaction transaction)
 			throws DetailException //MMM: exception not thrown with the UUID implementation
 	{
-		String id = null;
-		if(username != null)
+		String id = object.getPartyID();
+		if(id == null && username != null)
+			id = ((UserXmlMapper) mapperRegistry.getMapper(rs.ruta.common.User.class)).findPartyID(username);
+
+/*		if(username != null)
 			id = ((UserXmlMapper) mapperRegistry.getMapper(rs.ruta.common.User.class)).findPartyID(username);
 		if(id == null)
-			id = createID();
+			id = createID();*/
 		return id;
 	}
 

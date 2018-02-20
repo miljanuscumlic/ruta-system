@@ -68,22 +68,13 @@ public class PartyTableModel extends AbstractTableModel
 			switch(rowIndex)
 			{
 			case 0:
-				return party.getSimpleName();
+				return party.getPartySimpleName();
 			case 1:
 				return party.getRegistrationName();
 			case 2:
 				return party.getCompanyID();
 			case 3:
 				return party.getRegistrationDate();
-				/*XMLGregorianCalendar cal = party.getPartyLegalEntity().size() == 0 ? null :
-					(XMLGregorianCalendar) InstanceFactory.getPropertyOrNull(party.getPartyLegalEntity().get(0).getRegistrationDate(), RegistrationDateType::getValue);
-				if(cal != null)
-				{
-					LocalDate date = InstanceFactory.getLocalDate((XMLGregorianCalendar) party.getPartyLegalEntity().get(0).getRegistrationDate().getValue());
-					return DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(date);
-				}
-				else
-					return null;*/
 			case 4:
 				return null;
 			case 5:
@@ -169,7 +160,7 @@ public class PartyTableModel extends AbstractTableModel
 /*			InstanceFactory.checkAndCreateListProperty(party.getPartyName(), PartyNameType.class);
 			InstanceFactory.createAndSetLeafProperty(party.getPartyName().get(0), party.getPartyName().get(0).getName(), NameType.class, obj, String.class);*/
 
-			party.setSimpleName(obj.toString());
+			party.setPartySimpleName(obj.toString());
 			break;
 		case 1:
 			//			party.getPartyLegalEntity().get(0).getRegistrationName().setValue(obj.toString());

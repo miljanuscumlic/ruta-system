@@ -43,7 +43,11 @@ public class Party extends PartyType
 	    return ret;
 	}
 
-	public String getSimpleName()
+	/**
+	 * Returns Party's name.
+	 * @return {@code String} representing Party name or {@code null} if Party name is not set.
+	 */
+	public String getPartySimpleName()
 	{
 		try
 		{
@@ -53,7 +57,7 @@ public class Party extends PartyType
 		catch(Exception e) { return null; }
 	}
 
-	public void setSimpleName(String value)
+	public void setPartySimpleName(String value)
 	{
 		List<PartyNameType> names = getPartyName();
 		if(names.size() == 0)
@@ -73,6 +77,10 @@ public class Party extends PartyType
 			descriptions.get(0).setValue(value);
 	}*/
 
+	/**
+	 * Returns Party's registration name.
+	 * @return ID or {@code null} if registration name has not been set
+	 */
 	public String getRegistrationName()
 	{
 		try
@@ -94,11 +102,15 @@ public class Party extends PartyType
 		legalEntities.get(0).getRegistrationName().setValue(value);
 	}
 
+	/**
+	 * Returns Party's Company ID from {@link PartyLegalEntity} element.
+	 * @return Party's Company ID or {@code null} if Company ID has not been set
+	 */
 	public String getCompanyID()
 	{
 		try
 		{
-			return super.getPartyLegalEntity().size() == 0 ? null :
+			return super.getPartyLegalEntity().isEmpty() ? null :
 				InstanceFactory.getPropertyOrNull(super.getPartyLegalEntity().get(0).getCompanyID(), CompanyIDType::getValue);
 		}
 		catch(Exception e) { return null; }
@@ -144,6 +156,10 @@ public class Party extends PartyType
 		}
 	}
 
+	/**
+	 * Returns Party's registration street name.
+	 * @return ID or {@code null} if registration street name has not been set
+	 */
 	public String getRegistrationStreetName()
 	{
 		try
@@ -166,6 +182,10 @@ public class Party extends PartyType
 		legalEntities.get(0).getRegistrationAddress().getStreetName().setValue(value);
 	}
 
+	/**
+	 * Returns Party's registration Building Number.
+	 * @return ID or {@code null} if registration Building Number has not been set
+	 */
 	public String getRegistrationBuildingNumber()
 	{
 		try
@@ -277,6 +297,10 @@ public class Party extends PartyType
 		legalEntities.get(0).getRegistrationAddress().getCitySubdivisionName().setValue(value);
 	}
 
+	/**
+	 * Returns Party's registration city name.
+	 * @return ID or {@code null} if registration city name has not been set
+	 */
 	public String getRegistrationCityName()
 	{
 		try
@@ -344,6 +368,10 @@ public class Party extends PartyType
 		legalEntities.get(0).getRegistrationAddress().getCountrySubentity().setValue(value);
 	}
 
+	/**
+	 * Returns Party's registration country.
+	 * @return ID or {@code null} if registration country has not been set
+	 */
 	public String getRegistrationCountry()
 	{
 		try
@@ -702,7 +730,8 @@ public class Party extends PartyType
 		 identifications.get(0).getID().setValue(id);
 	}
 
-	/**Returns Party's ID or {@code null} if ID is not set.
+	/**
+	 * Returns Party's ID.
 	 * @return ID or {@code null} if ID has not been set
 	 */
 	public String getPartyID()
@@ -711,10 +740,38 @@ public class Party extends PartyType
 		return ("").equals(ID) ? null : ID;
 	}
 
+	/**
+	 * Returns Party's ID.
+	 * @param party Party to be checked
+	 * @return ID or {@code null} if ID has not been set
+	 */
 	public static String getPartyID(PartyType party)
 	{
 		String ID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
 		return ("").equals(ID) ? null : ID;
+	}
+
+	/**Verifies whether Party has all of its mandatory fields.
+	 * @return {@code null} if it has all mandatory fields, or {@code String} designating the first missing field
+	 */
+	public String verifyParty()
+	{
+		String missingField = null;
+		if(getPartySimpleName() == null)
+			missingField = "Party Name";
+		else if(getRegistrationName() == null)
+			missingField = "Registration Name";
+		else if(getCompanyID() == null)
+			missingField = "Company ID";
+		else if(getRegistrationStreetName() == null)
+			missingField = "Registration Street Name";
+		else if(getRegistrationBuildingNumber() == null)
+			missingField = "Registration Building Number";
+		else if(getRegistrationCityName() == null)
+			missingField = "Registration City Name";
+		else if(getRegistrationCountry() == null)
+			missingField = "Registration Country";
+		return missingField;
 	}
 
 	/**Checks whether two parties are the same. Check is based on equality of party IDs.

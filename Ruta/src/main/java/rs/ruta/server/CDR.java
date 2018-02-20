@@ -142,7 +142,7 @@ public class CDR implements Server
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
 				}
-				catch (DetailException e)
+				catch(DetailException e)
 				{
 					logger.error("Unable to distribute catalogue for the user: " + username + ".\n Exception is ", e);
 				}
@@ -170,7 +170,7 @@ public class CDR implements Server
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
 				}
-				catch (DetailException e)
+				catch(DetailException e)
 				{
 					logger.error("Unable to distribute catalogue for the user: " + username + ".\n Exception is ", e);
 				}
@@ -236,6 +236,36 @@ public class CDR implements Server
 		{
 			init();
 			secretKey = (String) mapperRegistry.getMapper(User.class).registerUser(username, password);
+		}
+		catch(Exception e)
+		{
+			processException(e, "Party could not be registered with the CDR service!");
+		}
+		return secretKey;
+	}
+
+	@Override
+	@WebMethod
+	public String newRegisterUser(String username, String password, PartyType party) throws RutaException
+	{
+		String secretKey = null;
+		try
+		{
+			init();
+			secretKey = (String) mapperRegistry.getMapper(User.class).newRegisterUser(username, password, party);
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).findByUsername(username).clone();
+					final DocumentDistribution partyDistribution = new DocumentDistribution(party, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, partyDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to send to itself's DocBox its own party for the user: " + username + ".\n Exception is ", e);
+				}
+			});
 		}
 		catch(Exception e)
 		{
@@ -525,7 +555,11 @@ public class CDR implements Server
 			Followers followers = mapperRegistry.getMapper(Followers.class).findByUserId(followID);
 			if(followers == null)
 			{
-				String msg = "Followers document is missing for the user with the ID: " + followID + ".";
+				String msg = null;
+				if(mapperRegistry.getMapper(User.class).findByUserId(followID) == null)
+					msg = "Party to follow does not exist in CDR.";
+				else
+					msg = "Followers document is missing for the party to follow.";
 				logger.error(msg);
 				throw new DatabaseException(msg);
 			}
@@ -558,7 +592,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			processException(e, "My Party could not be added as a follower of the user with ID: " + followID + "!");
+			processException(e, "My Party could not be added as a follower of the requested party!");
 		}
 		return party;
 	}
@@ -572,7 +606,11 @@ public class CDR implements Server
 			Followers followers = mapperRegistry.getMapper(Followers.class).findByUserId(followID);
 			if(followers == null)
 			{
-				String msg = "Followers document is missing for the user with the ID: " + followID + ".";
+				String msg = null;
+				if(mapperRegistry.getMapper(User.class).findByUserId(followID) == null)
+					msg = "Party to unfollow does not exist in CDR.";
+				else
+					msg = "Followers document is missing for the party to follow.";
 				logger.error(msg);
 				throw new DatabaseException(msg);
 			}

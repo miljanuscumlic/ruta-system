@@ -16,7 +16,6 @@ import rs.ruta.client.datamapper.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BusinessParty
 {
-//	@XmlTransient
 	@XmlElement(name = "Product")
 	private ArrayList<ItemType> products; //MMM: this should be moved to MyParty class or delete altogether and catalogue field used instead
 	@XmlElement(name ="Catalogue")
@@ -24,7 +23,6 @@ public class BusinessParty
 	@XmlTransient
 	private ItemTypeBinaryFileMapper<ItemType> itemDataMapper;
 	@XmlElement(name = "CoreParty")
-//	@XmlTransient
 	private Party coreParty;
 	/**
 	 * True if the party is followed by MyParty
@@ -163,7 +161,8 @@ public class BusinessParty
 		return coreParty == null ? false : true;
 	}
 
-	/**Gets Party's ID or {@code null} if ID is not set.
+	/**
+	 * Gets Party's ID or {@code null} if ID is not set.
 	 * @return ID or {@code null} if ID has not been set
 	 */
 	public String getPartyID()
@@ -171,12 +170,35 @@ public class BusinessParty
 		return getCoreParty().getPartyID();
 	}
 
-	/**Gets the simple name of the party.
+	/**
+	 * Sets new Party ID by generating a new {@link UUID} identifier.
+	 */
+	public void setPartyID()
+	{
+		getCoreParty().setPartyID(UUID.randomUUID().toString());
+	}
+
+	/**
+	 * Clears the Party ID by setting {@code List<}{@link PartyIdentificationType}{@code >} to a {@code null} value.
+	 * That list which elements contain {@link IDType} that hold the Party ID.
+	 */
+	public void clearPartyID()
+	{
+		getCoreParty().setPartyID(null);
+	}
+
+	/**
+	 * Gets the simple name of the party.
 	 * @return party's name
 	 */
-	public String getPartyName()
+	public String getPartySimpleName()
 	{
-		return getCoreParty().getSimpleName();
+		return getCoreParty().getPartySimpleName();
+	}
+
+	public void setPartySimpleName(String name)
+	{
+		getCoreParty().setPartySimpleName(name);
 	}
 
 	public ArrayList<ItemType> getProducts()

@@ -15,10 +15,12 @@ import org.xmldb.api.base.XMLDBException;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
+import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.User;
 
@@ -187,12 +189,65 @@ public class UserXmlMapper extends XmlMapper<User>
 				String id = ((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).insert(username, new PartyType(), transaction);
 				insertMetadata(username, DOCUMENT_ID, id);
 				//reservation of uuid for party in /db/ruta/system/party-id
-				String uuid = ((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(id), transaction);
+				String uuid = ((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(null, id), transaction);
 				insertMetadata(username, PARTY_ID, uuid);
 				//setting party as a follower of himself
 				Followers iFollower = new Followers();
 				iFollower.setPartyID(uuid);
 				iFollower.add(uuid);
+				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, iFollower, transaction);
+				logger.info("Finished registering of the user " + username + " with the CDR service.");
+			}
+			catch (XMLDBException e)
+			{
+				logger.error("Could not register the user " + username + " with the CDR service.");
+				logger.error("Exception is ", e);
+				rollbackTransaction(transaction);
+				throw new UserException("User has insufficient data in the database, or data could not be retrieved.");
+			}
+			catch(DetailException e)
+			{
+				logger.error("Exception is ", e);
+				rollbackTransaction(transaction);
+				throw e;
+			}
+			finally
+			{
+				closeTransaction(transaction);
+			}
+		}
+		return secretKey;
+	}
+
+	@Override
+	public String newRegisterUser(String username, String password, PartyType party) throws DetailException
+	{
+		String secretKey = null;
+		DatabaseTransaction transaction = (DatabaseTransaction) openTransaction();
+		synchronized(transaction)
+		{
+			try
+			{
+				logger.info("Start of registering of the user " + username + " with the CDR service.");
+				registerUserWithExist(username, password, transaction);
+				//reservation of unique secretKey in /db/ruta/key collection
+				//MMM: inserting secret key is not necessary anymore because of the use of the UUID
+				secretKey = insert(username, new User(), transaction);
+				//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
+				insertMetadata(username, SECRET_KEY, secretKey);
+				//inserting party in /db/ruta/party
+				final String documentID = ((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).insert(username, party, transaction);
+				insertMetadata(username, DOCUMENT_ID, documentID);
+				//inserting Party ID in /db/ruta/system/party-id
+				final String partyID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
+				if(partyID == null || "".equals(partyID))
+					throw new UserException("Party ID has not been set on the client side.");
+				insertMetadata(username, PARTY_ID, partyID);
+				((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(partyID, documentID), transaction);
+				//setting party as a follower of himself
+				Followers iFollower = new Followers();
+				iFollower.setPartyID(partyID);
+				iFollower.add(partyID);
 				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, iFollower, transaction);
 				logger.info("Finished registering of the user " + username + " with the CDR service.");
 			}

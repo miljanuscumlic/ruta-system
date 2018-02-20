@@ -54,8 +54,8 @@ public class PartyTreeModel extends DefaultTreeModel
 		{
 /*			String firstName = InstanceFactory.getPropertyOrNull(first.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);
 			String secondName = InstanceFactory.getPropertyOrNull(second.getCoreParty().getPartyName().get(0).getName(), NameType::getValue);*/
-			final String firstName = first.getPartyName();
-			final String secondName = second.getPartyName();
+			final String firstName = first.getPartySimpleName();
+			final String secondName = second.getPartySimpleName();
 			if(firstName == null)
 				if(secondName == null)
 					return 0;
