@@ -221,39 +221,45 @@ public class ClientFrame extends JFrame
 
 		importDataItem.addActionListener(event ->
 		{
-			chooser.setCurrentDirectory(new File("."));
-			chooser.setDialogTitle("Local Data Import");
-			int result = chooser.showOpenDialog(this);
-			if(result == JFileChooser.APPROVE_OPTION)
+			int option = JOptionPane.showConfirmDialog(ClientFrame.this,
+					"By importing data from a external file all you local data will be overriden!\nDo you want to proceed?", "Warning message",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(option == JOptionPane.YES_OPTION)
 			{
-				String filePath = chooser.getSelectedFile().getPath();
-				//importing data
-				try
+				chooser.setCurrentDirectory(new File("."));
+				chooser.setDialogTitle("Local Data Import");
+				int result = chooser.showOpenDialog(this);
+				if(result == JFileChooser.APPROVE_OPTION)
 				{
-					MyPartyXMLFileMapper<MyParty> partyDataMapper = new MyPartyXMLFileMapper<MyParty>(client, filePath);
-					ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
-					MyParty myParty;
-					if(parties.size() != 0)
+					String filePath = chooser.getSelectedFile().getPath();
+					//importing data
+					try
 					{
-						myParty = parties.get(0);
-						Search.setSearchNumber(myParty.getSearchNumber());
-						updateTitle(myParty.getPartySimpleName());
-						client.setMyParty(myParty);
-						//client.insertMyParty();
-						repaintTabbedPane(); // frame update
-						appendToConsole("Local data have been successfully imported from the file: " + filePath, Color.GREEN);
+						MyPartyXMLFileMapper<MyParty> partyDataMapper = new MyPartyXMLFileMapper<MyParty>(client, filePath);
+						ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
+						MyParty myParty;
+						if(parties.size() != 0)
+						{
+							myParty = parties.get(0);
+							Search.setSearchNumber(myParty.getSearchNumber());
+							updateTitle(myParty.getPartySimpleName());
+							client.setMyParty(myParty);
+							//client.insertMyParty();
+							repaintTabbedPane(); // frame update
+							appendToConsole("Local data have been successfully imported from the file: " + filePath, Color.GREEN);
+						}
 					}
-				}
-				catch(JAXBException e)
-				{
-					JOptionPane.showMessageDialog(chooser, "Could not import data from the chosen file. The file is corrupt!",
-							"Importing local data", JOptionPane.ERROR_MESSAGE);
-				}
-/*				catch (Exception e)
+					catch(JAXBException e)
+					{
+						JOptionPane.showMessageDialog(chooser, "Could not import data from the chosen file. The file is corrupt!",
+								"Importing local data", JOptionPane.ERROR_MESSAGE);
+					}
+					/*				catch (Exception e)
 				{
 					JOptionPane.showMessageDialog(ClientFrame.this, "Could not save data to the local data store!",
 							"Saving data to the local data store", JOptionPane.ERROR_MESSAGE);
 				}*/
+				}
 			}
 		});
 
@@ -409,11 +415,20 @@ public class ClientFrame extends JFrame
 			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
-				disablePartyMenuItems();
-				new Thread(() ->
+				EventQueue.invokeLater(() ->
 				{
-					client.cdrDeregisterMyParty();
-				}).start();
+					int option = JOptionPane.showConfirmDialog(ClientFrame.this,
+							"By deregistering your party from the CDR service, all your data in the CDR will be deleted\nand all your followers will be notified about your deregistration.\nDo you want to proceed?", "Warning message",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(option == JOptionPane.YES_OPTION)
+					{
+						disablePartyMenuItems();
+						new Thread(() ->
+						{
+							client.cdrDeregisterMyParty();
+						}).start();
+					}
+				});
 			}
 			else
 				appendToConsole("Deregistration request of My Party has not been sent to the CDR service."
@@ -438,9 +453,7 @@ public class ClientFrame extends JFrame
 					}).start();
 				}
 				else
-				{
 					appendToConsole("Catalogue is already synchronized with the CDR service.", Color.BLUE);
-				}
 			}
 			else
 				appendToConsole("Update request of My Catalogue has not been sent to the CDR service."
@@ -477,11 +490,20 @@ public class ClientFrame extends JFrame
 			{
 				if(myParty.isCatalogueInCDR())
 				{
-					disableCatalogueMenuItems();
-					new Thread( () ->
+					EventQueue.invokeLater(() ->
 					{
-						client.cdrDeleteMyCatalogue();
-					}).start();
+						int option = JOptionPane.showConfirmDialog(ClientFrame.this,
+								"By deleting your catalogue from the CDR all your followers\nwill be notified about the catalogue deletion. Do you want to proceed?", "Warning message",
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						if(option == JOptionPane.YES_OPTION)
+						{
+							disableCatalogueMenuItems();
+							new Thread( () ->
+							{
+								client.cdrDeleteMyCatalogue();
+							}).start();
+						}
+					});
 				}
 				else
 					appendToConsole("Deletion request of My Catalogue has not been sent to the CDR service."
