@@ -451,9 +451,9 @@ public class BusinessParty
 
 	public void setProductDescription(int index, String value) { }
 
-	public void setProductID(int index, String value) { }
+	public void setProductID(int index, String value) throws ProductException { }
 
-	public void setProductBarcode(int index, String value) { }
+	public void setProductBarcode(int index, String value) throws ProductException { }
 
 	public void setProductPackSizeNumeric(int index, BigDecimal value) { }
 

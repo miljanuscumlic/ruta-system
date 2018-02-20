@@ -1,7 +1,9 @@
 package rs.ruta.client;
 
+import java.awt.EventQueue;
 import java.math.BigDecimal;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.*;
 
 import java.util.stream.Collectors;
@@ -108,39 +110,49 @@ public class ProductTableModel extends AbstractTableModel
 	{
 		//add new product to the list if the cell value not empty
 		if(party.getProductCount() == rowIndex)
-			if(("").equals((String) obj)) // do nothing
+			if(("").equals(((String) obj).trim())) // do nothing
 				return;
 			else
 			{
 				party.addNewEmptyProduct();
 				fireTableRowsInserted(rowIndex+1, columnIndex);
 			}
-		switch(columnIndex)
+		try
 		{
-		case 0:
-			break;
-		case 1:
-			party.setProductName(rowIndex, (String) obj);
-			break;
-		case 2:
-			party.setProductDescription(rowIndex, (String) obj);
-			break;
-		case 3:
-			party.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
-			break;
-		case 4:
-			party.setProductID(rowIndex, obj.toString());
-			break;
-		case 5:
-			party.setProductBarcode(rowIndex, obj.toString());
-			break;
-		case 6:
-			party.setProductCommodityCode(rowIndex, obj.toString());
-			break;
-		case 7:
-			party.setProductKeywords(rowIndex, obj.toString());
-		default:
-			;
+			switch(columnIndex)
+			{
+			case 0:
+				break;
+			case 1:
+				party.setProductName(rowIndex, (String) obj);
+				break;
+			case 2:
+				party.setProductDescription(rowIndex, (String) obj);
+				break;
+			case 3:
+				party.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
+				break;
+			case 4:
+				party.setProductID(rowIndex, obj.toString());
+				break;
+			case 5:
+				party.setProductBarcode(rowIndex, obj.toString());
+				break;
+			case 6:
+				party.setProductCommodityCode(rowIndex, obj.toString());
+				break;
+			case 7:
+				party.setProductKeywords(rowIndex, obj.toString());
+			default:
+				break;
+			}
+		}
+		catch(ProductException e)
+		{
+			EventQueue.invokeLater(() ->
+			{
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			});
 		}
 	}
 

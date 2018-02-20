@@ -15,7 +15,8 @@ Features:
 Improvements:
 
 - Simplified My Party registration process, now consisted of only two calls to the CDR service. Updating My Party data is now superfluos during the registration of a party.
-- Removed option for pulling of My Catalogue, which is now part of new "getting new documents" feature. 
+- Removed option for pulling of My Catalogue, which is now part of new "getting new documents" feature.
+- Added conformance of UBL documents to the UBL standard and validation of it before document is being sent to the CDR service. 
 - When appropriate OK buttons in dialogs are set as default buttons. Those dialogs could be closed by pressing Enter key.
 
 Bug fixes:

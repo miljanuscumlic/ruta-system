@@ -1193,10 +1193,17 @@ public class ClientFrame extends JFrame
 						java.awt.Point p = e.getPoint();
 						int index = columnModel.getColumnIndexAtX(p.x);
 						int realIndex = columnModel.getColumn(index).getModelIndex();
-						if(realIndex == 7)
+						switch(realIndex)
+						{
+						case 3:
+							return "type 0 for field deletion";
+						case 4:
+							return "ID field is mandatory if Barcode should be entered";
+						case 7:
 							return "comma separeted values";
-						else
+						default:
 							return null;
+						}
 					}
 				};
 			}

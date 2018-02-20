@@ -515,6 +515,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductName(int index, String value)
 	{
+		value = value.trim();
 		ItemType item = getProducts().get(index);
 		if(item.getName() == null)
 			item.setName(new NameType());
@@ -525,6 +526,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductDescription(int index, String value)
 	{
+		value = value.trim();
 		ItemType item = getProducts().get(index);
 		List<DescriptionType> descriptions = item.getDescription();
 		if(descriptions.size() == 0)
@@ -534,8 +536,11 @@ public class MyParty extends BusinessParty
 	}
 
 	@Override
-	public void setProductID(int index, String value)
+	public void setProductID(int index, String value) throws ProductException
 	{
+		value = value.trim();
+		if("".equals(value))
+			throw new ProductException("Product ID must be a non-empty string value.\nChange you made have not been accepted.");
 		ItemType item = getProducts().get(index);
 		if(item.getSellersItemIdentification() == null)
 			item.setSellersItemIdentification(new ItemIdentificationType());
@@ -546,11 +551,13 @@ public class MyParty extends BusinessParty
 	}
 
 	@Override
-	public void setProductBarcode(int index, String value)
+	public void setProductBarcode(int index, String value) throws ProductException
 	{
+		value = value.trim();
 		ItemType item = getProducts().get(index);
 		if(item.getSellersItemIdentification() == null)
-			item.setSellersItemIdentification(new ItemIdentificationType());
+			//item.setSellersItemIdentification(new ItemIdentificationType());
+			throw new ProductException("Product ID is mandatory, and it must be entered first!");
 		if(item.getSellersItemIdentification().getBarcodeSymbologyID() == null)
 			item.getSellersItemIdentification().setBarcodeSymbologyID(new BarcodeSymbologyIDType());
 		if(hasCellValueChanged(item.getSellersItemIdentification().getBarcodeSymbologyID().getValue(), value))
@@ -564,16 +571,16 @@ public class MyParty extends BusinessParty
 		if(item.getPackSizeNumeric() == null)
 			item.setPackSizeNumeric(new PackSizeNumericType());
 		if(hasCellValueChanged(item.getPackSizeNumeric().getValue(), value))
-		{
-			if(value.doubleValue() == 0)
-				value = null;
-			item.getPackSizeNumeric().setValue(value);
-		}
+			if(value.doubleValue() == 0) // deletes PackSizeNumericType field because of UBL conformance
+				item.setPackSizeNumeric((PackSizeNumericType) null);
+			else
+				item.getPackSizeNumeric().setValue(value);
 	}
 
 	@Override
 	public void setProductCommodityCode(int index, String value)
 	{
+		value = value.trim();
 		ItemType item = getProducts().get(index);
 		List<CommodityClassificationType> commodities = item.getCommodityClassification();
 		if(commodities.size() == 0)
@@ -594,6 +601,7 @@ public class MyParty extends BusinessParty
 	@Override
 	public void setProductKeywords(int index, String value)
 	{
+		value = value.trim();
 		ItemType item = getProducts().get(index);
 		List<KeywordType> keywords =
 				Stream.of(value.split("( )*[,;]+")).map(keyword -> new KeywordType(keyword)).collect(Collectors.toList());
