@@ -9,7 +9,7 @@ public class CDRPartyTypeXMLFileMapper<T> extends XMLFileMapper<T>
 {
 	private Client client;
 
-	public CDRPartyTypeXMLFileMapper(Client client, String filename)
+	public CDRPartyTypeXMLFileMapper(Client client, String filename) throws Exception
 	{
 		super(filename);
 		this.packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";

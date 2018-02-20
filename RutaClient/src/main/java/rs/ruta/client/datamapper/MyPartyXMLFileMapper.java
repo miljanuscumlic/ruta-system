@@ -18,7 +18,7 @@ public class MyPartyXMLFileMapper<T> extends XMLFileMapper<T>
 	private Client client;
 	private String filePath;
 
-	public MyPartyXMLFileMapper(Client client, String filePath)
+	public MyPartyXMLFileMapper(Client client, String filePath) throws Exception
 	{
 		super(filePath);
 		this.filePath = filePath;

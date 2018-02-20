@@ -10,7 +10,7 @@ public class PartyTypeXMLFileMapper<T> extends XMLFileMapper<T>
 {
 	private Client client;
 
-	public PartyTypeXMLFileMapper(Client client, String filename)
+	public PartyTypeXMLFileMapper(Client client, String filename) throws Exception
 	{
 		super(filename);
 		this.packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";

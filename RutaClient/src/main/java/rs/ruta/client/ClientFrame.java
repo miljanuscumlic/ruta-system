@@ -12,6 +12,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -251,14 +254,15 @@ public class ClientFrame extends JFrame
 					}
 					catch(JAXBException e)
 					{
-						JOptionPane.showMessageDialog(chooser, "Could not import data from the chosen file. The file is corrupt!",
-								"Importing local data", JOptionPane.ERROR_MESSAGE);
+						appendToConsole("Could not import data from the chosen file. The file is corrupt!", Color.RED);
+//						JOptionPane.showMessageDialog(chooser, "Could not import data from the chosen file. The file is corrupt!",
+//								"Importing local data", JOptionPane.ERROR_MESSAGE);
 					}
-					/*				catch (Exception e)
-				{
-					JOptionPane.showMessageDialog(ClientFrame.this, "Could not save data to the local data store!",
-							"Saving data to the local data store", JOptionPane.ERROR_MESSAGE);
-				}*/
+					catch (Exception e)
+					{
+						appendToConsole("There has been an error. " + e.getMessage(), Color.RED);
+//						JOptionPane.showMessageDialog(ClientFrame.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		});
@@ -270,21 +274,30 @@ public class ClientFrame extends JFrame
 			int result = chooser.showSaveDialog(this);
 			if(result == JFileChooser.APPROVE_OPTION)
 			{
-				StringBuilder filePath = new StringBuilder(chooser.getSelectedFile().getPath());
-				if(!filePath.toString().endsWith(".xml"))
-					filePath = filePath.append(".xml");
+				StringBuilder filePathBuilder = new StringBuilder(chooser.getSelectedFile().getPath());
+				if(!filePathBuilder.toString().endsWith(".xml"))
+					filePathBuilder = filePathBuilder.append(".xml");
+				final String filePath = filePathBuilder.toString();
 				//exporting data
-				MyPartyXMLFileMapper<MyParty> partyMapper = new MyPartyXMLFileMapper<MyParty>(client, filePath.toString());
 				try
 				{
+					//file must be created because MyPartyXMLFileMapper would throw an exception if it doesn't exist
+					final Path path = Paths.get(filePath);
+					if(Files.notExists(path))
+						Files.createFile(path);
+
+					MyPartyXMLFileMapper<MyParty> partyMapper = new MyPartyXMLFileMapper<MyParty>(client, filePath);
 					partyMapper.insertAll();
 					appendToConsole("Local data have been successfully exported to the file: " + filePath, Color.GREEN);
 				}
 				catch (JAXBException e)
 				{
 					appendToConsole("There has been an error. Local data could not be exported to the file: " + filePath, Color.RED);
-					/*JOptionPane.showMessageDialog(ClientFrame.this, "Could not export data to the local data store!",
-							"Saving data to the local data store", JOptionPane.ERROR_MESSAGE);*/
+				}
+				catch (Exception e)
+				{
+					appendToConsole("There has been an error. " + e.getMessage(), Color.RED);
+//					JOptionPane.showMessageDialog(ClientFrame.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

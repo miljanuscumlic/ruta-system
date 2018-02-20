@@ -16,17 +16,19 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 	private String filename;
 	protected String packageList; // colon separated package list
 
-	public XMLFileMapper(String filename)
+	public XMLFileMapper(String filename) throws Exception
 	{
 		this.filename = filename;
+		if(!Files.exists(Paths.get(filename)))
+			throw new Exception("File " + filename + " does not exist!");
 	}
 
 	@Override
 	public ArrayList<T> findAll() throws Exception
 	{
 		ArrayList<T> result = new ArrayList<T>(); // MMM:This List is not nessecery because there is always one element of type T, not a list of them
-		Path path = Paths.get(filename); // MMM: set the Path and the document files to some sensible place
-		if (Files.exists(path))
+/*		Path path = Paths.get(filename); // MMM: set the Path and the document files to some sensible place
+		if (Files.exists(path))*/
 		{
 			try
 			{
@@ -62,43 +64,39 @@ public abstract class XMLFileMapper<T> implements OLDDataMapper
 	@Override
 	public void insertAll() throws Exception
 	{
-//		Path path = Paths.get(filename); // MMM: set the Path and the document files to some sensible place
-//		if (Files.exists(path))
+		try
 		{
+			JAXBContext jc = JAXBContext.newInstance(packageList);
+
+			// create an element for marshalling
+
+			JAXBElement<T> element = (JAXBElement<T>) getJAXBElement();
+
+			//**** this is SLOWER alternative to the upper statement and delegation to a subclass*****
+			//JAXBElement<T> element = getJAXBElementWithReflection();
+			//****************************************************************************************
+
+			// create a Marshaller and marshal to System.out - alternative to down below code
+			//JAXB.marshal( partyElement, System.out );
+
+			// create an Marshaller
+			Marshaller m = jc.createMarshaller();
+
+			// marshal a tree of Java content objects to a file
 			try
 			{
-				JAXBContext jc = JAXBContext.newInstance(packageList);
-
-				// create an element for marshalling
-
-				JAXBElement<T> element = (JAXBElement<T>) getJAXBElement();
-
-				//**** this is SLOWER alternative to the upper statement and delegation to a subclass*****
-				//JAXBElement<T> element = getJAXBElementWithReflection();
-				//****************************************************************************************
-
-		        // create a Marshaller and marshal to System.out - alternative to down below code
-		        //JAXB.marshal( partyElement, System.out );
-
-				// create an Marshaller
-				Marshaller m = jc.createMarshaller();
-
-				// marshal a tree of Java content objects to a file
-				try
-				{
-					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-					//m.marshal(element, System.out);
-					m.marshal(element, new FileOutputStream(filename));
-				}
-				catch (FileNotFoundException e)
-				{
-					System.out.println("Could not open document file " + filename);
-				}
+				m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+				//m.marshal(element, System.out);
+				m.marshal(element, new FileOutputStream(filename));
 			}
-			catch (JAXBException e)
+			catch (FileNotFoundException e)
 			{
-				logger.error("Exception is ", e);
+				System.out.println("Could not open document file " + filename);
 			}
+		}
+		catch (JAXBException e)
+		{
+			logger.error("Exception is ", e);
 		}
 	}
 
