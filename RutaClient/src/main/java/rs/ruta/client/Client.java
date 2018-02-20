@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -926,7 +927,8 @@ public class Client implements RutaNode
 							there = "There is ";
 						}
 						frame.appendToConsole(there + plural + " in my DocBox.", Color.BLACK);
-						frame.appendToConsole("Started download of " + plural + ".", Color.BLACK);
+						frame.appendToConsole("Started download of " + plural + ". Waiting...", Color.BLACK);
+						AtomicInteger downloadCount = new AtomicInteger(0);
 						CountDownLatch finished = new CountDownLatch(docCount);
 						Semaphore oneAtATime = new Semaphore(1);
 						for(String docID : docBoxIDs)
@@ -942,9 +944,15 @@ public class Client implements RutaNode
 									final FindDocBoxDocumentResponse res = docFuture.get();
 									final Object document = res.getReturn();
 									oneAtATime.release();
-									placeDocBoxDocument(document, docID);
-									frame.repaintTabbedPane();
-									port.deleteDocBoxDocumentAsync(myParty.getUsername(), docID, deleteFuture -> {});
+									if(document != null)
+									{
+										downloadCount.incrementAndGet();
+										placeDocBoxDocument(document, docID);
+										frame.repaintTabbedPane();
+										port.deleteDocBoxDocumentAsync(myParty.getUsername(), docID, deleteFuture -> {});
+									}
+									else
+										frame.appendToConsole("Document " + docID + " could not be downloaded!", Color.RED);
 								}
 								catch (Exception e)
 								{
@@ -958,7 +966,24 @@ public class Client implements RutaNode
 							});
 						}
 						finished.await();
-						frame.appendToConsole("Finished download of " + plural + ".", Color.BLACK);
+						String failed = null;
+						int downCount = downloadCount.get();
+						if(downCount != docCount)
+						{
+							if(downCount != 1)
+								plural = downCount + " documents";
+							else
+								plural = "1 document";
+
+							if(docCount - downCount != 1)
+								failed = "Failed download of " + (docCount - downCount) + " documents.";
+							else
+								failed = "Failed download of 1 document.";
+						}
+						if(failed != null)
+							frame.appendToConsole("Successful download of " + plural + ". " + failed, Color.BLACK);
+						else
+							frame.appendToConsole("Successful download of " + plural + ".", Color.BLACK);
 					}
 					else
 						frame.appendToConsole("There are no new documents in my DocBox.", Color.GREEN);
