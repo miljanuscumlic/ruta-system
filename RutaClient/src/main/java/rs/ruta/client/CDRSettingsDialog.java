@@ -76,7 +76,7 @@ public class CDRSettingsDialog extends JDialog
 		JPanel buttonPanel = new JPanel();
 		JButton apply = new JButton("Apply and close");
 		JButton cancel = new JButton("Cancel");
-
+		getRootPane().setDefaultButton(apply);
 		apply.addActionListener(event ->
 		{
 			String serviceString = serviceField.getText();

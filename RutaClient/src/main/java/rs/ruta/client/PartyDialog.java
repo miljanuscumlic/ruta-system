@@ -1,6 +1,7 @@
 package rs.ruta.client;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -59,6 +60,7 @@ public class PartyDialog extends JDialog
 						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE);
 			}
 		});
+		//getRootPane().setDefaultButton(okButton); does not work
 
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.setVerifyInputWhenFocusTarget(false);//do not verify previously focused element when Cancel is clicked

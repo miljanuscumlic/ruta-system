@@ -84,6 +84,7 @@ public class SearchDialog extends JDialog
 		buttonPanel.add(searchButton);
 		JButton cancelButton = new JButton("Cancel");
 		buttonPanel.add(cancelButton);
+		getRootPane().setDefaultButton(searchButton);
 
 		searchButton.addActionListener(event ->
 		{

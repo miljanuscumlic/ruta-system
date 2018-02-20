@@ -50,6 +50,7 @@ public class UpdateDialog extends JDialog
 		JButton cancel = new JButton("Cancel");
 		JButton download = new JButton("Download");
 		JButton ok = new JButton("OK");
+		getRootPane().setDefaultButton(ok);
 
 		buttonPanel.add(check);
 		//		buttonPanel.add(cancel);
