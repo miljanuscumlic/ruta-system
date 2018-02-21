@@ -1,7 +1,10 @@
 package rs.ruta.client;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -10,7 +13,10 @@ public class PartyDialog extends JDialog
 {
 	private static final long serialVersionUID = 8652433075065940074L;
 	private Party party;
-	private boolean changed; // table content has changed
+	/**
+	 * True when table content has changed.
+	 */
+	private boolean changed;
 	private AbstractTableModel partyModel;
 
 	public PartyDialog(ClientFrame owner)
@@ -25,6 +31,7 @@ public class PartyDialog extends JDialog
 
 		JPanel partyPanel = new JPanel();
 		JTable table = new PartyTable(partyModel);
+//		table.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
 
 		table.setFillsViewportHeight(true);
 		table.getTableHeader().setReorderingAllowed(false); //disables column reordering
@@ -39,6 +46,18 @@ public class PartyDialog extends JDialog
 		tableColumn = tableColumnModel.getColumn(1);
 		tableColumn.setPreferredWidth(280);
 
+		MouseAdapter tableLostFocus = new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if(table.isEditing())
+					table.getCellEditor().stopCellEditing();
+			}
+		};
+		table.getTableHeader().addMouseListener(tableLostFocus);
+		addMouseListener(tableLostFocus);
+
 //		TableCellRenderer renderer = new PartyTableCellRenderer();
 //		table.setDefaultRenderer(Object.class, renderer);
 
@@ -51,14 +70,14 @@ public class PartyDialog extends JDialog
 			String missingField = party.verifyParty();
 			if(missingField == null)
 			{
-				changed = ((PartyTable)table).hasChanged();
+				if(table.isEditing())
+					table.getCellEditor().stopCellEditing();
+				changed = ((PartyTable) table).hasChanged();
 				setVisible(false);
 			}
 			else
-			{
 				JOptionPane.showMessageDialog(PartyDialog.this, missingField + " is mandatory.",
 						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE);
-			}
 		});
 		//getRootPane().setDefaultButton(okButton); does not work
 
@@ -81,8 +100,6 @@ public class PartyDialog extends JDialog
 
 	public Party getParty()
 	{
-/*		if(party.getPartyID() == null) //ensuring that party object always has a nonempty identification field
-			party.setPartyID("");*/
 		return party;
 	}
 

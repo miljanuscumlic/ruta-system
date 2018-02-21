@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
 
 /**
- *Reading data from BusinessParty.products
+ *Table model containing data from BusinessParty.products.
  */
 public class ProductTableModel extends AbstractTableModel
 {

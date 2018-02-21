@@ -1131,6 +1131,7 @@ public class ClientFrame extends JFrame
 		case 1:
 			AbstractTableModel tableModel = new ProductTableModel(myParty, true);
 			JTable table = createCatalogueTable(tableModel);
+//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			table.addMouseListener(new MouseAdapter()
@@ -1180,7 +1181,7 @@ public class ClientFrame extends JFrame
 		JTable table = new JTable(tableModel)
 		{
 			private static final long serialVersionUID = -2879401192820075582L;
-			//implementing column header's tooltip
+			//implementing column header's tooltips
 			@Override
 			protected JTableHeader createDefaultTableHeader()
 			{
@@ -1198,7 +1199,7 @@ public class ClientFrame extends JFrame
 						case 3:
 							return "type 0 for field deletion";
 						case 4:
-							return "ID field is mandatory if Barcode should be entered";
+							return "ID field is mandatory if Barcode is going to be entered";
 						case 7:
 							return "comma separeted values";
 						default:
@@ -1218,10 +1219,10 @@ public class ClientFrame extends JFrame
 		colModel.getColumn(3).setPreferredWidth(20);
 		colModel.getColumn(7).setPreferredWidth(200);
 		//setting cell editor
-	//	table.setDefaultEditor(Object.class, new ProductTableCellEditor(table));
+		table.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));
 		//table.setDefaultRenderer(List.class, new ProductTableCellRenderer());
-		//table.setDefaultEditor(table.getColumnModel().getColumn(7).getClass(), new ProductTableCellEditor(table));
-	//	table.getColumnModel().getColumn(7).setCellEditor(new ProductTableCellEditor(table));
+		//table.setDefaultEditor(table.getColumnModel().getColumn(7).getClass(), new FocusLostTableCellEditor(table));
+	//	table.getColumnModel().getColumn(7).setCellEditor(new FocusLostTableCellEditor(table));
 		return table;
 	}
 

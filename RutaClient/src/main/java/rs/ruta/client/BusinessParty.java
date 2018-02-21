@@ -370,7 +370,7 @@ public class BusinessParty
 	{
 		ItemType item = products.get(index);
 		return item.getKeywordCount() == 0 ? null :
-			item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(" ,"));
+			item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", "));
 	}
 
 	public List<KeywordType> getProductKeywords(int index)
