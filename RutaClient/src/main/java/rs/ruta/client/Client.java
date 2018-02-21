@@ -284,6 +284,7 @@ public class Client implements RutaNode
 	 * @param username username of the party
 	 * @param password password of the party
 	 */
+/*	@Deprecated
 	public void cdrRegisterMyParty(PartyType party, String username, String password)
 	{
 		try
@@ -320,7 +321,7 @@ public class Client implements RutaNode
 					+ " Server is not accessible. Please try again later.", Color.RED);
 			frame.enablePartyMenuItems();
 		}
-	}
+	}*/
 
 	/**
 	 * Sends request for registration of My party with the Central Data Repository.
@@ -328,7 +329,7 @@ public class Client implements RutaNode
 	 * @param password password of the party
 	 * @param party {@link PartyType} object that should be registered
 	 */
-	public void cdrNewRegisterMyParty(String username, String password)
+	public void cdrRegisterMyParty(String username, String password)
 	{
 		try
 		{
@@ -1335,7 +1336,7 @@ public class Client implements RutaNode
 						/*						for(CatalogueType cat : results)
 							frame.appendToConsole("Party: " + cat.getProviderParty().getPartyName().get(0).getNameValue() +
 									" items: " + cat.getCatalogueLineCount(), Color.GREEN);*/
-						final Search<CatalogueType> search = new Search<CatalogueType>(searchName, criterion, results);
+						final Search<CatalogueType> search = new Search<CatalogueType>(searchName, criterion, results, CatalogueType.class);
 						if(search.getResultCount() != 0)
 						{
 							frame.appendToConsole("Search results for search request \"" + searchName + "\" have been successfully retrieved from the CDR service.", Color.GREEN);
@@ -1403,12 +1404,9 @@ public class Client implements RutaNode
 					try
 					{
 						SearchPartyResponse res = futureResult.get();
-						//handle the Party list
 
 						List<PartyType> results = res.getReturn();
-						/*						for(PartyType p : results)
-							frame.appendToConsole(p.getPartyName().get(0).getNameValue(), Color.GREEN);*/
-						final Search<PartyType> search = new Search<PartyType>(searchName, criterion , results);
+						final Search<PartyType> search = new Search<PartyType>(searchName, criterion , results, PartyType.class);
 						if(search.getResultCount() != 0)
 						{
 							frame.appendToConsole("Search results for search request \"" + searchName + "\" have been successfully retrieved from the CDR service.", Color.GREEN);
@@ -1535,21 +1533,18 @@ public class Client implements RutaNode
 						List<CatalogueType> results = res.getReturn();
 						if(exist)
 							myParty.getCatalogueSearches().remove(search);
-						if(results.size() != 0)
+						final Search<CatalogueType> newSearch = (Search<CatalogueType>) search;
+						newSearch.setResults(results);
+						myParty.getCatalogueSearches().add(0, newSearch);
+						if(results != null)
 						{
-							final Search<CatalogueType> newSearch = (Search<CatalogueType>) search;
-							newSearch.setResults(results);
-							myParty.getCatalogueSearches().add(0, newSearch);
 							frame.appendToConsole("Search results for search request \"" + newSearch.getSearchName() +
 									"\" have been successfully retrieved from the CDR service.", Color.GREEN);
 							frame.repaintTabbedPane();
 						}
 						else
-						{
-							if(!exist)
-								Search.decreaseSearchNumber();
-							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
-						}
+							frame.appendToConsole("Nothing found at CDR service that conforms to your search request \"" +
+									newSearch.getSearchName() + "\".", Color.GREEN);
 					}
 					catch(Exception e)
 					{
@@ -1573,21 +1568,19 @@ public class Client implements RutaNode
 						List<PartyType> results = res.getReturn();
 						if(exist)
 							myParty.getPartySearches().remove(search);
-						if(results.size() != 0)
+
+						final Search<PartyType> newSearch = (Search<PartyType>) search;
+						newSearch.setResults(results);
+						myParty.getPartySearches().add(0, newSearch);
+						if(results != null)
 						{
-							final Search<PartyType> newSearch = (Search<PartyType>) search;
-							newSearch.setResults(results);
-							myParty.getPartySearches().add(0, newSearch);
 							frame.appendToConsole("Search results for search request \"" + newSearch.getSearchName() +
 									"\" have been successfully retrieved from the CDR service.", Color.GREEN);
 							frame.repaintTabbedPane();
 						}
 						else
-						{
-							if(!exist)
-								Search.decreaseSearchNumber();
-							frame.appendToConsole("Nothing found at CDR service that conforms to your search criterion.", Color.GREEN);
-						}
+							frame.appendToConsole("Nothing found at CDR service that conforms to your search request \"" +
+									newSearch.getSearchName() + "\".", Color.GREEN);
 					}
 					catch(Exception e)
 					{

@@ -75,6 +75,8 @@ public class RegisterDialog extends JDialog
 			setVisible(false);
 		});
 
+		getRootPane().setDefaultButton(registerButton);
+
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.setVerifyInputWhenFocusTarget(false);
 		buttonPanel.add(cancelButton);

@@ -455,10 +455,7 @@ public class ClientFrame extends JFrame
 			{
 				if(myParty.isDirtyCatalogue())
 				{
-					EventQueue.invokeLater(() ->
-					{
-						disableCatalogueMenuItems();
-					});
+					disableCatalogueMenuItems();
 					//sending Catalogue to CDR
 					new Thread(()->
 					{
@@ -711,8 +708,11 @@ public class ClientFrame extends JFrame
 	 */
 	public void enableSearchMenuItems()
 	{
+		EventQueue.invokeLater(() ->
+		{
 		cdrSearchItem.setEnabled(true);
 		cdrDeregisterPartyItem.setEnabled(true);
+		});
 	}
 
 	/**Disables menu items regarding Search after client sends the request to the CDR service.
@@ -720,8 +720,11 @@ public class ClientFrame extends JFrame
 	 */
 	public void disableSearchMenuItems()
 	{
+		EventQueue.invokeLater(() ->
+		{
 		cdrSearchItem.setEnabled(false);
 		cdrDeregisterPartyItem.setEnabled(false);
+		});
 	}
 
 	/**Enables menu items regarding My Party after client gets the response from the CDR service.
@@ -755,10 +758,13 @@ public class ClientFrame extends JFrame
 	 */
 	public void enableCatalogueMenuItems()
 	{
+		EventQueue.invokeLater(() ->
+		{
 		cdrPullCatalogueItem.setEnabled(true);
 		cdrUpdateCatalogueItem.setEnabled(true);
 		cdrDeleteCatalogueItem.setEnabled(true);
 		cdrDeregisterPartyItem.setEnabled(true);
+		});
 	}
 
 	/**Disables menu items regarding My Catalogue after client sends the request to the CDR service.
@@ -766,10 +772,13 @@ public class ClientFrame extends JFrame
 	 */
 	public void disableCatalogueMenuItems()
 	{
+		EventQueue.invokeLater(() ->
+		{
 		cdrPullCatalogueItem.setEnabled(false);
 		cdrUpdateCatalogueItem.setEnabled(false);
 		cdrDeleteCatalogueItem.setEnabled(false);
 		cdrDeregisterPartyItem.setEnabled(false);
+		});
 	}
 
 	/**Saves properties from {@code ClientFrame} class fields to {@link Properties} object.
@@ -866,7 +875,7 @@ public class ClientFrame extends JFrame
 				Object selectedSearch = selectedNode.getUserObject();
 				if(selectedSearch instanceof Search)
 				{
-					Class<?> searchClazz = ((Search<?>) selectedSearch).getResultClass();
+					Class<?> searchClazz = ((Search<?>) selectedSearch).getResultType();
 					if(searchClazz == PartyType.class)
 					{
 						AbstractTableModel searchPartyTableModel = new PartySearchTableModel(false);
@@ -1109,7 +1118,7 @@ public class ClientFrame extends JFrame
 
 				Class<?> nodeClass = null; // Class object of the node in the tree
 				if(!(selectedSearch instanceof String))
-					nodeClass = ((Search<?>) selectedSearch).getResultClass();
+					nodeClass = ((Search<?>) selectedSearch).getResultType();
 				else
 					return;
 				if(nodeClass == PartyType.class)
@@ -1511,7 +1520,7 @@ public class ClientFrame extends JFrame
 			int rowIndex = table.getSelectedRow();
 			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
 
-			Class<?> searchClazz = selectedSearch.getResultClass();
+			Class<?> searchClazz = selectedSearch.getResultType();
 			if(searchClazz == PartyType.class)
 			{
 				if (myParty.getPartySearches().remove((Search<CatalogueType>) selectedSearch))
@@ -1676,7 +1685,7 @@ public class ClientFrame extends JFrame
 		registerDialog.setRegisterPressed(false);
 		if(registerPressed)
 		{
-			client.cdrNewRegisterMyParty(registerDialog.getUsername(), registerDialog.getPassword());
+			client.cdrRegisterMyParty(registerDialog.getUsername(), registerDialog.getPassword());
 //			MMM:down below is old implementation of the registration
 //			client.cdrRegisterMyParty(client.getMyParty().getCoreParty(), registerDialog.getUsername(), registerDialog.getPassword());
 		}

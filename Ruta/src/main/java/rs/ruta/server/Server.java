@@ -64,21 +64,23 @@ public interface Server
 	/**
 	 * Searches the database for all catalogue items that conforms to the search criterion.
 	 * @param criterion search criterion
-	 * @return list of catalogues with only the catalogue items conforming the criterion
+	 * @return list of catalogues containing only catalogue items conforming to the criterion or
+	 * {@code null} if no catalogue conforms to the search criterion
 	 * @throws RutaException if search query could not be processed
 	 */
 	@WebMethod(operationName = "SearchCatalogue")
 	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException;
 
-	/**
+/*	*//**
 	 * Registers user with the CDR service.
 	 * @param username user's username
 	 * @param password user's password
 	 * @return user's secret key
 	 * @throws RutaException throw if it was unable to register the user
-	 */
+	 *//*
+	@Deprecated
 	@WebMethod(operationName = "RegisterUser")
-	public String registerUser(String username, String password) throws RutaException;
+	public String registerUser(String username, String password) throws RutaException;*/
 
 	/**
 	 * Registers user with the CDR service.
@@ -89,7 +91,7 @@ public interface Server
 	 * @throws RutaException throw if it was unable to register the user
 	 */
 	@WebMethod(operationName = "NewRegisterUser")
-	public String newRegisterUser(String username, String password, PartyType party) throws RutaException;
+	public String registerParty(String username, String password, PartyType party) throws RutaException;
 
 	/**
 	 * Deregister the user from the CDR service.
@@ -138,7 +140,7 @@ public interface Server
 
 	/**Searches the database for all parties that conforms to the search criterion.
 	 * @param criterion search criterion
-	 * @return list of parties conforming the criterion
+	 * @return list of parties conforming to thethe criterion or {@code null} if no party conforms to the search criterion
 	 * @throws RutaException if search query could not be processed
 	 */
 	@WebMethod(operationName = "SearchParty")
@@ -168,9 +170,10 @@ public interface Server
 	@WebMethod(operationName = "DeleteDocBoxDocument")
 	void deleteDocBoxDocument(String username, String id) throws RutaException;
 
-	/**Searches the database for all {@link BugReport}s that conforms to the search criterion.
+	/**Searches the database for all {@link BugReport}s that conforms to the {@link SearchCriterion search criterion}.
 	 * @param criterion search criterion
-	 * @return list of {@code BugReport}s conforming the criterion or {@code null} if no {@code BugReport} has been found
+	 * @return list of {@code BugReport}s conforming to the search criterion or {@code null}
+	 * if no {@code BugReport} conforms to it
 	 * @throws RutaException if search query could not be processed
 	 */
 	@WebMethod(operationName = "SearchBugReport")

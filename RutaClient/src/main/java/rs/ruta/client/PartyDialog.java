@@ -17,12 +17,12 @@ public class PartyDialog extends JDialog
 	 * True when table content has changed.
 	 */
 	private boolean changed;
-	private AbstractTableModel partyModel;
+	private AbstractTableModel partyTableModel;
 
 	public PartyDialog(ClientFrame owner)
 	{
 		super(owner, true);
-		partyModel = new PartyTableModel();
+		partyTableModel = new PartyTableModel();
 		changed = false;
 		party = null;
 
@@ -30,7 +30,7 @@ public class PartyDialog extends JDialog
 		setLocationRelativeTo(owner);
 
 		JPanel partyPanel = new JPanel();
-		JTable table = new PartyTable(partyModel);
+		JTable table = new PartyTable(partyTableModel);
 //		table.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
 
 		table.setFillsViewportHeight(true);
@@ -67,11 +67,11 @@ public class PartyDialog extends JDialog
 		buttonPanel.add(okButton);
 		okButton.addActionListener(event ->
 		{
+			if(table.isEditing())
+				table.getCellEditor().stopCellEditing();
 			String missingField = party.verifyParty();
 			if(missingField == null)
 			{
-				if(table.isEditing())
-					table.getCellEditor().stopCellEditing();
 				changed = ((PartyTable) table).hasChanged();
 				setVisible(false);
 			}
@@ -95,7 +95,7 @@ public class PartyDialog extends JDialog
 	public void setParty(Party party)
 	{
 		this.party = party;
-		((PartyTableModel)partyModel).setParty(party);
+		((PartyTableModel) partyTableModel).setParty(party);
 	}
 
 	public Party getParty()
@@ -115,8 +115,8 @@ public class PartyDialog extends JDialog
 	/**
 	 * Sets the change filed of the Party dialog. Change field is true if there was a alternation of the data in the dialog.
 	 */
-	public void setChanged(boolean c)
+	public void setChanged(boolean changed)
 	{
-		changed = c;
+		this.changed = changed;
 	}
 }

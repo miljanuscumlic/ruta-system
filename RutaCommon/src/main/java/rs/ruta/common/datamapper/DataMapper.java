@@ -57,7 +57,7 @@ public interface DataMapper<T, ID>
 	 * Result is a list of objects that are of type {@code<T>} which is a type parameter of the appropriate
 	 * subclass instance of {@code DataMapper<T>} interface.
 	 * @param criterion search criterion
-	 * @return list of objects of type {@code<T>} or {@code null} if no objects are found
+	 * @return list of objects of type {@code<T>} or {@code null} if no object conforms to the search criterion
 	 * @throws DetailException if search request could not be processed
 	 */
 	default public List<T> findMany(SearchCriterion criterion) throws DetailException { return null; }
@@ -65,7 +65,7 @@ public interface DataMapper<T, ID>
 	/**Queries the data store based on the {@link SearchCriterion search criterion}.
 	 * Result is a list of ids of object that conform to the search criterion.
 	 * @param criterion search criterion
-	 * @return list of object ids or {@code null} if no objects are found
+	 * @return list of object ids or {@code null} if no object conforms to the search criterion
 	 * @throws DetailException if search request could not be processed
 	 */
 	default public List<ID> findManyIDs(SearchCriterion criterion) throws DetailException { return null; }
@@ -151,7 +151,8 @@ public interface DataMapper<T, ID>
 	 * @return user's identification object
 	 * @throws DetailException if user could not be registered
 	 */
-	default public ID registerUser(String username, String password) throws DetailException { return null; }
+/*	@Deprecated
+	default public ID registerUser(String username, String password) throws DetailException { return null; }*/
 
 	/**Registers new user with the data store.
 	 * @param username user's username
@@ -160,7 +161,7 @@ public interface DataMapper<T, ID>
 	 * @return user's identification object
 	 * @throws DetailException if user could not be registered
 	 */
-	default public ID newRegisterUser(String username, String password, PartyType party) throws DetailException { return null; }
+	default public ID registerUser(String username, String password, PartyType party) throws DetailException { return null; }
 
 	/**Gets user's secret key from the data store.
 	 * @param username user's username

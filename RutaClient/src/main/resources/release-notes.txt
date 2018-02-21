@@ -11,6 +11,7 @@ Features:
 - Implemented support for deleting deregistered Party from Deregistered Parties.
 - Implemented support for "getting new documents" from the service and their placement on the proper place within the domain model.
 - Added warning messages when is tried to import data from an external file or before are sent CDR requests for Catalogue deletion or Party deregistration.
+- Searches with no results from the CDR are now stored in the searches history.
 
 Improvements:
 

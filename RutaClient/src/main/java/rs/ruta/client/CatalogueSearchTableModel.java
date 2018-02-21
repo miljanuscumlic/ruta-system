@@ -1,5 +1,6 @@
 package rs.ruta.client;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
@@ -40,8 +41,8 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 	 */
 	private void calculateLineCount(Search<CatalogueType> catalogues)
 	{
-		catalogueLineCount = new int[catalogues.size()];
-		for(int i = 0; i < catalogues.size(); i++)
+		catalogueLineCount = new int[catalogues.getResultCount()];
+		for(int i = 0; i < catalogues.getResultCount(); i++)
 			catalogueLineCount[i] = catalogues.getResults().get(i).getCatalogueLineCount();
 	}
 
@@ -49,8 +50,10 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 	public int getRowCount()
 	{
 		int rowCount = 0;
-		for(CatalogueType cat : search.getResults())
-			rowCount += cat.getCatalogueLineCount();
+		List<CatalogueType> results = search.getResults();
+		if(results != null)
+			for(CatalogueType cat : results)
+				rowCount += cat.getCatalogueLineCount();
 		return rowCount;
 	}
 
@@ -71,7 +74,7 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 	{
 		int catalogueNumber = 0;
 		int catalogueLineNumber = rowIndex;
-		while(catalogueLineNumber >= 0 && catalogueNumber < search.size())
+		while(catalogueLineNumber >= 0 && catalogueNumber < search.getResultCount())
 			catalogueLineNumber -= catalogueLineCount[catalogueNumber++];
 		catalogueLineNumber += catalogueLineCount[--catalogueNumber];
 		CatalogueType catalogue = search.getResults().get(catalogueNumber);

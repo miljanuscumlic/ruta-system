@@ -1026,61 +1026,6 @@ public interface Server {
      * @param arg1
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.RegisterUserResponse>
-     */
-    @WebMethod(operationName = "RegisterUser")
-    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
-    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
-    public Response<RegisterUserResponse> registerUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "RegisterUser")
-    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
-    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
-    public Future<?> registerUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<RegisterUserResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns java.lang.String
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "RegisterUser")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
-    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
-    public String registerUser(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.DeleteDocBoxDocumentResponse>
      */
     @WebMethod(operationName = "DeleteDocBoxDocument")

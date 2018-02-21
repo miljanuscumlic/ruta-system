@@ -69,13 +69,13 @@ public class SearchListTableModel<T> extends AbstractTableModel
 	private int getResultCount(Search<T> search)
 	{
 		int resultCount = 0;
-		Class<?> resultClazz = search.getResultClass();
+		Class<?> resultClazz = search.getResultType();
 		if(resultClazz == PartyType.class)
 			resultCount = search.getResultCount();
 		else if(resultClazz == CatalogueType.class)
 		{
 			List<T> catalogues = search.getResults();
-			for(int i = 0; i < search.size(); i++)
+			for(int i = 0; i < search.getResultCount(); i++)
 				resultCount += ((CatalogueType) catalogues.get(i)).getCatalogueLineCount();
 		}
 		return resultCount;

@@ -1,5 +1,6 @@
 package rs.ruta.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -25,6 +26,8 @@ public class Search<T>
 	private CatalogueSearchCriterion criterion;
 	@XmlElement(name= "SearchResult")
 	private List<T> results;
+	@XmlElement(name = "ResultType")
+	private Class<T> resultType;
 
 	public Search() {}
 
@@ -33,11 +36,15 @@ public class Search<T>
 		this.searchName = searchName;
 	}
 
-	public Search(String searchName, CatalogueSearchCriterion criterion, List<T> results)
+	public Search(String searchName, CatalogueSearchCriterion criterion, List<T> results, Class<T> resultType)
 	{
 		this.searchName = searchName;
 		this.criterion = criterion;
-		this.results = results;
+/*		if(results == null)
+			this.results = new ArrayList<T>();
+		else*/
+			this.results = results;
+		this.resultType = resultType;
 	}
 
 	/**Gets the number of the next search.
@@ -95,25 +102,43 @@ public class Search<T>
 		return results;
 	}
 
-	public void setResults(List<T> results)
-	{
-		this.results = results;
-	}
-
-	/**Gets the {@link Class} object of the containing search result.
+	/**
+	 * Gets the {@link Class} object of the containing search result.
 	 * @return search result's {@code Class} object
 	 */
-	public Class<?> getResultClass()
+	public Class<T> getResultType()
 	{
-		return results.get(0).getClass();
+		return resultType;
 	}
 
-	public int size()
+	public void setResultType(Class<T> resultType)
 	{
-		return results.size();
+		this.resultType = resultType;
 	}
 
-	/**Get the name of teh search
+	/**
+	 * Sets the {@link List} of results. If passed argument is a {@code null}, appropriate empty
+	 * list is set instead.
+	 * @param results list of reselts to be set
+	 */
+	public void setResults(List<T> results)
+	{
+/*		if(results == null)
+			this.results = new ArrayList<T>();
+		else*/
+			this.results = results;
+	}
+
+	/**
+	 * Gets the number of results in a {@code Search}.
+	 * @return size of the result list
+	 */
+	public int getResultCount()
+	{
+		return results != null ? results.size() : 0;
+	}
+
+	/**Get the name of the search.
 	 * @return
 	 */
 	public String getSearchName()
@@ -121,20 +146,12 @@ public class Search<T>
 		return searchName;
 	}
 
-	/**Sets the name of the search
+	/**Sets the name of the search.
 	 * @param name
 	 */
 	public void setSearchName(String name)
 	{
 		this.searchName = name;
-	}
-
-	/**Gets the number of results in a {@code Search}.
-	 * @return
-	 */
-	public int getResultCount()
-	{
-		return results.size();
 	}
 
 	/* Returns the name of the search. Used as the node name in tree models.

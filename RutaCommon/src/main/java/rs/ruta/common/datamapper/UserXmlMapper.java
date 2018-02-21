@@ -169,7 +169,7 @@ public class UserXmlMapper extends XmlMapper<User>
 		}
 	}
 
-	@Override
+/*	@Override
 	public String registerUser(String username, String password) throws DetailException
 	{
 		String secretKey = null;
@@ -217,10 +217,10 @@ public class UserXmlMapper extends XmlMapper<User>
 			}
 		}
 		return secretKey;
-	}
+	}*/
 
 	@Override
-	public String newRegisterUser(String username, String password, PartyType party) throws DetailException
+	public String registerUser(String username, String password, PartyType party) throws DetailException
 	{
 		String secretKey = null;
 		DatabaseTransaction transaction = (DatabaseTransaction) openTransaction();

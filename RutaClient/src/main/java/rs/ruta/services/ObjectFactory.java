@@ -51,7 +51,6 @@ public class ObjectFactory {
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
     private final static QName _UnfollowParty_QNAME = new QName("http://ruta.rs/services", "UnfollowParty");
     private final static QName _InsertImageResponse_QNAME = new QName("http://ruta.rs/services", "InsertImageResponse");
-    private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
     private final static QName _FollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "FollowPartyResponse");
     private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
     private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
@@ -97,7 +96,6 @@ public class ObjectFactory {
     private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _PartyID_QNAME = new QName("urn:rs:ruta:services", "PartyID");
-    private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
     private final static QName _DatabaseOperation_QNAME = new QName("urn:rs:ruta:services", "DatabaseOperation");
     private final static QName _DeleteDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocument");
     private final static QName _FollowParty_QNAME = new QName("http://ruta.rs/services", "FollowParty");
@@ -331,14 +329,6 @@ public class ObjectFactory {
      */
     public FollowParty createFollowParty() {
         return new FollowParty();
-    }
-
-    /**
-     * Create an instance of {@link RegisterUser }
-     * 
-     */
-    public RegisterUser createRegisterUser() {
-        return new RegisterUser();
     }
 
     /**
@@ -590,14 +580,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RegisterUserResponse }
-     * 
-     */
-    public RegisterUserResponse createRegisterUserResponse() {
-        return new RegisterUserResponse();
-    }
-
-    /**
      * Create an instance of {@link FindAllBugReports }
      * 
      */
@@ -808,15 +790,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertImageResponse")
     public JAXBElement<InsertImageResponse> createInsertImageResponse(InsertImageResponse value) {
         return new JAXBElement<InsertImageResponse>(_InsertImageResponse_QNAME, InsertImageResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUserResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUserResponse")
-    public JAXBElement<RegisterUserResponse> createRegisterUserResponse(RegisterUserResponse value) {
-        return new JAXBElement<RegisterUserResponse>(_RegisterUserResponse_QNAME, RegisterUserResponse.class, null, value);
     }
 
     /**
@@ -1222,15 +1195,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "PartyID")
     public JAXBElement<PartyID> createPartyID(PartyID value) {
         return new JAXBElement<PartyID>(_PartyID_QNAME, PartyID.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUser }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUser")
-    public JAXBElement<RegisterUser> createRegisterUser(RegisterUser value) {
-        return new JAXBElement<RegisterUser>(_RegisterUser_QNAME, RegisterUser.class, null, value);
     }
 
     /**

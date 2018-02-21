@@ -13,6 +13,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.CatalogueSearchCriterion;
 
 public class SearchDialog extends JDialog
@@ -43,12 +45,12 @@ public class SearchDialog extends JDialog
 
 	private boolean searchPressed; // true if the sign up button were pressed
 
+	@SuppressWarnings("unchecked")
 	public SearchDialog(ClientFrame owner)
 	{
 		super(owner, true);
 		setResizable(false);
 		searchPressed = false;
-		//partyName = partyCompanyID = partyClassCode = partyCity = partyCountry = null;
 
 		criterion = new CatalogueSearchCriterion();
 		setSize(500, 420);
@@ -110,6 +112,10 @@ public class SearchDialog extends JDialog
 			search.setCriterion(criterion);
 			search.setSearchName(searchName);
 			search.setTimestamp();
+			if(criterion.isCatalogueSearchedFor())
+				((Search<CatalogueType>) search).setResultType(CatalogueType.class);
+			else
+				((Search<PartyType>) search).setResultType(PartyType.class);
 
 			setVisible(false);
 		});

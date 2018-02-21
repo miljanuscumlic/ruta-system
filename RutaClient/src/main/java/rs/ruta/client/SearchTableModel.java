@@ -27,7 +27,7 @@ public abstract class SearchTableModel<T> extends AbstractTableModel
 	@Override
 	public int getRowCount()
 	{
-		return search.size();
+		return search.getResultCount();
 	}
 
 	@Override

@@ -227,7 +227,8 @@ public class CDR implements Server
 		}
 	}
 
-	@Override
+/*	@Override
+	@Deprecated
 	@WebMethod
 	public String registerUser(String username, String password) throws RutaException
 	{
@@ -242,17 +243,17 @@ public class CDR implements Server
 			processException(e, "Party could not be registered with the CDR service!");
 		}
 		return secretKey;
-	}
+	}*/
 
 	@Override
 	@WebMethod
-	public String newRegisterUser(String username, String password, PartyType party) throws RutaException
+	public String registerParty(String username, String password, PartyType party) throws RutaException
 	{
 		String secretKey = null;
 		try
 		{
 			init();
-			secretKey = (String) mapperRegistry.getMapper(User.class).newRegisterUser(username, password, party);
+			secretKey = (String) mapperRegistry.getMapper(User.class).registerUser(username, password, party);
 			docBoxPool.submit(() ->
 			{
 				try
@@ -409,13 +410,13 @@ public class CDR implements Server
 		{
 			processException(e, "Query could not be processed by CDR service!");
 		}
-		return searchResult != null && searchResult.size() != 0 ? searchResult : null;
+		return searchResult;
 	}
 
 	@Override
 	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException
 	{
-		List<CatalogueType> searchResult = new ArrayList<>();
+		List<CatalogueType> searchResult = null;
 		try
 		{
 			init();
@@ -425,13 +426,13 @@ public class CDR implements Server
 		{
 			processException(e, "Query could not be processed by CDR service!");
 		}
-		return searchResult.size() != 0 ? searchResult : null;
+		return searchResult;
 	}
 
 	@Override
 	public List<BugReport> searchBugReport(BugReportSearchCriterion criterion) throws RutaException
 	{
-		List<BugReport> searchResult = new ArrayList<>();
+		List<BugReport> searchResult = null;
 		try
 		{
 			init();
@@ -441,7 +442,7 @@ public class CDR implements Server
 		{
 			processException(e, "Query could not be processed by CDR service!");
 		}
-		return searchResult.size() != 0 ? searchResult : null;
+		return searchResult;
 	}
 
 	@Override
