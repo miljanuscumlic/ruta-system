@@ -761,7 +761,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			File file = attachment.getFile();
+			File file = attachment.createFile("");
 			String id =  mapperRegistry.getMapper(BugReport.class).createID();
 			mapperRegistry.getMapper(BugReport.class).insert(file, id, transaction);
 		}

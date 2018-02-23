@@ -3,7 +3,9 @@ package rs.ruta.common;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 
 import javax.activation.DataHandler;
@@ -124,22 +126,22 @@ public class ReportAttachment
         dataHandler = new DataHandler(fileDataSource);
 	}
 
-	/**Constructs a file representing the {@code ReportAttachment}.
-	 * @return a file
-	 * @throws IOException if file coud not be constructed
+	/**Creates a {@link File} representing the {@code ReportAttachment} writing it to a file system.
+	 * @param filePath path of the file in the file system
+	 * @return created {@code File}
+	 * @throws IOException if file could not be opened or created, or data could be read from the source or written to a file
 	 */
-	public File getFile() throws IOException
+	public File createFile(String filePath) throws IOException
 	{
-		File file = new File(name);
-		BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(file));
-		BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
-		byte buffer[] = new byte[1024];
-		int n = 0;
-		while((n = bin.read(buffer)) != -1)
-			bout.write(buffer, 0, n);
-		bin.close();
-		bout.close();
-
+		File file = new File(filePath);
+		try(BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(file));
+				BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream()))
+		{
+			byte buffer[] = new byte[1024];
+			int n = 0;
+			while((n = bin.read(buffer)) != -1)
+				bout.write(buffer, 0, n);
+		}
 		return file;
 	}
 
@@ -205,4 +207,5 @@ public class ReportAttachment
 	{
 		this.dataHandler = dataHandler;
 	}
+
 }

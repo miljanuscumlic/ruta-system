@@ -3,39 +3,19 @@
 	xmlns:env="http://www.w3.org/2003/05/soap-envelope">
 	<env:Header>
 		<Credentials xmlns="http://ruta.rs/credentials">
-			<Username xmlns="">nova</Username>
-			<Timestamp xmlns="">21-02-2018T20:55:19Z</Timestamp>
-			<Signature xmlns="">tGDFfQBqDjq7ThboCN81faiJgMmW81nZWpW/ZbJ/cdY=
+			<Username xmlns="">ruta</Username>
+			<Timestamp xmlns="">22-02-2018T09:06:06Z</Timestamp>
+			<Signature xmlns="">rw+uxEE1UA1P+DJ6Bh4FCZm/keKkUVPAN0vkFtRNU40=
 			</Signature>
 		</Credentials>
 	</env:Header>
 	<S:Body>
-		<ns7:UpdateParty xmlns:ns2="urn:rs:ruta:common"
+		<ns7:FindBugReport xmlns:ns2="urn:rs:ruta:common"
 			xmlns:ns3="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
 			xmlns:ns4="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
 			xmlns:ns5="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
 			xmlns:ns6="urn:rs:ruta:services" xmlns:ns7="http://ruta.rs/services">
-			<arg0>nova</arg0>
-			<arg1>
-				<ns4:PartyIdentification>
-					<ns3:ID>f01c5ca5-8e2f-4a51-b0d1-63c62f577610</ns3:ID>
-				</ns4:PartyIdentification>
-				<ns4:PartyName>
-					<ns3:Name>Nova</ns3:Name>
-				</ns4:PartyName>
-				<ns4:PartyLegalEntity>
-					<ns3:RegistrationName>Nova d.o.o.</ns3:RegistrationName>
-					<ns3:CompanyID>9890</ns3:CompanyID>
-					<ns4:RegistrationAddress>
-						<ns3:StreetName>oioi</ns3:StreetName>
-						<ns3:BuildingNumber>9</ns3:BuildingNumber>
-						<ns3:CityName>iuiuo</ns3:CityName>
-						<ns4:Country>
-							<ns3:Name>iuiuo</ns3:Name>
-						</ns4:Country>
-					</ns4:RegistrationAddress>
-				</ns4:PartyLegalEntity>
-			</arg1>
-		</ns7:UpdateParty>
+			<arg0>1</arg0>
+		</ns7:FindBugReport>
 	</S:Body>
 </S:Envelope>

@@ -225,7 +225,7 @@ public class ClientFrame extends JFrame
 		importDataItem.addActionListener(event ->
 		{
 			int option = JOptionPane.showConfirmDialog(ClientFrame.this,
-					"By importing data from a external file all you local data will be overriden!\nDo you want to proceed?", "Warning message",
+					"By importing the data from an external file all you local data will be overriden!\nDo you want to proceed?", "Warning message",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(option == JOptionPane.YES_OPTION)
 			{
@@ -281,7 +281,7 @@ public class ClientFrame extends JFrame
 				//exporting data
 				try
 				{
-					//file must be created because MyPartyXMLFileMapper would throw an exception if it doesn't exist
+					//file must be created because MyPartyXMLFileMapper would throw an exception if file doesn't exist
 					final Path path = Paths.get(filePath);
 					if(Files.notExists(path))
 						Files.createFile(path);
@@ -503,8 +503,8 @@ public class ClientFrame extends JFrame
 					EventQueue.invokeLater(() ->
 					{
 						int option = JOptionPane.showConfirmDialog(ClientFrame.this,
-								"By deleting your catalogue from the CDR all your followers\nwill be notified about the catalogue deletion. Do you want to proceed?", "Warning message",
-								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+								"By deleting your catalogue from the CDR all your followers\nwill be notified about the catalogue deletion. Do you want to proceed?",
+								"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if(option == JOptionPane.YES_OPTION)
 						{
 							disableCatalogueMenuItems();

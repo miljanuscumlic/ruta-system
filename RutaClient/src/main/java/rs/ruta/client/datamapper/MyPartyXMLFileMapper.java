@@ -69,13 +69,13 @@ public class MyPartyXMLFileMapper<T> extends XMLFileMapper<T>
 		Marshaller m = jc.createMarshaller();
 
 		// marshal a tree of Java content objects to a file
-		try
+		try(FileOutputStream fos = new FileOutputStream(filePath))
 		{
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			//m.marshal(element, System.out);
-			m.marshal(element, new FileOutputStream(filePath));
+			m.marshal(element, fos);
 		}
-		catch (FileNotFoundException e)
+		catch (IOException e)
 		{
 			System.out.println("Could not open document file " + filePath);
 		}

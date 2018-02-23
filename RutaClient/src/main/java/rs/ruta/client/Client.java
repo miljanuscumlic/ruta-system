@@ -1772,7 +1772,7 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			future = port.searchBugReportAsync(criterion, futureResult -> { });
+			future = port.searchBugReportAsync(criterion, futureResult -> { }); //MMM: replace the futureResult with null
 			frame.appendToConsole("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response...",
 					Color.BLACK);
 		}
@@ -1817,7 +1817,7 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			future = port.addBugReportCommentAsync(id, comment, futureREsult -> { });
+			future = port.addBugReportCommentAsync(id, comment, futureResult -> { });
 			frame.appendToConsole("Comment has been sent to the CDR service. Waiting for a response...", Color.BLACK);
 		}
 		catch(WebServiceException e)

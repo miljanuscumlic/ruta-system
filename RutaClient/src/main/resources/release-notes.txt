@@ -26,6 +26,9 @@ Bug fixes:
 - Fixed bug not allowing nodes in the tree view of Parties to have the same name.
 - Fixed bug where My Party dialog did not except last cell edit when OK button had been pressed right after the cell editing.
 - Fixed bug where My Products table did not except last cell edit when focus had been transferred to some GUI component other than the table right after the cell editing.
+- Fixed bug not being anble to delete export file while the application is running.
+- Fixed bug saving a copy of bug report's attachment also to the user.directory whatever destination directory is chosen.
+- Fixed bug not closing information dialog about waiting a response upon Bug report retrieval request in a case when that request fails.
 - Fixed some minor bugs.
 
 --------------------
