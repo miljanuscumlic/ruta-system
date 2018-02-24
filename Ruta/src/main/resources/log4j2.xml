@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Properties>
+    	<Property name ="logs">C:\Program Files\wildfly-10.1.0.Final\standalone\log</Property>
+        <Property name="rollover.max.size">10MB</Property>
+        <Property name="rollover.max">14</Property>
+        <Property name="rollover.file.pattern">%d{yyyyMMddHHmmss}</Property>
+        <Property name="ruta.version">0.2.0-SNAPSHOT</Property>
+        <Property name="ruta.file.pattern">%d [%t] %-5p (%F [%M]:%L) - %m %n</Property>
+    </Properties>
+    
+    <Appenders>
+        
+        <Console name="STDOUT">
+            <PatternLayout pattern="%d{DATE} [%t] %-5p (%F [%M]:%L) - %m \n"/>
+        </Console>
+        
+        <RollingRandomAccessFile name="ruta.server" filePattern="${logs}\ruta.server.${rollover.file.pattern}.log.gz" fileName="${logs}\ruta-server-${ruta.version}.log">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${rollover.max}"/>
+            <PatternLayout pattern="${ruta.file.pattern}"/>
+        </RollingRandomAccessFile>
+        
+    </Appenders>
+    
+    <Loggers>
+    
+    	<!-- Ruta client loggers -->
+    	<Logger name="rs.ruta.server" additivity="false" level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ruta.server"/>
+        </Logger>
+        
+        <Logger name="rs.ruta.common" additivity="false" level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ruta.server"/>
+        </Logger>
+        
+        <Logger name="rs.ruta.common.datamapper" additivity="false" level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ruta.server"/>
+        </Logger>
+        
+        <!-- END Ruta client loggers -->
+        
+        <Root level="info">
+            <AppenderRef ref="ruta.server"></AppenderRef>
+        </Root>
+        
+    </Loggers>
+    
+</Configuration>

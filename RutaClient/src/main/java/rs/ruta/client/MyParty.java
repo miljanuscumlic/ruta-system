@@ -822,7 +822,7 @@ public class MyParty extends BusinessParty
 		myFollowingParty = myPartyCopy;*/
 
 		myFollowingParty = new MyParty();
-		//copying name value because it is neccessary for the tre node display
+		//copying name value because it is necessary for the tree node display //MMM: check why this is necessary
 		Party myFollowingCoreParty = new Party();
 		myFollowingCoreParty.setPartySimpleName(getPartySimpleName());
 		myFollowingParty.setCoreParty(myFollowingCoreParty);

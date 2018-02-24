@@ -369,8 +369,12 @@ public class Client implements RutaNode
 							myParty.setPassword(password);
 							myParty.setSecretKey(key);
 							myParty.setDirtyMyParty(false);
-							frame.appendToConsole("My Party has been successfully registered with the CDR service."
-									+ " Please synchronise My Catalogue with the CDR service to be able to use it.", Color.GREEN);
+							myParty.followMyself();
+							frame.appendToConsole("My Party has been added to the Following parties.", Color.BLACK);
+							frame.appendToConsole("My Party has been successfully registered with the CDR service and" +
+									" has been added to the Following parties.", Color.GREEN);
+							frame.appendToConsole("Please update My Catalogue on the CDR service for everyone to be able to see your products.",
+									Color.GREEN);
 						}
 						catch(Exception e)
 						{
@@ -400,7 +404,7 @@ public class Client implements RutaNode
 	 * Synchronise My Party data with the CDR service. Method sends the data
 	 * if they have been changed since the last synchronisation.
 	 */
-	//MMM: with the new registration process there is no difference with the insert and update of the Party on the client side
+	//MMM: with the new registration process there is no difference with the insert and update of the Party on the client side - theay are the same!!!
 	public void cdrSynchroniseMyParty()
 	{
 		cdrUpdateMyParty();
@@ -420,8 +424,7 @@ public class Client implements RutaNode
 			{
 				try
 				{
-					InsertPartyResponse res = futureParty.get();
-					String partyID = res.getReturn();
+					futureParty.get();
 					myParty.setDirtyMyParty(false);
 					frame.appendToConsole("My Party has been successfully synchronised with the CDR service.", Color.GREEN);
 				}
@@ -456,7 +459,7 @@ public class Client implements RutaNode
 			{
 				try
 				{
-					UpdatePartyResponse response = future.get();
+					future.get();
 					myParty.setDirtyMyParty(false);
 					frame.appendToConsole("My Party has been successfully updated with the CDR service.", Color.GREEN);
 				}
@@ -479,8 +482,9 @@ public class Client implements RutaNode
 		}
 	}
 
-	/**Deregister My Party from the CDR service. All documents corresponding to the My Party deposited in the CDR database
-	 * are deleted from the CDR service.
+	/**
+	 * Deregister My Party from the CDR service. All documents corresponding to the My Party deposited in the CDR database
+	 * are retrieved from the CDR service prior the deregistration.
 	 */
 	public void cdrDeregisterMyParty()
 	{
@@ -494,6 +498,7 @@ public class Client implements RutaNode
 		{
 			logger.error("Unable to make sequental calls of the CDR service.", e);
 		}
+
 		try
 		{
 			final Server port = getCDRPort();
@@ -537,10 +542,12 @@ public class Client implements RutaNode
 		}
 	}
 
-	/**Synchronise Catalogue with the CDR service. If catalogue is empty calls deleteCatalogue method.
+	/**
+	 * Synchronise Catalogue with the CDR service. If catalogue is empty calls deleteCatalogue method.
 	 * Method sends the catalogue if it is nonempty and has been changed since the last synchronisation
 	 * with the CDR service.
 	 */
+	//MMM: insert and update of My Catalogue is now effectively the same, accept the insertMyCatalogue boolean variable which is not used anymore - should be deleted - check this
 	void cdrSynchroniseMyCatalogue()
 	{
 		if(myParty.isInsertMyCatalogue() == true) //first time sending catalogue
@@ -585,9 +592,7 @@ public class Client implements RutaNode
 							frame.appendToConsole("My Catalogue has been successfully deposited to the CDR service.", Color.GREEN);
 							myParty.setDirtyCatalogue(false);
 							myParty.setInsertMyCatalogue(false);
-							myParty.followMyself();
 							frame.repaintTabbedPane(); //MMM: shoould be called method for repainting whole frame - to be implemented
-							frame.appendToConsole("My Party has been added to the Following parties.", Color.BLACK);
 						}
 						catch(Exception e)
 						{
@@ -662,7 +667,6 @@ public class Client implements RutaNode
 					myParty.setCatalogue(catalogue);
 					Server port = getCDRPort();
 					String username = myParty.getUsername();
-
 					port.updateCatalogueAsync(username, catalogue, future ->
 					{
 						try
