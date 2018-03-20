@@ -261,7 +261,8 @@ public class BugReportDialog extends JDialog
 		panel.add(comp, con);
 	}
 
-	/**Clears all fields that are frequently changed in the dialog. Come may stay like OS, Java etc.
+	/**
+	 * Clears all fields that are frequently changed in the dialog. Some may stay untouched like OS, Java etc.
 	 */
 	public void clearData()
 	{

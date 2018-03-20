@@ -15,12 +15,12 @@ public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 //	private static String FILENAME = "client-products.dat";
 
 //	private Client client;
-	private BusinessParty businessParty;
+	private MyParty myParty;
 
-	public ItemTypeBinaryFileMapper(BusinessParty businessParty, String filename)
+	public ItemTypeBinaryFileMapper(MyParty myParty, String filename)
 	{
 		super(filename);
-		this.businessParty = businessParty;
+		this.myParty = myParty;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 /*		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename)))
 		{
 			long res = findLong();
-			businessParty.setCatalogueID(res);
+			myParty.setCatalogueID(res);
 			//client.setCatalogueID((Long) input.readObject());
 		}
 		catch(IOException e)
@@ -55,11 +55,11 @@ public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(filename)))
 		{
-/*			long catID = businessParty.getCatalogueID(); // Catalogue ID number
+/*			long catID = myParty.getCatalogueID(); // Catalogue ID number
 			output.writeObject(catID);*/
-			ArrayList<ItemType> list = businessParty.getProducts();
+			ArrayList<Item> list = (ArrayList<Item>) myParty.getProducts();
 			for(int i = 0; i < list.size(); i++ )
-				output.writeObject(new Product(businessParty, i)); // writing data to the file
+				output.writeObject(new Product(myParty, i)); // writing data to the file
 		}
 		catch (Exception e)
 		{
@@ -178,17 +178,17 @@ return new Person(id, lastNameArg, firstNameArg, numDependentsArg);
 		private String commodityCode;
 		private List<KeywordType> keywords;
 
-		public Product(BusinessParty businessParty, int index)
+		public Product(MyParty myParty, int index)
 		{
 			mapID = nextID++;
-			name = businessParty.getProductNameAsString(index);
+			name = myParty.getProductNameAsString(index);
 			//id = Long.valueOf(client.getProductID(index));
-			id = businessParty.getProductIDAsString(index);
-			description = businessParty.getProductDescriptionAsString(index);
-			packSize = businessParty.getProductPackSizeAsBigDecimal(index);
-			barcode = businessParty.getProductBarcodeAsString(index);
-			commodityCode = businessParty.getProductCommodityCodeAsString(index);
-			keywords = businessParty.getProductKeywords(index);
+			id = myParty.getProductIDAsString(index);
+			description = myParty.getProductDescriptionAsString(index);
+			packSize = myParty.getProductPackSize(index);
+			barcode = myParty.getProductBarcodeAsString(index);
+			commodityCode = myParty.getProductCommodityCodeAsString(index);
+			keywords = myParty.getProductKeywords(index);
 		}
 
 		public String getId() { return id; }

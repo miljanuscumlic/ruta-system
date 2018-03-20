@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="OperationType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="BackupCollectionPath" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="BackupDocumentName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="User" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="RutaUser" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
     "operationType",
     "backupCollectionPath",
     "backupDocumentName",
-    "user"
+    "rutaUser"
 })
 @XmlSeeAlso({
     DatabaseOperation.class,
@@ -57,8 +57,8 @@ public abstract class ExistOperation {
     protected String backupCollectionPath;
     @XmlElement(name = "BackupDocumentName")
     protected String backupDocumentName;
-    @XmlElement(name = "User")
-    protected String user;
+    @XmlElement(name = "RutaUser")
+    protected String rutaUser;
 
     /**
      * Gets the value of the originalCollectionPath property.
@@ -181,27 +181,27 @@ public abstract class ExistOperation {
     }
 
     /**
-     * Gets the value of the user property.
+     * Gets the value of the rutaUser property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUser() {
-        return user;
+    public String getRutaUser() {
+        return rutaUser;
     }
 
     /**
-     * Sets the value of the user property.
+     * Sets the value of the rutaUser property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUser(String value) {
-        this.user = value;
+    public void setRutaUser(String value) {
+        this.rutaUser = value;
     }
 
 }

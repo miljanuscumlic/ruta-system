@@ -27,6 +27,11 @@ public class SearchTreeModel extends DefaultTreeModel
 		setAsksAllowsChildren(true);
 	}
 
+	public MyParty getParty()
+	{
+		return party;
+	}
+
 	private TreeNode populateTree()
 	{
 /*		Comparator<BusinessParty> partyNameComparator = (first, second)  ->

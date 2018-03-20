@@ -158,7 +158,7 @@
 								<manifest>
 									<addClasspath>true</addClasspath>
 									<classpathPrefix></classpathPrefix>
-									<mainClass>rs.ruta.client.ClientTest</mainClass>
+									<mainClass>rs.ruta.client.RutaClientTest</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
@@ -181,7 +181,7 @@
 							<archive>
 								<manifest>
 									<addClasspath>true</addClasspath>
-									<mainClass>rs.ruta.client.ClientTest</mainClass>
+									<mainClass>rs.ruta.client.RutaClientTest</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>

@@ -22,7 +22,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	final private static String queryNameSearchID = "search-id.xq";
 	final private static String queryNameSearchPartyID = "search-party-id.xq";
 
-	public PartyIDXmlMapper(ExistConnector connector) throws DetailException
+	public PartyIDXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 	}
@@ -60,10 +60,10 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 	{
 		String id = object.getPartyID();
 		if(id == null && username != null)
-			id = ((UserXmlMapper) mapperRegistry.getMapper(rs.ruta.common.User.class)).findPartyID(username);
+			id = ((UserXmlMapper) mapperRegistry.getMapper(rs.ruta.common.RutaUser.class)).findPartyID(username);
 
 /*		if(username != null)
-			id = ((UserXmlMapper) mapperRegistry.getMapper(rs.ruta.common.User.class)).findPartyID(username);
+			id = ((UserXmlMapper) mapperRegistry.getMapper(rs.ruta.common.RutaUser.class)).findPartyID(username);
 		if(id == null)
 			id = createID();*/
 		return id;
@@ -124,7 +124,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
 		}
 		finally
 		{
@@ -196,7 +196,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
 		}
 		finally
 		{

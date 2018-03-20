@@ -49,6 +49,7 @@ import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.RutaVersion;
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
@@ -59,6 +60,7 @@ import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.MapperRegistry;
 import rs.ruta.services.*;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.PartySearchCriterion;
 
 public class Client implements RutaNode
 {
@@ -110,7 +112,7 @@ public class Client implements RutaNode
 		ExistConnector connector = new LocalExistConnector();
 		new ClientMapperRegistry(); //just to initialize the registry. No reference needed later.
 		//		MapperRegistry.initialize(mapperRegistry);
-		partyDataMapper = new MyPartyExistMapper(Client.this, connector);
+		partyDataMapper = new MyPartyExistMapper(this, connector);
 
 		addShutDownHook();
 	}
@@ -134,7 +136,8 @@ public class Client implements RutaNode
 		}
 	}
 
-	/**If not already initialized in the preInitialize method, shows dialog for inputing Party data.
+	/**
+	 * If not already initialized in the {@link #preInitialize} method, shows dialog for inputing {@code Party} data.
 	 */
 	public void initialize()
 	{
@@ -365,9 +368,9 @@ public class Client implements RutaNode
 						{
 							NewRegisterUserResponse response = futureUser.get();
 							String key = response.getReturn();
-							myParty.setUsername(username);
-							myParty.setPassword(password);
-							myParty.setSecretKey(key);
+							myParty.setCDRUsername(username);
+							myParty.setCDRPassword(password);
+							myParty.setCDRSecretKey(key);
 							myParty.setDirtyMyParty(false);
 							myParty.followMyself();
 							frame.appendToConsole("My Party has been added to the Following parties.", Color.BLACK);
@@ -420,7 +423,7 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			port.insertPartyAsync(myParty.getUsername(), myParty.getCoreParty(), futureParty ->
+			port.insertPartyAsync(myParty.getCDRUsername(), myParty.getCoreParty(), futureParty ->
 			{
 				try
 				{
@@ -455,7 +458,7 @@ public class Client implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			port.updatePartyAsync(myParty.getUsername(), myParty.getCoreParty(), future ->
+			port.updatePartyAsync(myParty.getCDRUsername(), myParty.getCoreParty(), future ->
 			{
 				try
 				{
@@ -503,7 +506,7 @@ public class Client implements RutaNode
 		{
 			final Server port = getCDRPort();
 			final DeregistrationNotice notice = new DeregistrationNotice(myParty.getCoreParty());
-			port.deregisterUserAsync(myParty.getUsername(), notice, future ->
+			port.deregisterUserAsync(myParty.getCDRUsername(), notice, future ->
 			{
 				try
 				{
@@ -511,9 +514,9 @@ public class Client implements RutaNode
 					myParty.setDirtyMyParty(true);
 					myParty.setDirtyCatalogue(true);
 					myParty.setInsertMyCatalogue(true);
-					myParty.setSecretKey(null);
-					myParty.setUsername(null);
-					myParty.setPassword(null);
+					myParty.setCDRSecretKey(null);
+					myParty.setCDRUsername(null);
+					myParty.setCDRPassword(null);
 					myParty.getCoreParty().setPartyID(null);
 					myParty.setCatalogueID(0);
 					myParty.setCatalogueDeletionID(0);
@@ -548,7 +551,7 @@ public class Client implements RutaNode
 	 * with the CDR service.
 	 */
 	//MMM: insert and update of My Catalogue is now effectively the same, accept the insertMyCatalogue boolean variable which is not used anymore - should be deleted - check this
-	void cdrSynchroniseMyCatalogue()
+	public void cdrSynchroniseMyCatalogue()
 	{
 		if(myParty.isInsertMyCatalogue() == true) //first time sending catalogue
 			cdrInsertMyCatalogue();
@@ -583,7 +586,7 @@ public class Client implements RutaNode
 				{
 					myParty.setCatalogue(catalogue);
 					Server port = getCDRPort();
-					String username = myParty.getUsername();
+					String username = myParty.getCDRUsername();
 					port.insertCatalogueAsync(username, catalogue, future ->
 					{
 						try
@@ -666,7 +669,7 @@ public class Client implements RutaNode
 				{
 					myParty.setCatalogue(catalogue);
 					Server port = getCDRPort();
-					String username = myParty.getUsername();
+					String username = myParty.getCDRUsername();
 					port.updateCatalogueAsync(username, catalogue, future ->
 					{
 						try
@@ -747,14 +750,14 @@ public class Client implements RutaNode
 					if(catalogue != null)
 					{
 						frame.appendToConsole("Catalogue has been successfully retrieved from the CDR service.", Color.GREEN);
-						myFollowingParty.setProducts(catalogue);
+						myFollowingParty.setCatalogue(catalogue);
 					}
 					else
 					{
 						StringBuilder consoleMsg = new StringBuilder("Catalogue does not exist.");
-						if(myFollowingParty.getProductCount() != 0)
+						if(myFollowingParty.getCatalogue().getCatalogueLineCount() != 0)
 						{
-							myFollowingParty.clearProducts();
+							myFollowingParty.getCatalogue().setCatalogueLine(null);
 							consoleMsg.append(" My Catalogue has been removed from My Party in the Following parties.");
 						}
 						frame.appendToConsole(consoleMsg.toString(), Color.GREEN);
@@ -790,7 +793,7 @@ public class Client implements RutaNode
 			CatalogueDeletionType catalogueDeletion = myParty.createCatalogueDeletion(CDRParty);
 
 			Server port = getCDRPort();
-			String username = myParty.getUsername();
+			String username = myParty.getCDRUsername();
 			port.deleteCatalogueAsync(username, catalogueDeletion, future ->
 			{
 				try
@@ -954,7 +957,7 @@ public class Client implements RutaNode
 										downloadCount.incrementAndGet();
 										placeDocBoxDocument(document, docID);
 										frame.repaintTabbedPane();
-										port.deleteDocBoxDocumentAsync(myParty.getUsername(), docID, deleteFuture -> {});
+										port.deleteDocBoxDocumentAsync(myParty.getCDRUsername(), docID, deleteFuture -> {});
 									}
 									else
 										frame.appendToConsole("Document " + docID + " could not be downloaded!", Color.RED);
@@ -1294,7 +1297,7 @@ public class Client implements RutaNode
 	}
 
 	//Method may be used for some testing purposes
-	@Deprecated
+/*	@Deprecated
 	public void cdrSearchParty(CatalogueSearchCriterion criterion)
 	{
 		try
@@ -1337,9 +1340,9 @@ public class Client implements RutaNode
 						SearchCatalogueResponse res = futureResult.get();
 						//handle the Catalogue list
 						List<CatalogueType> results = res.getReturn();
-						/*						for(CatalogueType cat : results)
+												for(CatalogueType cat : results)
 							frame.appendToConsole("Party: " + cat.getProviderParty().getPartyName().get(0).getNameValue() +
-									" items: " + cat.getCatalogueLineCount(), Color.GREEN);*/
+									" items: " + cat.getCatalogueLineCount(), Color.GREEN);
 						final Search<CatalogueType> search = new Search<CatalogueType>(searchName, criterion, results, CatalogueType.class);
 						if(search.getResultCount() != 0)
 						{
@@ -1363,7 +1366,7 @@ public class Client implements RutaNode
 			else // querying only parties
 			{
 				//*******************TEST*************************
-				/*				String query = "declare variable $party-name external := (); \n" +
+								String query = "declare variable $party-name external := (); \n" +
 						"declare variable $party-company-id external := (); \n" +
 						"declare variable $party-class-code external := ();\n" +
 						"declare variable $party-city external := ();\n" +
@@ -1400,7 +1403,7 @@ public class Client implements RutaNode
 							(new StringBuilder("party-country := '").append(partyCountry).append("'")).toString());
 				if(!partyAll)
 					preparedQuery = preparedQuery.replaceFirst("party-all( )+external( )*:=( )*true",
-							(new StringBuilder("party-all := false")).toString());*/
+							(new StringBuilder("party-all := false")).toString());
 
 				//*******************TEST*************************
 				port.searchPartyAsync(criterion, futureResult ->
@@ -1513,7 +1516,7 @@ public class Client implements RutaNode
 			frame.appendToConsole("Search request has not been processed! Server is not accessible. Please try again later.", Color.RED);
 			frame.enableSearchMenuItems();
 		}
-	}
+	}*/
 
 	/**Sends search request to the CDR service.
 	 * @param search {@link Search} object representing the search and results
@@ -1526,10 +1529,10 @@ public class Client implements RutaNode
 		{
 			Server port = getCDRPort();
 			search.setTimestamp();
-			CatalogueSearchCriterion criterion = search.getCriterion();
-			if(criterion.isCatalogueSearchedFor()) //querying parties and catalogues
+			SearchCriterion criterion = search.getCriterion();
+			if(((CatalogueSearchCriterion) criterion).isCatalogueSearchedFor()) //querying parties and catalogues
 			{
-				port.searchCatalogueAsync(criterion, futureResult ->
+				port.searchCatalogueAsync((CatalogueSearchCriterion) criterion, futureResult ->
 				{
 					try
 					{
@@ -1564,7 +1567,7 @@ public class Client implements RutaNode
 			}
 			else // querying only parties
 			{
-				port.searchPartyAsync(criterion, futureResult ->
+				port.searchPartyAsync((PartySearchCriterion) criterion, futureResult ->
 				{
 					try
 					{
@@ -1687,7 +1690,7 @@ public class Client implements RutaNode
 	{
 		try
 		{
-			bug.setReportedBy(myParty.getUsername());
+			bug.setReportedBy(myParty.getCDRUsername());
 			Server port = getCDRPort();
 			port.insertBugReportAsync(bug, futureResult ->
 			{

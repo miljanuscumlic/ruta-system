@@ -55,10 +55,10 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 					QName qname = new QName("http://ruta.rs/credentials", "Credentials");
 					header.addHeaderElement(qname);
 					String timestamp = getTimestamp();
-					String username = myParty.getUsername();
-					String secretKey = myParty.getSecretKey();
+					String username = myParty.getCDRUsername();
+					String secretKey = myParty.getCDRSecretKey();
 					if(username == null || secretKey == null)
-						throw new RuntimeException("User is not registered with the CDR service!");
+						throw new RuntimeException("RutaUser is not registered with the CDR service!");
 					String signature = getSignature(username, timestamp, getBytes(secretKey));
 					Node firstChild = header.getFirstChild();
 					append(firstChild, "Username", username);

@@ -16,14 +16,16 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 
-/**Class containig the list of follower UUIDs of all Parties that follow the {@code Party}.
+/**
+ * Class containig the list of follower UUIDs of all Parties that follow the {@code Party}.
  */
 @XmlRootElement(name = "Followers", namespace = "urn:rs:ruta:common")
 @XmlType(name = "Followers")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Followers
 {
-	/**UUID of the {@code Party} which followers are listed in this class.
+	/**
+	 * UUID of the {@code Party} which followers are listed in this class.
 	 */
 	@XmlElement(name = "PartyID")
 	private String partyID;
@@ -46,7 +48,8 @@ public class Followers
 		return partyID;
 	}
 
-	/**Sets the ID of the {@code Party} which followers are listed in this class.
+	/**
+	 * Sets the ID of the {@code Party} which followers are listed in this class.
 	 * @param PartyID party ID
 	 */
 	public void setPartyID(String PartyID)

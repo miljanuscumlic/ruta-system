@@ -15,15 +15,15 @@ import rs.ruta.client.*;
 
 public class MyPartyXMLFileMapper<T> extends XMLFileMapper<T>
 {
-	private Client client;
+	private MyParty myParty;
 	private String filePath;
 
-	public MyPartyXMLFileMapper(Client client, String filePath) throws Exception
+	public MyPartyXMLFileMapper(MyParty myParty, String filePath) throws Exception
 	{
 		super(filePath);
 		this.filePath = filePath;
 		this.packageList = "rs.ruta.client";
-		this.client = client;
+		this.myParty = myParty;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,7 +93,7 @@ public class MyPartyXMLFileMapper<T> extends XMLFileMapper<T>
 	@Override
 	public T getObject()
 	{
-		return (T) client.getMyParty();
+		return (T) myParty;
 	}
 
 	//MMM: not finished method yet

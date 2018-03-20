@@ -22,6 +22,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
+import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.RutaVersion;
@@ -51,7 +52,7 @@ public interface Server {
     @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
     public Response<SearchPartyResponse> searchPartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueSearchCriterion arg0);
+        PartySearchCriterion arg0);
 
     /**
      * 
@@ -65,7 +66,7 @@ public interface Server {
     @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
     public Future<?> searchPartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueSearchCriterion arg0,
+        PartySearchCriterion arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
         AsyncHandler<SearchPartyResponse> asyncHandler);
 
@@ -82,7 +83,7 @@ public interface Server {
     @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
     public List<PartyType> searchParty(
         @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueSearchCriterion arg0)
+        PartySearchCriterion arg0)
         throws RutaException
     ;
 

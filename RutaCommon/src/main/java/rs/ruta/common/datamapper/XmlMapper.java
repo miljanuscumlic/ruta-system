@@ -5,17 +5,24 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -51,10 +58,11 @@ import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.DataMapper;
 
-/**XmlMapper abstract class maps the domain model used in the Ruta System to the eXist database.
+/**
+ * XmlMapper abstract class maps the domain model used in the Ruta System to the eXist database.
  * Each class of the domain model which objects are deposited and fetched from the database
  * have its own data mapper class derived from the XMLMapper. {@code XmlMapper} subclasses
  * optionally have a cache map of in-memmory objects. But, this cache map is mandatory for
@@ -72,9 +80,9 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 */
 	protected MapperRegistry mapperRegistry;
 
-	public XmlMapper(ExistConnector connector) throws DetailException
+	public XmlMapper(DatastoreConnector connector) throws DetailException
 	{
-		this.connector = connector;
+		this.connector = (ExistConnector) connector;
 		transactionFactory = MapperRegistry.getTransactionFactory();
 		mapperRegistry = MapperRegistry.getInstance();
 		init();
@@ -232,7 +240,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		{
 			object = retrieve(id);
 			if(object != null)
-				putCacheObject(id, object);
+				putCachedObject(id, object);
 		}
 		return object;
 	}
@@ -329,7 +337,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			{
 				String result = (String) resource.getContent();
 				object = (T) unmarshalFromXML(result);
-				putCacheObject(id, object);
+				putCachedObject(id, object);
 			}
 			return object;
 		}
@@ -337,21 +345,24 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			return null;
 	}
 
-	/**Puts the object in the memory. If particular subclass of {@link XmlMapper} has no map of in-memory objects
+	/**
+	 * Puts the object in the memory. If particular subclass of {@link XmlMapper} has no map of in-memory objects
 	 * this method does nothing.
 	 * @param id object's id
 	 * @param object object to be loaded in the memory
 	 */
-	protected void putCacheObject(String id, T object) { }
+	protected void putCachedObject(String id, T object) { }
 
-	/**Gets the object if it is loaded in the memory.
+	/**
+	 * Gets the object if it is loaded in the memory.
 	 * @param id object's id
 	 * @return loaded in-memory object or {@code null} if it is not loaded in the memory or particular subclass
 	 * does not have a map of in-memory objects
 	 */
 	protected T getCachedObject(String id) { return null; }
 
-	/**Removes the object if it is loaded in the memory.
+	/**
+	 * Removes the object if it is loaded in the memory.
 	 * @param id object's id
 	 * @return loaded in-memory object or {@code null} if it is not loaded in the memory or particular subclass
 	 * does not have a map of in-memory objects
@@ -500,7 +511,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its execution.", e);
 		}
 		finally
 		{
@@ -564,7 +575,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its execution.", e);
 		}
 		finally
 		{
@@ -641,7 +652,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its execution.", e);
 		}
 		finally
 		{
@@ -669,7 +680,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	@Deprecated
 	protected String prepareQuery(CatalogueSearchCriterion criterion) throws DatabaseException { return null; }
 
-	/**Binds query with search keywords from the {@link SearchCriterion} object. Query to be
+	/**
+	 * Binds query with search keywords from the {@link SearchCriterion} object. Query to be
 	 * populated is defined in the subclass of {@code XmlMapper}.
 	 * @param criterion search criterion
 	 * @return query as {@code String} ready for execution by xQuery processor or {@code null} if
@@ -728,18 +740,20 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 
 	protected abstract Class<?> getObjectClass();
 
-	/**Gets the name of the package that contains object's class. The object and class in question are ones that
-	 * {@ code XmlMapper} subclass is mapping to the XML.
+	/**
+	 * Gets the name of the package that contains object's class. The object and the class in question are ones that
+	 * {@code XmlMapper} subclass is mapping to the XML.
 	 * @return name of the package
 	 */
 	protected abstract String getObjectPackageName();
 
-	/**Hook method called from other methods from {@code XmlMapper} class.
-	 * Creates unique ID for an object along doing some subclass specific checks, preparations or modifications.
-	 * This method defines default behaviour which is obtaining the ID by retriving it based on the user's username
-	 * or creating the new one if the username is {@code null}. Username must be {@code null} if it is desired to
+	/**
+	 * Hook method called from other methods from {@code XmlMapper} class.
+	 * <p>Creates unique ID for an object along doing some subclass specific checks, preparations or modifications.
+	 * This method defines default behaviour which is obtaining the ID by retriving its value based on the user's username
+	 * or creating a new one if the username is {@code null}. Username must be {@code null} if it is desired to
 	 * generate a new ID, and not to use the one associated with the username. This behaviour is overidden by subclass
-	 * if it has a need for a specific procedures before or after it creates/retrieves an ID.
+	 * if it has a need for a specific procedures before or after it creates/retrieves an ID.</p>
 	 * @param object object which ID should be generated
 	 * @param username user's username which is the object
 	 * @param transaction transaction object
@@ -805,11 +819,31 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}*/
 
 	@Override
+	public void insertAll(String username, List<T> list) throws DetailException
+	{
+		DSTransaction transaction = openTransaction();
+		//synchronized on transaction because some other thread could potentially invoke rollbackAll
+		//method and try to rollback this transaction before it is commited (closed) by this call
+		synchronized(transaction)
+		{
+			try
+			{
+				for(T object : list)
+					insert(username, object, transaction);
+			}
+			finally
+			{
+				closeTransaction(transaction);
+			}
+		}
+	}
+
+	@Override
 	public String insert(String username, T object) throws DetailException
 	{
 		DSTransaction transaction = openTransaction();
 		//synchronized on transaction because some other thread could potentially invoke rollbackAll
-		//method and rollback this transaction before it is commited (closed)
+		//method and try to rollback this transaction before it is commited (closed) by this call
 		synchronized(transaction)
 		{
 			try
@@ -823,7 +857,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Inserts object into the database.
+	/**
+	 * Inserts object into the database.
 	 * @param username user's username
 	 * @param object object to be inserted
 	 * @param transaction transaction object
@@ -843,17 +878,17 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			if(id != null)
 			{
 				insert(collection, object, id, (DatabaseTransaction) transaction);
-				putCacheObject(id, object); //subclass's hook operation
+				putCachedObject(id, object); //subclass's hook operation
 			}
 			else
-				throw new DatabaseException("Object's Id could not be found.");
+				throw new DatabaseException("Object's ID could not be found.");
 		}
 		catch(XMLDBException e)
 		{
 			rollbackTransaction(transaction);
 			throw new DatabaseException("The collection could not be retrieved.", e);
 		}
-		catch(DetailException e)
+		catch(/*DetailException*/Exception e)
 		{
 			//logger.error("Exception is ", e); //commented because it is logged upper in the call hierarchy
 			rollbackTransaction(transaction);
@@ -916,7 +951,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 				if(id != null)
 				{
 					insert(collection, object, id, (DatabaseTransaction) transaction);
-					putCacheObject(id, object); //subclass's hook operation
+					putCachedObject(id, object); //subclass's hook operation
 				}
 				else
 					throw new DatabaseException("Object's ID could not be found");
@@ -926,7 +961,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 				rollbackTransaction(transaction);
 				throw new DatabaseException("The collection could not be retrieved.", e);
 			}
-			catch(DetailException e)
+			catch(/*DetailException*/ Exception e)
 			{
 				logger.error("Exception is ", e);
 				rollbackTransaction(transaction);
@@ -1188,7 +1223,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	/**Gets the collection from the database as a database admin. Retrieved collection is defined
-	 * in the subclass of the {@ code XmlMapper}.
+	 * in the subclass of the {@code XmlMapper}.
 	 * @return a {@code Collection} instance for the requested collection or {@code null} if the collection could not be found
 	 * @throws XMLDBException if there was an database connectivity issue
 	 */
@@ -1213,7 +1248,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	/**Gets the collection from the database as a specified user. Collection that is retrieved
-	 * is defined in the subclasses of the {@ code XmlMapper}.
+	 * is defined in the subclasses of the {@code XmlMapper}.
 	 * @return a {@code Collection} instance for the requested collection or {@code null} if the collection could not be found
 	 * @throws XMLDBException if there was an database connectivity issue
 	 */
@@ -1224,7 +1259,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	/**Gets the base collection where are placed deleted documents as a database admin.
-	 * Retrieved base collection is defined in the subclasses of the {@ code XmlMapper}.
+	 * Retrieved base collection is defined in the subclasses of the {@code XmlMapper}.
 	 * @return a {@code Collection} instance for the base deleted collection or {@code null} if the collection could not be found
 	 * @throws XMLDBException if there was an database connectivity issue
 	 */
@@ -1247,7 +1282,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return collection;
 	}
 
-	/**Deletes {@link Collection}.
+	/**
+	 * Deletes {@link Collection}.
 	 * @param collection collection to be deleted
 	 * @throws XMLDBException if collection could not be deleted or parent collection could not be closed
 	 */
@@ -1324,6 +1360,23 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
+	@Override
+	public void deleteAll() throws DetailException
+	{
+		try
+		{
+			final Collection collection = getCollection();
+			if(collection != null) // otherwise data is already deleted which is OK, not an exception
+				deleteCollection(collection);
+		}
+		catch (XMLDBException e)
+		{
+			logger.error("Database collection " + getCollectionPath() + " could not be deleted", e);
+			throw new DatabaseException("Data could not be deleted", e);
+		}
+
+	}
+
 	/**Copies resource representing original xml document to the pertinent subcollection of /deleted collection.
 	 * @param resource resource representing the original document to be copied
 	 * @param transaction transaction inside which this copying is happening
@@ -1385,7 +1438,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Opens xml document from the database collection which path and name are passed as the arguments.
+	/**
+	 * Opens xml document from the database collection which path and name are passed as the arguments.
 	 * Method does not use transactions.
 	 * @param collectionPath path of collection relative to the main collection of the Ruta application in which the document resides
 	 * @param documentName document name
@@ -1393,7 +1447,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * if the document does not exist
 	 * @throws DatabaseException if collection or document could not ber opened
 	 */
-	protected String openXmlDocument(String collectionPath, String documentName) throws DatabaseException
+	protected String openXmlDocument(String collectionPath, @Nonnull String documentName) throws DatabaseException
 	{
 		String result = null;
 		Collection collection = null;
@@ -1799,20 +1853,16 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	@Override
-	public void insertAll() throws DetailException
-	{
-		// TODO Auto-generated method stub
-	}
-
-	/**Returns relative path of the collection that stores documents. The path to the collection is defined in
+	/**
+	 * Returns relative path of the collection that stores documents. The path to the collection is defined in
 	 * the subclass of the {@code XMLMapper} and is relative to the {@code ExistConnector#rutaCollectionPath} field
 	 * which is the relative path of the main collection od the Ruta application.
 	 * @return {@code String} that represents relative path of the collection
 	 */
 	protected abstract String getCollectionPath();
 
-	/**Returns relative path of the collection. The path is relative to the base application collection.
+	/**
+	 * Returns relative path of the collection. The path is relative to the base application collection.
 	 * @param collection {@code Collection} instance
 	 * @return {@code String} that represents relative path of the collection
 	 */
@@ -1822,8 +1872,9 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	//MMM: Should be @Deprecated
-	/**Returns relative path of the base collection in which are placed deleted documents. The path to the
-	 * {@code /deleted} collection is defined in the subclass of the {@ code XmlMapper}. Retrived path
+	/**
+	 * Returns relative path of the base collection in which are placed deleted documents. The path to the
+	 * {@code /deleted} collection is defined in the subclass of the {@code XmlMapper}. Retrived path
 	 * respresents base collection that stores deleted documents for particular subclass.
 	 * @return {@code String} that represents relative path of the deleted collection
 	 */
@@ -1854,14 +1905,17 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 
 	protected abstract JAXBElement<T> getJAXBElement(T object);
 
-	/**Gets instance of {@link JAXBContext} for particular subclass of {@code XMLMapper}. <code>JAXBContext</code>
-	 * is instatiated on the base of the class's package name. To be able to instantiate {@code JAXBContext} object
-	 * with the name of the object's package passed as an argument to a {@link JAXBContext#newInstance} method,
-	 * it is mandatory to implement a method for creation of
-	 * the object and method for instantiation of the {@link JAXBElement} instance in {@link ObjectFactory} class,
-	 * as is to implement {@link XmlMapper#getObjectPackageName}.
-	 * @return <code>JAXBContext</code> object
-	 * @throws JAXBException if <code>JAXBContext</code> object could not be instatiated
+	/**
+	 * Gets the instance of {@link JAXBContext} for particular subclass of {@code XMLMapper}.
+	 * {@code JAXBContext} is instatiated on the base of the package name that contains the class
+	 * of the object to be marshalled. To be able to instantiate {@code JAXBContext} object using
+	 * the name of that package as a parameter passed to a {@link JAXBContext#newInstance} method,
+	 * it is mandatory to implement two methods in {@link ObjectFactory} class that is contained
+	 * in that the same package: a method for creation of the object and a method for instantiation of
+	 * the {@link JAXBElement} instance, as is to implement {@link XmlMapper#getObjectPackageName}
+	 * in particular {@code XmlMapper}'s subclass.
+	 * @return {@code JAXBContext} object
+	 * @throws JAXBException if {@code JAXBContext} object could not be instatiated
 	 */
 	protected JAXBContext getJAXBContext() throws JAXBException
 	{
@@ -1869,14 +1923,15 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		//return JAXBContext.newInstance(getObjectClass()); this is not working when querying the database
 	}
 
-	/**Gets the ID of the object based on the user's username.
+	/**
+	 * Gets the ID of the object based on the user's username.
 	 * @param username user's username
 	 * @return object's ID or {@code null} if object has no ID set in the database
 	 * @throws DetailException if user is not registered, ID could not be retrieved due database connectivity issues
 	 */
 	protected String getID(String username) throws DetailException
 	{
-		return ((UserXmlMapper) mapperRegistry.getMapper(User.class)).getID(username);
+		return ((UserXmlMapper) mapperRegistry.getMapper(RutaUser.class)).getID(username);
 	}
 
 	/**Retrieves object's ID from the database. ID is the result of the querying the database
@@ -1904,7 +1959,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	@Override
 	public String getUserID(String username) throws DetailException
 	{
-		return mapperRegistry.getMapper(User.class).getUserID(username);
+		return mapperRegistry.getMapper(RutaUser.class).getUserID(username);
 	}
 
 	/**Updates the object in the data store.
@@ -1981,7 +2036,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its execution.", e);
 		}
 		finally
 		{
@@ -2070,20 +2125,47 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		update(object, id);
 	}*/
 
-	/**Clears in memory object in {@link XmlMapper} subclass.
-	 */
-	protected void clearCachedObjects() { }
-
-	/**Clears all in memory objects in all {@link XmlMapper} subclasses.
-	 * @throws DetailException due to database connetivity issues
-	 */
-	public void clearAllCachedObjects() throws DetailException
+	@Override
+	public void checkDatastoreSetup() throws DetailException
 	{
-		((BugReportXmlMapper) mapperRegistry.getMapper(BugReport.class)).clearCachedObjects();
-		((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).clearCachedObjects();
-		((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).clearCachedObjects();
-		((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).clearCachedObjects();
-		((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearCachedObjects();
+		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		final String jarDirectoryName = "xquery";
+		final InputStream listInputStream = classLoader.getResourceAsStream(jarDirectoryName + "/xquery-list.txt");
+		final String tempDirectoryName = System.getProperty("user.dir", ".") + "/temp";
+		try
+		{
+			Files.createDirectories(Paths.get(tempDirectoryName));
+			try(final Scanner listScanner = new Scanner(listInputStream))
+			{
+				connector.connectToDatabase();
+				while(listScanner.hasNextLine())
+				{
+					final String filename = listScanner.nextLine();
+					File tempFile = null;
+					try(final InputStream fileStream = classLoader.getResourceAsStream(jarDirectoryName + "/" + filename))
+					{
+						final Path tempPath = Paths.get(tempDirectoryName + "/" + filename);
+						Files.copy(fileStream, tempPath, StandardCopyOption.REPLACE_EXISTING);
+						tempFile = tempPath.toFile();
+						ExistConnector.storeXQueryDocument(tempFile);
+					}
+					finally
+					{
+						if(tempFile != null)
+							tempFile.delete();
+					}
+				}
+			}
+/*			finally
+			{
+				if(connector != null)
+					connector.shutdownDatabase();
+			}*/
+		}
+		catch(Exception e)
+		{
+			throw new DatabaseException("Database could not be successfully checked!", e.getCause());
+		}
 	}
 
 }

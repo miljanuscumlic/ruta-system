@@ -11,7 +11,6 @@ public class RegisterWithPartyDialog extends JDialog
 {
 	private static final long serialVersionUID = 7700950953345766469L;
 	private PartyTableModel partyModel;
-	private Party party;
 	private String username;
 	private String password; //MMM: not secure, should be changed
 	private boolean registerPressed; // true if the sign up button were pressed
@@ -153,7 +152,6 @@ public class RegisterWithPartyDialog extends JDialog
 	 */
 	public void setParty(Party party)
 	{
-		this.party = party;
 		partyModel.setParty(party);
 	}
 }

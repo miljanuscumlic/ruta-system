@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
 import rs.ruta.common.PartyID;
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 
 /**{@code ObjectFactory} is a helper class in the process of mapping objects to {@code XML} elements.
  * {@code ObjectFactory} has two methods {@code createXxx} for every class which objects it is mapping.

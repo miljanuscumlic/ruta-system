@@ -16,7 +16,8 @@ public class CatalogueTableModel extends AbstractTableModel
 			"No.", "Name", "Description", "Pack Size", "ID", "Barcode", "Commodity Code", "Keywords"
 		};
 
-	private BusinessParty party; //MMM: maybe here should be CatalogueType instead of BussinesParty
+	private BusinessParty party; //MMM: maybe here should be Catalogue instead of BussinesParty
+	private Catalogue catalogue;
 
 	public BusinessParty getParty()
 	{
@@ -26,6 +27,7 @@ public class CatalogueTableModel extends AbstractTableModel
 	public void setParty(BusinessParty party)
 	{
 		this.party = party;
+		this.catalogue = (Catalogue) party.getCatalogue();
 	}
 
 	@Override
@@ -33,7 +35,6 @@ public class CatalogueTableModel extends AbstractTableModel
 	{
 		if(party == null)
 			return 0;
-		CatalogueType catalogue = party.getCatalogue();
 		return catalogue != null ? catalogue.getCatalogueLineCount() : 0;
 	}
 
@@ -59,19 +60,20 @@ public class CatalogueTableModel extends AbstractTableModel
 			case 0:
 				return rowIndex+1;
 			case 1:
-				return party.getProductNameAsString(rowIndex);
+//				return party.getProductNameAsString(rowIndex);
+				return catalogue.getProductNameAsString(rowIndex);
 			case 2:
-				return party.getProductDescriptionAsString(rowIndex);
+				return catalogue.getProductDescriptionAsString(rowIndex);
 			case 3:
-				return party.getProductPackSizeAsBigDecimal(rowIndex);
+				return catalogue.getProductPackSizeAsBigDecimal(rowIndex);
 			case 4:
-				return party.getProductIDAsString(rowIndex);
+				return catalogue.getProductIDAsString(rowIndex);
 			case 5:
-				return party.getProductBarcodeAsString(rowIndex);
+				return catalogue.getProductBarcodeAsString(rowIndex);
 			case 6:
-				return party.getProductCommodityCodeAsString(rowIndex);
+				return catalogue.getProductCommodityCodeAsString(rowIndex);
 			case 7:
-				return party.getProductKeywordsAsString(rowIndex);
+				return catalogue.getProductKeywordsAsString(rowIndex);
 			default:
 				return null;
 			}

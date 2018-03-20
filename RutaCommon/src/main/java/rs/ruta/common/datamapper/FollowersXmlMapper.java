@@ -21,7 +21,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, Followers> loadedFollowers;
 
-	public FollowersXmlMapper(ExistConnector connector) throws DetailException
+	public FollowersXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedFollowers = new ConcurrentHashMap<String, Followers>();
@@ -33,7 +33,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
-	protected void clearCachedObjects()
+	public void clearCache()
 	{
 		loadedFollowers.clear();
 	}
@@ -51,7 +51,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	}
 
 	@Override
-	protected void putCacheObject(String id, Followers object)
+	protected void putCachedObject(String id, Followers object)
 	{
 		loadedFollowers.put(id, object);
 	}
@@ -159,23 +159,26 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		FollowersSearchCriterion sc = (FollowersSearchCriterion) criterion;
-		String followerID = sc.getFollowerID();
 
-		String query = openXmlDocument(getQueryPath(), queryNameSearchFollowers);
-		if(query == null)
-			return query;
-		try
+		String query = null;
+		if(criterion.getClass() == FollowersSearchCriterion.class)
+			query = openXmlDocument(getQueryPath(), queryNameSearchFollowers);
+		if(query != null)
 		{
-			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
-			queryService.declareVariable("path", queryPath.toString());
-			if(followerID != null)
-				queryService.declareVariable("follower-id", followerID);
-		}
-		catch(XMLDBException e)
-		{
-			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+			FollowersSearchCriterion sc = (FollowersSearchCriterion) criterion;
+			String followerID = sc.getFollowerID();
+			try
+			{
+				StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+				queryService.declareVariable("path", queryPath.toString());
+				if(followerID != null)
+					queryService.declareVariable("follower-id", followerID);
+			}
+			catch(XMLDBException e)
+			{
+				logger.error(e.getMessage(), e);
+				throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
+			}
 		}
 		return query;
 	}

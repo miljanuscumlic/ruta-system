@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 
 import javax.xml.bind.annotation.XmlAccessType;
 
@@ -26,7 +26,7 @@ public abstract class ExistOperation
 	private String backupCollectionPath;
 	@XmlElement(name = "BackupDocumentName")
 	private String backupDocumentName;
-	@XmlElement(name = "User")
+	@XmlElement(name = "RutaUser")
 	private String username;
 
 	public ExistOperation()

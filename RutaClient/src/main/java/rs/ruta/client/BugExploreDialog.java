@@ -656,11 +656,14 @@ public class BugExploreDialog extends JDialog
 							"Comment area is not empty. If you proceed the contents will be discarded.",
 							"Warning", JOptionPane.OK_CANCEL_OPTION);
 					if(option == JOptionPane.OK_OPTION)
-						parent.sendBugReport();
+						clientFrame.sendBugReport();
 				});
 			}
 			else*/
-			parent.sendBugReport();
+			new Thread(()->
+			{
+				parent.sendBugReport();
+			}).start();
 		});
 
 		closeButton.addActionListener(event ->

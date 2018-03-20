@@ -8,7 +8,8 @@ import javax.swing.table.*;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.InstanceFactory;
 
-/**{@link TableModel} class that holds the model of the {@link BugReport} list retrieved from the CDR service.
+/**
+ * {@link TableModel} class that holds the model of the {@link BugReport} list retrieved from the CDR service.
  * List displays partial contents of these {@code BugReport}s, i.e. not all fields are displayed.
  */
 public class BugListTableModel extends AbstractTableModel

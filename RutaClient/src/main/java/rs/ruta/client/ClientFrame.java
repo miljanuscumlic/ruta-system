@@ -68,14 +68,17 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
+import rs.ruta.client.gui.TabCDRData;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.Followers;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.services.SearchCatalogue;
+import rs.ruta.services.SearchParty;
 
 public class ClientFrame extends JFrame
 {
-	private static final long serialVersionUID = 7189003953286046899L;
+	private static final long serialVersionUID = -6582749886269431483L;
 	private static final String DEFAULT_WIDTH = "1000";
 	private static final String DEFAULT_HEIGHT = "800";
 	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
@@ -93,8 +96,8 @@ public class ClientFrame extends JFrame
 	private NotifyDialog notifyDialog;
 	private BugReportDialog bugReportDialog;
 	private BugExploreDialog bugExploreDialog;
-//	private Component tab0RightPane;
-//	private Component tab0LeftPane;
+	//	private Component tab0RightPane;
+	//	private Component tab0LeftPane;
 	private Component leftPane;
 	private Component rightPane;
 	private JComponent tab0Pane;
@@ -128,22 +131,24 @@ public class ClientFrame extends JFrame
 		this.client.setFrame(this);
 
 		//get frame related properties
-		Properties properties = client.getProperties();
-		int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));
-		int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));
-		int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
-		int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
+		final Properties properties = client.getProperties();
+		final int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));
+		final int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));
+		final int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
+		final int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
 		setBounds(left, top, width, height);
-		String title = properties.getProperty("mainFrame.title", "Ruta Client");
+		final String title = properties.getProperty("mainFrame.title", "Ruta Client");
 		setTitle(title);
 
 		//file chooser
 		chooser = new JFileChooser();
-		FileFilter filter = new FileNameExtensionFilter("XML files", "xml");
+		final FileFilter filter = new FileNameExtensionFilter("XML files", "xml");
 		chooser.setFileFilter(filter);
 
 		//save properties and local data on exit
-/*		addWindowListener(new WindowAdapter()
+		//MMM: this is commented because shutdownHook is intantiated so it's not necessary to what on closing
+		//MMM: might be added call to save table if table.isEditind() returns true, i.e. some table cell has been edited but not saved
+		/*		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent event)
@@ -162,14 +167,10 @@ public class ClientFrame extends JFrame
 
 		tabbedPane.addChangeListener(event ->
 		{
-			// check if this tab still has a null component
-			//if(tabbedPane.getSelectedComponent() == null)
-
 			loadTab(tabbedPane.getSelectedIndex());
 		});
 
 		tabbedPane.setSelectedIndex(1);
-		loadTab(1);
 
 		consolePane = new JTextPane();
 		consolePane.setSize(3,50);
@@ -184,6 +185,10 @@ public class ClientFrame extends JFrame
 		setJMenuBar(menuBar);
 		JMenu localDataMenu = new JMenu("Local Data");
 		JMenu cdrMenu = new JMenu("Central Data Repository");
+		JMenu helpMenu = new JMenu("Help");
+		menuBar.add(localDataMenu);
+		menuBar.add(cdrMenu);
+		menuBar.add(helpMenu);
 
 		localDataMenu.add(myPartyItem);
 		localDataMenu.add(myCatalogueItem);
@@ -194,19 +199,12 @@ public class ClientFrame extends JFrame
 
 		myPartyItem.addActionListener(event ->
 		{
-			Party oldCoreParty = client.getMyParty().getCoreParty();
-			Party newCoreParty = showPartyDialog(oldCoreParty, "My Party");
-			/*if(! oldCoreParty.equals(newCoreParty))
-			{
-				client.getMyParty().setCoreParty(newCoreParty);
-				client.insertMyParty();
-			}*/
+			showPartyDialog(client.getMyParty().getCoreParty(), "My Party");
 		});
 
 		myCatalogueItem.addActionListener(event ->
 		{
 			tabbedPane.setSelectedIndex(1);
-			loadTab(1);
 		});
 
 		saveDataItem.addActionListener(event ->
@@ -225,8 +223,8 @@ public class ClientFrame extends JFrame
 		importDataItem.addActionListener(event ->
 		{
 			int option = JOptionPane.showConfirmDialog(ClientFrame.this,
-					"By importing the data from an external file all you local data will be overriden!\nDo you want to proceed?", "Warning message",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					"By importing the data from an external file all you local data will be overriden!\nDo you want to proceed?",
+					"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(option == JOptionPane.YES_OPTION)
 			{
 				chooser.setCurrentDirectory(new File("."));
@@ -234,12 +232,12 @@ public class ClientFrame extends JFrame
 				int result = chooser.showOpenDialog(this);
 				if(result == JFileChooser.APPROVE_OPTION)
 				{
-					String filePath = chooser.getSelectedFile().getPath();
+					final String filePath = chooser.getSelectedFile().getPath();
 					//importing data
 					try
 					{
-						MyPartyXMLFileMapper<MyParty> partyDataMapper = new MyPartyXMLFileMapper<MyParty>(client, filePath);
-						ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
+						final MyPartyXMLFileMapper<MyParty> partyDataMapper = new MyPartyXMLFileMapper<MyParty>(client.getMyParty(), filePath);
+						final ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
 						MyParty myParty;
 						if(parties.size() != 0)
 						{
@@ -247,7 +245,6 @@ public class ClientFrame extends JFrame
 							Search.setSearchNumber(myParty.getSearchNumber());
 							updateTitle(myParty.getPartySimpleName());
 							client.setMyParty(myParty);
-							//client.insertMyParty();
 							repaintTabbedPane(); // frame update
 							appendToConsole("Local data have been successfully imported from the file: " + filePath, Color.GREEN);
 						}
@@ -255,13 +252,10 @@ public class ClientFrame extends JFrame
 					catch(JAXBException e)
 					{
 						appendToConsole("Could not import data from the chosen file. The file is corrupt!", Color.RED);
-//						JOptionPane.showMessageDialog(chooser, "Could not import data from the chosen file. The file is corrupt!",
-//								"Importing local data", JOptionPane.ERROR_MESSAGE);
 					}
 					catch (Exception e)
 					{
 						appendToConsole("There has been an error. " + e.getMessage(), Color.RED);
-//						JOptionPane.showMessageDialog(ClientFrame.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
@@ -278,7 +272,6 @@ public class ClientFrame extends JFrame
 				if(!filePathBuilder.toString().endsWith(".xml"))
 					filePathBuilder = filePathBuilder.append(".xml");
 				final String filePath = filePathBuilder.toString();
-				//exporting data
 				try
 				{
 					//file must be created because MyPartyXMLFileMapper would throw an exception if file doesn't exist
@@ -286,8 +279,8 @@ public class ClientFrame extends JFrame
 					if(Files.notExists(path))
 						Files.createFile(path);
 
-					MyPartyXMLFileMapper<MyParty> partyMapper = new MyPartyXMLFileMapper<MyParty>(client, filePath);
-					partyMapper.insertAll();
+					MyPartyXMLFileMapper<MyParty> fileMapper = new MyPartyXMLFileMapper<MyParty>(client.getMyParty(), filePath);
+					fileMapper.insertAll();
 					appendToConsole("Local data have been successfully exported to the file: " + filePath, Color.GREEN);
 				}
 				catch (JAXBException e)
@@ -297,52 +290,11 @@ public class ClientFrame extends JFrame
 				catch (Exception e)
 				{
 					appendToConsole("There has been an error. " + e.getMessage(), Color.RED);
-//					JOptionPane.showMessageDialog(ClientFrame.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					//					JOptionPane.showMessageDialog(RutaClientFrame.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 
-		JMenuItem followPartyItem = new JMenuItem("Follow My Party");
-		followPartyItem.addActionListener(event ->
-		{
-			//MMM: here should be called WebMethod requesting the follow for selected party
-			//MMM: this should be placed in the Client class
-			//This implementaion is for the test purpose only - adding myParty without products as following party
-			/*BusinessParty tempParty = new BusinessParty();
-			Party tempCoreParty = InstanceFactory.newInstance(client.getMyParty().getCoreParty());
-			tempParty.setCoreParty(tempCoreParty);*/
-			//*****************
-			//adding Bussines Partners for the test purposes
-/*			List<BusinessParty> bp = client.getMyParty().getBusinessPartners();
-			List<BusinessParty> fp = client.getMyParty().getFollowingParties();
-			for(int i = 9; i>=0; i--)
-			{
-				Party p = InstanceFactory.newInstanceParty();
-				p.getPartyName().get(0).getName().setValue("Partner #" + i);
-				BusinessParty biz = new BusinessParty();
-				biz.setCoreParty(p);
-				bp.add(biz);
-				fp.add(biz);
-			}
-			for(int i = 15; i>=10; i--)
-			{
-				Party p = InstanceFactory.newInstanceParty();
-				p.getPartyName().get(0).getName().setValue("Party #" + i);
-				BusinessParty biz = new BusinessParty();
-				biz.setCoreParty(p);
-				fp.add(biz);
-			}*/
-			//*****************
-
-			client.getMyParty().followMyself();
-
-			loadTab(tabbedPane.getSelectedIndex());
-		});
-//		localDataMenu.add(followPartyItem);
-
-		menuBar.add(localDataMenu);
-
-		menuBar.add(cdrMenu);
 		cdrMenu.add(cdrGetDocumentsItem);
 		cdrMenu.add(cdrSearchItem);
 		cdrMenu.addSeparator();
@@ -358,9 +310,10 @@ public class ClientFrame extends JFrame
 
 		cdrGetDocumentsItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
-			if(myParty.isRegisteredWithCDR())
+			if(client.getMyParty().isRegisteredWithCDR())
 			{
+				//spawning new thread because inside cdrGetNewDocuments methid CDR request is made,
+				//thus avoiding to be executed inside the dispatch thread
 				new Thread(()->
 				{
 					client.cdrGetNewDocuments();
@@ -373,12 +326,11 @@ public class ClientFrame extends JFrame
 
 		cdrSearchItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
-			if(myParty.isRegisteredWithCDR())
+			if(client.getMyParty().isRegisteredWithCDR())
 			{
 				new Thread(() ->
 				{
-					showSearchDialog(myParty, "Search CDR");
+					showSearchDialog("Search CDR");
 				}).start();
 			}
 			else
@@ -388,7 +340,7 @@ public class ClientFrame extends JFrame
 
 		cdrRegisterPartyItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 				appendToConsole("My Party is already registered with the CDR service!", Color.BLUE);
 			else
@@ -396,14 +348,14 @@ public class ClientFrame extends JFrame
 				disablePartyMenuItems();
 				new Thread(() ->
 				{
-					showSignUpDialog(myParty, "Sign Up to CDR");
+					showSignUpDialog("Sign Up to CDR");
 				}).start();
 			}
 		});
 
 		cdrUpdatePartyItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isDirtyMyParty())
@@ -416,10 +368,10 @@ public class ClientFrame extends JFrame
 					}).start();
 				}
 				else
-					appendToConsole("My Party is already synchronized with the CDR service!", Color.BLUE);
+					appendToConsole("My Party is already updated on the CDR service!", Color.BLUE);
 			}
 			else
-				appendToConsole("Request for the synchronisation of My Party has not been sent to the CDR service."
+				appendToConsole("Update request of My Party has not been sent to the CDR service."
 						+ " My Party should be registered with the CDR service first!", Color.RED);
 		});
 
@@ -431,8 +383,9 @@ public class ClientFrame extends JFrame
 				EventQueue.invokeLater(() ->
 				{
 					int option = JOptionPane.showConfirmDialog(ClientFrame.this,
-							"By deregistering your party from the CDR service, all your data in the CDR will be deleted\nand all your followers will be notified about your deregistration.\nDo you want to proceed?", "Warning message",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+							"By deregistering My Party from the CDR service, all your data in the CDR will be deleted\n" +
+									"and all your followers will be notified about your deregistration.\nDo you want to proceed?",
+									"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)
 					{
 						disablePartyMenuItems();
@@ -456,14 +409,13 @@ public class ClientFrame extends JFrame
 				if(myParty.isDirtyCatalogue())
 				{
 					disableCatalogueMenuItems();
-					//sending Catalogue to CDR
 					new Thread(()->
 					{
 						client.cdrSynchroniseMyCatalogue();
 					}).start();
 				}
 				else
-					appendToConsole("Catalogue is already synchronized with the CDR service.", Color.BLUE);
+					appendToConsole("Catalogue is already updated on the CDR service.", Color.BLUE);
 			}
 			else
 				appendToConsole("Update request of My Catalogue has not been sent to the CDR service."
@@ -478,7 +430,6 @@ public class ClientFrame extends JFrame
 				if(myParty.getMyFollowingParty() != null)
 				{
 					disableCatalogueMenuItems();
-					//pulling Catalogue from CDR
 					new Thread(() ->
 					{
 						client.cdrPullMyCatalogue();
@@ -537,20 +488,19 @@ public class ClientFrame extends JFrame
 			}
 		});
 
-		JMenu helpMenu = new JMenu("Help");
 		JMenuItem aboutItem = new JMenuItem("About");
 		helpMenu.add(aboutItem);
 		JMenuItem updateItem = new JMenuItem("Check for Updates");
 		helpMenu.add(updateItem);
 		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
-//		MMM: Comment notifyItem before new version of Ruta Client is released
-//		helpMenu.add(notifyItem);
+		//		MMM: Comment notifyItem before new version of Ruta Client is released!
+		helpMenu.add(notifyItem);
 		JMenuItem reportBugItem = new JMenuItem("Report a Bug");
 		helpMenu.add(reportBugItem);
 		JMenuItem exploreBugItem = new JMenuItem("Explore the Bugs");
 		helpMenu.add(exploreBugItem);
 		JMenuItem fileItem = new JMenuItem("Send a File");
-//		helpMenu.add(fileItem);
+		//		helpMenu.add(fileItem);
 		JMenuItem clearCacheItem = new JMenuItem("Clear Service Cache");
 		helpMenu.add(clearCacheItem);
 
@@ -564,23 +514,7 @@ public class ClientFrame extends JFrame
 		updateItem.addActionListener(event ->
 		{
 			if(updateDialog == null)
-			{
-				StringBuilder msg = new StringBuilder("Update request has failed! ");
-/*				try
-				{*/
-					updateDialog = new UpdateDialog(ClientFrame.this, client);
-/*				}
-				catch (Exception e)
-				{
-					msg.append("Server responds: ");
-					Throwable cause = e.getCause();
-					if(cause instanceof RutaException)
-						msg.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
-					else
-						msg.append(Client.trimSOAPFaultMessage(cause.getMessage()));
-					appendToConsole(msg.toString(), Color.RED);
-				}*/
-			}
+				updateDialog = new UpdateDialog(ClientFrame.this, client);
 			updateDialog.setVisible(true);
 		});
 
@@ -592,45 +526,55 @@ public class ClientFrame extends JFrame
 			if(notifyDialog.isNotifyPressed())
 			{
 				notifyDialog.setNotifyPressed(false);
-				client.cdrUpdateNotification(notifyDialog.getVersion());
+				new Thread(()->
+				{
+					client.cdrUpdateNotification(notifyDialog.getVersion());
+				}).start();
 			}
 		});
 
 		reportBugItem.addActionListener(event ->
 		{
-			sendBugReport();
+			new Thread(()->
+			{
+				sendBugReport();
+			}).start();
 		});
 
 		exploreBugItem.addActionListener(event ->
 		{
 			if(client.getMyParty().isRegisteredWithCDR())
 			{
-				//if(bugExploreDialog == null)
-					bugExploreDialog = new BugExploreDialog(ClientFrame.this);
+				bugExploreDialog = new BugExploreDialog(ClientFrame.this);
 				bugExploreDialog.setVisible(true);
 			}
 			else
 			{
-				appendToConsole("Bugs cannot be explored by non-registered parties.", Color.RED);
+				appendToConsole("Bug reports cannot be explored by non-registered party.", Color.RED);
 			}
 		});
 
 		fileItem.addActionListener(event ->
 		{
-			client.cdrInsertAttachment();
+			new Thread(()->
+			{
+				client.cdrInsertAttachment();
+			}).start();
 		});
 
 		clearCacheItem.addActionListener(event ->
 		{
-			client.cdrClearCache();
+			new Thread(()->
+			{
+				client.cdrClearCache();
+			}).start();
 		});
-
-		menuBar.add(helpMenu);
 	}
 
-	/**Checks if MyParty is registered with the CDR, then opens {@link BugReportDialog}
-	 * and sends {@link BugReport} to the CDR by calling apropriate method in the {@link Client}
-	 * class. This method is extracted from the {@code ActionListener} because it is used in
+	/**
+	 * Checks whether My Party is registered with the CDR, then opens {@link BugReportDialog}
+	 * and sends {@link BugReport} to the CDR by calling appropriate method in the {@link Client}
+	 * class. {@code sendBugReport} method is extracted from the {@code ActionListener} because it is used in
 	 * more than one place.
 	 */
 	public void sendBugReport()
@@ -646,10 +590,11 @@ public class ClientFrame extends JFrame
 			}
 		}
 		else
-			appendToConsole("Bug report cannot be issued by non-registered parties.", Color.RED);
+			appendToConsole("Bug report cannot be issued by non-registered party.", Color.RED);
 	}
 
-	/**Checks if MyParty is registered with the CDR, then sends a request to the CDR for the list of
+	/**
+	 * Checks whether My Party is registered with the CDR, then sends a request to the CDR for the list of
 	 * {@link BugReport}s based on some search criterion.
 	 * @param criterion search criterion
 	 * @return {@link Future} object representing the response.
@@ -660,11 +605,12 @@ public class ClientFrame extends JFrame
 		if(client.getMyParty().isRegisteredWithCDR())
 			future = client.cdrSearchBugReport(criterion);
 		else
-			appendToConsole("Bug report list cannot be requested by non-registered parties.", Color.RED);
+			appendToConsole("Bug report list cannot be requested by non-registered party.", Color.RED);
 		return future;
 	}
 
-	/**Checks if MyParty is registered with the CDR, then sends a request for the list of all
+	/**
+	 * Checks whether My Party is registered with the CDR, then sends a request for the list of all
 	 * {@link BugReport bugs reported} to the CDR.
 	 * @return {@link Future} object representing the response.
 	 */
@@ -674,10 +620,17 @@ public class ClientFrame extends JFrame
 		if(client.getMyParty().isRegisteredWithCDR())
 			future = client.cdrFindAllBugs();
 		else
-			appendToConsole("Bug report list cannot be requested by non-registered parties.", Color.RED);
+			appendToConsole("Bug report list cannot be requested by non-registered party.", Color.RED);
 		return future;
 	}
 
+	/**
+	 * Sends the follow request to the CDR if the party to be followed is not My Party or already has been followed.
+	 * If argument {@code partner} is set to {@code true} following party is set as a {@code Business Parter}.
+	 * @param followingName name of the party to follow
+	 * @param followingID ID of the party to follow
+	 * @param partner whether following party should be set as a {@code Business Parter}
+	 */
 	public void followParty(String followingName, String followingID, boolean partner)
 	{
 		MyParty myParty = client.getMyParty();
@@ -687,15 +640,14 @@ public class ClientFrame extends JFrame
 		{
 			BusinessParty following = myParty.getFollowingParty(followingID);
 			if(following == null)
-			{
 				client.cdrFollowParty(followingName, followingID, partner);
-			}
 			else if(partner && !following.isPartner())
 			{
 				//move following to the business partner list
 				following.setPartner(true);
 				myParty.addFollowingParty(following);
-				appendToConsole("Party " + followingName + " is already in the following list. But from now it is marked as a business partner.", Color.GREEN);
+				appendToConsole("Party " + followingName + " is already in the following list. But from now on it is marked as a business partner.",
+						Color.GREEN);
 				repaintTabbedPane();
 			}
 			else
@@ -703,32 +655,35 @@ public class ClientFrame extends JFrame
 		}
 	};
 
-	/**Enables menu items regarding Search after client gets the response from the CDR service.
-	 * All method calls are made through the {@link EventQueue}.
+	/**
+	 * Enables menu items regarding Search after client gets the response from the CDR service.
+	 * Method code is executed in the {@link EventQueue}.
 	 */
 	public void enableSearchMenuItems()
 	{
 		EventQueue.invokeLater(() ->
 		{
-		cdrSearchItem.setEnabled(true);
-		cdrDeregisterPartyItem.setEnabled(true);
+			cdrSearchItem.setEnabled(true);
+			cdrDeregisterPartyItem.setEnabled(true);
 		});
 	}
 
-	/**Disables menu items regarding Search after client sends the request to the CDR service.
-	 * All method calls are made through the {@link EventQueue}.
+	/**
+	 * Disables menu items regarding Search after client sends the request to the CDR service.
+	 * Method code is executed in the {@link EventQueue}.
 	 */
 	public void disableSearchMenuItems()
 	{
 		EventQueue.invokeLater(() ->
 		{
-		cdrSearchItem.setEnabled(false);
-		cdrDeregisterPartyItem.setEnabled(false);
+			cdrSearchItem.setEnabled(false);
+			cdrDeregisterPartyItem.setEnabled(false);
 		});
 	}
 
-	/**Enables menu items regarding My Party after client gets the response from the CDR service.
-	 * All method calls are made through the {@link EventQueue}.
+	/**
+	 * Enables menu items regarding My Party after client gets the response from the CDR service.
+	 * Method code is executed in the {@link EventQueue}.
 	 */
 	public void enablePartyMenuItems()
 	{
@@ -740,8 +695,9 @@ public class ClientFrame extends JFrame
 		});
 	}
 
-	/**Disables menu items regarding My Party after client sends the request to the CDR service.
-	 * All method calls are made through the {@link EventQueue}.
+	/**
+	 * Disables menu items regarding My Party after client sends the request to the CDR service.
+	 * Method code is executed in the {@link EventQueue}.
 	 */
 	public void disablePartyMenuItems()
 	{
@@ -753,35 +709,38 @@ public class ClientFrame extends JFrame
 		});
 	}
 
-	/**Enables menu items regarding My Catalogue after client gets the response from the CDR service.
-	 * All method calls are made through the {@link EventQueue}.
+	/**
+	 * Enables menu items regarding My Catalogue after client gets the response from the CDR service.
+	 * Method code is executed in the {@link EventQueue}.
 	 */
 	public void enableCatalogueMenuItems()
 	{
 		EventQueue.invokeLater(() ->
 		{
-		cdrPullCatalogueItem.setEnabled(true);
-		cdrUpdateCatalogueItem.setEnabled(true);
-		cdrDeleteCatalogueItem.setEnabled(true);
-		cdrDeregisterPartyItem.setEnabled(true);
+			cdrPullCatalogueItem.setEnabled(true);
+			cdrUpdateCatalogueItem.setEnabled(true);
+			cdrDeleteCatalogueItem.setEnabled(true);
+			cdrDeregisterPartyItem.setEnabled(true);
 		});
 	}
 
-	/**Disables menu items regarding My Catalogue after client sends the request to the CDR service.
-	 * All method calls are made through the {@link EventQueue}.
+	/**
+	 * Disables menu items regarding My Catalogue after client sends the request to the CDR service.
+	 * Method code is executed in the {@link EventQueue}.
 	 */
 	public void disableCatalogueMenuItems()
 	{
 		EventQueue.invokeLater(() ->
 		{
-		cdrPullCatalogueItem.setEnabled(false);
-		cdrUpdateCatalogueItem.setEnabled(false);
-		cdrDeleteCatalogueItem.setEnabled(false);
-		cdrDeregisterPartyItem.setEnabled(false);
+			cdrPullCatalogueItem.setEnabled(false);
+			cdrUpdateCatalogueItem.setEnabled(false);
+			cdrDeleteCatalogueItem.setEnabled(false);
+			cdrDeregisterPartyItem.setEnabled(false);
 		});
 	}
 
-	/**Saves properties from {@code ClientFrame} class fields to {@link Properties} object.
+	/**
+	 * Saves properties from {@code RutaClientFrame} class fields to the {@link Properties} object.
 	 */
 	public void saveProperties()
 	{
@@ -791,9 +750,8 @@ public class ClientFrame extends JFrame
 		properties.put("mainFrame.width", String.valueOf(getWidth()));
 		properties.put("mainFrame.height", String.valueOf(getHeight()));
 		properties.put("mainFrame.title", "Ruta Client - " + getTitle());
-//		properties.put("mainFrame.title", "Ruta Client - " + client.getMyParty().getCoreParty().getPartySimpleName());
 
-		//MMM: add column sizes for all tabs
+		//MMM: add column sizes for all the tabs
 	}
 
 	@SuppressWarnings("unchecked")
@@ -820,7 +778,7 @@ public class ClientFrame extends JFrame
 			rightPane = new JLabel();
 
 			JLabel blankPane = new JLabel();
-/*			blankPane.setOpaque(true);
+			/*			blankPane.setOpaque(true);
 			blankPane.setBackground(Color.WHITE);*/
 
 			//setting action listener for tab repaint on selection of the business party node
@@ -833,35 +791,35 @@ public class ClientFrame extends JFrame
 				Object selectedParty = selectedNode.getUserObject();
 				if (selectedParty instanceof BusinessParty)
 				{
-//					ProductTableModel partnerTableModel = new ProductTableModel(false);
+					//ProductTableModel partnerTableModel = new ProductTableModel(false);
 					CatalogueTableModel partnerTableModel = new CatalogueTableModel();
 					JTable partnerTable = createCatalogueTable(partnerTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
 					partnerTableModel.setParty((BusinessParty) selectedParty);
 					rightPane = new JScrollPane(partnerTable);
-					arrangeTab0(leftPane, rightPane);
+					arrangeTab0(leftPane, rightPane); //MMM: here rightPane is changed only, so it only should be repaint!!!
 				}
 				else //String
 				{
 					PartyListTableModel partiesTableModel = new PartyListTableModel();
 					JTable partiesTable = createPartyListTable(partiesTableModel); //MMM: partnerTable.setModel(partnerTableModel) but before this partnerTable should be created one in constructor
+					List<BusinessParty> partyList = new ArrayList<>();
 					if("My Party".equals((String) selectedParty))
 					{
-						final List<BusinessParty> myPartyList = new ArrayList<>();
 						final BusinessParty my = myParty.getMyFollowingParty();
 						if(my != null)
-							myPartyList.add(my);
-						partiesTableModel.setParties(myPartyList);
+							partyList.add(my);
 					}
 					else if("Business Partners".equals((String) selectedParty))
-						partiesTableModel.setParties(myParty.getBusinessPartners());
+						partyList = myParty.getBusinessPartners();
 					else if("Other Parties".equals((String) selectedParty))
-						partiesTableModel.setParties(myParty.getOtherParties());
+						partyList = myParty.getOtherParties();
 					else if("Archived Parties".equals((String) selectedParty))
-						partiesTableModel.setParties(myParty.getArchivedParties());
+						partyList = myParty.getArchivedParties();
 					else if("Deregistered Parties".equals((String) selectedParty))
-						partiesTableModel.setParties(myParty.getDeregisteredParties());
+						partyList = myParty.getDeregisteredParties();
+					partiesTableModel.setParties(partyList);
 					rightPane = new JScrollPane(partiesTable);
-					arrangeTab0(leftPane, rightPane);
+					arrangeTab0(leftPane, rightPane); //MMM: here rightPane is changed only, so it only should be repaint!!!
 				}
 			});
 
@@ -875,7 +833,7 @@ public class ClientFrame extends JFrame
 				Object selectedSearch = selectedNode.getUserObject();
 				if(selectedSearch instanceof Search)
 				{
-					Class<?> searchClazz = ((Search<?>) selectedSearch).getResultType();
+/*					Class<?> searchClazz = ((Search<?>) selectedSearch).getResultType();
 					if(searchClazz == PartyType.class)
 					{
 						AbstractTableModel searchPartyTableModel = new PartySearchTableModel(false);
@@ -885,6 +843,23 @@ public class ClientFrame extends JFrame
 						arrangeTab0(leftPane, rightPane);
 					}
 					else if(searchClazz == CatalogueType.class)
+					{
+						AbstractTableModel searchCatalogueTableModel = new CatalogueSearchTableModel(false);
+						((CatalogueSearchTableModel) searchCatalogueTableModel).setSearch((Search<CatalogueType>) selectedSearch);
+						JTable searchTable = createSearchCatalogueTable(searchCatalogueTableModel);
+						rightPane = new JScrollPane(searchTable);
+						arrangeTab0(leftPane, rightPane);
+					}*/
+					Class<?> searchClazz = selectedSearch.getClass();
+					if(searchClazz == SearchParty.class)
+					{
+						AbstractTableModel searchPartyTableModel = new PartySearchTableModel(false);
+						((PartySearchTableModel) searchPartyTableModel).setSearch((Search<PartyType>) selectedSearch);
+						JTable searchTable = createSearchPartyTable(searchPartyTableModel);
+						rightPane = new JScrollPane(searchTable);
+						arrangeTab0(leftPane, rightPane);
+					}
+					else if(searchClazz == SearchCatalogue.class)
 					{
 						AbstractTableModel searchCatalogueTableModel = new CatalogueSearchTableModel(false);
 						((CatalogueSearchTableModel) searchCatalogueTableModel).setSearch((Search<CatalogueType>) selectedSearch);
@@ -923,9 +898,6 @@ public class ClientFrame extends JFrame
 				{
 					if(SwingUtilities.isRightMouseButton(event))
 					{
-						/*						int selRow = searchTree.getRowForLocation(event.getX(), event.getY());
-						if (selRow > -1)
-							searchTree.setSelectionRow(selRow);*/
 						TreePath path = searchTree.getPathForLocation(event.getX(), event.getY());
 						searchTree.setSelectionPath(path);
 						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
@@ -953,7 +925,10 @@ public class ClientFrame extends JFrame
 				if(selectedParty instanceof String)
 					return;
 				else // BusinessParty
-					client.cdrUnfollowParty((BusinessParty) selectedParty);
+					new Thread(()->
+					{
+						client.cdrUnfollowParty((BusinessParty) selectedParty);
+					}).start();
 			});
 
 			addPartnerItem.addActionListener(event ->
@@ -1001,9 +976,8 @@ public class ClientFrame extends JFrame
 				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 				final BusinessParty selectedParty = (BusinessParty) selectedNode.getUserObject();
 				myParty.removeArchivedParty(selectedParty);
-				appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been deleted from Archived Parties. ", Color.GREEN);
+				appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been deleted from Archived Parties.", Color.GREEN);
 				repaintTabbedPane();
-
 			});
 
 			deleteDeregisteredItem.addActionListener(event ->
@@ -1013,7 +987,7 @@ public class ClientFrame extends JFrame
 				final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 				final BusinessParty selectedParty = (BusinessParty) selectedNode.getUserObject();
 				myParty.removeDeregisteredParty(selectedParty);
-				appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been deleted from Deregistered Parties. ", Color.GREEN);
+				appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been deleted from Deregistered Parties.", Color.GREEN);
 				repaintTabbedPane();
 			});
 
@@ -1077,7 +1051,7 @@ public class ClientFrame extends JFrame
 			searchTreePopupMenu.add(renameSearchItem);
 			JMenuItem deleteSearchItem = new JMenuItem("Delete");
 			searchTreePopupMenu.add(deleteSearchItem);
-//			((JComponent) searchTree).setComponentPopupMenu(searchTreePopupMenu);
+			//			((JComponent) searchTree).setComponentPopupMenu(searchTreePopupMenu);
 
 			againSearchItem.addActionListener(event ->
 			{
@@ -1088,7 +1062,10 @@ public class ClientFrame extends JFrame
 				if(selectedSearch instanceof String)
 					return;
 				else
-					client.cdrSearch((Search<?>) selectedSearch, true);
+					new Thread(()->
+					{
+						client.cdrSearch((Search<?>) selectedSearch, true);
+					}).start();
 			});
 
 			renameSearchItem.addActionListener(event ->
@@ -1102,9 +1079,9 @@ public class ClientFrame extends JFrame
 						JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
 				if(newName != null)
 					selectedSearch.setSearchName(newName);
-				searchTree.invalidate();
-				searchTree.revalidate();
-				searchTree.repaint();
+//				MMM: code down below not necessary for repaint
+/*				searchTree.revalidate();
+				searchTree.repaint();*/
 				//arrangeTab0(leftPane, rightPane);
 			});
 
@@ -1123,7 +1100,7 @@ public class ClientFrame extends JFrame
 					return;
 				if(nodeClass == PartyType.class)
 				{
-					if (myParty.getPartySearches().remove((Search<CatalogueType>) selectedSearch))
+					if (myParty.getPartySearches().remove((Search<PartyType>) selectedSearch))
 						loadTab(tabbedPane.getSelectedIndex());
 				}
 				else if(nodeClass == CatalogueType.class)
@@ -1140,7 +1117,7 @@ public class ClientFrame extends JFrame
 		case 1:
 			AbstractTableModel tableModel = new ProductTableModel(myParty, true);
 			JTable table = createCatalogueTable(tableModel);
-//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+			//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			table.addMouseListener(new MouseAdapter()
@@ -1166,11 +1143,17 @@ public class ClientFrame extends JFrame
 
 			deleteItem.addActionListener( event ->
 			{
-				//MMM: should be in a new method of the new class for TabbedPane
 				int row = table.getSelectedRow();
 				int col = table.getSelectedColumn();
 
-				myParty.removeProduct(row);
+				try
+				{
+					myParty.removeProduct(row);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 				loadTab(tabbedPane.getSelectedIndex());
 			});
 			component = new JScrollPane(table);
@@ -1206,7 +1189,7 @@ public class ClientFrame extends JFrame
 						switch(realIndex)
 						{
 						case 3:
-							return "type 0 for field deletion";
+							return "integer numbers; 0 for field deletion";
 						case 4:
 							return "ID field is mandatory if Barcode is going to be entered";
 						case 7:
@@ -1219,7 +1202,7 @@ public class ClientFrame extends JFrame
 			}
 		};
 
-		table.setFillsViewportHeight(true); // filling the viewport with white background color
+		table.setFillsViewportHeight(true);
 
 		TableColumnModel colModel = table.getColumnModel();
 		colModel.getColumn(0).setPreferredWidth(20);
@@ -1227,16 +1210,13 @@ public class ClientFrame extends JFrame
 		colModel.getColumn(2).setPreferredWidth(200);
 		colModel.getColumn(3).setPreferredWidth(20);
 		colModel.getColumn(7).setPreferredWidth(200);
-		//setting cell editor
 		table.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));
-		//table.setDefaultRenderer(List.class, new ProductTableCellRenderer());
-		//table.setDefaultEditor(table.getColumnModel().getColumn(7).getClass(), new FocusLostTableCellEditor(table));
-	//	table.getColumnModel().getColumn(7).setCellEditor(new FocusLostTableCellEditor(table));
 		return table;
 	}
 
-	/**Creates and formats the view of empty table that would contain data from the list of parties.
-	 * @param tableModel model representing list of parties
+	/**
+	 * Creates and formats the view of empty table that would contain data from the list of parties.
+	 * @param tableModel model representing the list of parties to be displayed
 	 * @return created table
 	 */
 	private JTable newEmptyPartyListTable(AbstractTableModel tableModel)
@@ -1260,7 +1240,8 @@ public class ClientFrame extends JFrame
 		return table;
 	}
 
-	/**Creates table for showing list of parties e.g. Business Partnres, Other Parties etc.
+	/**
+	 * Creates table showing list of parties e.g. Business Partners, Other Parties etc.
 	 * @param tableModel model containing party data to display
 	 * @param search true if the table displays search results, and false if it displays list of parties
 	 * @return constructed table object
@@ -1279,7 +1260,10 @@ public class ClientFrame extends JFrame
 		{
 			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
-			client.cdrUnfollowParty(selectedParty);
+			new Thread(()->
+			{
+				client.cdrUnfollowParty(selectedParty);
+			}).start();
 		});
 
 		addPartnerItem.addActionListener(event ->
@@ -1292,7 +1276,7 @@ public class ClientFrame extends JFrame
 				appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been moved from Other Parties to Business Partners. "
 						+ "Party is still followed by My Party.", Color.GREEN);
 				repaintTabbedPane();
-//				((AbstractTableModel) table.getModel()).fireTableDataChanged();
+				//				((AbstractTableModel) table.getModel()).fireTableDataChanged();
 			}
 		});
 
@@ -1323,6 +1307,7 @@ public class ClientFrame extends JFrame
 						table.setRowSelectionInterval(rowIndex, rowIndex);
 
 						final TreePath path = partyTree.getSelectionPath();
+						if(path == null) return;
 						final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 						final Object selectedParty = selectedNode.getUserObject();
 						if(selectedParty instanceof String)
@@ -1331,6 +1316,7 @@ public class ClientFrame extends JFrame
 							if("Business Partners".equals(nodeTitle))
 							{
 								partyTablePopupMenu.remove(unfollowPartyItem);
+								partyTablePopupMenu.remove(addPartnerItem);
 								partyTablePopupMenu.add(removePartnerItem);
 							}
 							else if("Other Parties".equals(nodeTitle))
@@ -1345,12 +1331,12 @@ public class ClientFrame extends JFrame
 					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
 						final CatalogueTableModel catalogueTableModel = new CatalogueTableModel(); //MMM: this is alternative to ProductTableModel
-//						final ProductTableModel catalogueTableModel = new ProductTableModel(false);
+						//						final ProductTableModel catalogueTableModel = new ProductTableModel(false);
 						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
 						final BusinessParty party = partyListTableModel.getParty(rowIndex);
 						catalogueTableModel.setParty(party);
 						final JTable catalogueTable = createCatalogueTable(catalogueTableModel);
-						selectPartyNode(party);
+						selectNode(partyTree, party);
 						rightPane =  new JScrollPane(catalogueTable);
 						arrangeTab0(leftPane, rightPane);
 					}
@@ -1361,9 +1347,11 @@ public class ClientFrame extends JFrame
 		return table;
 	}
 
-	/**Selects party's node in the party tree.
+	/**
+	 * Selects party's node in the party tree.
 	 * @param party party which node should be selected
 	 */
+	@Deprecated
 	private void selectPartyNode(final BusinessParty party)
 	{
 		final DefaultMutableTreeNode nodeToSelect = searchPartyNode(party);
@@ -1376,23 +1364,31 @@ public class ClientFrame extends JFrame
 		}
 	}
 
-	/**Gets the {@link DefaultMutableTreeNode node} from the tree for the {@link BusinessParty} user object.
+	/**
+	 * Gets the {@link DefaultMutableTreeNode node} from the tree for the {@link BusinessParty} user object.
 	 * @param party node's user object
 	 * @return tree node
 	 */
+	@Deprecated
 	private DefaultMutableTreeNode searchPartyNode(BusinessParty party)
 	{
 		DefaultMutableTreeNode node = null;
-		final Enumeration enumeration = ((DefaultMutableTreeNode) partyTree.getModel().getRoot()).breadthFirstEnumeration();
+		@SuppressWarnings("unchecked")
+		final Enumeration<DefaultMutableTreeNode> enumeration = ((DefaultMutableTreeNode) partyTree.getModel().getRoot()).breadthFirstEnumeration();
 		while(enumeration.hasMoreElements())
 		{
-			node = (DefaultMutableTreeNode) enumeration.nextElement();
+			node = enumeration.nextElement();
 			if(party == node.getUserObject())
 				break;
 		}
 		return node;
 	}
 
+	/**
+	 * Selects the tree node containing the object.
+	 * @param tree tree which node should be selected
+	 * @param object object contained in the tree node
+	 */
 	private void selectNode(final JTree tree, final Object object)
 	{
 		final DefaultMutableTreeNode nodeToSelect = searchNode(tree, object);
@@ -1405,22 +1401,29 @@ public class ClientFrame extends JFrame
 		}
 	}
 
+	/**
+	 * Searches for an object in the tree.
+	 * @param tree tree to be searched
+	 * @param object object to be searched for
+	 * @return {@link DefaultMutableTreeNode node} containing searched object
+	 */
 	private DefaultMutableTreeNode searchNode(JTree tree, Object object)
 	{
 		DefaultMutableTreeNode node = null;
-		final Enumeration enumeration = ((DefaultMutableTreeNode) tree.getModel().getRoot()).breadthFirstEnumeration();
+		@SuppressWarnings("unchecked")
+		final Enumeration<DefaultMutableTreeNode> enumeration = ((DefaultMutableTreeNode) tree.getModel().getRoot()).breadthFirstEnumeration();
 		while(enumeration.hasMoreElements())
 		{
-			node = (DefaultMutableTreeNode) enumeration.nextElement();
+			node = enumeration.nextElement();
 			if(object == node.getUserObject())
 				break;
 		}
 		return node;
 	}
 
-	/**Creates table for showing list of parties that are the result of quering the CDR service data store.
+	/**
+	 * Creates table displaying list of parties that are the result of quering the CDR.
 	 * @param tableModel model containing party data to display
-	 * @param search true if the table displays search results, and false if it displays list of parties
 	 * @return constructed table object
 	 */
 	private JTable createSearchPartyTable(AbstractTableModel tableModel)
@@ -1440,7 +1443,10 @@ public class ClientFrame extends JFrame
 			final String followingName = InstanceFactory.getPropertyOrNull(followingParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(followingParty.getPartyIdentificationAtIndex(0),
 					PartyIdentificationType::getIDValue);
-			followParty(followingName, followingID, true);
+			new Thread(()->
+			{
+				followParty(followingName, followingID, true);
+			}).start();
 		});
 
 		followParty.addActionListener(event ->
@@ -1450,7 +1456,10 @@ public class ClientFrame extends JFrame
 			final String followingName = InstanceFactory.getPropertyOrNull(followingParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(followingParty.getPartyIdentificationAtIndex(0),
 					PartyIdentificationType::getIDValue);
-			followParty(followingName, followingID, false);
+			new Thread(()->
+			{
+				followParty(followingName, followingID, false);
+			}).start();
 		});
 
 		table.addMouseListener(new MouseAdapter()
@@ -1488,26 +1497,29 @@ public class ClientFrame extends JFrame
 		table.setFillsViewportHeight(true);
 
 		JPopupMenu searchTablePopupMenu = new JPopupMenu();
-		JMenuItem againSearchItem = new JMenuItem("Search Again");
-		searchTablePopupMenu.add(againSearchItem);
+		JMenuItem searchAgainItem = new JMenuItem("Search Again");
+		searchTablePopupMenu.add(searchAgainItem);
 		searchTablePopupMenu.addSeparator();
 		JMenuItem renameSearchItem = new JMenuItem("Rename");
 		searchTablePopupMenu.add(renameSearchItem);
 		JMenuItem deleteSearchItem = new JMenuItem("Delete");
 		searchTablePopupMenu.add(deleteSearchItem);
 
-		againSearchItem.addActionListener(event ->
+		searchAgainItem.addActionListener(event ->
 		{
 			int rowIndex = table.getSelectedRow();
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
-			client.cdrSearch(selectedSearch, true);
-			arrangeTab0(leftPane, rightPane);
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) tableModel).getSearches().get(rowIndex);
+			new Thread(()->
+			{
+				client.cdrSearch(selectedSearch, true);
+				arrangeTab0(leftPane, rightPane);
+			}).start();
 		});
 
 		renameSearchItem.addActionListener(event ->
 		{
 			int rowIndex = table.getSelectedRow();
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) tableModel).getSearches().get(rowIndex);
 			String newName = (String) JOptionPane.showInputDialog(this, "Enter new name: ", "Rename a search",
 					JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
 			if(newName != null)
@@ -1518,20 +1530,19 @@ public class ClientFrame extends JFrame
 		deleteSearchItem.addActionListener( event ->
 		{
 			int rowIndex = table.getSelectedRow();
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>)tableModel).getSearches().get(rowIndex);
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) tableModel).getSearches().get(rowIndex);
 
 			Class<?> searchClazz = selectedSearch.getResultType();
 			if(searchClazz == PartyType.class)
 			{
 				if (myParty.getPartySearches().remove((Search<CatalogueType>) selectedSearch))
-					loadTab(tabbedPane.getSelectedIndex());
+					arrangeTab0(leftPane, rightPane); // loadTab(tabbedPane.getSelectedIndex());
 			}
 			else if(searchClazz == CatalogueType.class)
 			{
 				if (myParty.getCatalogueSearches().remove((Search<CatalogueType>) selectedSearch))
-					loadTab(tabbedPane.getSelectedIndex());
+					arrangeTab0(leftPane, rightPane); //loadTab(tabbedPane.getSelectedIndex());
 			}
-			arrangeTab0(leftPane, rightPane);
 		});
 
 		table.addMouseListener(new MouseAdapter()
@@ -1543,6 +1554,7 @@ public class ClientFrame extends JFrame
 				if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 				{
 					final TreePath path = searchTree.getSelectionPath();
+					if(path == null) return;
 					final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 					final Object selectedSearch = selectedNode.getUserObject();
 					if(selectedSearch instanceof String)
@@ -1575,7 +1587,6 @@ public class ClientFrame extends JFrame
 					{
 						table.setRowSelectionInterval(rowIndex, rowIndex);
 						searchTablePopupMenu.show(table, event.getX(), event.getY());
-
 					}
 			}
 		});
@@ -1598,11 +1609,12 @@ public class ClientFrame extends JFrame
 		return table;
 	}
 
-	/**Sets the left and right {@code Component} of the tab0's pane.
+	/**
+	 * Sets the left and right {@code Component} of the tab0's pane.
 	 * @param left
 	 * @param right
 	 */
-	private void arrangeTab0(Component left, Component right) //MMM: Does not colapse the tree views :)
+	private void arrangeTab0(Component left, Component right) //MMM: Does not collapse the tree views if left pane has not changed :)
 	{
 		if(tab0Pane == null)
 			tab0Pane = new JSplitPane();
@@ -1610,91 +1622,79 @@ public class ClientFrame extends JFrame
 			tab0Pane.removeAll();
 		tab0Pane.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right));
 		//repaint();
-/*		tab0Pane.repaint();
+		/*		tabPane.repaint();
 		repaint();*/
 	}
 
-/*	private Component getTab0RightPane()
-	{
-		return tab0RightPane;
-	}
-
-	private void setTab0RightPane(Component component)
-	{
-		this.tab0RightPane = tab0RightPane;
-		repaint();
-		if(tab0RightPane.getComponentCount() != 0)
-			tab0RightPane.removeAll();
-		tab0RightPane.add(component);
-	}*/
-
-	/**Shows dialog with Party data which could be changed.
-	 * @param party Party object which data are to be changed
+	/**
+	 * Shows dialog with {@link Party} data which could be changed. If changes have been made to the {@code Party}
+	 * object they are saved within this method.
+	 * @param party {@code Party} object which data are to be shown
 	 * @param title title of the dialog
-	 * @return party object with changes if any
+	 * @return {@code Party} with potentially changed data
 	 */
+	//MMM: boolean editable could be added; = false if party should only be displayed not changed
 	public Party showPartyDialog(Party party, String title)
 	{
-		//		Party partyCopy = InstanceFactory.<Party>newInstance(party);
-		Party partyCopy = party.clone();
-
 		partyDialog = new PartyDialog(ClientFrame.this);
 		partyDialog.setTitle(title);
-		partyDialog.setParty(partyCopy);
+		//setting clone not original object as a dialog's party field because the changes to the party will be rejected
+		//if they are not accepted by pressing the dialog's OK button. If original object is set, changes remain
+		//no matter what button is pressed
+		partyDialog.setParty(party.clone());
 		partyDialog.setVisible(true);
 		if(partyDialog.isChanged())
 		{
 			party = partyDialog.getParty();
 			updateTitle(party.getPartySimpleName());
-			MyParty myParty = client.getMyParty();
+			final MyParty myParty = client.getMyParty();
 			myParty.setCoreParty(party);
 			myParty.setDirtyMyParty(true);
-			new Thread(()->
+			partyDialog.setChanged(false);
+
+/*			MMM: not necessary to write to local database
+ * 			new Thread(()->
 			{
 				try
 				{
 					client.insertMyParty();
-					partyDialog.setChanged(false);
 				}
 				catch (Exception e)
 				{
-					JOptionPane.showMessageDialog(ClientFrame.this, "Could not save data to the local data store!",
+					JOptionPane.showMessageDialog(RutaClientFrame.this, "Could not save data to the local data store!",
 							"Saving data to the local data store", JOptionPane.ERROR_MESSAGE);
 				}
-			}).start();
-
+			}).start();*/
 		}
 		return party;
 	}
 
-	/**Shows dialog for the sign up reguest with the CDR.
-	 * @param party Party object with wich the request will be made
-	 * @param title titel of the dialog
-	 * @return bolean value that shows if the sign up procedure is canceled or not
+	/**
+	 * Shows dialog for the sign up request with the CDR.
+	 * @param title title of the dialog
+	 * @return true when sign up procedure has been canceled, false otherwise
 	 */
-	public boolean showSignUpDialog(MyParty party, String title)
+	public boolean showSignUpDialog(String title)
 	{
 		boolean registerPressed = false;
-		//		Party corePartyCopy = InstanceFactory.<Party>newInstance(party.getCoreParty());
-		//		Party corePartyCopy = party.getCoreParty().clone();
-		//		signUpDialog = new RegisterWithPartyDialog(ClientFrame.this, corePartyCopy);
 		registerDialog = new RegisterDialog(ClientFrame.this);
 		registerDialog.setTitle(title);
 		registerDialog.setVisible(true);
 		registerPressed = registerDialog.isRegisterPressed();
 		registerDialog.setRegisterPressed(false);
 		if(registerPressed)
-		{
 			client.cdrRegisterMyParty(registerDialog.getUsername(), registerDialog.getPassword());
-//			MMM:down below is old implementation of the registration
-//			client.cdrRegisterMyParty(client.getMyParty().getCoreParty(), registerDialog.getUsername(), registerDialog.getPassword());
-		}
 		else
 			enablePartyMenuItems();
 		return registerPressed;
 	}
 
-	private void showSearchDialog(MyParty party, String title)
+	/**
+	 * Shows {@link SearchDialog} for entering the search criterion of the request and calls a method
+	 * that makes the acctual request to the CDR.
+	 * @param title {@code SearchDialog} title
+	 */
+	private void showSearchDialog(String title)
 	{
 		searchDialog = new SearchDialog(ClientFrame.this);
 		searchDialog.setTitle(title);
@@ -1702,7 +1702,6 @@ public class ClientFrame extends JFrame
 		if(searchDialog.isSearchPressed())
 		{
 			searchDialog.setSearchPressed(false);
-		//	client.cdrSearch(searchDialog.getSearchName(), searchDialog.getCriterion());
 			client.cdrSearch(searchDialog.getSearch(), false);
 		}
 	}
@@ -1712,7 +1711,8 @@ public class ClientFrame extends JFrame
 		return client;
 	}
 
-	/**Appends current date and time and coloured passed string to the console. All this is done inside the
+	/**
+	 * Appends current date and time and passed coloured string to the console. All this is done inside the
 	 * {@link EventQueue}.
 	 * @param str string to be shown on the console
 	 * @param c colour of the string
@@ -1740,104 +1740,16 @@ public class ClientFrame extends JFrame
 		});
 	}
 
-	//***************** TESTING APPLICATION CALL *********************
-	/**Constructs eXist database instance and registers it at the <code>DatabaseManager</code>, enabling
-	 * the application to communicate with it.
+	/**
+	 *Repaints the selected tab.
 	 */
-	/*	public static void connectDatabase()
-	{
-		try
-		{
-			@SuppressWarnings("unchecked")
-			final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
-			final Database database = dbClass.newInstance();
-			database.setProperty("create-database", "true");
-			DatabaseManager.registerDatabase(database);
-		}
-		catch(Exception e)
-		{
-			logger.error(e.getStackTrace().toString());
-		}
-	}*/
-
-	/**Starts the eXist database application in its own jetty server.
-	 * @throws Exception thrown if eXist could not be started
-	 */
-	private static void startDatabase() throws Exception
-	{
-		new Thread( () ->
-		{
-			Process process;
-			try
-			{
-				System.out.println("User directory: " + System.getProperty("user.dir"));
-				System.out.println("User home: " + System.getProperty("user.home"));
-				/*			String command2 = "java -jar ruta-client.jar";
-			logger.info(command2);
-			process = Runtime.getRuntime().exec(command2);
-			printLines("info", process.getInputStream());
-		    printLines("error", process.getErrorStream());
-		    process.waitFor();
-		    logger.info("exitValue() " + process.exitValue());*/
-
-				String[] commands = {"cmd", "/c", "start", "cmd", "/k", "java", "-Xmx1024M", "-Dexist.home=C:\\Programs\\exist-db",
-						"-Djava.endorsed.dirs=lib/endorsed", "-Djetty.port=8888", "-jar", "C:\\Programs\\exist-db\\start.jar", "jetty"};
-				ProcessBuilder probuilder = new ProcessBuilder(commands);
-				process = probuilder.start();
-
-
-				/*			String command = "cmd /k java -Xmx1024M -Dexist.home=C:\\Programs\\exist-db -Djava.endorsed.dirs=lib/endorsed -Djetty.port=8888 -jar C:\\Programs\\exist-db\\start.jar jetty";
-			System.out.println("Exist home: " + System.getProperty("exist.home"));
-			//logger.info(command);
-			System.out.println(command);
-			process = Runtime.getRuntime().exec(command);*/
-
-				printLines("info", process.getInputStream());
-				printLines("error", process.getErrorStream());
-				//process.waitFor(2000, TimeUnit.SECONDS);
-				process.destroyForcibly();
-
-				//process.waitFor();
-				//logger.info("exitValue() " + process.exitValue());
-				//System.out.println("exitValue() " + process.exitValue());
-			}
-			catch (Exception e)
-			{
-				logger.error("Exception is ", e);
-				//throw e;
-			}
-		}).start();
-	}
-
-	/**Sends <code>Inpustream</code> text to the console window.
-	 * @param type type of the message
-	 * @param ins <code>Inpustream</code> that would be sent to the console window
-	 * @throws Exception thrown if there is the error in starting the database or reading the input stream
-	 */
-	private static void printLines(String type, InputStream ins) throws Exception
-	{
-		String line = null;
-		BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-		if("info".equals(type))
-			while ((line = in.readLine()) != null)
-				System.out.println(line);
-		else if("error".equals(type))
-		{
-			while((line = in.readLine()) != null)
-				System.err.println(line);
-			throw new Exception("Error while starting the database.");
-		}
-		else
-			throw new Exception("Invalid type of the input stream.");
-	}
-
 	//MMM: should be implemented to update view of trees with no path collapsing as it is now
 	public void repaintTabbedPane()
 	{
 		int selectedTab = tabbedPane.getSelectedIndex();
 		loadTab(selectedTab);
 
-/*		if(selectedTab == 0)
+		/*		if(selectedTab == 0)
 		{
 			leftPane.revalidate();
 			leftPane.repaint();
@@ -1850,40 +1762,19 @@ public class ClientFrame extends JFrame
 			loadTab(selectedTab);*/
 
 
-/*		Component treeContainer = ((JComponent) ((JComponent)((JComponent) tab0Pane.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
+		/*		Component treeContainer = ((JComponent) ((JComponent)((JComponent) tabPane.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
 		JTree partyTree = (JTree) ((JComponent) treeContainer).getComponent(0);
 		JTree searchTree = (JTree) ((JComponent) treeContainer).getComponent(1);
 		((DefaultTreeModel) partyTree.getModel()).reload();
 		((DefaultTreeModel) searchTree.getModel()).reload();*/
 	}
 
-	/**Update the main frame's title.
-	 * @param partyName party naem that should be shown in the title bar
+	/**
+	 * Update the main frame's title.
+	 * @param partyName party name that should be shown as a part of the title
 	 */
 	public void updateTitle(String partyName)
 	{
-		this.setTitle("Ruta Client - " + partyName);
+		setTitle("Ruta Client - " + partyName);
 	}
-
-	/**Shuts down the eXist database, its application program and jetty server as its container.
-	 * @throws Exception thrown if database could not be stopped
-	 */
-	/*	private static void shutdownDatabase() throws Exception
-	{
-		Collection root = null;
-		try
-		{
-			root = getRootCollection();
-			final DatabaseInstanceManager dbm = (DatabaseInstanceManager) root.getService("DatabaseInstanceManager", "1.0");
-			dbm.shutdown();
-		}
-		catch (XMLDBException e)
-		{
-			logger.error(e.getStackTrace().toString());
-			throw e;
-		}
-	}*/
-
-	//****************************************************************
-
 }

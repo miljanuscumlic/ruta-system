@@ -10,7 +10,7 @@ public class DeregistrationNoticeXmlMapper extends XmlMapper<DeregistrationNotic
 	final private static String objectPackageName = "rs.ruta.common";
 	final private static String collectionPath = "/deregistration-notice";
 
-	public DeregistrationNoticeXmlMapper(ExistConnector connector) throws DetailException
+	public DeregistrationNoticeXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 	}

@@ -203,11 +203,11 @@ public class ClientTest
 	}
 
 	/**
-	 * Creates a collection at a path from the parent collection
-	 * i.e. if the parent collection is "/db" and the pathSegments are ['a', 'b', c']
+	 * Creates a collection at a path from the clientFrame collection
+	 * i.e. if the clientFrame collection is "/db" and the pathSegments are ['a', 'b', c']
 	 * we will create and return the collection /db/a/b/c
 	 *
-	 * @param parent the parent collection in which to create the collection path
+	 * @param clientFrame the clientFrame collection in which to create the collection path
 	 * @param pathSegments Each segment of the path to create, i.e. each segment is a sub-collection
 	 *
 	 * @return The created collection indicated by the path

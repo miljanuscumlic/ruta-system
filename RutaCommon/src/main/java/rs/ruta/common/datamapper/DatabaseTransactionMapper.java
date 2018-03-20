@@ -17,7 +17,7 @@ public class DatabaseTransactionMapper extends XmlMapper<DatabaseTransaction>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, DatabaseTransaction> loadedTransactions;
 
-	public DatabaseTransactionMapper(ExistConnector connector) throws DetailException
+	public DatabaseTransactionMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedTransactions = new ConcurrentHashMap<String, DatabaseTransaction>();
@@ -122,7 +122,7 @@ public class DatabaseTransactionMapper extends XmlMapper<DatabaseTransaction>
 	}
 
 	@Override
-	protected void putCacheObject(String id, DatabaseTransaction object)
+	protected void putCachedObject(String id, DatabaseTransaction object)
 	{
 		loadedTransactions.put(id, object);
 	}

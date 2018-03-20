@@ -8,7 +8,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.swing.JButton;
@@ -17,14 +16,9 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-
 import rs.ruta.common.RutaVersion;
 import rs.ruta.services.UpdateRutaClientResponse;
 
@@ -127,7 +121,6 @@ public class UpdateDialog extends JDialog
 										repaint();
 									});
 								}
-
 							});
 						}
 					}

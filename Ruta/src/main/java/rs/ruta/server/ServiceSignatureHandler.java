@@ -22,7 +22,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;
 
@@ -150,7 +150,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	 */
 	private String getSecretKey(String username) throws DetailException
 	{
-		return (String) MapperRegistry.getInstance().getMapper(User.class).findSecretKey(username);
+		return (String) MapperRegistry.getInstance().getMapper(RutaUser.class).findSecretKey(username);
 	}
 
 	/**Generates SOAPFaultException that is thrown as SOAP Fault to the client. Reason for the exception is

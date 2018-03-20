@@ -109,6 +109,7 @@ public class SearchDialog extends JDialog
 			criterion.nullEmptyFields();
 
 			search = new Search<>();
+//			search.setNextId();
 			search.setCriterion(criterion);
 			search.setSearchName(searchName);
 			search.setTimestamp();

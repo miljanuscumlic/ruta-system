@@ -1,6 +1,5 @@
 package rs.ruta.common.datamapper;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.bind.JAXBElement;
 
 import org.exist.xmldb.XQueryService;
-import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
@@ -24,7 +22,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	//MMM: This map should be some kind of most recently used collection
 	private Map<String, CatalogueType> loadedCatalogues;
 
-	public CatalogueXmlMapper(ExistConnector connector) throws DetailException
+	public CatalogueXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedCatalogues = new ConcurrentHashMap<String, CatalogueType>();
@@ -123,7 +121,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	protected void putCacheObject(String id, CatalogueType object)
+	protected void putCachedObject(String id, CatalogueType object)
 	{
 		loadedCatalogues.put(id, object);
 	}
@@ -141,7 +139,7 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	}
 
 	@Override
-	protected void clearCachedObjects()
+	public void clearCache()
 	{
 		loadedCatalogues.clear();
 	}
@@ -217,65 +215,62 @@ public class CatalogueXmlMapper extends XmlMapper<CatalogueType>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		String queryName = null;
-		if(criterion.getClass() == CatalogueSearchCriterion.class)  //MMM: at this point this is superfluous
-			queryName = queryNameSearchCatalogue;
-		String query = openXmlDocument(getQueryPath(), queryName);
-
-		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
-		String partyName = sc.getPartyName();
-		String partyCompanyID = sc.getPartyCompanyID();
-		String partyClassCode = sc.getPartyClassCode();
-		String partyCity = sc.getPartyCity();
-		String partyCountry = sc.getPartyCountry();
-		boolean partyAll = sc.isPartyAll();
-
-		String itemName = sc.getItemName();
-		String itemDescription = sc.getItemDescription();
-		String itemBarcode = sc.getItemBarcode();
-		String itemCommCode = sc.getItemCommCode();
-		String itemKeyword = sc.getItemKeyword();
-		boolean itemAll = sc.isItemAll();
-
-		if(query == null)
-			return query;
-		try
+		String query = null;
+		if(criterion.getClass() == CatalogueSearchCriterion.class)
+			query = openXmlDocument(getQueryPath(), queryNameSearchCatalogue);
+		if(query != null)
 		{
-			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
-			queryService.declareVariable("path", queryPath.toString());
-			if(partyName != null)
-				queryService.declareVariable("party-name", partyName);
-			if(partyCompanyID != null)
-				queryService.declareVariable("party-company-id", partyCompanyID);
-			if(partyClassCode != null)
-				queryService.declareVariable("party-class-code", partyClassCode);
-			if(partyCity != null)
-				queryService.declareVariable("party-city", partyCity);
-			if(partyCountry != null)
-				queryService.declareVariable("party-country", partyCountry);
-			if(!partyAll)
-				queryService.declareVariable("party-all", false);
+			CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
+			String partyName = sc.getPartyName();
+			String partyCompanyID = sc.getPartyCompanyID();
+			String partyClassCode = sc.getPartyClassCode();
+			String partyCity = sc.getPartyCity();
+			String partyCountry = sc.getPartyCountry();
+			boolean partyAll = sc.isPartyAll();
 
-			if(itemName != null)
-				queryService.declareVariable("item-name", itemName);
-			if(itemDescription != null)
-				queryService.declareVariable("item-description", itemDescription);
-			if(itemBarcode != null)
-				queryService.declareVariable("item-barcode", itemBarcode);
-			if(itemCommCode != null)
-				queryService.declareVariable("item-comm-code", itemCommCode);
-			if(itemKeyword != null)
-				queryService.declareVariable("item-keyword", itemKeyword);
-			if(!itemAll)
-				queryService.declareVariable("item-all", false);
-		}
-		catch(XMLDBException e)
-		{
-			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
-		}
+			String itemName = sc.getItemName();
+			String itemDescription = sc.getItemDescription();
+			String itemBarcode = sc.getItemBarcode();
+			String itemCommCode = sc.getItemCommCode();
+			String itemKeyword = sc.getItemKeyword();
+			boolean itemAll = sc.isItemAll();
 
+			try
+			{
+				StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+				queryService.declareVariable("path", queryPath.toString());
+				if(partyName != null)
+					queryService.declareVariable("party-name", partyName);
+				if(partyCompanyID != null)
+					queryService.declareVariable("party-company-id", partyCompanyID);
+				if(partyClassCode != null)
+					queryService.declareVariable("party-class-code", partyClassCode);
+				if(partyCity != null)
+					queryService.declareVariable("party-city", partyCity);
+				if(partyCountry != null)
+					queryService.declareVariable("party-country", partyCountry);
+				if(!partyAll)
+					queryService.declareVariable("party-all", false);
+
+				if(itemName != null)
+					queryService.declareVariable("item-name", itemName);
+				if(itemDescription != null)
+					queryService.declareVariable("item-description", itemDescription);
+				if(itemBarcode != null)
+					queryService.declareVariable("item-barcode", itemBarcode);
+				if(itemCommCode != null)
+					queryService.declareVariable("item-comm-code", itemCommCode);
+				if(itemKeyword != null)
+					queryService.declareVariable("item-keyword", itemKeyword);
+				if(!itemAll)
+					queryService.declareVariable("item-all", false);
+			}
+			catch(XMLDBException e)
+			{
+				logger.error(e.getMessage(), e);
+				throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
+			}
+		}
 		return query;
 	}
-
 }

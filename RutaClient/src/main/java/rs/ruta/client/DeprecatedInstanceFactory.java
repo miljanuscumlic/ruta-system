@@ -482,9 +482,9 @@ public final class DeprecatedInstanceFactory
 
 	/**Reflection version of setter method of the node property i.e. not leaf property. If the node property object is null,
 	 * then it creates the object.
-	 * @param <T> type of the owner of the property under check
+	 * @param <T> type of the clientFrame of the property under check
 	 * @param <U> type of the property under check
-	 * @param ref owner of the property
+	 * @param ref clientFrame of the property
 	 * @param property property under check
 	 * @param propClazz class object of the property
 	 * @return created property
@@ -511,9 +511,9 @@ public final class DeprecatedInstanceFactory
 
 	/**Reflection version of setter method of the node property i.e. not leaf property. If the node property object is null,
 	 * then it creates the object and set its value calling denoted setter method.
-	 * @param <T> type of the owner of the property under check
+	 * @param <T> type of the clientFrame of the property under check
 	 * @param <U> type of the property under check
-	 * @param ref owner of the property
+	 * @param ref clientFrame of the property
 	 * @param property property under check
 	 * @param propClazz class object of the property
 	 * @param methodName string representing a setter method name that should be called
@@ -539,10 +539,10 @@ public final class DeprecatedInstanceFactory
 	}
 
 	/**Reflection version of the leaf property setter method. If the leaf property object is null, then it creates the object and sets its value.
-	 * @param <T> type of the owner of the property under check
+	 * @param <T> type of the clientFrame of the property under check
 	 * @param <U> type of the property under check
 	 * @param <V> type of the property value
-	 * @param ref owner property of the property under check
+	 * @param ref clientFrame property of the property under check
 	 * @param property property under check
 	 * @param propClazz class object of the property
 	 * @param value String value that should be asigned to the property
@@ -629,12 +629,12 @@ public final class DeprecatedInstanceFactory
 		return property != null ? extractor.apply(property) : null;
 	}*/
 
-	/**Recursion version of the getter method .Gets the value of the property if it is defined. If the owner of the property,
+	/**Recursion version of the getter method .Gets the value of the property if it is defined. If the clientFrame of the property,
 	 * or property is null, returns null.
 	 * @param T type of the property being returned
-	 * @param field owner of the proprety
+	 * @param field clientFrame of the proprety
 	 * @param property property whose value is questioned
-	 * @return returns value of the property, or null if property or owner are not set
+	 * @return returns value of the property, or null if property or clientFrame are not set
 	 */
 	@Deprecated
 	@SuppressWarnings("unchecked")

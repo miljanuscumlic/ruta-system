@@ -17,6 +17,9 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 
 import rs.ruta.common.InstanceFactory;
 
+/**
+ *Wrapper class for {@link PartyType} with additional convinient methods.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Party")
 public class Party extends PartyType
@@ -25,21 +28,22 @@ public class Party extends PartyType
 
 	public Party() { super(); }
 
-	/**Copy constructor that copies passed {@link PartyType} superclass object and
+	/**
+	 * Copy constructor that copies passed {@link PartyType} superclass object and
 	 * retrieves new {@code Party} object.
-	 * @param party
+	 * @param party {@code PartyType} object with which new {@code Catalogue} is initialized
 	 */
 	public Party(PartyType party)
 	{
 		super();
-		party.cloneTo((PartyType) this);
+		party.cloneTo(this);
 	}
 
 	@Override
 	public Party clone()
 	{
 		Party ret = new Party();
-	    super.cloneTo((PartyType) ret);
+	    super.cloneTo(ret);
 	    return ret;
 	}
 
@@ -883,7 +887,7 @@ public class Party extends PartyType
 	}
 
 	/**
-	 * Returns Party's ID.
+	 * Returns Party's ID as a {@code String}.
 	 * @return ID or {@code null} if ID has not been set
 	 */
 	public String getPartyID()
@@ -893,7 +897,7 @@ public class Party extends PartyType
 	}
 
 	/**
-	 * Returns Party's ID.
+	 * Returns Party's ID as a {@code String}.
 	 * @param party Party to be checked
 	 * @return ID or {@code null} if ID has not been set
 	 */
@@ -903,7 +907,8 @@ public class Party extends PartyType
 		return ("").equals(ID) ? null : ID;
 	}
 
-	/**Verifies whether Party has all of its mandatory fields.
+	/**
+	 * Verifies whether Party has all of its mandatory fields.
 	 * @return {@code null} if it has all mandatory fields, or {@code String} designating the first missing field
 	 */
 	public String verifyParty()

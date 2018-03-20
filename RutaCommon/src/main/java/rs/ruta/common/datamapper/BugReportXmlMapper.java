@@ -37,7 +37,7 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	 */
 	private Map<String, BugReport> loadedBugReports;
 
-	public BugReportXmlMapper(ExistConnector connector) throws DetailException
+	public BugReportXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedBugReports = new ConcurrentHashMap<>();
@@ -68,13 +68,13 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	}
 
 	@Override
-	protected void clearCachedObjects()
+	public void clearCache()
 	{
 		loadedBugReports.clear();
 	}
 
 	@Override
-	protected void putCacheObject(String id, BugReport object)
+	protected void putCachedObject(String id, BugReport object)
 	{
 		loadedBugReports.put(id, object);
 	}
@@ -187,28 +187,23 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		String queryName = null;
-		Class<? extends SearchCriterion> criterionClazz = criterion.getClass();
-		if(criterionClazz == BugReportSearchCriterion.class)  //MMM: at this point this is superfluous
-			queryName = queryBugReport;
-		String query = openXmlDocument(getQueryPath(), queryName);
-		if(query == null)
-			return query;
-		try
-		{
-			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
-			queryService.declareVariable("path", queryPath.toString());
+		String query = null;
+		if(criterion.getClass() == BugReportSearchCriterion.class)
+			query = openXmlDocument(getQueryPath(), queryBugReport);
+		if(query != null)
 
-			/* here should be put the code for binding the variables like this:
-			 * if(partyName != null)
-				queryService.declareVariable("party-name", partyName);*/
-		}
-		catch(XMLDBException e)
 		{
-			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+			try
+			{
+				StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+				queryService.declareVariable("path", queryPath.toString());
+			}
+			catch(XMLDBException e)
+			{
+				logger.error(e.getMessage(), e);
+				throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
+			}
 		}
-
 		return query;
 	}
 
@@ -293,7 +288,7 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There is an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There is an error in the process of its execution.", e);
 		}
 		finally
 		{

@@ -22,7 +22,7 @@ public class ObjectFactory
 	public final static QName _BugReport_QNAME = new QName("urn:rs:ruta:common", "BugReport");
 	public final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
 	public final static QName _PartyID_QNAME = new QName("urn:rs:ruta:services", "PartyID");
-	public final static QName _User_QNAME = new QName("urn:rs:ruta:services", "RutaUser");
+	public final static QName _RutaUser_QNAME = new QName("urn:rs:ruta:common", "RutaUser");
 	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:common", "Followers");
 	public final static QName _DocumentDistribution_QNAME = new QName("urn:rs:ruta:services", "DocumentDistribution");
 	public final static QName _DeregistrationNotice_QNAME = new QName("urn:rs:ruta:common", "DeregistrationNotice");
@@ -103,26 +103,29 @@ public class ObjectFactory
 		return new JAXBElement<PartyID>(_PartyID_QNAME, PartyID.class, null, value);
 	}
 
-	/**Creates an instance of {@link User}.
-	 * @return created {@code User} object and never {@code null}
+	/**
+	 * Creates an instance of {@link RutaUser}.
+	 * @return created {@code RutaUser} object and never {@code null}
 	 */
 	@Nonnull
-	public User createUser()
+	public RutaUser createUser()
 	{
-		return new User();
+		return new RutaUser();
 	}
 
-	/** Creates an instance of {@link JAXBElement }{@code <}{@link User }{@code >}.
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link RutaUser }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "RutaUser")
+	@XmlElementDecl(namespace = "urn:rs:ruta:common", name = "RutaUser")
 	@Nonnull
-	public JAXBElement<User> createUser(@Nullable final User value)
+	public JAXBElement<RutaUser> createUser(@Nullable final RutaUser value)
 	{
-		return new JAXBElement<User>(_User_QNAME, User.class, null, value);
+		return new JAXBElement<RutaUser>(_RutaUser_QNAME, RutaUser.class, null, value);
 	}
 
-	/**Creates an instance of {@link Followers}.
+	/**
+	 * Creates an instance of {@link Followers}.
 	 * @return created {@code Followers} object and never {@code null}
 	 */
 	@Nonnull
@@ -150,7 +153,8 @@ public class ObjectFactory
 		return new DocumentDistribution();
 	}
 
-	/** Creates an instance of {@link JAXBElement }{@code <}{@link DocumentDistribution }{@code >}.
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link DocumentDistribution }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
 	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DocumentDistribution")
@@ -160,7 +164,8 @@ public class ObjectFactory
 		return new JAXBElement<DocumentDistribution>(_DocumentDistribution_QNAME, DocumentDistribution.class, null, value);
 	}
 
-	/**Creates an instance of {@link DeregistrationNotice}.
+	/**
+	 * Creates an instance of {@link DeregistrationNotice}.
 	 * @return created {@code DeregistrationNotice} object and never {@code null}
 	 */
 	@Nonnull
@@ -169,7 +174,8 @@ public class ObjectFactory
 		return new DeregistrationNotice();
 	}
 
-	/** Creates an instance of {@link JAXBElement }{@code <}{@link DeregistrationNotice }{@code >}.
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link DeregistrationNotice }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
 	@XmlElementDecl(namespace = "urn:rs:ruta:common", name = "DeregistrationNotice")
@@ -180,4 +186,3 @@ public class ObjectFactory
 	}
 
 }
-

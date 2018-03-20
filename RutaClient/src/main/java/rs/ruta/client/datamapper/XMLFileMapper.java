@@ -10,6 +10,7 @@ import java.util.*;
 import javax.xml.bind.*;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
+import rs.ruta.client.ObjectFactory;
 
 public abstract class XMLFileMapper<T> implements OLDDataMapper
 {

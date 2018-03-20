@@ -17,7 +17,7 @@ public class DistributionTransactionMapper extends XmlMapper<DistributionTransac
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, DistributionTransaction> loadedTransactions;
 
-	public DistributionTransactionMapper(ExistConnector connector) throws DetailException
+	public DistributionTransactionMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedTransactions = new ConcurrentHashMap<String, DistributionTransaction>();
@@ -111,7 +111,7 @@ public class DistributionTransactionMapper extends XmlMapper<DistributionTransac
 	}
 
 	@Override
-	protected void putCacheObject(String id, DistributionTransaction object)
+	protected void putCachedObject(String id, DistributionTransaction object)
 	{
 		loadedTransactions.put(id, object);
 	}

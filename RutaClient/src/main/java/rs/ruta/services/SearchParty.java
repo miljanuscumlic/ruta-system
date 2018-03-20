@@ -4,7 +4,7 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import rs.ruta.common.CatalogueSearchCriterion;
+import rs.ruta.common.PartySearchCriterion;
 
 
 /**
@@ -17,7 +17,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="arg0" type="{http://ruta.rs/services}CatalogueSearchCriterion" minOccurs="0"/>
+ *         &lt;element name="arg0" type="{http://ruta.rs/services}PartySearchCriterion" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -32,17 +32,17 @@ import rs.ruta.common.CatalogueSearchCriterion;
 })
 public class SearchParty {
 
-    protected CatalogueSearchCriterion arg0;
+    protected PartySearchCriterion arg0;
 
     /**
      * Gets the value of the arg0 property.
      * 
      * @return
      *     possible object is
-     *     {@link CatalogueSearchCriterion }
+     *     {@link PartySearchCriterion }
      *     
      */
-    public CatalogueSearchCriterion getArg0() {
+    public PartySearchCriterion getArg0() {
         return arg0;
     }
 
@@ -51,10 +51,10 @@ public class SearchParty {
      * 
      * @param value
      *     allowed object is
-     *     {@link CatalogueSearchCriterion }
+     *     {@link PartySearchCriterion }
      *     
      */
-    public void setArg0(CatalogueSearchCriterion value) {
+    public void setArg0(PartySearchCriterion value) {
         this.arg0 = value;
     }
 

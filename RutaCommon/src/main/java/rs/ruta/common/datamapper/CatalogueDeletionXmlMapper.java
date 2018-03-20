@@ -23,7 +23,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	//MMM: This map should be some kind of most recently used collection
 	private Map<String, CatalogueDeletionType> loadedCatalogueDeletions;
 
-	public CatalogueDeletionXmlMapper(ExistConnector connector) throws DetailException
+	public CatalogueDeletionXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedCatalogueDeletions = new ConcurrentHashMap<String, CatalogueDeletionType>();
@@ -102,7 +102,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
-	protected void putCacheObject(String id, CatalogueDeletionType object)
+	protected void putCachedObject(String id, CatalogueDeletionType object)
 	{
 		loadedCatalogueDeletions.put(id, object);
 	}
@@ -130,7 +130,7 @@ public class CatalogueDeletionXmlMapper extends XmlMapper<CatalogueDeletionType>
 	}
 
 	@Override
-	protected void clearCachedObjects()
+	public void clearCache()
 	{
 		loadedCatalogueDeletions.clear();
 	}

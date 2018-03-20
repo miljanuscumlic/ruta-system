@@ -149,14 +149,14 @@ public class PartyTreeModel extends DefaultTreeModel
 	}
 
   @Override
-	public Object getChild(Object parent, int index)
+	public Object getChild(Object clientFrame, int index)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public int getChildCount(Object parent)
+	public int getChildCount(Object clientFrame)
 	{
 
 		return 0;
@@ -170,7 +170,7 @@ public class PartyTreeModel extends DefaultTreeModel
 	}
 
 	@Override
-	public int getIndexOfChild(Object parent, Object child)
+	public int getIndexOfChild(Object clientFrame, Object child)
 	{
 		// TODO Auto-generated method stub
 		return 0;

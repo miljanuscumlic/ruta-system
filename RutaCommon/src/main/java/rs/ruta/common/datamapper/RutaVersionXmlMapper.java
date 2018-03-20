@@ -22,7 +22,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	final private static String queryNameVersion = "search-version.xq";
 	private RutaVersion loadedVersion = null;
 
-	public RutaVersionXmlMapper(ExistConnector connector) throws DetailException
+	public RutaVersionXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 	}
@@ -55,7 +55,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 	}
 
 	@Override
-	protected void putCacheObject(String id, RutaVersion version)
+	protected void putCachedObject(String id, RutaVersion version)
 	{
 		loadedVersion = version;
 	}
@@ -119,7 +119,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 		catch(XMLDBException e)
 		{
 			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+			throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
 		}
 		finally
 		{

@@ -16,6 +16,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
 
@@ -27,7 +28,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	//MMM: This map should be some kind of most recently used collection bounded in size
 	private Map<String, PartyType> loadedParties;
 
-	public PartyXmlMapper(ExistConnector connector) throws DetailException
+	public PartyXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedParties = new ConcurrentHashMap<String, PartyType>();
@@ -85,7 +86,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected void clearCachedObjects()
+	public void clearCache()
 	{
 		loadedParties.clear();
 	}
@@ -103,7 +104,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	}
 
 	@Override
-	protected void putCacheObject(String id, PartyType object)
+	protected void putCachedObject(String id, PartyType object)
 	{
 		loadedParties.put(id, object);
 	}
@@ -113,9 +114,9 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 			throws DetailException
 	{
 		String id = null;
-		//object that should be stored doesn't have an ID and User has no Document ID metadata set
+		//object that should be stored doesn't have an ID and RutaUser has no Document ID metadata set
 		//MMM: this is changed - Party is getting UUID on the Client side - commented code is from the previous implementation - should be deleted
-		//User which object should be stored has no Document ID metadata set
+		//RutaUser which object should be stored has no Document ID metadata set
 		if(/*getPartyID(party) == null &&*/ getID(username) == null)
 			id = createID();
 		else
@@ -135,7 +136,7 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 		Collection collection = null;
 		String id = null;
 		try
-		{	//object that should be stored doesn't have an ID and User has no Document ID metadata set
+		{	//object that should be stored doesn't have an ID and RutaUser has no Document ID metadata set
 			if(getPartyID(party) == null && getID(username) == null)
 			{
 				collection = getCollection();
@@ -258,44 +259,42 @@ public class PartyXmlMapper extends XmlMapper<PartyType>
 	@Override
 	protected String prepareQuery(SearchCriterion criterion, XQueryService queryService) throws DatabaseException
 	{
-		String queryName = null;
-		if(criterion.getClass() == CatalogueSearchCriterion.class)  //MMM: at this point this is superfluous
-			queryName = queryNameSearchParty;
-		String query = openXmlDocument(getQueryPath(), queryName);
-
-		CatalogueSearchCriterion sc = (CatalogueSearchCriterion) criterion;
-		String partyName = sc.getPartyName();
-		String partyCompanyID = sc.getPartyCompanyID();
-		String partyClassCode = sc.getPartyClassCode();
-		String partyCity = sc.getPartyCity();
-		String partyCountry = sc.getPartyCountry();
-		boolean partyAll = sc.isPartyAll();
-
-		if(query == null)
-			return query;
-		try
+		String query = null;
+		if(criterion.getClass() == PartySearchCriterion.class)
+			query = openXmlDocument(getQueryPath(), queryNameSearchParty);
+		if(query != null)
 		{
-			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
-			queryService.declareVariable("path", queryPath.toString());
-			if(partyName != null)
-				queryService.declareVariable("party-name", partyName);
-			if(partyCompanyID != null)
-				queryService.declareVariable("party-company-id", partyCompanyID);
-			if(partyClassCode != null)
-				queryService.declareVariable("party-class-code", partyClassCode);
-			if(partyCity != null)
-				queryService.declareVariable("party-city", partyCity);
-			if(partyCountry != null)
-				queryService.declareVariable("party-country", partyCountry);
-			if(!partyAll)
-				queryService.declareVariable("party-all", false);
-		}
-		catch(XMLDBException e)
-		{
-			logger.error(e.getMessage(), e);
-			throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
-		}
+			PartySearchCriterion sc = (PartySearchCriterion) criterion;
+			String partyName = sc.getPartyName();
+			String partyCompanyID = sc.getPartyCompanyID();
+			String partyClassCode = sc.getPartyClassCode();
+			String partyCity = sc.getPartyCity();
+			String partyCountry = sc.getPartyCountry();
+			boolean partyAll = sc.isPartyAll();
 
+			try
+			{
+				StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
+				queryService.declareVariable("path", queryPath.toString());
+				if(partyName != null)
+					queryService.declareVariable("party-name", partyName);
+				if(partyCompanyID != null)
+					queryService.declareVariable("party-company-id", partyCompanyID);
+				if(partyClassCode != null)
+					queryService.declareVariable("party-class-code", partyClassCode);
+				if(partyCity != null)
+					queryService.declareVariable("party-city", partyCity);
+				if(partyCountry != null)
+					queryService.declareVariable("party-country", partyCountry);
+				if(!partyAll)
+					queryService.declareVariable("party-all", false);
+			}
+			catch(XMLDBException e)
+			{
+				logger.error(e.getMessage(), e);
+				throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
+			}
+		}
 		return query;
 	}
 

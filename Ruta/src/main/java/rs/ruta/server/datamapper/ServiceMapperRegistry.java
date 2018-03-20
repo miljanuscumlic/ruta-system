@@ -10,7 +10,7 @@ import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.BugReportXmlMapper;
 import rs.ruta.common.datamapper.CatalogueDeletionXmlMapper;
 import rs.ruta.common.datamapper.CatalogueXmlMapper;
@@ -50,7 +50,8 @@ public class ServiceMapperRegistry extends MapperRegistry
 		setConnector(new RemoteExistConnector());
 	}
 
-	/**Gets the {@link DataMapper} for connection to the data store based on the <code>Class</code> paramater.
+	/**
+	 * Gets the {@link DataMapper} for connection to the data store based on the <code>Class</code> paramater.
 	 * If mapper for a particular class is not in the registry, it will be added to it prior to its retrieval.
 	 * @param clazz <code>Class</code> object of the class which mapper should be returned
 	 * @return data mapper for the input parameter object or <code>null</code>
@@ -71,7 +72,7 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new CatalogueDeletionXmlMapper(getConnector());
 			else if(clazz == PartyType.class)
 				dataMapper = (DataMapper<S, String>) new PartyXmlMapper(getConnector());
-			else if(clazz == User.class)
+			else if(clazz == RutaUser.class)
 				dataMapper = (DataMapper<S, String>) new UserXmlMapper(getConnector());
 			else if(clazz == DatabaseTransaction.class)
 				dataMapper = (DataMapper<S, String>) new DatabaseTransactionMapper(getConnector());

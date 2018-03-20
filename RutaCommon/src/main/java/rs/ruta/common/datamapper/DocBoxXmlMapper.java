@@ -28,7 +28,7 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 	final private static String queryNameSearchDocBoxIDs = "search-docbox-id.xq";
 	final private static String queryNameFindDocument = "search-docbox-document.xq";
 
-	public DocBoxXmlMapper(ExistConnector connector) throws DetailException
+	public DocBoxXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 	}
@@ -199,7 +199,7 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			catch(XMLDBException e)
 			{
 				logger.error(e.getMessage(), e);
-				throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+				throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
 			}
 		}
 		else if(criterionClazz == DocBoxDocumentSearchCriterion.class)
@@ -224,11 +224,12 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			catch(XMLDBException e)
 			{
 				logger.error(e.getMessage(), e);
-				throw new DatabaseException("Could not process the query. There has been an error in the process of its exceution.", e);
+				throw new DatabaseException("Could not process the query. There has been an error in the process of its execution.", e);
 			}
 		}
-		else
-			throw new DocumentException("Not valid search criterion querying DocBox documents.");
+//		MMM: should return null not an exception; check whether exception could be omitted - yes
+//		else
+//			throw new DocumentException("Not valid search criterion querying DocBox documents.");
 		return query;
 	}
 

@@ -10,9 +10,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
+import rs.ruta.common.datamapper.DetailException;
 
 /**
- *Table model containing data from BusinessParty.products.
+ *Table model containing data from MyParty.products.
  */
 public class ProductTableModel extends AbstractTableModel
 {
@@ -23,23 +24,23 @@ public class ProductTableModel extends AbstractTableModel
 		};
 
 
-	private BusinessParty party;
+	private MyParty party;
 	private boolean editable;
 
 	/**Creates new model for the product table.
 	 * @param party party which products are modeled and shown
 	 * @param editable if true, table cells are editable
 	 */
-	public ProductTableModel(BusinessParty party, boolean editable)
+	public ProductTableModel(MyParty party, boolean editable)
 	{
 		this.party = party;
 		this.editable = editable;
 	}
 
 	/**Creates new model for the product table. Party should be set with the subsequent call to
-	 * setBusinessParty(BusinessParty party)
+	 * setMyParty(MyParty party)
 	 * @param editable if true, table cells are editable
-	 * @see ProductTableModel#setBusinessParty
+	 * @see ProductTableModel#setMyParty
 	 */
 	public ProductTableModel(boolean editable)
 	{
@@ -47,7 +48,7 @@ public class ProductTableModel extends AbstractTableModel
 		this.editable = editable;
 	}
 
-	public BusinessParty getParty()
+	public MyParty getParty()
 	{
 		return party;
 	}
@@ -55,7 +56,7 @@ public class ProductTableModel extends AbstractTableModel
 	/**Sets the Party for the product table model.
 	 * @param party Party that is going to be set
 	 */
-	public void setParty(BusinessParty party)
+	public void setParty(MyParty party)
 	{
 		this.party = party;
 	}
@@ -88,7 +89,7 @@ public class ProductTableModel extends AbstractTableModel
 			case 2:
 				return party.getProductDescriptionAsString(rowIndex);
 			case 3:
-				return party.getProductPackSizeAsBigDecimal(rowIndex);
+				return party.getProductPackSize(rowIndex);
 			case 4:
 				return party.getProductIDAsString(rowIndex);
 			case 5:
@@ -114,8 +115,18 @@ public class ProductTableModel extends AbstractTableModel
 				return;
 			else
 			{
-				party.addNewEmptyProduct();
-				fireTableRowsInserted(rowIndex+1, columnIndex);
+				try
+				{
+					party.addNewEmptyProduct(rowIndex);
+					fireTableRowsInserted(rowIndex+1, columnIndex);
+				}
+				catch (DetailException e)
+				{
+					EventQueue.invokeLater(() ->
+						JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
+								"Database Error", JOptionPane.ERROR_MESSAGE)
+					);
+				}
 			}
 		try
 		{

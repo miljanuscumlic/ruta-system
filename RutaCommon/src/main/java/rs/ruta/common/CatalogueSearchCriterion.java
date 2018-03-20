@@ -7,8 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 
 //@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:common")
 /**
- *Class represents a {@code SearchCriterion} for {@link CatalogueType catalogue} and
- *{@link PartyType party} searches.
+ *Class represents a {@code SearchCriterion} for {@link CatalogueType catalogue} searches.
  */
 @XmlType(name = "CatalogueSearchCriterion")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -47,7 +46,8 @@ public class CatalogueSearchCriterion extends SearchCriterion
 		partyAll = itemAll = false;
 	}
 
-	/**Checks whether the search is supposed to query Catalogues. If not the Parties are only queried.
+	/**
+	 * Checks whether the search is supposed to query Catalogues. If not the Parties are only queried.
 	 * @return true if Catalogues should be queried.
 	 */
 	public boolean isCatalogueSearchedFor()
@@ -193,11 +193,7 @@ public class CatalogueSearchCriterion extends SearchCriterion
 		this.itemAll = itemAll;
 	}
 
-	/**If a string field is equal to empty string this method replaces its values with a null.
-	 *This enables xml serialization of <code>SearchCriterion</code> object not to have elements that
-	 *corresponds to empty strings in the model.
-	 * @return this object
-	 */
+	@Override
 	public CatalogueSearchCriterion nullEmptyFields()
 	{
 		if("".equals(partyName))

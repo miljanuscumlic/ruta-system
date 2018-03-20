@@ -7,7 +7,6 @@ import java.util.List;
 import org.xmldb.api.base.XMLDBException;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
-import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
 
@@ -89,16 +88,25 @@ public interface DataMapper<T, ID>
 	 */
 	default public <U> List<U> findGeneric(CatalogueSearchCriterion criterion) throws DetailException { return null; }
 
-	/** Writes all objects to the data store.
-	 * @throws DetailException TODO
+	/**
+	 * Writes all objects to the data store.
+	 * @throws DetailException if object could not be inserted in the store
 	 */
-	public void insertAll() throws DetailException;
+	default public void insertAll() throws DetailException { }
+
+	/**
+	 * Writes all objects to the data store.
+	 * @param username user's username
+	 * @param list of objects to write to the data store.
+	 * @throws DetailException if object could not be inserted in the store
+	 */
+	default public void insertAll(String username, List<T> list) throws DetailException { }
 
 	/**Inserts object to the data store. If necessary unique id of the object may be created.
 	 * @param username username of the user whose object is to be stored in the datastore
 	 * @param object object to be stored
 	 * @return object's id
-	 * @throws DetailException if object cannot be insert in the store
+	 * @throws DetailException if object could not be inserted in the store
 	 */
 	public ID insert(String username, T object) throws DetailException;
 
@@ -117,7 +125,8 @@ public interface DataMapper<T, ID>
 	 */
 	public ID getUserID(String username) throws DetailException;
 
-	/**Retrieves object's id from the data store. ID is the result of the querying the data store
+	/**
+	 * Retrieves object's id from the data store. ID is the result of the querying the data store
 	 * based on the contents of the passed argument.
 	 * @param object object which id is requested
 	 * @return object's id
@@ -125,27 +134,37 @@ public interface DataMapper<T, ID>
 	 */
 	default public ID getID(T object) throws DetailException { return null; }
 
-	/**Deletes object with passed id from the data store.
+	/**
+	 * Deletes object with passed id from the data store.
 	 * @param username user's username
 	 * @param id id of the object that should be deleted
 	 * @throws DetailException if object cannot be deleted
 	 */
 	public void delete(String username, ID id) throws DetailException;
 
-	/**Deletes user from the data store.
+	/**
+	 * Deletes all the objects. If none of the objects exist method returns, without an exception.
+	 * @throws DetailException if objects cannot be deleted
+	 */
+	public void deleteAll() throws DetailException;
+
+	/**
+	 * Deletes user from the data store.
 	 * @param user's username
 	 * @throws DetailException if user cannot be deleted
 	 */
 	default public void deleteUser(String username) throws DetailException { }
 
-	/**Deletes DocBoxDocument
+	/**
+	 * Deletes DocBoxDocument
 	 * @param username username of the user from which DocBox document is to be deleted
 	 * @param id document's id
 	 * @throws DetailException if document could not be deleted
 	 */
 	default public void deleteDocBoxDocument(String username, ID id) throws DetailException {}
 
-	/**Registers new user with the data store.
+	/**
+	 * Registers new user with the data store.
 	 * @param username user's username
 	 * @param password user's password
 	 * @return user's identification object
@@ -158,7 +177,7 @@ public interface DataMapper<T, ID>
 	 * @param username user's username
 	 * @param password user's password
 	 * @param party party data to register
-	 * @return user's identification object
+	 * @return user's secret key
 	 * @throws DetailException if user could not be registered
 	 */
 	default public ID registerUser(String username, String password, PartyType party) throws DetailException { return null; }
@@ -196,5 +215,16 @@ public interface DataMapper<T, ID>
 	//MMM: not used except with MyParty and that is only temporary. After end of its usage it should be deleted.
 	@Deprecated
 	public void insert(T object) throws DetailException;
+
+	/**
+	 * Checks the datastore setup.
+	 * @throws DetailException if datastore could be successfully checked
+	 */
+	default public void checkDatastoreSetup() throws DetailException { }
+
+	/**
+	 * Clears cache i.e. in memory objects.
+	 */
+	default public void clearCache() { }
 
 }

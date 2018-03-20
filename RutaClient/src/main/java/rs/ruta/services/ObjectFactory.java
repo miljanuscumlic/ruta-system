@@ -46,6 +46,7 @@ public class ObjectFactory {
     private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
     private final static QName _DeregisterUser_QNAME = new QName("http://ruta.rs/services", "DeregisterUser");
     private final static QName _FindAllDocBoxDocumentIDsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDsResponse");
+    private final static QName _RutaUser_QNAME = new QName("urn:rs:ruta:common", "RutaUser");
     private final static QName _ReportAttachment_QNAME = new QName("urn:rs:ruta:common", "ReportAttachment");
     private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/services", "FindAllBugReports");
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
@@ -73,7 +74,6 @@ public class ObjectFactory {
     private final static QName _FindDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocument");
     private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/services", "InsertBugReportResponse");
     private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClientResponse");
-    private final static QName _RutaUser_QNAME = new QName("urn:rs:ruta:services", "RutaUser");
     private final static QName _BugReport_QNAME = new QName("urn:rs:ruta:common", "BugReport");
     private final static QName _AddBugReportCommentResponse_QNAME = new QName("http://ruta.rs/services", "AddBugReportCommentResponse");
     private final static QName _NotifyUpdate_QNAME = new QName("http://ruta.rs/services", "NotifyUpdate");
@@ -108,19 +108,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RutaUser }
+     * 
+     */
+    public RutaUser createRutaUser() {
+        return new RutaUser();
+    }
+
+    /**
      * Create an instance of {@link DistributionTransaction }
      * 
      */
     public DistributionTransaction createDistributionTransaction() {
         return new DistributionTransaction();
-    }
-
-    /**
-     * Create an instance of {@link User }
-     * 
-     */
-    public User createUser() {
-        return new User();
     }
 
     /**
@@ -748,6 +748,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RutaUser }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:rs:ruta:common", name = "RutaUser")
+    public JAXBElement<RutaUser> createRutaUser(RutaUser value) {
+        return new JAXBElement<RutaUser>(_RutaUser_QNAME, RutaUser.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ReportAttachment }{@code >}}
      * 
      */
@@ -988,15 +997,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClientResponse")
     public JAXBElement<UpdateRutaClientResponse> createUpdateRutaClientResponse(UpdateRutaClientResponse value) {
         return new JAXBElement<UpdateRutaClientResponse>(_UpdateRutaClientResponse_QNAME, UpdateRutaClientResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link User }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "RutaUser")
-    public JAXBElement<User> createRutaUser(User value) {
-        return new JAXBElement<User>(_RutaUser_QNAME, User.class, null, value);
     }
 
     /**

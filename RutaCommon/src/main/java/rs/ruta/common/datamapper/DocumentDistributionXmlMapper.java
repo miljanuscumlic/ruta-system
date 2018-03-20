@@ -27,7 +27,7 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 	final private static int nThreads = 100;
 	final private static Semaphore sem = new Semaphore(nThreads);
 
-	public DocumentDistributionXmlMapper(ExistConnector connector) throws DetailException
+	public DocumentDistributionXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 	}

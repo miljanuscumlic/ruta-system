@@ -3,7 +3,8 @@ package rs.ruta.common.datamapper;
 import javax.xml.ws.WebFault;
 
 //WebFault annotation is mandatory so I can include detail element inside the SOAPFault
-/**DatabaseException is thrown when there is a problem with the database connectivy or some other issue
+/**
+ * DatabaseException is thrown when there is a problem with the database connectivy or some other issue
  * in regard with calling the database.
  * @author miljan
  */

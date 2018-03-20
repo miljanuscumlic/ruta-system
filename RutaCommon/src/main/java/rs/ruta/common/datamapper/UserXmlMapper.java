@@ -22,9 +22,9 @@ import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartyID;
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 
-public class UserXmlMapper extends XmlMapper<User>
+public class UserXmlMapper extends XmlMapper<RutaUser>
 {
 	final private static String userGroupName = "users";
 	final private static String collectionPath = "/system/key";
@@ -33,7 +33,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	final private static SchemaType PARTY_ID = AXSchemaType.FIRSTNAME;
 	final private static String objectPackageName = "rs.ruta.common";
 
-	public UserXmlMapper(ExistConnector connector) throws DetailException
+	public UserXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
 	}
@@ -143,7 +143,7 @@ public class UserXmlMapper extends XmlMapper<User>
 			UserManagementService ums = (UserManagementService) rootCollection.getService("UserManagementService", "1.0");
 			Account account = ums.getAccount(username);
 			if(account == null)
-				throw new UserException("User account does not exist!");
+				throw new UserException("RutaUser account does not exist!");
 			ums.removeAccount(account);
 			logger.info("Finished deletion of user account \"" + username + "\" from the database.");
 /*			There is no need to append anything to the Transaction journal because deregistration has succeeded
@@ -153,7 +153,7 @@ public class UserXmlMapper extends XmlMapper<User>
 		catch(XMLDBException e)
 		{
 			logger.info("Could not delete user account \"" + username + "\" from the database.");
-			throw new UserException("User account could not be removed from the database.", e);
+			throw new UserException("RutaUser account could not be removed from the database.", e);
 		}
 		finally
 		{
@@ -182,7 +182,7 @@ public class UserXmlMapper extends XmlMapper<User>
 				registerUserWithExist(username, password, transaction);
 				//reservation of unique secretKey in /db/ruta/key collection
 				//MMM: inserting secret key is not necessary anymore because of the use of the UUID
-				secretKey = insert(username, new User(), transaction);
+				secretKey = insert(username, new RutaUser(), transaction);
 				//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
 				insertMetadata(username, SECRET_KEY, secretKey);
 				//reservation of unique id for documents in /db/ruta/party
@@ -203,7 +203,7 @@ public class UserXmlMapper extends XmlMapper<User>
 				logger.error("Could not register the user " + username + " with the CDR service.");
 				logger.error("Exception is ", e);
 				rollbackTransaction(transaction);
-				throw new UserException("User has insufficient data in the database, or data could not be retrieved.");
+				throw new UserException("RutaUser has insufficient data in the database, or data could not be retrieved.");
 			}
 			catch(DetailException e)
 			{
@@ -232,14 +232,16 @@ public class UserXmlMapper extends XmlMapper<User>
 				registerUserWithExist(username, password, transaction);
 				//reservation of unique secretKey in /db/ruta/key collection
 				//MMM: inserting secret key is not necessary anymore because of the use of the UUID
-				secretKey = insert(username, new User(), transaction);
+				secretKey = insert(username, new RutaUser(), transaction);
 				//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
 				insertMetadata(username, SECRET_KEY, secretKey);
 				//inserting party in /db/ruta/party
 				final String documentID = ((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).insert(username, party, transaction);
 				insertMetadata(username, DOCUMENT_ID, documentID);
 				//inserting Party ID in /db/ruta/system/party-id
-				final String partyID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
+				String partyID = null;
+				if(!party.getPartyIdentification().isEmpty())
+					partyID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
 				if(partyID == null || "".equals(partyID))
 					throw new UserException("Party ID has not been set on the client side.");
 				insertMetadata(username, PARTY_ID, partyID);
@@ -256,11 +258,11 @@ public class UserXmlMapper extends XmlMapper<User>
 				logger.error("Could not register the user " + username + " with the CDR service.");
 				logger.error("Exception is ", e);
 				rollbackTransaction(transaction);
-				throw new UserException("User has insufficient data in the database, or data could not be retrieved.");
+				throw new UserException("RutaUser has insufficient data in the database, or data could not be retrieved.");
 			}
-			catch(DetailException e)
+			catch(/*DetailException*/ Exception e)
 			{
-				logger.error("Exception is ", e);
+//				logger.error("Exception is ", e);
 				rollbackTransaction(transaction);
 				throw e;
 			}
@@ -295,15 +297,15 @@ public class UserXmlMapper extends XmlMapper<User>
 		try
 		{
 			Group userGroup = ums.getGroup(userGroupName);
-			if(userGroupName == null)
+			if(userGroup == null)
 			{
 				userGroup = new GroupAider(userGroupName);
 				ums.addGroup(userGroup);
 			}
-			transaction.addOperation(null, null, "REGISTER", null, null, username);
 			final UserAider account = new UserAider(username, userGroup);
 			account.setPassword(password);
 			ums.addAccount(account);
+			transaction.addOperation(null, null, "REGISTER", null, null, username);
 		}
 		catch(XMLDBException e)
 		{
@@ -347,7 +349,7 @@ public class UserXmlMapper extends XmlMapper<User>
 			//check to see if user has right credentials
 			collection = getRootCollection(username, password); // user tries to retrieve root collection
 			if(!secretKey.equals(account.getMetadataValue(SECRET_KEY)))
-				throw new UserException("User is not registered with the database!");
+				throw new UserException("RutaUser is not registered with the database!");
 			partyID = account.getMetadataValue(DOCUMENT_ID); //null if user is not yet registered
 		}
 		catch (XMLDBException e)
@@ -385,8 +387,12 @@ public class UserXmlMapper extends XmlMapper<User>
 		{
 			collection = getRootCollection();
 			UserManagementService ums = (UserManagementService) collection.getService("UserManagementService", "1.0");
-			final UserAider account = (UserAider) ums.getAccount(username);
+/*			final UserAider account = (UserAider) ums.getAccount(username);
+			account.setMetadataValue(schemaType, metaData);*/
+
+			final Account account = ums.getAccount(username);
 			account.setMetadataValue(schemaType, metaData);
+
 			ums.updateAccount(account);
 		}
 		finally
@@ -422,12 +428,12 @@ public class UserXmlMapper extends XmlMapper<User>
 			if(account != null)
 				return account.getMetadataValue(schemaType);
 			else
-				throw new UserException("User is not registered with the database!");
+				throw new UserException("RutaUser is not registered with the database!");
 		}
 		catch(XMLDBException e)
 		{
 			logger.error("Exception is ", e);
-			throw new UserException("User has insufficient data in the database, or data could not be retrieved.", e);
+			throw new UserException("RutaUser has insufficient data in the database, or data could not be retrieved.", e);
 		}
 		finally
 		{
@@ -456,7 +462,7 @@ public class UserXmlMapper extends XmlMapper<User>
 	protected String getObjectPackageName() { return objectPackageName; }
 
 	@Override
-	protected JAXBElement<User> getJAXBElement(User object)
+	protected JAXBElement<RutaUser> getJAXBElement(RutaUser object)
 	{
 		return new rs.ruta.common.ObjectFactory().createUser(object);
 	}

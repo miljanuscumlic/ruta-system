@@ -37,9 +37,10 @@ import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
+import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.*;
 import rs.ruta.server.datamapper.ServiceMapperRegistry;
 
@@ -236,7 +237,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			secretKey = (String) mapperRegistry.getMapper(User.class).registerUser(username, password);
+			secretKey = (String) mapperRegistry.getMapper(RutaUser.class).registerUser(username, password);
 		}
 		catch(Exception e)
 		{
@@ -253,7 +254,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			secretKey = (String) mapperRegistry.getMapper(User.class).registerUser(username, password, party);
+			secretKey = (String) mapperRegistry.getMapper(RutaUser.class).registerUser(username, password, party);
 			docBoxPool.submit(() ->
 			{
 				try
@@ -284,7 +285,7 @@ public class CDR implements Server
 		{
 			init();
 			mapperRegistry.getMapper(PartyType.class).insert(username, party);
-			id = mapperRegistry.getMapper(User.class).getUserID(username);
+			id = mapperRegistry.getMapper(RutaUser.class).getUserID(username);
 		}
 		catch(Exception e)
 		{
@@ -322,7 +323,7 @@ public class CDR implements Server
 	}
 
 	@Override
-	@WebMethod
+	@WebMethod //MMM: should be renamed to deregisterParty
 	public void deregisterUser(String username, DeregistrationNotice notice) throws RutaException
 	{
 		try
@@ -331,7 +332,7 @@ public class CDR implements Server
 			//MMM: temporary clearing of cache
 			//((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
 			final Followers followers = mapperRegistry.getMapper(Followers.class).findByUsername(username).clone();
-			mapperRegistry.getMapper(User.class).deleteUser(username);
+			mapperRegistry.getMapper(RutaUser.class).deleteUser(username);
 			docBoxPool.submit(() ->
 			{
 				try
@@ -352,7 +353,7 @@ public class CDR implements Server
 	}
 
 	@Override
-	public List<PartyType> searchParty(CatalogueSearchCriterion criterion) throws RutaException
+	public List<PartyType> searchParty(PartySearchCriterion criterion) throws RutaException
 	{
 		//		logger.info(criterion.getPartyName());
 		List<PartyType> searchResult = null;// new ArrayList<>();
@@ -557,7 +558,7 @@ public class CDR implements Server
 			if(followers == null)
 			{
 				String msg = null;
-				if(mapperRegistry.getMapper(User.class).findByUserId(followID) == null)
+				if(mapperRegistry.getMapper(RutaUser.class).findByUserId(followID) == null)
 					msg = "Party to follow does not exist in CDR.";
 				else
 					msg = "Followers document is missing for the party to follow.";
@@ -608,7 +609,7 @@ public class CDR implements Server
 			if(followers == null)
 			{
 				String msg = null;
-				if(mapperRegistry.getMapper(User.class).findByUserId(followID) == null)
+				if(mapperRegistry.getMapper(RutaUser.class).findByUserId(followID) == null)
 					msg = "Party to unfollow does not exist in CDR.";
 				else
 					msg = "Followers document is missing for the party to follow.";
@@ -782,7 +783,8 @@ public class CDR implements Server
 		try
 		{
 			init();
-			((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
+			mapperRegistry.clearCachedObjects();
+//			((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
 		}
 		catch(Exception e)
 		{

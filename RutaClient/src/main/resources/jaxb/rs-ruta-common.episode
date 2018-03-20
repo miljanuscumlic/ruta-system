@@ -28,6 +28,12 @@
 	</bindings>
 	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
 		if-exists="true">
+		<bindings scd="~tns:PartySearchCriterion">
+			<class ref="rs.ruta.common.PartySearchCriterion" />
+		</bindings>
+	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
+		if-exists="true">
 		<bindings scd="~tns:DocBoxAllIDsSearchCriterion">
 			<class ref="rs.ruta.common.DocBoxAllIDsSearchCriterion" />
 		</bindings>

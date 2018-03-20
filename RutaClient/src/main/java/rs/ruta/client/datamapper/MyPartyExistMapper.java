@@ -77,7 +77,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	}*/
 
 	@Override
-	protected void clearCachedObjects()
+	public void clearCache()
 	{
 		loadedParties.clear();
 	}
@@ -89,7 +89,7 @@ public class MyPartyExistMapper extends XmlMapper<MyParty>
 	}
 
 	@Override
-	protected void putCacheObject(String id, MyParty object)
+	protected void putCachedObject(String id, MyParty object)
 	{
 		loadedParties.put(id, object);
 	}

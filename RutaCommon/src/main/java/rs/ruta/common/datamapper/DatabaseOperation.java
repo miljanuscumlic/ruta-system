@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import rs.ruta.common.User;
+import rs.ruta.common.RutaUser;
 
 /**
  *Represents the database operation that are constituents of the {@link DatabaseTransaction transaction}.
@@ -53,11 +53,11 @@ public class DatabaseOperation extends ExistOperation
 		{
 			try
 			{
-				((UserXmlMapper)MapperRegistry.getInstance().getMapper(User.class)).deleteExistAccount(getUsername());
+				((UserXmlMapper)MapperRegistry.getInstance().getMapper(RutaUser.class)).deleteExistAccount(getUsername());
 			}
 			catch(UserException e)
 			{// it's OK if the user does not exist; in that case rollback should not be done
-				if(!(e.getMessage().equals("User account does not exist!")))
+				if(!(e.getMessage().equals("RutaUser account does not exist!")))
 					throw e;
 			}
 		}

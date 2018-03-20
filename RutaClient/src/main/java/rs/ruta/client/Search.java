@@ -1,18 +1,20 @@
 package rs.ruta.client;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.SearchCriterion;
 
+@XmlRootElement(namespace = "urn:rs:ruta:client", name = "Search")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Search<T>
 {
@@ -23,20 +25,17 @@ public class Search<T>
 	@XmlElement(name = "Timestamp")
 	private XMLGregorianCalendar timestamp;
 	@XmlElement(name = "SearchCriterion")
-	private CatalogueSearchCriterion criterion;
+	private SearchCriterion criterion;
 	@XmlElement(name= "SearchResult")
 	private List<T> results;
 	@XmlElement(name = "ResultType")
 	private Class<T> resultType;
+	@XmlElement(name = "ID")
+	private String id;
 
 	public Search() {}
 
-	public Search(String searchName)
-	{
-		this.searchName = searchName;
-	}
-
-	public Search(String searchName, CatalogueSearchCriterion criterion, List<T> results, Class<T> resultType)
+	public Search(String searchName, SearchCriterion criterion, List<T> results, Class<T> resultType)
 	{
 		this.searchName = searchName;
 		this.criterion = criterion;
@@ -45,9 +44,74 @@ public class Search<T>
 		else*/
 			this.results = results;
 		this.resultType = resultType;
+		this.id = UUID.randomUUID().toString();
 	}
 
-	/**Gets the number of the next search.
+	@Override
+	public Search<T> clone()
+	{
+		Search<T> newSearch = new Search<T>();
+		newSearch.searchName = searchName;
+		newSearch.timestamp = timestamp;
+		//newSearch.criterion = criterion.clone();
+		newSearch.resultType = resultType;
+		newSearch.id = id;
+		//MMM: not finished - have to test it
+
+
+		return newSearch;
+	}
+
+	public Search<T> cloneTo(Search<T> newSearch)
+	{
+		newSearch.searchName = searchName;
+		newSearch.timestamp = timestamp;
+		//newSearch.criterion = criterion.clone();
+		newSearch.resultType = resultType;
+		newSearch.id = id;
+		//MMM: not finished - have to test it
+
+		return newSearch;
+	}
+
+	/**
+	 * Transforms a list of elements of generic type {@link Search}{@code <T>} to a list of elements of type
+	 * {@code U} that extends {@code Search<T>} generic class.
+	 * @param oldList list to transform
+	 * @param <T> type of objects that are queried and which results are contained in an element of
+	 * {@code Search<T>} type
+	 * @param <U> type of search to which elements of {@code Search<T>} type are casted
+	 * @return transformed list or {@code null} if input list has a {@code null} value
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T, U> List<U> listFromLisfOfGenerics(List<Search<T>> oldList)
+	{
+		List<U> newList = null;
+		if(oldList != null)
+			newList = oldList.stream().map(search -> (U) search).collect(Collectors.toList());
+		return newList;
+	}
+
+	/**
+	 * Transforms a list of elements of type {@code U} which extends {@link Search}{@code <T>} generic type
+	 * to a list of elements of that generic type.
+	 * @param oldList list to transform
+	 * @param <T> type of objects that are queried and which results are contained in an element of
+	 * {@code Search<T>} type
+	 * @param <U> type of search to which elements of {@code Search<T>} type are casted
+	 * @return transformed list or {@code null} if input list has a {@code null} value
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T, U> List<Search<T>> listToListOfGenerics(List<U> oldList)
+	{
+		List<Search<T>> newList = null;
+		if(oldList != null)
+			newList = oldList.stream().map(search -> (Search<T>) search).collect(Collectors.toList());
+		return newList;
+	}
+
+	/**
+	 * Gets the number of the next search.
 	 * @return
 	 */
 	public static long getSearchNum()
@@ -55,7 +119,8 @@ public class Search<T>
 		return num;
 	}
 
-	/**Sets the number of the next search.
+	/**
+	 * Sets the ordinal number of the next search.
 	 * @param num
 	 */
 	public static void setSearchNumber(long num)
@@ -63,36 +128,73 @@ public class Search<T>
 		Search.num = num;
 	}
 
-	/**Decreases number of searches but not to less tnah zero.
-	 *
+	/**
+	 * Decreases number of searches but not to less than zero.
 	 */
 	public static void decreaseSearchNumber()
 	{
 		Search.num = Search.num != 0 ? Search.num - 1 : 0;
 	}
 
-	/**Gets the next search name based on the next search number. Also increments the counter.
-	 * @return
+	/**
+	 * Gets the next search name based on the next search number. Also increments the counter.
+	 * @return search name
 	 */
 	public static String getNextSearchName()
 	{
 		return "Search_" + getNextSearchNumber();
 	}
 
-	/**Gets the next search number and increments the counter.
+	/**
+	 * Gets the next search number and increments the counter.
 	 * @return
 	 */
-	public static long getNextSearchNumber()
+	private static long getNextSearchNumber()
 	{
 		return num++;
 	}
 
-	public CatalogueSearchCriterion getCriterion()
+	/**
+	 * Sets the next search number to 0.
+	 */
+	public static void resetSearchNumber()
+	{
+		num = 0;
+	}
+
+/*	*//**
+	 * Sets the ID. This method must be called after {@link #getNextSearchName()} static method has been called,
+	 * not before. I don't like this call dependence!
+	 *//*
+	public void setNextId()
+	{
+		id = num;
+	}*/
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Sets id by generating new {@link UUID}.
+	 */
+	public void setId()
+	{
+		id = UUID.randomUUID().toString();
+	}
+
+	public SearchCriterion getCriterion()
 	{
 		return criterion;
 	}
 
-	public void setCriterion(CatalogueSearchCriterion criterion)
+	public void setCriterion(SearchCriterion criterion)
 	{
 		this.criterion = criterion;
 	}
@@ -138,7 +240,8 @@ public class Search<T>
 		return results != null ? results.size() : 0;
 	}
 
-	/**Get the name of the search.
+	/**
+	 * Gets the name of the search.
 	 * @return
 	 */
 	public String getSearchName()
@@ -146,7 +249,8 @@ public class Search<T>
 		return searchName;
 	}
 
-	/**Sets the name of the search.
+	/**
+	 * Sets the name of the search.
 	 * @param name
 	 */
 	public void setSearchName(String name)
@@ -154,7 +258,8 @@ public class Search<T>
 		this.searchName = name;
 	}
 
-	/* Returns the name of the search. Used as the node name in tree models.
+	/*
+	 * Returns the name of the search. Used as the node name in tree models.
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -173,14 +278,16 @@ public class Search<T>
 		this.timestamp = timestamp;
 	}
 
-	/**Sets the time of the search to now.
+	/**
+	 * Sets the time of the search to now.
 	 */
 	public void setTimestamp()
 	{
 		timestamp = InstanceFactory.getDate();
 	}
 
-	/**Gets the String represantation of the search timestamp.
+	/**
+	 * Gets the String represantation of the search timestamp.
 	 * @return
 	 */
 	public String getTimestampAsString()

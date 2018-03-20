@@ -32,7 +32,8 @@ public class DocumentDistribution
 		return document;
 	}
 
-	/**Sets the document.
+	/**
+	 * Sets the document.
 	 * @param document
 	 * @throws DocumentException if document's type is not permissible
 	 */
@@ -43,7 +44,8 @@ public class DocumentDistribution
 		this.document = document;
 	}
 
-	/**Checks whether the document type is a valid one for the distribution.
+	/**
+	 * Checks whether the document type is a valid one for the distribution.
 	 * @param document document which type is to be checked
 	 */
 	private boolean isValidDocumentType(Object document)

@@ -20,6 +20,7 @@ import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.Followers;
+import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.RutaException;
@@ -144,7 +145,7 @@ public interface Server
 	 * @throws RutaException if search query could not be processed
 	 */
 	@WebMethod(operationName = "SearchParty")
-	public List<PartyType> searchParty(CatalogueSearchCriterion criterion) throws RutaException;
+	public List<PartyType> searchParty(PartySearchCriterion criterion) throws RutaException;
 
 	/**Finds all IDs of documents in the DocBox of the party.
 	 * @param criterion search criterion containing party's unique ID
