@@ -127,7 +127,7 @@ public class MyParty extends BusinessParty
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		catalogueIssueDate = null;
 		actionListeners = new ArrayList<>();;
-		jaxb = Client.getVersion().getJaxbVersion();
+		jaxb = RutaClient.getVersion().getJaxbVersion();
 	}
 
 	/**

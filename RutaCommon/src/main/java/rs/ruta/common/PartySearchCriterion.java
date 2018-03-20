@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- *Class represents a {@code SearchCriterion} for {@link PartyType party} searches.
+ * Class represents a {@code SearchCriterion} for {@link PartyType party} searches.
  */
 //@XmlRootElement(name = "PartySearchCriterion", namespace = "urn:rs:ruta:common")
 @XmlType(name = "PartySearchCriterion")

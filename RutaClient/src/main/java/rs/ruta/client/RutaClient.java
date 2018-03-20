@@ -252,10 +252,11 @@ public class RutaClient implements RutaNode
 			{
 				try
 				{
-					System.out.println("Shutdown hook started.");
+					logger.info("Shutdown hook started.");
 					//					properties.put("started", false);
 					shutdownApplication();
-					System.out.println("Shutdown hook ended.");
+					logger.info("Shutdown hook ended.");
+					logger.info("Opening Ruta Client Application");
 				}
 				catch(Exception e)
 				{

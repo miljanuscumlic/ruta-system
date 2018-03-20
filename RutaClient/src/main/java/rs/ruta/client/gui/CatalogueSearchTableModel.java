@@ -97,7 +97,7 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 			return item.getCommodityClassificationCount() == 0 ? null : item.getCommodityClassificationAtIndex(0).getCommodityCodeValue();
 		case 5:
 			return item.getKeywordCount() == 0 ? null :
-				item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(" ,"));
+				item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", "));
 		case 6:
 			return catalogue.getProviderParty() == null ? null :
 				catalogue.getProviderParty().getPartyNameAtIndex(0).getNameValue();

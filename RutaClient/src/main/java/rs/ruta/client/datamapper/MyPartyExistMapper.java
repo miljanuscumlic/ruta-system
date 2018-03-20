@@ -24,13 +24,13 @@ import rs.ruta.common.datamapper.XmlMapper;
  */
 public class MyPartyExistMapper extends XmlMapper<MyParty>
 {
-	private Client client;
+	private RutaClient client;
 	final private static String collectionPath = "/my-party";
 	final private static String objectPackageName = "rs.ruta.client";
 	final private static String queryNameSearchParty = "search-my-party.xq"; //MMM: not defined
 	private Map<String, MyParty> loadedParties;
 
-	public MyPartyExistMapper(Client client, ExistConnector connector) throws DetailException
+	public MyPartyExistMapper(RutaClient client, ExistConnector connector) throws DetailException
 	{
 		super(connector);
 		loadedParties = new ConcurrentHashMap<String, MyParty>();

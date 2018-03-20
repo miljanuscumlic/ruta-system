@@ -8,6 +8,6 @@
         </exclude-subsystems>
     </deployment>
 </jboss-deployment-structure>
-<!-- this file disables WildFly to use its pwn logging setting and that way
-enables deployed applications to use their own log4j2 settings placed in their
+<!-- this file disables WildFly to use its own logging settings and that way
+enabling deployed applications to use their own log4j2 settings, placed in their
 war files  -->

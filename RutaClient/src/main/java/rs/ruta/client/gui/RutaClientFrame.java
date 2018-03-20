@@ -1360,7 +1360,7 @@ public class RutaClientFrame extends JFrame
 	 * object they are saved within this method.
 	 * @param party {@code Party} object which data are to be shown
 	 * @param title title of the dialog
-	 * @param registration when dialog is shown drugin local database registration
+	 * @param registration whether the dialog is shown during local database registration
 	 * @return {@code Party} with potentially changed data
 	 */
 	//MMM: boolean editable could be added; = false if party should only be displayed not changed
@@ -1380,7 +1380,6 @@ public class RutaClientFrame extends JFrame
 					JOptionPane.showMessageDialog(RutaClientFrame.this,
 							"Entering My Party data is mandatory step during application setup."));
 				}
-
 			});
 		}
 		//setting clone not original object as a dialog's party field because the changes to the party will be rejected

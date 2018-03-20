@@ -7,9 +7,9 @@ import rs.ruta.client.*;
 
 public class CDRPartyTypeXMLFileMapper<T> extends XMLFileMapper<T>
 {
-	private Client client;
+	private RutaClient client;
 
-	public CDRPartyTypeXMLFileMapper(Client client, String filename) throws Exception
+	public CDRPartyTypeXMLFileMapper(RutaClient client, String filename) throws Exception
 	{
 		super(filename);
 		this.packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";

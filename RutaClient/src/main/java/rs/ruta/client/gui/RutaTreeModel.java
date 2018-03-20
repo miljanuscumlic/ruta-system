@@ -7,6 +7,7 @@ import javax.swing.tree.TreeNode;
 
 public class RutaTreeModel extends DefaultTreeModel
 {
+	private static final long serialVersionUID = -8711344527654849179L;
 
 	public RutaTreeModel(TreeNode root)
 	{

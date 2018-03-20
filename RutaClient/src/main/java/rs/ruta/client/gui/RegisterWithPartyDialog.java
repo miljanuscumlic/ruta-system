@@ -1,10 +1,12 @@
-package rs.ruta.client;
+package rs.ruta.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.*;
 import javax.swing.table.*;
+
+import rs.ruta.client.Party;
 
 @Deprecated
 public class RegisterWithPartyDialog extends JDialog
@@ -15,7 +17,7 @@ public class RegisterWithPartyDialog extends JDialog
 	private String password; //MMM: not secure, should be changed
 	private boolean registerPressed; // true if the sign up button were pressed
 
-	public RegisterWithPartyDialog(ClientFrame owner, Party party)
+	public RegisterWithPartyDialog(RutaClientFrame owner, Party party)
 	{
 		super(owner, true);
 		registerPressed = false;
@@ -96,7 +98,7 @@ public class RegisterWithPartyDialog extends JDialog
 		buttonPanel.add(changeButton);
 		changeButton.addActionListener(event ->
 		{
-			Party changedParty = owner.showPartyDialog(party, "My Party");
+			Party changedParty = owner.showPartyDialog(party, "My Party", false);
 			setParty(changedParty);
 			repaint();
 		});

@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import rs.ruta.client.Client;
 import rs.ruta.client.MyParty;
 
 public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>

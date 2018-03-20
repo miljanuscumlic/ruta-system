@@ -8,9 +8,9 @@ import rs.ruta.client.*;
 
 public class PartyTypeXMLFileMapper<T> extends XMLFileMapper<T>
 {
-	private Client client;
+	private RutaClient client;
 
-	public PartyTypeXMLFileMapper(Client client, String filename) throws Exception
+	public PartyTypeXMLFileMapper(RutaClient client, String filename) throws Exception
 	{
 		super(filename);
 		this.packageList = "oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21";

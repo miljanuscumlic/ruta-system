@@ -6,7 +6,6 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.handler.PortInfo;
 
-import rs.ruta.client.Client;
 import rs.ruta.client.MyParty;
 
 public class ClientHandlerResolver implements HandlerResolver
