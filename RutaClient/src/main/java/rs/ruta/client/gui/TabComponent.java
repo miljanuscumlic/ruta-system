@@ -1,11 +1,12 @@
 package rs.ruta.client.gui;
 
 import java.awt.AWTEvent;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -15,25 +16,34 @@ import javax.swing.DefaultRowSorter;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-public abstract class TabComponent
+import org.slf4j.Logger;
+
+/**
+ * Abstract class {@code TabComponent} represents apstraction of one tab in the view of the {@link RutaClientFrame main frame}
+ * of the {@code Ruta Client application}. Every tab is an instance of a {@code TabComponent}'s subclass. {@code TabComponent}
+ * is a container of common methods used in its subclasses.
+ */
+//MMM: TabComponent does not have to be an ActionListener. It and its subclasses can deal with events through dispatchEvent methos.
+public abstract class TabComponent implements ActionListener
 {
 	protected RutaClientFrame clientFrame;
 	protected Component component;
+	protected Logger logger;
 
 	public TabComponent(RutaClientFrame clientFrame)
 	{
 		this.clientFrame = clientFrame;
+		this.logger = RutaClientFrame.getLogger();
 	}
 
 	public Component getComponent()
@@ -59,7 +69,7 @@ public abstract class TabComponent
 	}
 
 	@SuppressWarnings("unchecked")
-	protected JTable createCatalogueTable(AbstractTableModel tableModel)
+	protected JTable createCatalogueTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel)
 		{
@@ -97,7 +107,7 @@ public abstract class TabComponent
 
 		table.getRowSorter();
 		table.getRowSorter().getModelRowCount();
-		((DefaultRowSorter<AbstractTableModel, Integer>) table.getRowSorter()).setSortable(0, false);
+		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);
 
 		table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());
 
@@ -157,7 +167,64 @@ public abstract class TabComponent
 	}
 
 	/**
-	 * Selects the tree node containing the object.
+	 * Gets the object contained in the selected node of the tree.
+	 * @param tree tree to be searched
+	 * @return object of the selected node or {@code null} if no node is selected
+	 */
+	protected Object getSelectedUserObject(JTree tree)
+	{
+		final TreePath path = tree.getSelectionPath();
+		if(path == null) return null;
+		final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+		final Object selectedParty = selectedNode.getUserObject();
+		return selectedParty;
+	}
+
+	/**
+	 * Gets the object contained in the selected node of the tree.
+	 * @param path {@link TreePath tree path} of the seleceted node
+	 * @return object of the selected node or {@code null} if no node is selected
+	 */
+	protected Object getSelectedUserObject(TreePath path)
+	{
+		if(path == null) return null;
+		final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+		final Object selectedParty = selectedNode.getUserObject();
+		return selectedParty;
+	}
+
+	/**
+	 * Gets the selected {@link DefaultMutableTreeNode node} of the tree.
+	 * @param tree tree to be searched
+	 * @return selected node or {@code null} if no node is selected
+	 */
+	protected DefaultMutableTreeNode getSelectedNode(JTree tree)
+	{
+		final TreePath path = tree.getSelectionPath();
+		if(path == null) return null;
+		final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+		return selectedNode;
+	}
+
+	/**
+	 * Makes visible tree node containing the object.
+	 * @param tree tree which node should be made visible
+	 * @param object object contained in the tree node
+	 */
+	protected void makeVisibleNode(final JTree tree, final Object object)
+	{
+		final DefaultMutableTreeNode node = searchNode(tree, object);
+		if(node != null)
+		{
+			final TreeNode[] nodePath = node.getPath();
+			final TreePath treePath = new TreePath(nodePath);
+			tree.scrollPathToVisible(treePath);
+			tree.makeVisible(treePath);
+		}
+	}
+
+	/**
+	 * Selects tree node containing the object.
 	 * @param tree tree which node should be selected
 	 * @param object object contained in the tree node
 	 */
@@ -166,40 +233,75 @@ public abstract class TabComponent
 		final DefaultMutableTreeNode nodeToSelect = searchNode(tree, object);
 		if(nodeToSelect != null)
 		{
-			final TreeNode[] nodes = ((DefaultTreeModel) tree.getModel()).getPathToRoot(nodeToSelect);
-			final TreePath treePath = new TreePath(nodes);
+//			final TreeNode[] nodes = ((DefaultTreeModel) tree.getModel()).getPathToRoot(nodeToSelect);
+			final TreeNode[] nodePath = nodeToSelect.getPath();
+			final TreePath treePath = new TreePath(nodePath);
+			tree.scrollPathToVisible(treePath);
+//			tree.makeVisible(treePath);
+			tree.setSelectionPath(treePath);
+		}
+	}
+
+	/**
+	 * Finds next node of the tree eligable for the selection. If node containing the object could not be found
+	 * in the tree, root node is get. If node exists in the tree method tries to get the next sibling node.
+	 * If next sibling node does not exist, previous one is selected. If previous node does not exist, parent node
+	 * is get if it exists.
+	 * @param tree tree which node should be selected
+	 * @param object object contained in the tree node
+	 * @return next node to be selected
+	 */
+	protected DefaultMutableTreeNode getNextNodeForSelection(final JTree tree, final Object object)
+	{
+		final DefaultMutableTreeNode node = searchNode(tree, object);
+		DefaultMutableTreeNode nodeToSelect = null;
+		if(node == null)
+			nodeToSelect = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		else
+		{
+			nodeToSelect = node.getNextSibling();
+			if(nodeToSelect == null)
+				nodeToSelect = node.getPreviousSibling();
+			if(nodeToSelect == null)
+				nodeToSelect = (DefaultMutableTreeNode) node.getParent();
+		}
+		return nodeToSelect;
+	}
+
+	/**
+	 * Selects node in a tree.
+	 * @param tree tree which not should be selected
+	 * @param nodeToSelect node to select
+	 */
+	protected void selectNode(final JTree tree, final DefaultMutableTreeNode nodeToSelect)
+	{
+		if(nodeToSelect != null)
+		{
+			final TreeNode[] nodePath = ((DefaultTreeModel) tree.getModel()).getPathToRoot(nodeToSelect);
+			final TreePath treePath = new TreePath(nodePath);
 			tree.scrollPathToVisible(treePath);
 			tree.setSelectionPath(treePath);
 		}
 	}
 
 	/**
-	 * Selects previous sibling tree node of the node containing the object. If previous node does
-	 * not exist, root node is selected if exist.
+	 * Selects next eligable node in a tree. This method is usually called after node deletion when there is a need
+	 * to select next eligable node in a tree.
 	 * @param tree tree which node should be selected
 	 * @param object object contained in the tree node
 	 */
-	protected void selectPreviousSiblingNode(final JTree tree, final Object object)
+	protected void selectNextNode(final JTree tree, final Object object)
 	{
-		final DefaultMutableTreeNode node = searchNode(tree, object);
-		DefaultMutableTreeNode nodeToSelect = node.getPreviousSibling();
-		if(nodeToSelect == null)
-			nodeToSelect = (DefaultMutableTreeNode) node.getParent();
-		if(nodeToSelect != null)
-		{
-			final TreeNode[] nodes = ((DefaultTreeModel) tree.getModel()).getPathToRoot(nodeToSelect);
-			final TreePath treePath = new TreePath(nodes);
-			tree.scrollPathToVisible(treePath);
-			tree.setSelectionPath(treePath);
-		}
+		selectNode(tree, getNextNodeForSelection(tree, object));
 	}
 
 	/**
 	 * Selects next sibling tree node of the node containing the object. If next node does not exist,
-	 * previous node is selected; if previous node does not exist root node is selected if exist.
+	 * previous node is selected; if previous node does not exist parent node is selected if exists.
 	 * @param tree tree which node should be selected
 	 * @param object object contained in the tree node
 	 */
+	@Deprecated
 	protected void selectNextSiblingNode(final JTree tree, final Object object)
 	{
 		final DefaultMutableTreeNode node = searchNode(tree, object);
@@ -220,7 +322,7 @@ public abstract class TabComponent
 	/**
 	 * Selects parent node of the tree node containing the object.
 	 * @param tree tree which node should be selected
-	 * @param object object contained in the tree node
+	 * @param object object contained in the tree node which parent is to be selected
 	 */
 	protected void selectParentNode(final JTree tree, final Object object)
 	{
@@ -240,14 +342,16 @@ public abstract class TabComponent
 	 * Searches for an object in the tree.
 	 * @param tree tree to be searched
 	 * @param object object to be searched for
-	 * @return {@link DefaultMutableTreeNode node} containing searched object or {@code null} if there the object is not present in the tree
+	 * @return {@link DefaultMutableTreeNode node} containing searched object or {@code null} if
+	 * the object is not present in the tree
 	 */
 	protected DefaultMutableTreeNode searchNode(JTree tree, Object object)
 	{
 		DefaultMutableTreeNode node = null;
 		boolean success = false;
 		@SuppressWarnings("unchecked")
-		final Enumeration<DefaultMutableTreeNode> enumeration = ((DefaultMutableTreeNode) tree.getModel().getRoot()).breadthFirstEnumeration();
+		final Enumeration<DefaultMutableTreeNode> enumeration =
+		((DefaultMutableTreeNode) tree.getModel().getRoot()).breadthFirstEnumeration();
 		while(!success && enumeration.hasMoreElements())
 		{
 			node = enumeration.nextElement();
@@ -265,32 +369,20 @@ public abstract class TabComponent
 			return null;
 	}
 
-	/**
-	 *Repaints the selected tab.
+	/* (non-Javadoc)
+	 *  Should be overriden by subclasses intereseted in listeneting to events.
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-	//MMM: should be implemented to update view of trees with no path collapsing as it is now
-/*	public void repaintTabbedPane()
+	@Override
+	public void actionPerformed(ActionEvent event) { }
+
+	/**
+	 * Dispatches {@link ActionEvent event} to particular subclass of {@link TabComponent}.
+	 * @param event event to dispatch
+	 */
+	public void dispatchEvent(ActionEvent event)
 	{
-		int selectedTab = tabbedPane.getSelectedIndex();
-		loadTab(selectedTab);
+		actionPerformed(event);
+	}
 
-				if(selectedTab == 0)
-		{
-			leftPane.revalidate();
-			leftPane.repaint();
-			rightPane.revalidate();
-			rightPane.repaint();
-
-			arrangeTab0(leftPane, rightPane);
-		}
-		else
-			loadTab(selectedTab);
-
-
-				Component treeContainer = ((JComponent) ((JComponent)((JComponent) tabPane.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
-		JTree partyTree = (JTree) ((JComponent) treeContainer).getComponent(0);
-		JTree searchTree = (JTree) ((JComponent) treeContainer).getComponent(1);
-		((DefaultTreeModel) partyTree.getModel()).reload();
-		((DefaultTreeModel) searchTree.getModel()).reload();
-	}*/
 }

@@ -7,10 +7,10 @@ public class SearchEvent extends ActionEvent
 	private static final long serialVersionUID = -4405562652384954954L;
 	public static final String PARTY_SEARCH_ADDED = "Party search added";
 	public static final String PARTY_SEARCH_REMOVED = "Party search removed";
-	public static final String PARTY_SEARCH_CHANGED = "Party search changed";
+	public static final String PARTY_SEARCH_UPDATED = "Party search updated";
 	public static final String CATALOGUE_SEARCH_ADDED = "Catalogue search added";
 	public static final String CATALOGUE_SEARCH_REMOVED = "Catalogue search removed";
-	public static final String CATALOGUE_SEARCH_CHANGED = "Catalogue search changed";
+	public static final String CATALOGUE_SEARCH_UPDATED = "Catalogue search updated";
 	public static final String ALL_PARTY_SEARCHES_REMOVED = "All party searches removed";
 	public static final String ALL_CATALOGUE_SEARCHES_REMOVED = "All catalogue searches removed";
 
@@ -30,5 +30,4 @@ public class SearchEvent extends ActionEvent
 	{
 		super(source, id, command);
 	}
-
 }

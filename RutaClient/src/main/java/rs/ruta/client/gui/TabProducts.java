@@ -20,8 +20,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class TabProducts extends TabComponent
 	{
 		super(clientFrame);
 		final MyParty myParty = clientFrame.getClient().getMyParty();
-		final AbstractTableModel tableModel = new ProductTableModel(myParty, true);
+		final DefaultTableModel tableModel = new ProductTableModel(myParty, true);
 		final JTable table = createCatalogueTable(tableModel);
 		//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

@@ -3,11 +3,14 @@ package rs.ruta.client;
 import rs.ruta.common.InstanceFactory;
 import java.util.*;
 import javax.xml.bind.annotation.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
-//commented because it is not root xml element anymore, MyParty is instead - not anymore, because it is using its own data mapper
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
+/**
+ * Representing common caracteristics of the party of {@code Ruta application}.
+ */
 @XmlRootElement(name = "BussinesParty", namespace = "urn:rs:ruta:client")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BusinessParty
@@ -36,6 +39,16 @@ public class BusinessParty
 	 */
 	@XmlElement(name = "Deregistered")
 	private boolean deregistered;
+	/**
+	 * Timestamp of the last received update of this party from the CDR service.
+	 */
+	@XmlElement(name = "Timestamp")
+	private XMLGregorianCalendar timestamp;
+	/**
+	 * True when there is a recent update for this party from the CDR service.
+	 */
+	@XmlElement(name = "RecentlyUpdated")
+	private boolean recentlyUpdated;
 
 	public BusinessParty()
 	{
@@ -50,11 +63,33 @@ public class BusinessParty
 		bp.partner = partner;
 		bp.archived = archived;
 		bp.deregistered = deregistered;
+		bp.timestamp = timestamp;
+		bp.recentlyUpdated = recentlyUpdated;
 		if(coreParty != null)
 			bp.coreParty = coreParty.clone();
 		if(catalogue != null)
 			bp.catalogue = catalogue.clone();
 		return bp;
+	}
+
+	public XMLGregorianCalendar getTimestamp()
+	{
+		return timestamp;
+	}
+
+	public void setTimestamp(XMLGregorianCalendar timestamp)
+	{
+		this.timestamp = timestamp;
+	}
+
+	public boolean isRecentlyUpdated()
+	{
+		return recentlyUpdated;
+	}
+
+	public void setRecentlyUpdated(boolean recentlyUpdated)
+	{
+		this.recentlyUpdated = recentlyUpdated;
 	}
 
 	/**
@@ -134,6 +169,10 @@ public class BusinessParty
 		this.catalogue = catalogue;
 	}
 
+	/**
+	 * Sets the {@link CatalogueType catalogue} by cloning the passed one.
+	 * @param catalogueType
+	 */
 	public void setCatalogue(CatalogueType catalogueType)
 	{
 		if(catalogue == null)
@@ -232,9 +271,9 @@ public class BusinessParty
 	}
 
 	/**
-	 * Checks whether two parties are the same. Check is based on equality of party IDs.
-	 * @param partyOne
-	 * @param partyTwo
+	 * Checks whether two parties are the same. Check is based on equality of party IDs of theirs core parties.
+	 * @param partyOne first {@link BusinessParty party}
+	 * @param partyTwo second {@link BusinessParty party}
 	 * @return true if parties are the same, false if they are not the same or some party has not set
 	 * its party ID.
 	 */
@@ -244,9 +283,9 @@ public class BusinessParty
 	}
 
 	/**
-	 * Checks whether two parties are the same. Check is based on equality of party IDs.
-	 * @param partyOne
-	 * @param partyTwo
+	 * Checks whether two parties are the same. Check is based on equality of party IDs .
+	 * @param partyOne first {@link BusinessParty party}
+	 * @param partyTwo {@link PartyType core party} of the second party
 	 * @return true if parties are the same, false if they are not the same or some party has not set
 	 * its party ID.
 	 */

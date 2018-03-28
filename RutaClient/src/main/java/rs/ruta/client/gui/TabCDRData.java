@@ -5,13 +5,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
-import javax.swing.DefaultRowSorter;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -20,17 +26,20 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.xml.ws.WebServiceException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
@@ -41,7 +50,9 @@ import rs.ruta.client.CatalogueSearch;
 import rs.ruta.client.gui.CatalogueSearchTableModel;
 import rs.ruta.client.gui.CatalogueTableModel;
 import rs.ruta.client.MyParty;
+import rs.ruta.client.Party;
 import rs.ruta.client.PartySearch;
+import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.gui.PartyListTableModel;
 import rs.ruta.client.gui.PartySearchTableModel;
 import rs.ruta.client.gui.PartyTreeModel;
@@ -49,30 +60,41 @@ import rs.ruta.client.Search;
 import rs.ruta.client.gui.SearchListTableModel;
 import rs.ruta.client.gui.SearchTreeModel;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
 
 public class TabCDRData extends TabComponent
 {
+	private static final String CATALOGUES = "Catalogues";
+	private static final String PARTIES = "Parties";
+	private static final String MY_PARTY = "My Party";
+	private static final String SEARCHES = "Searches";
+	private static final String FOLLOWINGS = "Followings";
+	private static final String DEREGISTERED_PARTIES = "Deregistered Parties";
+	private static final String ARCHIVED_PARTIES = "Archived Parties";
+	private static final String OTHER_PARTIES = "Other Parties";
+	private static final String BUSINESS_PARTNERS = "Business Partners";
+	private final RutaClientFrame clientFrame;
 	private final JComponent leftPane;
 	private final JComponent rightPane;
 	private JComponent tabPane;
 	private final JTree partyTree;
 	private final JTree searchTree;
 	private final JScrollPane rightScrollPane;
-//	private final JScrollPane leftScroolPane;
+	//	private final JScrollPane leftScroolPane;
 	private PartySearchTableModel searchesPartyTableModel;
 	private JTable searchesPartyTable;
 	private CatalogueSearchTableModel searchesCatalogueTableModel;
 	private JTable searchesCatalogueTable;
 	private JTable searchesTable;
-	private final TableRowSorter<AbstractTableModel> searchesPartySorter;
-	private final TableRowSorter<AbstractTableModel> searchesCatalogueSorter;
+	private final TableRowSorter<DefaultTableModel> searchesPartySorter;
+	private final TableRowSorter<DefaultTableModel> searchesCatalogueSorter;
 
 	private CatalogueTableModel partnerCatalogueTableModel;
 	private JTable partnerCatalogueTable;
 	private PartyListTableModel partiesTableModel;
 	private JTable partiesTable;
-	private final TableRowSorter<AbstractTableModel> partnerCatalogueSorter;
-	private final TableRowSorter<AbstractTableModel> partiesSorter;
+	private final TableRowSorter<DefaultTableModel> partnerCatalogueSorter;
+	private final TableRowSorter<DefaultTableModel> partiesSorter;
 	/**
 	 * @param clientFrame
 	 */
@@ -80,15 +102,22 @@ public class TabCDRData extends TabComponent
 	public TabCDRData(RutaClientFrame clientFrame)
 	{
 		super(clientFrame);
+		this.clientFrame = clientFrame;
 		MyParty myParty = clientFrame.getClient().getMyParty();
 		//constructing left pane
-		DefaultTreeModel partyTreeModel = new PartyTreeModel(new DefaultMutableTreeNode("Followings"), myParty);
+		DefaultTreeModel partyTreeModel = new PartyTreeModel(new DefaultMutableTreeNode(FOLLOWINGS), myParty);
 		partyTree = new JTree(partyTreeModel);
-		DefaultTreeModel searchTreeModel = new SearchTreeModel(new DefaultMutableTreeNode("Searches"), myParty);
+		PartyTreeCellRenderer partyTreeCellRenderer = new PartyTreeCellRenderer();
+		partyTree.setCellRenderer(partyTreeCellRenderer);
+		DefaultTreeModel searchTreeModel = new SearchTreeModel(new DefaultMutableTreeNode(SEARCHES), myParty);
 		searchTree = new JTree(searchTreeModel);
 		JPanel treePanel = new JPanel(new BorderLayout());
 		treePanel.add(partyTree, BorderLayout.NORTH);
 		treePanel.add(searchTree, BorderLayout.CENTER);
+
+/*		JPanel treePanel = new JPanel(new GridLayout(2,1));
+		treePanel.add(partyTree);
+		treePanel.add(searchTree);*/
 
 		leftPane = new JScrollPane(treePanel);
 		leftPane.setPreferredSize(new Dimension(250, 500));
@@ -99,15 +128,18 @@ public class TabCDRData extends TabComponent
 
 		JLabel blankLabel = new JLabel();
 
-		//partner (party) data table model
+		//partner (party) data table models
+		final TabComponent.RowNumberRenderer rowNumberRenderer = new TabComponent.RowNumberRenderer();
 		partnerCatalogueTableModel = new CatalogueTableModel();
 		partnerCatalogueTable = createCatalogueTable(partnerCatalogueTableModel);
+		partnerCatalogueTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
 		partiesTableModel = new PartyListTableModel();
 		partiesTable = createPartyListTable(partiesTableModel);
+		partiesTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
 
-		partnerCatalogueSorter = getTableRowSorter(partnerCatalogueTableModel, partnerCatalogueTable);
+		partnerCatalogueSorter = createTableRowSorter(partnerCatalogueTableModel, partnerCatalogueTable);
 		partnerCatalogueTable.setRowSorter(partnerCatalogueSorter);
-		partiesSorter = getTableRowSorter(partiesTableModel, partiesTable);
+		partiesSorter = createTableRowSorter(partiesTableModel, partiesTable);
 		partiesTable.setRowSorter(partiesSorter);
 
 		JPopupMenu partyTreePopupMenu = new JPopupMenu();
@@ -116,45 +148,40 @@ public class TabCDRData extends TabComponent
 		//setting action listener for tab repaint on selection of the business party node
 		partyTree.addTreeSelectionListener(event ->
 		{
-			final TreePath path = partyTree.getSelectionPath();
-			if(path == null) return;
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
 			searchTree.clearSelection();
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Object selectedParty = selectedNode.getUserObject();
 			if (selectedParty instanceof BusinessParty)
 			{
-				partnerCatalogueTableModel.setParty((BusinessParty) selectedParty);
-				/*rightPane.removeAll();
-				rightPane.add(new JScrollPane(partnerCatalogueTable));*/
-
-				partnerCatalogueSorter.allRowsChanged();
-//				partnerCatalogueSorter.setSortable(0, false);
+				((BusinessParty) selectedParty).setRecentlyUpdated(false);
+				partnerCatalogueTableModel.setCatalogue(((BusinessParty) selectedParty).getCatalogue());
+//				partnerCatalogueSorter.allRowsChanged();
+				partnerCatalogueTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCatalogueTable);
 			}
 			else //String
 			{
 				List<BusinessParty> partyList = new ArrayList<>();
-				if("My Party".equals((String) selectedParty))
+				if(MY_PARTY.equals((String) selectedParty))
 				{
 					final BusinessParty my = myParty.getMyFollowingParty();
 					if(my != null)
 						partyList.add(my);
 				}
-				else if("Business Partners".equals((String) selectedParty))
+				else if(BUSINESS_PARTNERS.equals((String) selectedParty))
 					partyList = myParty.getBusinessPartners();
-				else if("Other Parties".equals((String) selectedParty))
+				else if(OTHER_PARTIES.equals((String) selectedParty))
 					partyList = myParty.getOtherParties();
-				else if("Archived Parties".equals((String) selectedParty))
+				else if(ARCHIVED_PARTIES.equals((String) selectedParty))
 					partyList = myParty.getArchivedParties();
-				else if("Deregistered Parties".equals((String) selectedParty))
+				else if(DEREGISTERED_PARTIES.equals((String) selectedParty))
 					partyList = myParty.getDeregisteredParties();
 
-				if(!"Followings".equals((String) selectedParty))
+				if(!FOLLOWINGS.equals((String) selectedParty))
 				{
 					partiesTableModel.setParties(partyList);
-//					rightPane.add(new JScrollPane(partiesTable));
 					partiesSorter.allRowsChanged();
-//					partiesSorter.setSortable(0, false);
+					//					partiesSorter.setSortable(0, false);
 					rightScrollPane.setViewportView(partiesTable);
 				}
 				else
@@ -165,86 +192,209 @@ public class TabCDRData extends TabComponent
 			repaint();
 		});
 
-		JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
-		JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
-		JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
-		JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
-		JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
+		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
+		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
+		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
+		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
+		final JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
+		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
+		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
+
+		followPartnerItem.addActionListener(event ->
+		{
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
+			{
+				final Party coreParty = ((BusinessParty) selectedParty).getCoreParty();
+				final String followingName = InstanceFactory.
+						getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+				final String followingID = InstanceFactory.
+						getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
+					if(ret != null)
+					{
+						ret.get();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+						//						EventQueue.invokeLater(() -> selectNode(partyTree, followedParty));
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append(" could not be added to the following parties as a business partner!"));
+				}
+			}).start();
+		});
+
+		followPartyItem.addActionListener(event ->
+		{
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
+			{
+				final Party coreParty = ((BusinessParty) selectedParty).getCoreParty();
+				final String followingName = InstanceFactory.
+						getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+				final String followingID = InstanceFactory.
+						getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
+					if(ret != null)
+					{
+						ret.get();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
+						//						EventQueue.invokeLater(() -> selectNode(partyTree, followedParty));
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append(" could not be added to the following parties!"));
+				}
+			}).start();
+		});
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			final TreePath path = partyTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Object selectedParty = selectedNode.getUserObject();
-			if(selectedParty instanceof String)
-				return;
-			else // BusinessParty
-				new Thread(()->
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(()->
+			{
+				DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
+				Future<?> ret = clientFrame.getClient().cdrUnfollowParty((BusinessParty) selectedParty);
+				try
 				{
-					clientFrame.getClient().cdrUnfollowParty((BusinessParty) selectedParty);
-				}).start();
+					if(ret != null)
+					{
+						ret.get();
+						EventQueue.invokeLater(() ->
+						{
+							selectNode(partyTree, nodeToSelect);
+							makeVisibleNode(partyTree, selectedParty);
+						});
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append(" could not be removed from the following parties!"));
+				}
+			}).start();
+			//				MMM: commented below is a not completed alternative with the SwingWorker
+			//				new UnfollowPartyWorker((BusinessParty) selectedParty).execute();
+
 		});
 
 		addPartnerItem.addActionListener(event ->
 		{
-			final TreePath path = partyTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Object selectedParty = selectedNode.getUserObject();
-			if(selectedParty instanceof String)
-				return;
-			else //BusinessParty
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
 			{
 				BusinessParty otherParty = ((BusinessParty) selectedParty);
 				otherParty.setPartner(true);
-				myParty.followParty(otherParty);
-				clientFrame.appendToConsole("Party " + otherParty.getPartySimpleName() +
-						" has been moved from Other Parties to Business Partners. " +
-						"Party is still followed by My Party.", Color.GREEN);
-			}
+				try
+				{
+					myParty.followParty(otherParty);
+					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(otherParty.getPartySimpleName()).
+							append(" has been moved from Other Parties to Business Partners.").
+							append(" Party is still followed by My Party."), Color.GREEN);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(otherParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
+				}
+			}).start();
 		});
 
 		removePartnerItem.addActionListener(event ->
 		{
-			final TreePath path = partyTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Object selectedParty = selectedNode.getUserObject();
-			if(selectedParty instanceof String)
-				return;
-			else //BusinessParty
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread( () ->
 			{
 				BusinessParty otherParty = ((BusinessParty) selectedParty);
 				otherParty.setPartner(false);
-				myParty.followParty(otherParty);
-				clientFrame.appendToConsole("Party " + otherParty.getPartySimpleName() +
-						" has been moved from Business Partners to Other Parties. " +
-						"Party is still followed by My Party.", Color.GREEN);
-			}
+				try
+				{
+					myParty.followParty(otherParty);
+					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(otherParty.getPartySimpleName()).
+							append(" has been moved from Business Partners to Other Parties. ").
+							append("Party is still followed by My Party."), Color.GREEN);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(otherParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
+				}
+			}).start();
 		});
 
 		deleteArchivedItem.addActionListener(event ->
 		{
-			final TreePath path = partyTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final BusinessParty selectedParty = (BusinessParty) selectedNode.getUserObject();
-			myParty.purgeParty(selectedParty);
-			clientFrame.appendToConsole("Party " + selectedParty.getPartySimpleName() +
-					" has been deleted from Archived Parties.", Color.GREEN);
+			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
+			{
+				final String partyName = selectedParty.getPartySimpleName();
+				try
+				{
+					//commented line is a privious variant of a selection
+//					selectNextNode(partyTree, selectedParty);
+					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
+					myParty.purgeParty(selectedParty);
+					partiesSorter.allRowsChanged();
+					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" has been deleted from Archived Parties."), Color.GREEN);
+				}
+				catch (DetailException e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Archived Parties."), Color.GREEN);
+					logger.error(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Archived Parties.").toString(), e);
+				}
+			}).start();
 		});
 
 		deleteDeregisteredItem.addActionListener(event ->
 		{
-			final TreePath path = partyTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final BusinessParty selectedParty = (BusinessParty) selectedNode.getUserObject();
-//			myParty.deleteDeregisteredParty(selectedParty);
-			myParty.purgeParty(selectedParty);
-			clientFrame.appendToConsole("Party " + selectedParty.getPartySimpleName() +
-					" has been deleted from Deregistered Parties.", Color.GREEN);
+			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
+			{
+				final String partyName = selectedParty.getPartySimpleName();
+				try
+				{
+//					selectNextNode(partyTree, selectedParty);
+					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
+					myParty.purgeParty(selectedParty);
+					partiesSorter.allRowsChanged();
+					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" has been deleted from Deregistered Parties."), Color.GREEN);
+				}
+				catch (DetailException e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Deregistered Parties."), Color.GREEN);
+					logger.error(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Deregistered Parties.").toString(), e);
+				}
+			}).start();
 		});
 
 		partyTree.addMouseListener(new MouseAdapter()
@@ -254,42 +404,34 @@ public class TabCDRData extends TabComponent
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					TreePath path = partyTree.getPathForLocation(event.getX(), event.getY());
+					final TreePath path = partyTree.getPathForLocation(event.getX(), event.getY());
+					final Object selectedParty = getSelectedUserObject(path);
+					if(selectedParty == null) return;
 					partyTree.setSelectionPath(path);
-					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-					Object selectedParty = selectedNode.getUserObject();
-					if(!(selectedParty instanceof String))
+					if(!(selectedParty instanceof String) && selectedParty != clientFrame.getClient().getMyParty().getMyFollowingParty())
 					{
 						if(((BusinessParty) selectedParty).isPartner())
 						{
-							partyTreePopupMenu.remove(unfollowPartyItem);
-							partyTreePopupMenu.remove(deleteArchivedItem);
-							partyTreePopupMenu.remove(deleteDeregisteredItem);
-							partyTreePopupMenu.remove(addPartnerItem);
+							partyTreePopupMenu.removeAll();
 							partyTreePopupMenu.add(unfollowPartyItem);
 							partyTreePopupMenu.add(removePartnerItem);
 						}
 						else if(((BusinessParty) selectedParty).isArchived())
 						{
-							partyTreePopupMenu.remove(addPartnerItem);
-							partyTreePopupMenu.remove(removePartnerItem);
-							partyTreePopupMenu.remove(unfollowPartyItem);
-							partyTreePopupMenu.remove(deleteDeregisteredItem);
+							partyTreePopupMenu.removeAll();
+							partyTreePopupMenu.add(followPartnerItem);
+							partyTreePopupMenu.add(followPartyItem);
+							partyTreePopupMenu.addSeparator();
 							partyTreePopupMenu.add(deleteArchivedItem);
 						}
 						else if(((BusinessParty) selectedParty).isDeregistered())
 						{
-							partyTreePopupMenu.remove(addPartnerItem);
-							partyTreePopupMenu.remove(removePartnerItem);
-							partyTreePopupMenu.remove(unfollowPartyItem);
-							partyTreePopupMenu.remove(deleteArchivedItem);
+							partyTreePopupMenu.removeAll();
 							partyTreePopupMenu.add(deleteDeregisteredItem);
 						}
 						else //Other Parties
 						{
-							partyTreePopupMenu.remove(removePartnerItem);
-							partyTreePopupMenu.remove(deleteArchivedItem);
-							partyTreePopupMenu.remove(deleteDeregisteredItem);
+							partyTreePopupMenu.removeAll();
 							partyTreePopupMenu.add(addPartnerItem);
 							partyTreePopupMenu.add(unfollowPartyItem);
 						}
@@ -299,18 +441,18 @@ public class TabCDRData extends TabComponent
 			}
 		});
 
-		final TabComponent.RowNumberRenderer rowNumberRenderer = new TabComponent.RowNumberRenderer();
-		searchesPartyTableModel = new PartySearchTableModel(false);
+		//searches tables
+		searchesPartyTableModel = new PartySearchTableModel();
 		searchesPartyTable = createSearchPartyTable(searchesPartyTableModel);
 		searchesPartyTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-		searchesCatalogueTableModel = new CatalogueSearchTableModel(false);
+		searchesCatalogueTableModel = new CatalogueSearchTableModel();
 		searchesCatalogueTable = createSearchCatalogueTable(searchesCatalogueTableModel);
 		searchesCatalogueTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
 		searchesTable = createSearchListTable(new SearchListTableModel<>());
 
-		searchesPartySorter = getTableRowSorter(searchesPartyTableModel, searchesPartyTable);
+		searchesPartySorter = createTableRowSorter(searchesPartyTableModel, searchesPartyTable);
 		searchesPartyTable.setRowSorter(searchesPartySorter);
-		searchesCatalogueSorter = getTableRowSorter(searchesCatalogueTableModel, searchesCatalogueTable);
+		searchesCatalogueSorter = createTableRowSorter(searchesCatalogueTableModel, searchesCatalogueTable);
 		searchesCatalogueTable.setRowSorter(searchesCatalogueSorter);
 		//there is no searchesTableModel and searchesTableSorter because there are a few different models that
 		//could be instantiated based on the type of the object that is searched for: PartyType, CatalogueType
@@ -318,47 +460,39 @@ public class TabCDRData extends TabComponent
 		//setting action listener for tab repaint on selection of the search nodes
 		searchTree.addTreeSelectionListener(event ->
 		{
-			final TreePath path = searchTree.getSelectionPath();
-			if(path == null) return;
+			final Object selectedSearch = getSelectedUserObject(searchTree);
+			if(selectedSearch == null) return;
 			partyTree.clearSelection();
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Object selectedSearch = selectedNode.getUserObject();
 			if(selectedSearch instanceof PartySearch)
 			{
 				searchesPartyTableModel.setSearch((Search<PartyType>) selectedSearch);
-/*				searchesCatalogueTable.setAutoCreateRowSorter(true);
-				((DefaultRowSorter<AbstractTableModel, Integer>) searchesCatalogueTable.getRowSorter()).setSortable(0, false);*/
 				searchesPartySorter.allRowsChanged();
-				searchesPartySorter.setSortable(0, false);
 				rightScrollPane.setViewportView(searchesPartyTable);
 			}
 			else if(selectedSearch instanceof CatalogueSearch)
 			{
 				searchesCatalogueTableModel.setSearch((Search<CatalogueType>) selectedSearch);
 				searchesCatalogueSorter.allRowsChanged();
-				searchesCatalogueSorter.setSortable(0, false);
 				rightScrollPane.setViewportView(searchesCatalogueTable);
 			}
 			else //String
 			{
 				SearchListTableModel<?> searchesTableModel = null;
-				if("Parties".equals((String) selectedSearch))
+				if(PARTIES.equals((String) selectedSearch))
 				{
 					searchesTableModel = new SearchListTableModel<PartyType>();
 					((SearchListTableModel<PartyType>) searchesTableModel).setSearches(myParty.getPartySearches());
 				}
-				else if("Catalogues".equals((String) selectedSearch))
+				else if(CATALOGUES.equals((String) selectedSearch))
 				{
 					searchesTableModel = new SearchListTableModel<CatalogueType>();
 					((SearchListTableModel<CatalogueType>) searchesTableModel).setSearches(myParty.getCatalogueSearches());
 				}
-				if(!"Searches".equals((String) selectedSearch))
+				if(!SEARCHES.equals((String) selectedSearch))
 				{
 					searchesTable.setModel(searchesTableModel);
 					searchesTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-//					searchesTable.setAutoCreateRowSorter(true);
-//					((DefaultRowSorter<AbstractTableModel, Integer>) searchesTable.getRowSorter()).setSortable(0, false);
-					searchesTable.setRowSorter(getTableRowSorter(searchesTableModel, searchesTable));
+					searchesTable.setRowSorter(createTableRowSorter(searchesTableModel, searchesTable));
 					rightScrollPane.setViewportView(searchesTable);
 				}
 				else
@@ -369,6 +503,89 @@ public class TabCDRData extends TabComponent
 			repaint();
 		});
 
+		JMenuItem againSearchItem = new JMenuItem("Search Again");
+		JMenuItem renameSearchItem = new JMenuItem("Rename");
+		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		searchTreePopupMenu.add(againSearchItem);
+		searchTreePopupMenu.addSeparator();
+		searchTreePopupMenu.add(renameSearchItem);
+		searchTreePopupMenu.add(deleteSearchItem);
+
+		againSearchItem.addActionListener(event ->
+		{
+			final Object selectedSearch = getSelectedUserObject(searchTree);
+			if(selectedSearch == null) return;
+			new Thread(() ->
+			{
+				try
+				{
+					final Future<?> ret = clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
+					if(ret != null)
+					{
+						ret.get();
+						EventQueue.invokeLater(() ->
+						{
+							selectNode(searchTree, selectedSearch);
+							searchesPartySorter.allRowsChanged();
+							repaint();
+						});
+					}
+
+					/*					((SearchTreeModel) searchTreeModel).changeNode((Search<?>) selectedSearch);
+					selectNode(searchTree, selectedSearch);
+					repaint(null, false, false);*/
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+				}
+			}).start();
+		});
+
+		renameSearchItem.addActionListener(event ->
+		{
+			final Search<?> selectedSearch = (Search<?>) getSelectedUserObject(searchTree);
+			if(selectedSearch == null) return;
+
+			final SearchNameDialog newNameDialog = new SearchNameDialog(clientFrame, selectedSearch.getSearchName());
+			newNameDialog.setVisible(true);
+			final String newName = newNameDialog.getSearchName();
+			if(newName != null)
+			{
+				new Thread(() ->
+				{
+					try
+					{
+						selectedSearch.setSearchName(newName);
+						myParty.updateSearch(selectedSearch);
+					}
+					catch(Exception e)
+					{
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					}
+				}).start();
+			}
+		});
+
+		deleteSearchItem.addActionListener( event ->
+		{
+			final Search<?> selectedSearch = (Search<?>) getSelectedUserObject(searchTree);
+			if(selectedSearch == null) return;
+			new Thread(() ->
+			{
+				try
+				{
+					final DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(searchTree, selectedSearch);
+					myParty.removeSearch(selectedSearch);
+					selectNode(searchTree, nodeToSelect);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+				}
+			}).start();
+		});
+
 		//mouse listener for the right click
 		searchTree.addMouseListener(new MouseAdapter()
 		{
@@ -377,80 +594,13 @@ public class TabCDRData extends TabComponent
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					TreePath path = searchTree.getPathForLocation(event.getX(), event.getY());
+					final TreePath path = searchTree.getPathForLocation(event.getX(), event.getY());
 					searchTree.setSelectionPath(path);
-					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-					Object selectedSearch = selectedNode.getUserObject();
+					final Object selectedSearch = getSelectedUserObject(path);
+					if(selectedSearch == null) return;
 					if(!(selectedSearch instanceof String))
 						searchTreePopupMenu.show(searchTree, event.getX(), event.getY());
 				}
-			}
-		});
-
-		JMenuItem againSearchItem = new JMenuItem("Search Again");
-		searchTreePopupMenu.add(againSearchItem);
-		searchTreePopupMenu.addSeparator();
-		JMenuItem renameSearchItem = new JMenuItem("Rename");
-		searchTreePopupMenu.add(renameSearchItem);
-		JMenuItem deleteSearchItem = new JMenuItem("Delete");
-		searchTreePopupMenu.add(deleteSearchItem);
-
-		againSearchItem.addActionListener(event ->
-		{
-			final TreePath path = searchTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Object selectedSearch = selectedNode.getUserObject();
-			if(selectedSearch instanceof String)
-				return;
-			else
-				new Thread(()->
-				{
-					clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
-/*					((SearchTreeModel) searchTreeModel).changeNode((Search<?>) selectedSearch);
-					selectNode(searchTree, selectedSearch);
-					repaint(null, false, false);*/
-				}).start();
-		});
-
-		renameSearchItem.addActionListener(event ->
-		{
-			//MMM: should be in a new method of the new class for TabbedPane
-			final  TreePath path = searchTree.getSelectionPath();
-			if(path == null) return;
-			final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			final Search<?> selectedSearch = (Search<?>) selectedNode.getUserObject();
-			String newName = (String) JOptionPane.showInputDialog(clientFrame, "Enter new name: ", "Rename a search",
-					JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
-			if(newName != null)
-				selectedSearch.setSearchName(newName);
-			searchTreeModel.nodeChanged(selectedNode);
-		});
-
-		deleteSearchItem.addActionListener( event ->
-		{
-			//MMM: should be in a new method of the new class for TabbedPane
-			TreePath path = searchTree.getSelectionPath();
-			int selectedRow = searchTree.getMinSelectionRow();
-			if(path == null) return;
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			Object selectedSearch = selectedNode.getUserObject();
-
-			Class<?> nodeClass = null; // Class object of the node in the tree
-			if(!(selectedSearch instanceof String))
-			{
-
-/*				nodeClass = ((Search<?>) selectedSearch).getResultType();
-				if(nodeClass == PartyType.class)
-					myParty.getPartySearches().remove((Search<PartyType>) selectedSearch);
-				else if(nodeClass == CatalogueType.class)
-					myParty.getCatalogueSearches().remove((Search<CatalogueType>) selectedSearch);
-				searchTreeModel.removeNodeFromParent(selectedNode);*/
-				if(((SearchTreeModel) searchTreeModel).isLastObject((Search<?>) selectedSearch))
-					--selectedRow;
-				((SearchTreeModel) searchTreeModel).deleteNode((Search<?>) selectedSearch, true);
-				searchTree.setSelectionRow(selectedRow);
-//				repaint(null, false);
 			}
 		});
 
@@ -459,26 +609,27 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates {@link TableRowSorter} and sets first column not to be sortable.
+	 * Creates {@link TableRowSorter}.
 	 * @param tableModel
 	 * @param table
-	 * @return sorter
+	 * @return sorter created {@code TableSorter}
 	 */
-	private TableRowSorter<AbstractTableModel> getTableRowSorter(AbstractTableModel tableModel, JTable table)
+	private TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel, JTable table)
 	{
-		TableRowSorter<AbstractTableModel> sorter = new TableRowSorter<AbstractTableModel>(tableModel);
+		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(tableModel);
 		sorter.setSortable(0, false);
-		sorter.addRowSorterListener(new RowSorterListener()
+		sorter.toggleSortOrder(1);
+/*		sorter.addRowSorterListener(new RowSorterListener()
 		{
-		    @Override
-		    public void sorterChanged(RowSorterEvent evt)
-		    {
-		    	//doesn't work in searchTree???!!!
-		        int columnIndex = 0;
-		        for (int i = 0; i < table.getRowCount(); i++)
-		        	table.setValueAt(i + 1, i, columnIndex);
-		    }
-		});
+			@Override
+			public void sorterChanged(RowSorterEvent evt)
+			{
+				//doesn't work in searchTree???!!!
+				int columnIndex = 0;
+				for (int i = 0; i < table.getRowCount(); i++)
+					table.setValueAt(i + 1, i, columnIndex);
+			}
+		});*/
 		return sorter;
 	}
 
@@ -486,22 +637,10 @@ public class TabCDRData extends TabComponent
 	 * Notifies {@link TableRowSorter} about model change.
 	 * @param sorter
 	 */
-	private void notifyRowSorter(TableRowSorter<AbstractTableModel> sorter, JTable table)
+	private void notifyRowSorter(TableRowSorter<DefaultTableModel> sorter, JTable table)
 	{
-		sorter.setSortable(0, false);
+//		sorter.setSortable(0, false);
 		sorter.allRowsChanged();
-/*		sorter.addRowSorterListener(new RowSorterListener()
-		{
-		    @Override
-		    public void sorterChanged(RowSorterEvent evt)
-		    {
-		        int columnIndex = 0;
-		        for (int i = 0; i < table.getRowCount(); i++)
-		        	table.setValueAt(i + 1, i, columnIndex);
-		    	EventQueue.invokeLater(() -> JOptionPane.showMessageDialog(clientFrame, "Sorter changed!"));
-
-		    }
-		});*/
 	}
 
 	/**
@@ -525,7 +664,7 @@ public class TabCDRData extends TabComponent
 	 * @param search true if the table displays search results, and false if it displays list of parties
 	 * @return constructed table object
 	 */
-	private JTable createPartyListTable(AbstractTableModel tableModel)
+	private JTable createPartyListTable(DefaultTableModel tableModel)
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -533,44 +672,198 @@ public class TabCDRData extends TabComponent
 		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
 		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
 		final JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
+		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
+		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
+		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
+		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
+
 		final MyParty myParty = clientFrame.getClient().getMyParty();
+
+		followPartnerItem.addActionListener(event ->
+		{
+			//			final int rowIndex = table.getSelectedRow()*/;
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			final Party coreParty = selectedParty.getCoreParty();
+			final String followingName = InstanceFactory.
+					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0),
+					PartyIdentificationType::getIDValue);
+			new Thread(()->
+			{
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
+					if(ret != null)
+					{
+						ret.get();
+						partiesTableModel.fireTableDataChanged();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append(" could not be removed from the following parties!"));
+				}
+			}).start();
+		});
+
+		followPartyItem.addActionListener(event ->
+		{
+			//			final int rowIndex = table.getSelectedRow()*/;
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			final Party coreParty = selectedParty.getCoreParty();
+			final String followingName = InstanceFactory.
+					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0),
+					PartyIdentificationType::getIDValue);
+			new Thread(()->
+			{
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
+					if(ret != null)
+					{
+						ret.get();
+						partiesTableModel.fireTableDataChanged();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append(" could not be removed from the following parties!"));
+				}
+			}).start();
+		});
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
+			//			final int rowIndex = table.getSelectedRow()*/;
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			new Thread(()->
 			{
-				clientFrame.getClient().cdrUnfollowParty(selectedParty);
+				try
+				{
+					Future<?> ret = clientFrame.getClient().cdrUnfollowParty(selectedParty);
+					if(ret != null)
+					{
+						ret.get();
+						partiesTableModel.fireTableDataChanged();
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append(" could not be removed from the following parties!"));
+				}
 			}).start();
 		});
 
 		addPartnerItem.addActionListener(event ->
 		{
-			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
+			//			final int rowIndex = table.getSelectedRow()*/;
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			new Thread(() ->
 			{
 				selectedParty.setPartner(true);
-				myParty.followParty(selectedParty);
-				clientFrame.appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been moved from Other Parties to Business Partners. "
-						+ "Party is still followed by My Party.", Color.GREEN);
-				repaint();
-				//				((AbstractTableModel) table.getModel()).fireTableDataChanged();
-			}
+				try
+				{
+					myParty.followParty(selectedParty);
+					partiesTableModel.fireTableDataChanged();
+					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
+							append(" has been moved from Other Parties to Business Partners.").
+							append(" Party is still followed by My Party."), Color.GREEN);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
+				}
+			}).start();
 		});
 
 		removePartnerItem.addActionListener(event ->
 		{
-			final int rowIndex = table.rowAtPoint(partyTablePopupMenu.getBounds().getLocation());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(rowIndex);
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			{
 				selectedParty.setPartner(false);
-				myParty.followParty(selectedParty);
-				clientFrame.appendToConsole("Party " + selectedParty.getPartySimpleName() + " has been moved from Business Partners to Other Parties. "
-						+ "Party is still followed by My Party.", Color.GREEN);
-				repaint();
-				//((AbstractTableModel) table.getModel()).fireTableDataChanged();
+				try
+				{
+					myParty.followParty(selectedParty);
+					partiesTableModel.fireTableDataChanged();
+					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
+							append(" has been moved from Business Partners to Other Parties.").
+							append(" Party is still followed by My Party."), Color.GREEN);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
+				}
 			}
+		});
+
+		deleteArchivedItem.addActionListener(event ->
+		{
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			new Thread(() ->
+			{
+				final String partyName = selectedParty.getPartySimpleName();
+				try
+				{
+					myParty.purgeParty(selectedParty);
+					partiesTableModel.fireTableDataChanged();
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" has been deleted from Archived Parties."), Color.GREEN);
+				}
+				catch (DetailException e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Archived Parties."), Color.GREEN);
+					logger.error(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Archived Parties.").toString(), e);
+				}
+			}).start();
+		});
+
+		deleteDeregisteredItem.addActionListener(event ->
+		{
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			new Thread(() ->
+			{
+				final String partyName = selectedParty.getPartySimpleName();
+				try
+				{
+					myParty.purgeParty(selectedParty);
+					partiesTableModel.fireTableDataChanged();
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" has been deleted from Deregistered Parties."), Color.GREEN);
+				}
+				catch (DetailException e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Deregistered Parties."), Color.GREEN);
+					logger.error(new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Deregistered Parties.").toString(), e);
+				}
+			}).start();
 		});
 
 		table.addMouseListener(new MouseAdapter()
@@ -581,37 +874,51 @@ public class TabCDRData extends TabComponent
 				EventQueue.invokeLater(() ->
 				{
 					final int rowIndex = table.rowAtPoint(event.getPoint());
+					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
 					if(SwingUtilities.isRightMouseButton(event))
 					{
 						table.setRowSelectionInterval(rowIndex, rowIndex);
 
-						final TreePath path = partyTree.getSelectionPath();
-						if(path == null) return;
-						final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-						final Object selectedParty = selectedNode.getUserObject();
+						final Object selectedParty = getSelectedUserObject(partyTree);
+						if(selectedParty == null) return;
 						if(selectedParty instanceof String)
 						{
 							final String nodeTitle = (String) selectedParty;
-							if("Business Partners".equals(nodeTitle))
+							if(BUSINESS_PARTNERS.equals(nodeTitle))
 							{
-								partyTablePopupMenu.remove(unfollowPartyItem);
-								partyTablePopupMenu.remove(addPartnerItem);
+								partyTablePopupMenu.removeAll();
 								partyTablePopupMenu.add(removePartnerItem);
+								partyTablePopupMenu.add(unfollowPartyItem);
 							}
-							else if("Other Parties".equals(nodeTitle))
+							else if(OTHER_PARTIES.equals(nodeTitle))
 							{
-								partyTablePopupMenu.remove(removePartnerItem);
+								partyTablePopupMenu.removeAll();
 								partyTablePopupMenu.add(addPartnerItem);
 								partyTablePopupMenu.add(unfollowPartyItem);
 							}
+							else if(ARCHIVED_PARTIES.equals(nodeTitle))
+							{
+								partyTablePopupMenu.removeAll();
+								partyTablePopupMenu.add(followPartnerItem);
+								partyTablePopupMenu.add(followPartyItem);
+								partyTablePopupMenu.addSeparator();
+								partyTablePopupMenu.add(deleteArchivedItem);
+							}
+							else if(DEREGISTERED_PARTIES.equals(nodeTitle))
+							{
+								partyTablePopupMenu.removeAll();
+								partyTablePopupMenu.add(deleteDeregisteredItem);
+							}
+							else
+								partyTablePopupMenu.removeAll();
 							partyTablePopupMenu.show(table, event.getX(), event.getY());
 						}
 					}
 					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
 						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
-						final BusinessParty party = partyListTableModel.getParty(rowIndex);
-						partnerCatalogueTableModel.setParty(party);
+						final BusinessParty party = partyListTableModel.getParty(realRowIndex);
+						partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
 						rightScrollPane.setViewportView(partnerCatalogueTable);
 						selectNode(partyTree, party);
 						repaint();
@@ -623,11 +930,11 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates and formats the view of empty table that would contain data from the list of parties.
+	 * Creates and formats the view of empty table that will contain data from the list of parties.
 	 * @param tableModel model representing the list of parties to be displayed
 	 * @return created table
 	 */
-	private JTable newEmptyPartyListTable(AbstractTableModel tableModel)
+	private JTable newEmptyPartyListTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -648,7 +955,7 @@ public class TabCDRData extends TabComponent
 		return table;
 	}
 
-	private JTable createSearchListTable(AbstractTableModel tableModel)
+	private JTable createSearchListTable(DefaultTableModel tableModel)
 	{
 		final MyParty myParty = clientFrame.getClient().getMyParty();
 		if(tableModel == null) return null;
@@ -664,67 +971,81 @@ public class TabCDRData extends TabComponent
 		colModel.getColumn(3).setPreferredWidth(200);
 
 		JPopupMenu searchTablePopupMenu = new JPopupMenu();
-		JMenuItem searchAgainItem = new JMenuItem("Search Again");
-		searchTablePopupMenu.add(searchAgainItem);
-		searchTablePopupMenu.addSeparator();
+		JMenuItem againSearchItem = new JMenuItem("Search Again");
 		JMenuItem renameSearchItem = new JMenuItem("Rename");
-		searchTablePopupMenu.add(renameSearchItem);
 		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		searchTablePopupMenu.add(againSearchItem);
+		searchTablePopupMenu.addSeparator();
+		searchTablePopupMenu.add(renameSearchItem);
 		searchTablePopupMenu.add(deleteSearchItem);
 
-		searchAgainItem.addActionListener(event ->
+		//in all listeners table model must be get with table.getModel() in order to have a current instance of it
+		againSearchItem.addActionListener(event ->
 		{
-			int rowIndex = table.getSelectedRow();
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) tableModel).getSearches().get(rowIndex);
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(realRowIndex);
 			new Thread(()->
 			{
-				clientFrame.getClient().cdrSearch(selectedSearch, true);
-//				((SearchTreeModel) searchTree.getModel()).deleteNode(selectedSearch);
-				repaint();
+				try
+				{
+					final Future<?> ret = clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
+					if(ret != null)
+					{
+						ret.get();
+						EventQueue.invokeLater(() ->
+						{
+							selectNode(searchTree, selectedSearch);
+						});
+//						((DefaultTableModel) table.getModel()).fireTableDataChanged();
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+				}
 			}).start();
 		});
 
 		renameSearchItem.addActionListener(event ->
 		{
-			int rowIndex = table.getSelectedRow();
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) tableModel).getSearches().get(rowIndex);
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(realRowIndex);
 			String newName = (String) JOptionPane.showInputDialog(clientFrame, "Enter new name: ", "Rename a search",
 					JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
 			if(newName != null)
-				selectedSearch.setSearchName(newName);
-			repaint();
+			{
+				new Thread(() ->
+				{
+					try
+					{
+						selectedSearch.setSearchName(newName);
+						myParty.updateSearch(selectedSearch);
+						((DefaultTableModel) table.getModel()).fireTableDataChanged();
+					}
+					catch(Exception e)
+					{
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					}
+				}).start();
+			}
 		});
 
 		deleteSearchItem.addActionListener( event ->
 		{
-			int rowIndex = table.getSelectedRow();
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) tableModel).getSearches().get(rowIndex);
-
-/*			Class<?> searchClazz = selectedSearch.getResultType();
-			if(searchClazz == PartyType.class)
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(realRowIndex);
+			new Thread(() ->
 			{
-				if (myParty.getPartySearches().remove((Search<PartyType>) selectedSearch)) ;
-//					repaint(selectedSearch, false, true);  // loadTab(tabbedPane.getSelectedIndex());
-			}
-			else if(searchClazz == CatalogueType.class)
-			{
-				if (myParty.getCatalogueSearches().remove((Search<CatalogueType>) selectedSearch)) ;
-//					repaint(selectedSearch, false, true);  // loadTab(tabbedPane.getSelectedIndex());
-			}*/
-
-			Class<?> searchClazz = selectedSearch.getClass();
-			if(searchClazz == PartySearch.class)
-			{
-				if (myParty.getPartySearches().remove(selectedSearch))
-					repaint();  // loadTab(tabbedPane.getSelectedIndex());
-			}
-			else if(searchClazz == CatalogueSearch.class)
-			{
-				if (myParty.getCatalogueSearches().remove(selectedSearch))
-					repaint();  // loadTab(tabbedPane.getSelectedIndex());
-			}
-
-
+				try
+				{
+					myParty.removeSearch(selectedSearch);
+					((DefaultTableModel) table.getModel()).fireTableDataChanged();
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+				}
+			}).start();
 		});
 
 		table.addMouseListener(new MouseAdapter()
@@ -733,53 +1054,27 @@ public class TabCDRData extends TabComponent
 			public void mouseClicked(MouseEvent event)
 			{
 				final int rowIndex = table.rowAtPoint(event.getPoint());
+				final int realRowIndex = table.convertRowIndexToModel(rowIndex);
 				if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 				{
-					final TreePath path = searchTree.getSelectionPath();
-					if(path == null) return;
-					final DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-					final Object selectedSearch = selectedNode.getUserObject();
-					if(selectedSearch instanceof String)
+					final Object selectedSearchListNode = getSelectedUserObject(searchTree);
+					if(selectedSearchListNode == null) return;
+					if(selectedSearchListNode instanceof String)
 					{
-						final String nodeTitle = (String) selectedSearch;
-						if("Parties".equals(nodeTitle))
+						final String nodeTitle = (String) selectedSearchListNode;
+						if(PARTIES.equals(nodeTitle))
 						{
-/*							final PartySearchTableModel tableModel = new PartySearchTableModel(false);
-							final Search<PartyType> search = myParty.getPartySearches().get(rowIndex);
-							tableModel.setSearch(search);
-							final JTable searchTable = createSearchPartyTable(tableModel);
-							selectNode(searchTree, search);
-							rightPane.removeAll();
-							rightPane.add(new JScrollPane(searchTable));
-							repaint();*/
-
-							final Search<PartyType> search = myParty.getPartySearches().get(rowIndex);
-							searchesPartyTableModel.setSearch(search);
-							selectNode(searchTree, search);
-							searchesPartySorter.allRowsChanged();
-							searchesPartySorter.setSortable(0, false);
+							final Search<PartyType> selectedSearch = myParty.getPartySearches().get(realRowIndex);
+							searchesPartyTableModel.setSearch(selectedSearch);
+							selectNode(searchTree, selectedSearch);
 							rightScrollPane.setViewportView(searchesPartyTable);
-							repaint();
-
 						}
-						else if("Catalogues".equals(nodeTitle))
+						else if(CATALOGUES.equals(nodeTitle))
 						{
-/*							final CatalogueSearchTableModel tableModel = new CatalogueSearchTableModel(false);
-							final Search<CatalogueType> search = myParty.getCatalogueSearches().get(rowIndex);
-							tableModel.setSearch(search);
-							final JTable searchTable = createSearchCatalogueTable(tableModel);
-							selectNode(searchTree, search);
-							rightPane.removeAll();
-							rightPane.add(new JScrollPane(searchTable));
-							repaint();*/
-
-							final Search<CatalogueType> search = myParty.getCatalogueSearches().get(rowIndex);
-							searchesCatalogueTableModel.setSearch(search);
-							selectNode(searchTree, search);
-							searchesCatalogueSorter.allRowsChanged();
-							searchesCatalogueSorter.setSortable(0, false);
+							final Search<CatalogueType> selectedSearch = myParty.getCatalogueSearches().get(realRowIndex);
+							searchesCatalogueTableModel.setSearch(selectedSearch);
+							selectNode(searchTree, selectedSearch);
 							rightScrollPane.setViewportView(searchesCatalogueTable);
-							repaint();
 						}
 					}
 				}
@@ -800,39 +1095,69 @@ public class TabCDRData extends TabComponent
 	 * @param tableModel model containing party data to display
 	 * @return constructed table object
 	 */
-	private JTable createSearchPartyTable(AbstractTableModel tableModel)
+	private JTable createSearchPartyTable(DefaultTableModel tableModel)
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		final JPopupMenu popupMenu = new JPopupMenu();
-		final JMenuItem followBusinessPartner = new JMenuItem("Follow as Business Partner");
-		final JMenuItem followParty = new JMenuItem("Follow as Party");
-		popupMenu.add(followBusinessPartner);
-		popupMenu.add(followParty);
+		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
+		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
+		popupMenu.add(followPartnerItem);
+		popupMenu.add(followPartyItem);
 
-		followBusinessPartner.addActionListener(event ->
+		followPartnerItem.addActionListener(event ->
 		{
-			int rowIndex = table.getSelectedRow();
-			final PartyType followingParty = ((PartySearchTableModel) table.getModel()).getParty(rowIndex);
-			final String followingName = InstanceFactory.getPropertyOrNull(followingParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(followingParty.getPartyIdentificationAtIndex(0),
+			//			int rowIndex = table.getSelectedRow();
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
+			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
 					PartyIdentificationType::getIDValue);
 			new Thread(()->
 			{
-				clientFrame.followParty(followingName, followingID, true);
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
+					if(ret != null)
+					{
+						ret.get();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(followingName).
+							append(" could not be added to the following parties as a business partner!"));
+				}
 			}).start();
 		});
 
-		followParty.addActionListener(event ->
+		followPartyItem.addActionListener(event ->
 		{
-			int rowIndex = table.getSelectedRow();
-			final PartyType followingParty = ((PartySearchTableModel) table.getModel()).getParty(rowIndex);
-			final String followingName = InstanceFactory.getPropertyOrNull(followingParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(followingParty.getPartyIdentificationAtIndex(0),
+			//			int rowIndex = table.getSelectedRow();
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
+			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
 					PartyIdentificationType::getIDValue);
 			new Thread(()->
 			{
-				clientFrame.followParty(followingName, followingID, false);
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
+					if(ret != null)
+					{
+						ret.get();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+							append(followingName).append(" could not be added to the following parties!"));
+				}
 			}).start();
 		});
 
@@ -856,7 +1181,12 @@ public class TabCDRData extends TabComponent
 		return table;
 	}
 
-	private JTable createSearchCatalogueTable(AbstractTableModel tableModel)
+	/**
+	 * Creates table displaying list of catalogue items that are the result of quering the CDR.
+	 * @param tableModel model containing party data to display
+	 * @return constructed table object
+	 */
+	private JTable createSearchCatalogueTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -869,32 +1199,196 @@ public class TabCDRData extends TabComponent
 		colModel.getColumn(5).setPreferredWidth(300);
 		colModel.getColumn(6).setPreferredWidth(150);
 		table.setFillsViewportHeight(true);
+
+		final JPopupMenu popupMenu = new JPopupMenu();
+		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
+		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
+		popupMenu.add(followPartnerItem);
+		popupMenu.add(followPartyItem);
+
+		followPartnerItem.addActionListener(event ->
+		{
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = searchesCatalogueTableModel.getParty(realRowIndex);
+			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0),
+					PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
+					PartyIdentificationType::getIDValue);
+			new Thread(() ->
+			{
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
+					if(ret != null)
+					{
+						ret.get();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(followingName).
+							append(" could not be added to the following parties as a business partner!"));
+				}
+			}).start();
+		});
+
+		followPartyItem.addActionListener(event ->
+		{
+			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = searchesCatalogueTableModel.getParty(realRowIndex);
+			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0),
+					PartyNameType::getNameValue);
+			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
+					PartyIdentificationType::getIDValue);
+			new Thread(() ->
+			{
+				try
+				{
+					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
+					if(ret != null)
+					{
+						ret.get();
+						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+					}
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(followingName).
+							append(" could not be added to the following parties!"));
+				}
+			}).start();
+		});
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				if(SwingUtilities.isRightMouseButton(event))
+				{
+					final int rowIndex = table.rowAtPoint(event.getPoint());
+					table.addRowSelectionInterval(rowIndex, rowIndex);
+					popupMenu.show(table, event.getX(), event.getY());
+				}
+			}
+		});
+
 		return table;
 	}
 
-/*	@Override
-	public void repaint()
+	@Override
+	public void actionPerformed(ActionEvent event)
 	{
-		//MMM: check whether this repaints are nedded
-//		super.repaint();
-		rightPane.revalidate();
-		rightPane.repaint();
-		leftPane.revalidate();
-		leftPane.repaint();
-
-
-
-		for (Component comp: rightPane.getComponents())
+		final Object source = event.getSource();
+		final String command = event.getActionCommand();
+		if(source.getClass() == BusinessParty.class)
 		{
-			comp.revalidate();
-			comp.repaint();
+			BusinessParty party = (BusinessParty) source;
+			//MMM: there should be more commands; every command responsible for an update of a specific table
+			if(RutaClientFrameEvent.CATALOGUE_UPDATED.equals(command))
+			{
+				EventQueue.invokeLater(() -> {
+					makeVisibleNode(partyTree, party);
+					final Object selectedUserObject = getSelectedUserObject(partyTree);
+					if(selectedUserObject instanceof BusinessParty)
+					{
+						if(selectedUserObject == party)
+							partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
+						partnerCatalogueTableModel.fireTableDataChanged();
+					}
+				});
+			}
+			else if(RutaClientFrameEvent.PARTY_UPDATED.equals(command))
+			{
+				EventQueue.invokeLater(() -> {
+					makeVisibleNode(partyTree, party);
+					final Object selectedUserObject = getSelectedUserObject(partyTree);
+					if(!(selectedUserObject instanceof BusinessParty))
+						partiesTableModel.fireTableDataChanged();
+				});
+			}
+			else if(RutaClientFrameEvent.PARTY_MOVED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					makeVisibleNode(partyTree, party);
+/*					final Object selectedUserObject = getSelectedUserObject(partyTree);
+					if(!(selectedUserObject instanceof BusinessParty))
+						partiesTableModel.fireTableDataChanged();*/
+				});
+			}
+			else if(RutaClientFrameEvent.SELECT_NEXT.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					selectNextNode(partyTree, party);
+				});
+			}
 		}
-		for (Component comp: leftPane.getComponents())
+	}
+
+	public class UnfollowPartyWorker extends SwingWorker<Void, ConsoleData>
+	{
+		private BusinessParty party;
+		private boolean success;
+
+		public UnfollowPartyWorker(BusinessParty party)
 		{
-			comp.revalidate();
-			comp.repaint();
+			this.party = party;
+			success = false;
 		}
 
-	}*/
+		@Override
+		protected Void doInBackground() throws Exception
+		{
+			try
+			{
+				Future<?> ret = clientFrame.getClient().cdrNonBlockingUnfollowParty(party, this);
+				if(ret != null)
+				{
+					ret.get();
+					success = true;
+				}
+			}
+			catch(WebServiceException e)
+			{
+				publish(new ConsoleData(new StringBuilder("Unfollow request has not been sent to the CDR service!").
+						append(" Server is not accessible. Please try again later."), Color.RED));
+			}
+			catch(Exception e)
+			{
+				publish(new ConsoleData(clientFrame.processException(e, new StringBuilder("Party ").append(party.getPartySimpleName()).
+						append(" could not be removed from the following parties!")), Color.RED));
+			}
+			return null;
+		}
+
+		@Override
+		protected void process(List<ConsoleData> chunks)
+		{
+			for(ConsoleData data : chunks)
+				clientFrame.appendToConsole(data.getMsg(), data.getColor());
+		}
+
+		@Override
+		protected void done()
+		{
+			if(success)
+			{
+				EventQueue.invokeLater(() -> selectNode(partyTree, party));
+				clientFrame.appendToConsole(new StringBuilder("Party ").append(party.getPartySimpleName()).
+						append(" has been moved to archived parties."), Color.GREEN);
+			}
+		}
+
+		public void publish(ConsoleData data)
+		{
+			super.publish(data);
+		}
+
+	}
 
 }

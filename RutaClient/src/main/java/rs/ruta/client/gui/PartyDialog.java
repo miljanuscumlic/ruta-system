@@ -3,10 +3,6 @@ package rs.ruta.client.gui;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.servlet.Registration;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -20,7 +16,7 @@ public class PartyDialog extends JDialog
 	 * True when table content has changed.
 	 */
 	private boolean changed;
-	private AbstractTableModel partyTableModel;
+	private DefaultTableModel partyTableModel;
 
 	/**
 	 * Constructs the dialog for displaying and/or changing the data of a {@link Party}.
@@ -51,8 +47,10 @@ public class PartyDialog extends JDialog
 		TableColumnModel tableColumnModel = table.getColumnModel();
 		TableColumn tableColumn = tableColumnModel.getColumn(0);
 		tableColumn.setResizable(false);
+		tableColumn.setMinWidth(160);
+		tableColumn.setPreferredWidth(160);
+		tableColumn.setMaxWidth(180);
 		tableColumn = tableColumnModel.getColumn(1);
-		tableColumn.setPreferredWidth(280);
 
 		MouseAdapter tableLostFocus = new MouseAdapter()
 		{

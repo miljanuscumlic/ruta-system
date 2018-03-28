@@ -15,21 +15,42 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import oasis.names.specification.ubl.schema.xsd.catalogue_21.*;
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.*;
-import rs.ruta.client.gui.RutaTreeModel;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueLineType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CommodityClassificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemLocationQuantityType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PriceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BarcodeSymbologyIDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.CommodityCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.DescriptionType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PackSizeNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PriceAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.UUIDType;
+import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.BusinessPartySearchCriterion;
-import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.InstanceFactory;
-import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.DataMapper;
+import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;
 
+/**
+ * Class representing party of {@code Ruta application} containing all the data pertaining that
+ * party and all of its correspondeces with other parties in {@code Ruta System}.
+ */
 @XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType
@@ -50,6 +71,7 @@ public class MyParty extends BusinessParty
 	@Nullable
 	private BusinessParty myFollowingParty;
 	/**
+	 * Helper list containing all following parties of MyParty except {@code myFollowingParty}.
 	 * List of all following parties of MyParty. Should always be accessed with {@link #getFollowingParty(String)}
 	 * method call unless prior to access is checked for {@code null}.
 	 */
@@ -58,14 +80,14 @@ public class MyParty extends BusinessParty
 	@Nullable
 	private List<BusinessParty> followingParties;
 	/**
-	 * Helper list containing only business partners of MyParty.
+	 * List containing only business partners of MyParty.
 	 * Should always be accessed with {@link #getBusinessPartners()} method call unless prior to access is checked for {@code null}.
 	 */
 	@XmlTransient
 	@Nullable
 	private List<BusinessParty> businessPartners;
 	/**
-	 * Helper list containing only following parties that are not business partners of MyParty.
+	 * List containing only following parties that are not business partners of MyParty.
 	 * Should always be accessed with {@link #getOtherParties()} method call unless prior to access is checked for {@code null}.
 	 */
 	@XmlTransient
@@ -94,7 +116,9 @@ public class MyParty extends BusinessParty
 	@XmlTransient
 	private List<Search<CatalogueType>> catalogueSearches;
 	@XmlTransient
-	private List<ActionListener> actionListeners;
+//	private List<ActionListener> actionListeners;
+
+	private Map<Class<? extends ActionEvent>, List<ActionListener>> actionListeners;
 	@XmlElement(name = "DirtyCatalogue")
 	private boolean dirtyCatalogue;
 	@XmlElement(name = "DirtyMyParty")
@@ -126,7 +150,7 @@ public class MyParty extends BusinessParty
 		followingParties = businessPartners = otherParties = archivedParties = deregisteredParties = null;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		catalogueIssueDate = null;
-		actionListeners = new ArrayList<>();;
+		actionListeners = createListenerMap();
 		jaxb = RutaClient.getVersion().getJaxbVersion();
 	}
 
@@ -195,7 +219,7 @@ public class MyParty extends BusinessParty
 	 * Stores My Party data to a local data store.
 	 * @throws Exception if data could not be stored to a data store
 	 */
-	public void storeData() throws Exception
+	public void storeAllData() throws Exception
 	{
 		setSearchNumber(Search.getSearchNum());
 		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
@@ -226,6 +250,45 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
+	 * Stores only My Party data to a local data store that have not be stored after start of the application.
+	 * Some data that are stored immediately after they had be changed, should not be stored in this method again.
+	 * <p>This method should be refined.</p>
+	 * @throws Exception if data could not be stored to a data store
+	 */
+	public void storeDirtyData() throws Exception
+	{
+		setSearchNumber(Search.getSearchNum());
+		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
+		mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
+		mapperRegistry.getMapper(Item.class).insertAll(null, getProducts());
+
+/*		if(followingParties != null && !followingParties.isEmpty())
+			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, getFollowingParties());*/
+
+/*		if(businessPartners != null && !businessPartners.isEmpty())
+			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, businessPartners);
+		if(otherParties != null && !otherParties.isEmpty())
+			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, otherParties);
+		if(archivedParties != null && !archivedParties.isEmpty())
+			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, archivedParties);
+		if(deregisteredParties != null && !deregisteredParties.isEmpty())
+			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, deregisteredParties);
+		if(myFollowingParty != null)
+			mapperRegistry.getMapper(BusinessParty.class).insert(null, myFollowingParty);*/
+
+		if(partySearches != null && !partySearches.isEmpty())
+		{
+			List<PartySearch> newList = Search.listFromLisfOfGenerics(getPartySearches());
+			mapperRegistry.getMapper(PartySearch.class).insertAll(null, newList);
+		}
+		if(catalogueSearches != null && !catalogueSearches.isEmpty())
+		{
+			List<CatalogueSearch> newList = Search.listFromLisfOfGenerics(getCatalogueSearches());
+			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
+		}
+	}
+
+	/**
 	 * Deletes all the objects from the data model and all the data from the data store.
 	 * @throws DetailException if data could not be deleted
 	 */
@@ -240,18 +303,33 @@ public class MyParty extends BusinessParty
 		clearProducts();
 	}
 
-	public List<ActionListener> getActionListeners()
+	/**
+	 * Creates a {@link HashMap map} with (key, value) pairs where the key is a {@link Class} object of the
+	 * event and the value is a list of all listeners that are listening for that event.
+	 * @return map of listeners
+	 */
+	private Map<Class<? extends ActionEvent>, List<ActionListener>> createListenerMap()
+	{
+		Map<Class<? extends ActionEvent>, List<ActionListener>> listeners = new HashMap<>();
+		listeners.put(BusinessPartyEvent.class, new ArrayList<>());
+		listeners.put(SearchEvent.class, new ArrayList<>());
+		listeners.put(RutaClientFrameEvent.class, new ArrayList<>());
+		return listeners;
+	}
+
+	public Map<Class<? extends ActionEvent>, List<ActionListener>> getActionListeners()
 	{
 		return actionListeners;
 	}
 
 	/**
 	 * Registeres new {@link ActionListener} with {@code MyParty} object.
-	 * @param listener
+	 * @param listener listener to register
+	 * @param eventClazz {@link Class} object of the event that the listener is listening for
 	 */
-	public void addActionListener(ActionListener listener)
+	public void addActionListener(ActionListener listener, Class<? extends ActionEvent> eventClazz)
 	{
-		actionListeners.add(listener);
+		actionListeners.get(eventClazz).add(listener);
 	}
 
 	/**
@@ -261,14 +339,18 @@ public class MyParty extends BusinessParty
 	 */
 	public void notifyListeners(ActionEvent event)
 	{
-		actionListeners.stream().
-		filter(listener -> ((RutaTreeModel) listener).listenFor(event.getClass())).
-		forEach(listener -> listener.actionPerformed(event));
+/*		actionListeners.stream().
+		filter(listener -> listener.getClass() == RutaTreeModel.class && ((RutaTreeModel) listener).listensFor(event.getClass())).
+//		filter(listener -> ((RutaTreeModel) listener).listenFor(event.getClass())).
+		forEach(listener -> listener.actionPerformed(event));*/
 
 /*		List<ActionListener> listeners = actionListeners.stream().filter(listener -> ((RutaTreeModel) listener).
 				listenFor(event.getClass())).collect(Collectors.toList());
 		for(ActionListener listener : listeners)
 			listener.actionPerformed(event);*/
+
+		actionListeners.get(event.getClass()).stream().forEach(listener -> listener.actionPerformed(event));
+
 	}
 
 	public List<Item> getProducts()
@@ -306,7 +388,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all products from the data model and data store.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the database
 	 */
 	public void clearProducts() throws DetailException
@@ -684,7 +766,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all parties from the data model and data store.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the database
 	 */
 	public void clearParties() throws DetailException
@@ -699,7 +781,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all searches from the data model and data store.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the database
 	 */
 	public void clearSearches() throws DetailException
@@ -721,7 +803,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Sets MyParty data previously retrvied from the CDR service.
+	 * Sets MyParty data previously retrieved from the CDR service.
 	 * @param myFollowingParty
 	 */
 	public void setMyFollowingParty(BusinessParty myFollowingParty)
@@ -753,7 +835,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all parties from the business partners list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
 	public void clearBusinessPartners() throws DetailException
@@ -767,11 +849,13 @@ public class MyParty extends BusinessParty
 	/**
 	 * Adds party to business partner list.
 	 * @param party party to add
+	 * @throws DetailException if party could not be inserted in the data store
 	 */
-	private void addBusinessPartner(BusinessParty party)
+	private void addBusinessPartner(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
+			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			party.setPartner(true);
 			getBusinessPartners().add(party);
 		}
@@ -781,16 +865,44 @@ public class MyParty extends BusinessParty
 	 * Removes party from the list of business partners.
 	 * @param party party to remove
 	 * @return true if party was contained in list of business parties and removed from it
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	private boolean removeBusinessPartner(BusinessParty party)
+	private boolean removeBusinessPartner(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
 		{
-			success = getBusinessPartners().remove(party);
-			party.setPartner(false);
+			try
+			{
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+				success = getBusinessPartners().remove(party);
+				party.setPartner(false);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
 		}
 		return success;
+	}
+
+	/**
+	 * Gets the business partner with passed ID.
+	 * @param id following party's ID
+	 * @return following party or {@code null} if there is no party with specified ID in the
+	 * list of following parties
+	 */
+	public BusinessParty getBusinessPartner(String id)
+	{
+		try
+		{
+			return getBusinessPartners().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed id
+		{
+			return null;
+		}
 	}
 
 	/**
@@ -818,7 +930,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all parties from the other parties list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
 	public void clearOtherParties() throws DetailException
@@ -830,13 +942,15 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Adds party to other parties list.
+	 * Adds party to other parties list and inserts it in the data store.
 	 * @param party party to add
+	 * @throws DetailException if party could not be inserted in the data store
 	 */
-	private void addOtherParty(BusinessParty party)
+	private void addOtherParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
+			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			party.setPartner(false);
 			getOtherParties().add(party);
 		}
@@ -845,17 +959,45 @@ public class MyParty extends BusinessParty
 	/**
 	 * Removes party from the list of business partners.
 	 * @param party party to remove
-	 *  @return true if party was contained in list of other parties and removed from it
+	 * @return true if party was contained in list of other parties and removed from it
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	private boolean removeOtherParty(BusinessParty party)
+	private boolean removeOtherParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
 		{
-			party.setPartner(false);
-			success = getOtherParties().remove(party);
+			try
+			{
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+				party.setPartner(false);
+				success = getOtherParties().remove(party);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
 		}
 		return success;
+	}
+
+	/**
+	 * Gets the other party with passed ID.
+	 * @param id following party's ID
+	 * @return following party or {@code null} if there is no party with specified ID in the
+	 * list of following parties
+	 */
+	public BusinessParty getOtherParty(String id)
+	{
+		try
+		{
+			return getOtherParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed id
+		{
+			return null;
+		}
 	}
 
 	public List<BusinessParty> getArchivedParties()
@@ -872,7 +1014,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all parties from the archived parties list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
 	public void clearArchivedParties() throws DetailException
@@ -916,11 +1058,13 @@ public class MyParty extends BusinessParty
 	/**
 	 * Adds party to archived party list.
 	 * @param party party to add
+	 * @throws DetailException if party could not be inserted in the data store
 	 */
-	private void addArchivedParty(BusinessParty party)
+	private void addArchivedParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
+			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			party.setArchived(true);
 			getArchivedParties().add(party);
 		}
@@ -930,25 +1074,36 @@ public class MyParty extends BusinessParty
 	 * Removes party from the list of archived parties.
 	 * @param party party to remove
 	 * @return true if party was contained in list of archived parties and removed from it
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	private boolean removeArchivedParty(BusinessParty party)
+	private boolean removeArchivedParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
 		{
-			//MMM: TODO can be removed only if there are no correspondence/documents with the party
-			party.setArchived(false);
-			success = getArchivedParties().remove(party);
+			try
+			{
+				//MMM: TODO can be removed only if there are no correspondence/documents with the party
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+				party.setArchived(false);
+				success = getArchivedParties().remove(party);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
 		}
 		return success;
 	}
 
 	/**
 	 * Adds party to the archived list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be archive
+	 * @throws DetailException if party could not be added to the data store
 	 */
-	public void archiveParty(BusinessParty party)
+	public void archiveParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
@@ -958,11 +1113,13 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Deletes party from the archived or deregistered list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * Deletes party from archived or deregistered list depending on which one it belongs and from
+	 * the data store.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be deleted
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	public void purgeParty(BusinessParty party)
+	public void purgeParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
@@ -988,7 +1145,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes all parties from the deregistered parties list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
 	public void clearDeregisteredParties() throws DetailException
@@ -1035,22 +1192,26 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Adds to deregisterd party list and removes it from archived list if it is in it.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * Adds to deregisterd party list and removes it from archived list if it is in it. Also, it
+	 * updates the party in the data store.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party to add
+	 * @throws DetailException if party could not be updated in the data store
 	 */
-	private void addDeregisteredParty(BusinessParty party)
+	private void addDeregisteredParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
 			party.setDeregistered(true);
+			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			getDeregisteredParties().add(party);
 			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
 
 			if(checkArchivedParty(party)) //MMM: superfluos??? remove down below will succeed or not
 			{	//This way it is removed the object with the same Party ID, not just
 				//the same object like in this call: getArchivedParties().remove(party)
-				if(getArchivedParties().remove(getArchivedParty(party.getPartyID())))
+				if(removeArchivedParty(party))
+//				if(getArchivedParties().remove(getArchivedParty(party.getPartyID())))
 					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			}
 		}
@@ -1060,25 +1221,36 @@ public class MyParty extends BusinessParty
 	 * Removes party from the list of Deregistered parties.
 	 * @param party party to be removed
 	 * @return true if party was contained in list of deregistered parties and removed from it
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	private boolean removeDeregisteredParty(BusinessParty party)
+	private boolean removeDeregisteredParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
 		{
-			//MMM: TODO should be removed only if there are no correspondence/documents with the party
-			success = getDeregisteredParties().remove(party);
-			party.setDeregistered(false);
+			try
+			{
+				//MMM: TODO should be removed only if there are no correspondence/documents with the party
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+				success = getDeregisteredParties().remove(party);
+				party.setDeregistered(false);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
 		}
 		return success;
 	}
 
 	/**
 	 * Adds party to the deregistered list and removes it from the lists it is contained in.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be deregister
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	public void deregisterParty(BusinessParty party)
+	public void deregisterParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
@@ -1090,7 +1262,7 @@ public class MyParty extends BusinessParty
 
 /*	*//**
 	 * Deletes party from the deregistered list.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be deleted
 	 *//*
 	 *@Deprecated
@@ -1178,7 +1350,7 @@ public class MyParty extends BusinessParty
 	/**
 	 * Adds party to the list of following parties and to one appropriate helper list while removing it
 	 * from the other. If party is present in the list, this method overwrites it.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party following party
 	 */
 	@Deprecated
@@ -1247,8 +1419,9 @@ public class MyParty extends BusinessParty
 	 * Removes party from proper list of following parties.
 	 * @param party party to remove
 	 * @return true if party was contained in some of the following lists and removed from it
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	private boolean removeFollowingParty(BusinessParty party)
+	private boolean removeFollowingParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
@@ -1277,10 +1450,11 @@ public class MyParty extends BusinessParty
 	/**
 	 * Adds party to the proper list of {@link BusinessParty BusinessParties} and removes it from the
 	 * archived list if the party was archived before.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party to follow
+	 * @throws DetailException if party could not be inserted or updated with the data store
 	 */
-	public void followParty(BusinessParty party)
+	public void followParty(BusinessParty party) throws DetailException
 	{
 		party.setFollowing(true);
 
@@ -1320,8 +1494,9 @@ public class MyParty extends BusinessParty
 	 * Unfollows the party by removing it from appropriate list and by sending the notification to tree model
 	 * listener.
 	 * @param party party to unfollow
+	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	public void unfollowParty(BusinessParty party)
+	public void unfollowParty(BusinessParty party) throws DetailException
 	{
 		boolean partner = party.isPartner();
 		removeFollowingParty(party);
@@ -1358,7 +1533,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Checks whether My Party is registered with the CDR service.
-	 * @return true if party is registered with the CDR service, otherwise false
+	 * @return true if party is registered with the CDR service
 	 */
 	public boolean isRegisteredWithCDR()
 	{
@@ -1368,7 +1543,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Checks whether My Party is registered with the local datastore.
-	 * @return true if party is registered with the local datastore, otherwise false
+	 * @return true if party is registered with the local datastore
 	 */
 	public boolean isRegisteredWithLocalDatastore()
 	{
@@ -1377,7 +1552,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Checks whether My Party's cdr User has a secret key.
-	 * @return true if party has a secret key, otherwise false
+	 * @return true if party has a secret key
 	 */
 	public boolean hasCDRSecretKey()
 	{
@@ -1688,11 +1863,13 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Register My Party as a following party of a self.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 */
 	public void followMyself()
 	{
 		myFollowingParty = new BusinessParty();
+		myFollowingParty.setRecentlyUpdated(true);
+		myFollowingParty.setTimestamp(InstanceFactory.getDate());
 		//copying name value because it is necessary for the tree node display, because
 		//the node has to be displayed before My Party data is retrieved from the CDR
 		//and the name string is used for the node display
@@ -1700,16 +1877,16 @@ public class MyParty extends BusinessParty
 		//copying Party ID value because it is necessary for the database insert, which
 		//could be done before My Party is retrieved from the CDR
 		myFollowingParty.setPartyID(getPartyID());
-		notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.MY_PARTY_ADDED));
+		notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.MY_FOLLOWING_PARTY_ADDED));
 	}
 
 	/**
 	 * Deregister My Party as a following party of a self.
-	 * <p>Notifies listeners registered for this type of {@link BusinessPartyEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 */
 	public void unfollowMyself()
 	{
-		notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.MY_PARTY_REMOVED));
+		notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.MY_FOLLOWING_PARTY_REMOVED));
 		myFollowingParty = null;
 	}
 
@@ -1759,71 +1936,6 @@ public class MyParty extends BusinessParty
 		}
 	}
 
-	//MMM: because of view update, shouldn't this method be placed in Client class???
-	void placeDocBoxCatalogue(CatalogueType catalogue, String docID)
-	{
-		PartyType provider = catalogue.getProviderParty();
-		if(sameParties(this, provider))
-		{
-			getMyFollowingParty().setCatalogue(catalogue);
-			//MMM: update the view (tree view, table....) ; bolding the name of the node in tree view
-		}
-		else
-		{
-			for(BusinessParty bParty: getFollowingParties())
-				if(sameParties(bParty, provider))
-				{
-					bParty.setCatalogue(catalogue);
-					//MMM: update the view (tree view, table....) ; bolding the name of the node in tree view
-					break;
-				}
-		}
-	}
-
-	public void placeDocBoxParty(PartyType party, String docID)
-	{
-		if(sameParties(this, party))
-			getMyFollowingParty().setCoreParty(party);
-		else
-			for(BusinessParty bParty: getFollowingParties())
-			{
-				if(sameParties(bParty, party))
-				{
-					bParty.setCoreParty(party);
-					break;
-				}
-			}
-	}
-
-	public void placeDocBoxCatalogueDeletion(CatalogueDeletionType catDeletion, String docID)
-	{
-		PartyType provider = catDeletion.getProviderParty();
-		if(sameParties(this, provider))
-		{
-			getMyFollowingParty().setCatalogue(null);
-		}
-		else
-			for(BusinessParty bParty: getFollowingParties())
-			{
-				if(sameParties(bParty, provider))
-				{
-					bParty.setCatalogue(null);
-					break;
-				}
-			}
-	}
-
-	public void placeDocBoxDeregistrationNotice(DeregistrationNotice notice, String docID)
-	{
-		PartyType party = notice.getParty();
-		for(BusinessParty bParty: getFollowingParties())
-			if(sameParties(bParty, party))
-			{
-				deregisterParty(bParty);
-				break;
-			}
-	}
-
 	/**
 	 * Clears all data of My Party that are related to the CDR. This method is usually called
 	 * during deregistration from the CDR service.
@@ -1848,25 +1960,107 @@ public class MyParty extends BusinessParty
 	/**
 	 * @param search
 	 */
-	private void addPartySearch(final PartySearch search)
+/*	private void addPartySearch(final PartySearch search)
 	{
 		getPartySearches().add(0, search);
+	}*/
+
+	/**
+	 * Adds {@link PartySearch} to a party search list and inserts it to the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to add
+	 * @throws DetailException if search could not be inserted in the data store
+	 */
+	public void addPartySearch(Search<PartyType> search) throws DetailException
+	{
+		if(search != null)
+		{
+			MapperRegistry.getInstance().getMapper(PartySearch.class).insert(null, (PartySearch) search);
+			getPartySearches().add(0, search);
+			notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_ADDED));
+		}
 	}
 
 	/**
-	 * @param search
+	 * Updates {@link PartySearch} in the collection of all party searches and in the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to update
+	 * @return true if search was contained in list of party searches and updated
+	 * @throws DetailException if search could not be updated in the data store
 	 */
-	private void removePartySearch(final PartySearch search)
+	public boolean updatePartySearch(final Search<PartyType> search) throws DetailException
 	{
-		getPartySearches().remove(search);
+		boolean success = false;
+		if(search != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(PartySearch.class).update(null, (PartySearch) search);
+				success = true; //getPartySearches().remove(newSearch) || getPartySearches().add(newSearch); //MMM ??? is it necessary at all
+				notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_UPDATED));
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Removes {@link PartySearch} from the collection of all party searches and from the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to delete
+	 * @return true if search was contained in list of party searches and removed from it
+	 * @throws DetailException if search could not be deleted from the data store
+	 */
+	public boolean removePartySearch(final Search<PartyType> search) throws DetailException
+	{
+		boolean success = false;
+		if(search != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(PartySearch.class).delete(null, search.getId());
+				success = getPartySearches().remove(search);
+				notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_REMOVED));
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Removes {@link Search} from the proper collection of all searches and from the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to delete
+	 * @return true if search was contained in an list of searches and removed from it
+	 * @throws DetailException if search could not be deleted from the data store
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean removeSearch(final Search<?> search) throws DetailException
+	{
+		boolean success = false;
+		if(search instanceof PartySearch)
+			success = removePartySearch((Search<PartyType>) search);
+		else if(search instanceof CatalogueSearch)
+			success = removeCatalogueSearch((Search<CatalogueType>) search);
+		return success;
 	}
 
 	/**
 	 * Adds {@link PartySearch} to the collection of all party searches.
-	 * <p>Notifies listeners registered for this type of {@link SearchEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
 	 * @param search
+	 * @throws DetailException if party could not be inserted to the data store
 	 */
-	public void listPartySearch(final PartySearch search)
+	@Deprecated
+	public void listPartySearch(final PartySearch search) throws DetailException
 	{
 		addPartySearch(search);
 		notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_ADDED));
@@ -1874,10 +2068,12 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes {@link PartySearch} from the collection of all party searches.
-	 * <p>Notifies listeners registered for this type of {@link SearchEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
 	 * @param search
+	 * @throws DetailException if search could not be deleted from the data store
 	 */
-	public void delistPartySearch(final PartySearch search)
+	@Deprecated
+	public void delistPartySearch(final PartySearch search) throws DetailException
 	{
 		removePartySearch(search);
 		notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_REMOVED));
@@ -1885,65 +2081,272 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Updates {@link PartySearch} in the collection of all party searches.
-	 * <p>Notifies listeners registered for this type of {@link SearchEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
 	 * @param search
+	 * @throws DetailException if search could not be updated to the data store
 	 */
-	public void relistPartySearch(final PartySearch search)
+	@Deprecated
+	public void relistPartySearch(final PartySearch search) throws DetailException
 	{
 		removePartySearch(search);
 		addPartySearch(search);
-		notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_CHANGED));
+		notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_UPDATED));
 	}
 
 	/**
 	 * Adds {@link PartySearch} to the collection of all party searches.
 	 * @param search
 	 */
-	private void addCatalogueSearch(final Search<CatalogueType> search)
+/*	private void addCatalogueSearch(final Search<CatalogueType> search)
 	{
 		getCatalogueSearches().add(0, search);
+	}*/
+
+	/**
+	 * Adds {@link CatalogueSearch} to a catalogue search list and inserts it to the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param newSearch search to add
+	 * @throws DetailException if search could not be inserted in the data store
+	 */
+	public void addCatalogueSearch(Search<CatalogueType> newSearch) throws DetailException
+	{
+		if(newSearch != null)
+		{
+			MapperRegistry.getInstance().getMapper(CatalogueSearch.class).insert(null, (CatalogueSearch) newSearch);
+			getCatalogueSearches().add(0, newSearch);
+			notifyListeners(new SearchEvent(newSearch, SearchEvent.CATALOGUE_SEARCH_ADDED));
+		}
 	}
 
 	/**
-	 * Removes {@link PartySearch} from the collection of all party searches.
-	 * @param search
+	 * Removes {@link CatalogueSearch} from the collection of all catalogue searches and from the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to delete
+	 * @return true if search was contained in list of catalogue searches and removed from it
+	 * @throws DetailException if search could not be deleted from the data store
 	 */
-	private void removeCatalogueSearch(final Search<CatalogueType> search)
+	public boolean removeCatalogueSearch(final Search<CatalogueType> search) throws DetailException
 	{
-		getCatalogueSearches().remove(search);
+		boolean success = false;
+		if(search != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(CatalogueSearch.class).delete(null, search.getId());
+				success = getCatalogueSearches().remove(search);
+				notifyListeners(new SearchEvent(search, SearchEvent.CATALOGUE_SEARCH_REMOVED));
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Updates {@link CatalogueSearch} in the collection of all catalogue searches and in the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to update
+	 * @return true if search was contained in list of catalogue searches and updated
+	 * @throws DetailException if search could not be updated in the data store
+	 */
+	public boolean updateCatalogueSearch(final Search<CatalogueType> search) throws DetailException
+	{
+		boolean success = false;
+		if(search != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(CatalogueSearch.class).update(null, (CatalogueSearch) search);
+				success = true; //getCatalogueSearches().remove(newSearch) || getCatalogueSearches().add(newSearch); //MMM ??? is it necessary at all
+				notifyListeners(new SearchEvent(search, SearchEvent.CATALOGUE_SEARCH_UPDATED));
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Updates {@link Search} in the appropriate collection of searches and in the data store.
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param search search to update
+	 * @return true if search was contained in list of catalogue searches and updated
+	 * @throws DetailException if search could not be updated in the data store
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean updateSearch(final Search<?> search) throws DetailException
+	{
+		boolean success = false;
+		if(search instanceof PartySearch)
+			success = updatePartySearch((Search<PartyType>) search);
+		else if(search instanceof CatalogueSearch)
+			success = updateCatalogueSearch((Search<CatalogueType>) search);
+		return success;
 	}
 
 	/**
 	 * Adds {@link CatalogueSearch} to the collection of all party searches.
-	 * <p>Notifies listeners registered for this type of {@link SearchEvent event}.</p>
-	 * @param search
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param newSearch
+	 * @throws DetailException
 	 */
-	public void listCatalogueSearch(final Search<CatalogueType> search)
+	public void listCatalogueSearch(final Search<CatalogueType> newSearch) throws DetailException
 	{
-		addCatalogueSearch(search);
-		notifyListeners(new SearchEvent(search, SearchEvent.CATALOGUE_SEARCH_ADDED));
+		addCatalogueSearch(newSearch);
+		notifyListeners(new SearchEvent(newSearch, SearchEvent.CATALOGUE_SEARCH_ADDED));
 	}
 
 	/**
 	 * Removes {@link CatalogueSearch} from the collection of all party searches.
-	 * <p>Notifies listeners registered for this type of {@link SearchEvent event}.</p>
-	 * @param search
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param newSearch
+	 * @throws DetailException
 	 */
-	public void delistCatalogueSearch(final Search<CatalogueType> search)
+	public void delistCatalogueSearch(final Search<CatalogueType> newSearch) throws DetailException
 	{
-		removeCatalogueSearch(search);
-		notifyListeners(new SearchEvent(search, SearchEvent.CATALOGUE_SEARCH_REMOVED));
+		removeCatalogueSearch(newSearch);
+		notifyListeners(new SearchEvent(newSearch, SearchEvent.CATALOGUE_SEARCH_REMOVED));
 	}
 
 	/**
 	 * Updates {@link CatalogueSearch} in the collection of all party searches.
-	 * <p>Notifies listeners registered for this type of {@link SearchEvent event}.</p>
-	 * @param search
+	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
+	 * @param newSearch
+	 * @throws DetailException
 	 */
-	public void relistCatalogueSearch(final Search<CatalogueType> search)
+	public void relistCatalogueSearch(final Search<CatalogueType> newSearch) throws DetailException
 	{
-		removeCatalogueSearch(search);
-		addCatalogueSearch(search);
-		notifyListeners(new SearchEvent(search, SearchEvent.CATALOGUE_SEARCH_CHANGED));
+		removeCatalogueSearch(newSearch);
+		addCatalogueSearch(newSearch);
+		notifyListeners(new SearchEvent(newSearch, SearchEvent.CATALOGUE_SEARCH_UPDATED));
 	}
+
+	/**
+	 * Places {@link CatalogueType catalogue} document on the proper place in the data model setting it
+	 * to its {@link BusinessParty owner}.
+	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * @param catalogue catalogue to place
+	 */
+	public void processDocBoxCatalogue(CatalogueType catalogue)
+	{
+		PartyType provider = catalogue.getProviderParty();
+
+		if(BusinessParty.sameParties(this, provider))
+		{
+			myFollowingParty.setCatalogue(catalogue);
+			myFollowingParty.setRecentlyUpdated(true);
+			notifyListeners(new RutaClientFrameEvent(myFollowingParty, RutaClientFrameEvent.CATALOGUE_UPDATED));
+		}
+		else
+		{
+			final List<BusinessParty> followingParties = getFollowingParties();
+			for(BusinessParty bParty: followingParties)
+				if(BusinessParty.sameParties(bParty, provider))
+				{
+					bParty.setCatalogue(catalogue);
+					bParty.setRecentlyUpdated(true);
+					notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.CATALOGUE_UPDATED));
+					break;
+				}
+		}
+	}
+
+	/**
+	 * Places {@link PartyType party} object on the proper place in the data model by setting it
+	 * to its {@link BusinessParty owner}.
+	 * <p>Notifies listeners registered for these events: {@link RutaClientFrameEvent} and
+	 * {@link BusinessPartyEvent}.</p>
+	 * @param party party to place
+	 */
+	public void processDocBoxParty(PartyType party)
+	{
+		if(BusinessParty.sameParties(this, party))
+		{
+			final String oldName = myFollowingParty.getPartySimpleName();
+			myFollowingParty.setCoreParty(party);
+			myFollowingParty.setRecentlyUpdated(true);
+			notifyListeners(new RutaClientFrameEvent(myFollowingParty, RutaClientFrameEvent.PARTY_UPDATED));
+			final String newName = InstanceFactory.getPropertyOrNull(party.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			if(!oldName.equals(newName))
+				notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.PARTY_UPDATED));
+		}
+		else
+		{
+			final List<BusinessParty> followingParties = getFollowingParties();
+			for(BusinessParty bParty: followingParties)
+			{
+				if(BusinessParty.sameParties(bParty, party))
+				{
+					final String oldName = bParty.getPartySimpleName();
+					bParty.setCoreParty(party);
+					bParty.setRecentlyUpdated(true);
+					notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.PARTY_UPDATED));
+					final String newName = InstanceFactory.getPropertyOrNull(party.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+					if(!oldName.equals(newName))
+						notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_UPDATED));
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Places {@link CatalogueDeletionType catalogue deletion} document on the proper place in the data model
+	 * by deleting respective {@link CatalogueType catalogue} from its {@link BusinessParty owner}.
+	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * @param catDeletion {@link CatalogueDeletionType catalogue deletion} to process
+	 */
+	public void processDocBoxCatalogueDeletion(CatalogueDeletionType catDeletion)
+	{
+		PartyType provider = catDeletion.getProviderParty();
+		if(BusinessParty.sameParties(this, provider))
+		{
+			myFollowingParty.setCatalogue(null);
+			myFollowingParty.setRecentlyUpdated(true);
+			notifyListeners(new RutaClientFrameEvent(myFollowingParty, RutaClientFrameEvent.CATALOGUE_UPDATED));
+		}
+		else
+		{
+			final List<BusinessParty> followingParties = getFollowingParties();
+			for(BusinessParty bParty: followingParties)
+			{
+				if(BusinessParty.sameParties(bParty, provider))
+				{
+					bParty.setCatalogue(null);
+					bParty.setRecentlyUpdated(true);
+					notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.CATALOGUE_UPDATED));
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Processes {@link DeregistrationNotice deregistration notice} document
+	 * by deregistering {@link BusinessParty party} specified in it.
+	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * @param notice notice to process
+	 * @throws DetailException if party could not be deleted from the data store
+	 */
+	public void processDocBoxDeregistrationNotice(DeregistrationNotice notice) throws DetailException
+	{
+		PartyType party = notice.getParty();
+		final List<BusinessParty> followingParties = getFollowingParties();
+		for(BusinessParty bParty: followingParties)
+			if(BusinessParty.sameParties(bParty, party))
+			{
+//				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.SELECT_NEXT));
+				deregisterParty(bParty);
+				bParty.setRecentlyUpdated(true);
+				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.PARTY_MOVED));
+				break;
+			}
+	}
+
 }

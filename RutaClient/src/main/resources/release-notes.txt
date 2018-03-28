@@ -15,6 +15,7 @@ Features:
 
 Improvements:
 
+- When change has been made in the data model GUI is not completely redrawn but is partialy repainted in respect of that change.
 - Simplified My Party registration process, now consisted of only two calls to the CDR service. Updating My Party data is now superfluous during the registration of a party.
 - Removed option for pulling of My Catalogue, which is now part of new "getting new documents" feature.
 - Added conformance of UBL documents to the UBL standard and validation of it before document is being sent to the CDR service. 

@@ -48,7 +48,7 @@ public class BugReportDialog extends JDialog
 
 	public BugReportDialog(JFrame owner)
 	{
-		super(owner, "Report a Bug", true);
+		super(owner, "Report Bug", true);
 		setResizable(false);
 		setSize(520, 500);
 		setLocationRelativeTo(owner);

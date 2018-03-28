@@ -6,11 +6,13 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.ReportComment;
 
-public class BugReportTableModel extends AbstractTableModel
+public class BugReportTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 3845356013956033331L;
 
-	private String[] rowNames =
+	//must be static because it's used in getRowCount method which is called from the
+	//constructor of the super class
+	private static String[] rowNames =
 		{
 			"ID", "Summary", "Description", "Reported by", "Product", "Component", "Version", "Status", "Resolution",
 			"Platform", "Operating system", "Java version", "Reported", "Modified", "Priority", "Severity",
@@ -18,13 +20,18 @@ public class BugReportTableModel extends AbstractTableModel
 		};
 
 	private BugReport bugReport;
-	/**Number of {@link ReportAttachment}s in {@code BugReport}.*/
+	/**
+	 * Number of {@link ReportAttachment}s in {@code BugReport}.
+	*/
 	private int numAtts;
-	/**Number of {@link ReportComment}s in {@code BugReport}.*/
+	/**
+	 * Number of {@link ReportComment}s in {@code BugReport}.
+	*/
 	private int numComms;
 
 	public BugReportTableModel()
 	{
+		super();
 		bugReport = null;
 		numAtts = numComms = 0;
 	}
@@ -42,6 +49,12 @@ public class BugReportTableModel extends AbstractTableModel
 	}
 
 	@Override
+	public boolean isCellEditable(int row, int column)
+	{
+		return false;
+	}
+
+	@Override
 	public int getRowCount()
 	{
 		return rowNames.length - 2 + numAtts + numComms;
@@ -53,7 +66,8 @@ public class BugReportTableModel extends AbstractTableModel
 		return 2;
 	}
 
-	/**Gets the number of rows that are always present i.e. not counting attachment and comment rows.
+	/**
+	 * Gets the number of rows that are always present i.e. not counting attachment and comment rows.
 	 * @return number of allways displayed rows
 	 */
 	public int getFixedRowCount()
@@ -193,7 +207,7 @@ public class BugReportTableModel extends AbstractTableModel
 		}
 	}
 
-	//MMM: method not used because the table is not editable: default implementation returns false - might be used later
+	//MMM: method not used because the table is not editable: default implementation returns true - might be used later
 /*	@Override
 	public boolean isCellEditable(int row, int column)
 	{
@@ -213,7 +227,8 @@ public class BugReportTableModel extends AbstractTableModel
 		}*/
 	}
 
-	/**Checks whether passed row index contains the {@link ReportComment} and gets it if it does.
+	/**
+	 * Checks whether passed row index contains the {@link ReportComment} and gets it if it does.
 	 * @param rowIndex index of the table row
 	 * @return comment or null if row does not contain it
 	 */

@@ -14,7 +14,7 @@ import rs.ruta.common.datamapper.DetailException;
 /**
  *Table model containing data from MyParty.products.
  */
-public class ProductTableModel extends AbstractTableModel
+public class ProductTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
 	private static String[] columnNames =
@@ -32,6 +32,7 @@ public class ProductTableModel extends AbstractTableModel
 	 */
 	public ProductTableModel(MyParty myParty, boolean editable)
 	{
+		super();
 		this.myParty = myParty;
 		this.editable = editable;
 	}
@@ -44,6 +45,7 @@ public class ProductTableModel extends AbstractTableModel
 	 */
 	public ProductTableModel(boolean editable)
 	{
+		super();
 		this.myParty = null;
 		this.editable = editable;
 	}

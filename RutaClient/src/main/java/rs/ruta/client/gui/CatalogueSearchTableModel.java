@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import rs.ruta.client.BusinessParty;
 import rs.ruta.client.Search;
 
 public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
@@ -18,14 +20,14 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 	 */
 	private int[] catalogueLineCount;
 
-	public CatalogueSearchTableModel(boolean editable)
+	public CatalogueSearchTableModel()
 	{
-		super(editable);
+		super();
 	}
 
-	public CatalogueSearchTableModel(Search<CatalogueType> catalogues, boolean editable)
+	public CatalogueSearchTableModel(Search<CatalogueType> catalogues)
 	{
-		super(catalogues, editable);
+		super(catalogues);
 		calculateLineCount(catalogues);
 	}
 
@@ -106,4 +108,20 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 		}
 	}
 
+	/**
+	 * Gets {@link PartyType provider party} for of the {@link ItemType item} with passed index.
+	 * @param rowIndex index of the item from the table
+	 * @return {@link PartyType provider party} of the item
+	 */
+	public PartyType getParty(int rowIndex)
+	{
+		int catalogueNumber = 0;
+		int catalogueLineNumber = rowIndex;
+		while(catalogueLineNumber >= 0 && catalogueNumber < search.getResultCount())
+			catalogueLineNumber -= catalogueLineCount[catalogueNumber++];
+//		catalogueLineNumber += catalogueLineCount[--catalogueNumber];
+		final CatalogueType catalogue = search.getResults().get(--catalogueNumber);
+
+		return catalogue.getProviderParty();
+	}
 }

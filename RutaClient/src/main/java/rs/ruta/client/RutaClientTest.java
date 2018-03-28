@@ -31,20 +31,6 @@ public class RutaClientTest
 
 	public static void main(String[] args) throws Exception
 	{
-		//redirecting error stream to a file
-		/*		File file = new File("err.txt");
-		FileOutputStream fos;
-		try
-		{
-			fos = new FileOutputStream(file);
-			PrintStream ps = new PrintStream(fos);
-			//			System.setErr(ps); //MMM: this sould be uncommented if is wanted to redirect error stream to err.txt
-		}
-		catch (FileNotFoundException e1)
-		{
-			e1.printStackTrace();
-		}*/
-
 		//setting EXIST_HOME
 		final String EXIST_HOME = System.getProperty("user.dir");
 		System.setProperty("exist.home", EXIST_HOME);
@@ -179,9 +165,8 @@ public class RutaClientTest
 		}
 		catch(Exception e)
 		{
-			awhileDialog.setVisible(false);
+			EventQueue.invokeLater( () -> awhileDialog.setVisible(false));
 			logger.error("Unable to open Ruta Client application. Exception is ", e);
-
 			EventQueue.invokeLater( () ->
 			{
 				JOptionPane.showMessageDialog(null, "Unable to open Ruta Client application.\n" + e.getMessage(),

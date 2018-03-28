@@ -1731,7 +1731,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * collection. "Deleted" collection is consisting of deleted objects. Deleted objects of the same type and
 	 * with the same ID are placed in the subcollection that has a name as the object's ID.
 	 * @param id document's name that represents id in check
-	 * @return true if id was used earlier, otherwise false
+	 * @return true if id was used earlier
 	 * @throws XMLDBException if collection cannot be retrieved from the database
 	 */
 	private boolean isIDPresentInDeleted(String id) throws XMLDBException
@@ -1756,7 +1756,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * name as the object's ID.
 	 * @param collection collection in which ID should be unique
 	 * @param id id in check
-	 * @return true if id has been used earlier, otherwise false
+	 * @return true if id has been used earlier
 	 * @throws XMLDBException if collection cannot be retrieved from the database
 	 */
 	private boolean isIDDeleted(Collection collection, String id) throws XMLDBException

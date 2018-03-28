@@ -3,17 +3,28 @@ package rs.ruta.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.Search;
 
-public class SearchListTableModel<T> extends AbstractTableModel
+public class SearchListTableModel<T> extends DefaultTableModel
 {
 	private static final long serialVersionUID = -3491302158739229497L;
 	private static String[] colNames = { "No.", "Name", "Number of results", "Time" };
 	private List<Search<T>> searchList;
+
+	public SearchListTableModel()
+	{
+		super();
+	}
+
+	@Override
+	public boolean isCellEditable(int row, int column)
+	{
+		return false;
+	}
 
 	@Override
 	public int getRowCount()

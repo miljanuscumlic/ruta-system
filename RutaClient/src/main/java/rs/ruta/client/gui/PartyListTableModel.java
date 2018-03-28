@@ -2,7 +2,7 @@ package rs.ruta.client.gui;
 
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BuildingNumberType;
@@ -12,7 +12,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.StreetN
 import rs.ruta.client.BusinessParty;
 import rs.ruta.common.InstanceFactory;
 
-public class PartyListTableModel extends AbstractTableModel
+public class PartyListTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = -1366607627023019652L;
 	private static String[] columnNames =
@@ -21,6 +21,11 @@ public class PartyListTableModel extends AbstractTableModel
 				"Classification code", "Telephone", "Email", "Website", "Industry Classification Code"
 		};
 	private List<BusinessParty> parties = null;
+
+	public PartyListTableModel()
+	{
+		super();
+	}
 
 	public List<BusinessParty> getParties()
 	{

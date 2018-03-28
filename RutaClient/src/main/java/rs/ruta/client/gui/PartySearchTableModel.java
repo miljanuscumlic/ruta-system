@@ -20,14 +20,14 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 				"Classification code", "Telephone", "Email", "Website", "Industry Classification Code"
 		};
 
-	public PartySearchTableModel(boolean editable)
+	public PartySearchTableModel()
 	{
-		super(editable);
+		super();
 	}
 
-	public PartySearchTableModel(Search<PartyType> search, boolean editable)
+	public PartySearchTableModel(Search<PartyType> search)
 	{
-		super(search, editable);
+		super(search);
 	}
 
 	@Override
@@ -103,6 +103,11 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 				PartyIdentificationType::getIDValue);
 	}
 
+	/**
+	 * Gets the {@link PartyType party} with an {@code index} from the list of the search results.
+	 * @param index index of the party
+	 * @return {@code PartyType} object
+	 */
 	public PartyType getParty(int index)
 	{
 		return search.getResults().get(index);

@@ -17,7 +17,7 @@ import rs.ruta.client.PartySearch;
 import rs.ruta.client.Search;
 import rs.ruta.client.SearchEvent;
 
-public class SearchTreeModel extends RutaTreeModel implements ActionListener
+public class SearchTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = -5486578776182215565L;
 	private static final String CATALOGUES = "Catalogues";
@@ -39,20 +39,18 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 		catalogueSearches = myParty.getCatalogueSearches();
 		populateTree();
 		setAsksAllowsChildren(true);
-		myParty.addActionListener(this);
+		myParty.addActionListener(this, SearchEvent.class);
 	}
 
+	@Deprecated
 	@Override
-	public boolean listenFor(Class<? extends ActionEvent> eventClazz)
+	public boolean listensFor(Class<? extends ActionEvent> eventClazz)
 	{
 		return eventClazz == null ? false : eventClazz == SearchEvent.class;
 	}
 
-	/**
-	 * Constructs {@link DefaultMutableTreeNode nodes} from objects of the model and populates the tree with them.
-	 * @return {@link TreeNode root node}
-	 */
-	private TreeNode populateTree()
+	@Override
+	protected TreeNode populateTree()
 	{
 /*		partySearches = myParty.getPartySearches();
 		catalogueSearches = myParty.getCatalogueSearches();*/
@@ -95,40 +93,12 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 	}
 
 	/**
-	 * Searches for an object in the tree.
-	 * @param tree tree to be searched
-	 * @param userObject object to be searched for
-	 * @return {@link DefaultMutableTreeNode node} containing searched object or {@code null} if there the object is not present in the tree
-	 */
-	private DefaultMutableTreeNode searchNode(Object userObject)
-	{
-		DefaultMutableTreeNode node = null;
-		boolean success = false;
-		@SuppressWarnings("unchecked")
-		final Enumeration<DefaultMutableTreeNode> enumeration = ((DefaultMutableTreeNode) getRoot()).breadthFirstEnumeration();
-		while(!success && enumeration.hasMoreElements())
-		{
-			node = enumeration.nextElement();
-			if(userObject.getClass() == String.class)
-			{
-				if(userObject.equals(node.getUserObject()))
-					success = true;
-			}
-			else if(userObject == node.getUserObject())
-				success = true;
-		}
-		if(success)
-			return node;
-		else
-			return null;
-	}
-
-	/**
 	 * Adds node to the model right after the parent node i.e. at the index 0.
 	 * @param userObject object contained in new node
-	 * @param command TODO
+	 * @param command event command that is resulting in node addition to the model
 	 */
-	public void addNode(Search<?> userObject, String command)
+	@Override
+	public void addNode(Object userObject, String command)
 	{
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(userObject);
 		node.setAllowsChildren(false);
@@ -148,49 +118,13 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 	}
 
 	/**
-	 * Deletes {@link DefaultMutableTreeNode node} from the model.
-	 * @param node node to delete
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public void deleteNode(DefaultMutableTreeNode node/*, Object[] path, int[] childIndices*/)
-	{
-		Object selectedSearch = node.getUserObject();
-		Class<?> searchClass = ((Search<?>) selectedSearch).getResultType();
-		if(searchClass == PartyType.class)
-			partySearches.remove((Search<PartyType>) selectedSearch);
-		else if(searchClass == CatalogueType.class)
-			catalogueSearches.remove((Search<CatalogueType>) selectedSearch);
-//		removeNodeFromParent(selectedNode);
-
-		populateTree();
-		if(node != null)
-			removeNodeFromParent(node);
-/*		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-
-		if(parent == null)
-			throw new IllegalArgumentException("Node does not have a parent.");
-
-		int[] childIndex = new int[1];
-//		Object[] removedArray = new Object[1];
-
-		childIndex[0] = parent.getIndex(node);
-		parent.remove(childIndex[0]);
-		removedArray[0] = node;
-		nodesWereRemoved(parent, childIndex, removedArray);
-
-
-		fireTreeNodesRemoved(this, getPathToRoot(node), childIndex, new Object[] {node});*/
-	}
-
-	/**
 	 * Deletes {@link DefaultMutableTreeNode node} and optionally user object contained in the node from the model.
 	 * RutaUser object is to be deleted from within this method when the method call originates from the GUI.
 	 * @param userObject object which wrapper node is to be deleted
 	 * @param deleteFromDataModel true if user object should be deleted from the data model also
 	 */
 	@SuppressWarnings("unchecked")
-	public void deleteNode(Search<?> userObject/*, Object[] path, int[] childIndices*/, boolean deleteFromDataModel)
+	public void deleteNode(Object userObject, boolean deleteFromDataModel)
 	{
 		DefaultMutableTreeNode node = searchNode(userObject);
 
@@ -217,33 +151,19 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 		removedArray[0] = node;
 		nodesWereRemoved(parent, childIndex, removedArray);
 
-
 		fireTreeNodesRemoved(this, getPathToRoot(node), childIndex, new Object[] {node});*/
 	}
 
 	/**
-	 * Deletes all childer nodes from the parent.
-	 * @param parentNodeName name of the parent node
-	 */
-	private void deleteChildrenNodes(String parentNodeName)
-	{
-		DefaultMutableTreeNode node = searchNode(parentNodeName);
-		node.removeAllChildren();
-		nodeStructureChanged(node);
-	}
-
-	/**
-	 * Change the content of the node removing the node from the model and adding a new one with the new content.
+	 * Rewiring the nodes in the tree model in a way that the node in question is positioned right after
+	 * the parent node.
 	 * @param userObject object contained in changed node
 	 */
-	public void changeNode(Search<?> userObject)
+	@Override
+	protected void updateNode(Object userObject)
 	{
 		DefaultMutableTreeNode node = searchNode(userObject);
 		DefaultMutableTreeNode parentNode = null;
-/*		if(((Search<?>) userObject).getResultType() == CatalogueType.class)
-			parentNode = searchNode(CATALOGUES);
-		else if(((Search<?>) userObject).getResultType() == PartyType.class)
-			parentNode = searchNode(PARTIES);*/
 		if(node != null)
 		{
 			parentNode = (DefaultMutableTreeNode) node.getParent();
@@ -251,7 +171,7 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 			{
 				removeNodeFromParent(node);
 				insertNodeInto(node, parentNode, 0);
-				nodeChanged(node); //necessary if display name is longer than the previous node's one
+				nodeChanged(node); //necessary if display name is longer than the previous one
 			}
 		}
 	}
@@ -294,9 +214,9 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 			{
 				deleteNode(sourceSearch, false);
 			}
-			else if(SearchEvent.PARTY_SEARCH_CHANGED.equals(command))
+			else if(SearchEvent.PARTY_SEARCH_UPDATED.equals(command))
 			{
-				changeNode(sourceSearch);
+				updateNode(sourceSearch);
 			}
 		}
 		else if(source.getClass() == CatalogueSearch.class)
@@ -311,9 +231,9 @@ public class SearchTreeModel extends RutaTreeModel implements ActionListener
 			{
 				deleteNode(sourceSearch, false);
 			}
-			else if(SearchEvent.CATALOGUE_SEARCH_CHANGED.equals(command))
+			else if(SearchEvent.CATALOGUE_SEARCH_UPDATED.equals(command))
 			{
-				changeNode(sourceSearch);
+				updateNode(sourceSearch);
 			}
 		}
 		else if(source.getClass() == ArrayList.class)

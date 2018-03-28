@@ -67,14 +67,14 @@ public final class InstanceFactory
 	}
 
 	/**
-	 * Returns {@code null} or the value of the property of the object. Value of the property named {@code value}
+	 * Returns {@code null} or the value of the property of the object. Value of the property
 	 * can be of the type {@code String}, {@code BigDecimal}, or some other type.
-	 * @param <T> type of object which metod {@code getValue} is being called
-	 * @param <U> type of the return value of the {@code getValue} method
-	 * @param property of the object whose {@code value} property is get
+	 * @param <T> type of object which extracting metod is being called
+	 * @param <U> type of the return value of extracting method
+	 * @param property property of the object whose value is get
 	 * @param extractor function which has two type parameters: of the type T or some supertype of the T,
 	 * and U or some subtype of U
-	 * @return value of the type U which is the result of the called passed method {@code getValue}
+	 * @return value of the type U which is the result of the called passed method for getting the value
 	 */
 	public static <T, U> U getPropertyOrNull(T property, Function<? super T, ? extends U> extractor)
 	{
@@ -126,6 +126,10 @@ public final class InstanceFactory
 		return date != null ? formatter.format(date) : null;
 	}
 
+	/**
+	 * Constructs a {@link XMLGregorianCalendar} using the current time.
+	 * @return current time as {@code XMLGregorianCalendar}
+	 */
 	public static XMLGregorianCalendar getDate()
 	{
 		try
@@ -137,6 +141,10 @@ public final class InstanceFactory
 		}
 	}
 
+	/**
+	 * Constructs a {@link XMLGregorianCalendar} from passed {@link GregorianCalendar}.
+	 * @return time as {@code XMLGregorianCalendar}
+	 */
 	public static XMLGregorianCalendar getDate(GregorianCalendar gc)
 	{
 		try

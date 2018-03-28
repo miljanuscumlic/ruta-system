@@ -11,7 +11,7 @@ import rs.ruta.common.InstanceFactory;
 /**{@link TableModel} class that holds the model of the {@link BugReport} list retrieved from the CDR service.
  * List displays partial contents of these {@code BugReport}s, i.e. not all fields are displayed.
  */
-public class BugListTableModel extends AbstractTableModel
+public class BugListTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = -3079128130727300652L;
 
@@ -24,11 +24,13 @@ public class BugListTableModel extends AbstractTableModel
 
 	public BugListTableModel()
 	{
+		super();
 		bugReports = new ArrayList<BugReport>();
 	}
 
 	public BugListTableModel(List<BugReport> bugReports)
 	{
+		super();
 		if(bugReports == null)
 			bugReports = new ArrayList<BugReport>();
 		this.bugReports = bugReports;
@@ -42,6 +44,12 @@ public class BugListTableModel extends AbstractTableModel
 	public List<BugReport> getBugReports()
 	{
 		return bugReports;
+	}
+
+	@Override
+	public boolean isCellEditable(int row, int column)
+	{
+		return false;
 	}
 
 	@Override

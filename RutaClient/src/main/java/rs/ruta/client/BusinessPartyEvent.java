@@ -18,17 +18,14 @@ public class BusinessPartyEvent extends ActionEvent
 	public static final String ARCHIVED_PARTY_REMOVED = "Archived Party removed";
 	public static final String DEREGISTERED_PARTY_ADDED = "Deregistered Party added";
 	public static final String DEREGISTERED_PARTY_REMOVED = "Deregistered Party removed";
-	public static final String MY_PARTY_ADDED = "My Following Party added";
-	public static final String MY_PARTY_REMOVED = "My Following Party removed";
+	public static final String MY_FOLLOWING_PARTY_ADDED = "My Following Party added";
+	public static final String MY_FOLLOWING_PARTY_REMOVED = "My Following Party removed";
 	public static final String ALL_PARTIES_REMOVED = "All lists removed";
 	public static final String ARCHIVED_LIST_REMOVED = "Archived list removed";
 	public static final String BUSINESS_LIST_REMOVED = "Business Partners list removed";
 	public static final String OTHER_LIST_REMOVED = "Other parties list removed";
 	public static final String DEREGISTERED_LIST_REMOVED = "Deregistered list removed";
-
-/*	//MMM: part of other Event classes
- * 	public static final String ALL_PARTY_SEARCHES_REMOVED = "All searches removed";
-	public static final String ALL_PRODUCTS_REMOVED = "All products removed";*/
+	public static final String PARTY_UPDATED = "Part updated";
 
 	public BusinessPartyEvent(Object source, String command)
 	{

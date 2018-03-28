@@ -18,7 +18,10 @@ import rs.ruta.client.BusinessParty;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.BusinessPartyEvent;
 
-public class PartyTreeModel extends RutaTreeModel implements ActionListener
+/**
+ * Tree model that is an adapter model for the parties of {@link MyParty} object.
+ */
+public class PartyTreeModel extends RutaTreeModel
 {
 	private static final String DEREGISTERED_PARTIES = "Deregistered Parties";
 	private static final String ARCHIVED_PARTIES = "Archived Parties";
@@ -40,20 +43,15 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 		this.myParty = myParty;
 		populateTree();
 		setAsksAllowsChildren(true);
-		myParty.addActionListener(this);
-	}
-
-	@Override
-	public boolean listenFor(Class<? extends ActionEvent> eventClazz)
-	{
-		return eventClazz == null ? false : eventClazz == BusinessPartyEvent.class;
+		myParty.addActionListener(this, BusinessPartyEvent.class);
 	}
 
 	/**
 	 * Constructs {@link DefaultMutableTreeNode nodes} from objects of the model and populates the tree with them.
 	 * @return {@link TreeNode root node}
 	 */
-	public TreeNode populateTree()
+	@Override
+	protected TreeNode populateTree()
 	{
 		Comparator<BusinessParty> partyNameComparator = (first, second)  ->
 		{
@@ -134,17 +132,6 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 		return root;
 	}
 
-	@Override
-	public Object getRoot()
-	{
-		return root;
-	}
-
-	public void setRoot(DefaultMutableTreeNode root)
-	{
-		this.root = root;
-	}
-
 	/**
 	 * Gets the index of the node in the tree, relative to its parent.
 	 * @param party contained object of the node
@@ -164,41 +151,12 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 	}
 
 	/**
-	 * Searches for a node in the tree containing an object.
-	 * @param tree tree to be searched
-	 * @param userObject object which node is to be searched for
-	 * @return {@link DefaultMutableTreeNode node} containing searched object or {@code null}
-	 * if the object is not present in the tree
-	 */
-	private DefaultMutableTreeNode searchNode(Object userObject)
-	{
-		DefaultMutableTreeNode node = null;
-		boolean success = false;
-		@SuppressWarnings("unchecked")
-		final Enumeration<DefaultMutableTreeNode> enumeration = ((DefaultMutableTreeNode) getRoot()).breadthFirstEnumeration();
-		while(!success && enumeration.hasMoreElements())
-		{
-			node = enumeration.nextElement();
-			if(userObject.getClass() == String.class)
-			{
-				if(userObject.equals(node.getUserObject()))
-					success = true;
-			}
-			else if(userObject == node.getUserObject())
-				success = true;
-		}
-		if(success)
-			return node;
-		else
-			return null;
-	}
-
-	/**
 	 * Adds node to the model right after the parent node i.e. at the index 0.
 	 * @param userObject object contained in new node
-	 * @param command TODO MMM: NOT USED AT THIS POINT - could be used to differentiate where should node be put
+	 * @param command event command that is resulting in node addition to the model
 	 */
-	public void addNode(BusinessParty userObject, String command)
+	@Override
+	public void addNode(Object userObject, String command)
 	{
 		final BusinessParty userParty = (BusinessParty) userObject;
 		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(userParty);
@@ -214,31 +172,6 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 		else
 			insertNodeInto(node, searchNode(MY_PARTY), 0);
 		nodeChanged(node); //necessary when new display name is longer than the old one which is replaced
-	}
-
-	/**
-	 * Deletes {@link DefaultMutableTreeNode node} and optionally user object contained in the node from the model.
-	 * User object is to be deleted from within this method when the method call originates from the GUI. //MMM: check wheter this is neccessary
-	 * @param userObject object which wrapper node is to be deleted
-	 * @param deleteFromDataModel true if user object should be deleted from the data model also
-	 */
-	//MMM: deleteFromDataModel should be removed from the method
-	public void deleteNode(@Nullable BusinessParty userObject, boolean deleteFromDataModel)
-	{
-		DefaultMutableTreeNode node = searchNode(userObject);
-		if(node != null)
-			removeNodeFromParent(node);
-	}
-
-	/**
-	 * Deletes all childer nodes from the parent.
-	 * @param parentNodeName name of the parent node
-	 */
-	private void deleteChildrenNodes(String parentNodeName)
-	{
-		DefaultMutableTreeNode node = searchNode(parentNodeName);
-		node.removeAllChildren();
-		nodeStructureChanged(node);
 	}
 
 	@Override
@@ -263,7 +196,7 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 			{
 				//delete from other parties
 				otherParties.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 				//add to business partners
 				businessPartners.add(sourceParty);
 				addNode(sourceParty, command);
@@ -274,7 +207,7 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 			{
 				//delete from business partners
 				businessPartners.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 				//add to archived parties
 				archivedParties.add(sourceParty);
 				addNode(sourceParty, command);
@@ -289,7 +222,7 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 			{
 				//delete from business partners
 				businessPartners.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 				//add to other parties
 				otherParties.add(sourceParty);
 				addNode(sourceParty, command);
@@ -298,7 +231,7 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 			{
 				//remove from other parties
 				otherParties.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 				//add to archived parties
 				archivedParties.add(sourceParty);
 				addNode(sourceParty, command);
@@ -313,7 +246,7 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 			{
 				//delete from archived parties
 				archivedParties.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.DEREGISTERED_PARTY_ADDED.equals(command))
 			{
@@ -321,7 +254,7 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 				businessPartners.remove(sourceParty);
 				otherParties.remove(sourceParty);
 				archivedParties.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 				//add to deregistered parties
 				deregisteredParties.add(sourceParty);
 				addNode(sourceParty, command);
@@ -330,17 +263,22 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 			{
 				//delete from deregistered parties
 				deregisteredParties.remove(sourceParty);
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
 			}
-			else if(BusinessPartyEvent.MY_PARTY_ADDED.equals(command))
+			else if(BusinessPartyEvent.MY_FOLLOWING_PARTY_ADDED.equals(command))
 			{
 				//add following party
 				addNode(sourceParty, command);
 			}
-			else if(BusinessPartyEvent.MY_PARTY_REMOVED.equals(command))
+			else if(BusinessPartyEvent.MY_FOLLOWING_PARTY_REMOVED.equals(command))
 			{
 				//delete my following party
-				deleteNode(sourceParty, false);
+				deleteNode(sourceParty);
+			}
+			else if(BusinessPartyEvent.PARTY_UPDATED.equals(command))
+			{
+				//update node text
+				updateNode(sourceParty);
 			}
 		}
 		else if(source.getClass() == ArrayList.class)
@@ -379,4 +317,10 @@ public class PartyTreeModel extends RutaTreeModel implements ActionListener
 		}
 	}
 
+	@Deprecated
+	@Override
+	public boolean listensFor(Class<? extends ActionEvent> eventClazz)
+	{
+		return eventClazz == null ? false : eventClazz == BusinessPartyEvent.class;
+	}
 }

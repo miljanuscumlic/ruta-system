@@ -5,6 +5,9 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -46,8 +49,10 @@ public class SearchDialog extends JDialog
 
 	private Search<?> search;
 	private String searchName;
-
-	private boolean searchPressed; // true if the search button has been pressed
+	/**
+	 * true if search button has been pressed
+	 */
+	private boolean searchPressed;
 
 	public SearchDialog(RutaClientFrame owner)
 	{
@@ -61,6 +66,16 @@ public class SearchDialog extends JDialog
 		int width = 20;
 		sNameField = new JTextField(width);
 		sNameField.setText(Search.getNextSearchName());
+
+		addComponentListener(new ComponentAdapter()
+		{
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+				sNameField.requestFocusInWindow();
+				sNameField.selectAll();
+			}
+		});
 
 		pNameField = new JTextField(width);
 		pCompanyIDField = new JTextField(width);

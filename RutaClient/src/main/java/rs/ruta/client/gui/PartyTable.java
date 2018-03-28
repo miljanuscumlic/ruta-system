@@ -9,7 +9,7 @@ public class PartyTable extends JTable
 	private PartyTableCellEditor dateEditor;
 	private PartyTableCellEditor stringEditor;
 
-	public PartyTable(AbstractTableModel model)
+	public PartyTable(DefaultTableModel model)
 	{
 		super(model);
 		dateEditor = new PartyTableDateCellEditor(new PartyTableDateVerifier());
