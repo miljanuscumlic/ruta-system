@@ -228,7 +228,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 		{
 			try
 			{
-				logger.info("Start of registering of the user " + username + " with the CDR service.");
+				logger.info("Started registration of the user " + username + " with the CDR service.");
 				registerUserWithExist(username, password, transaction);
 				//reservation of unique secretKey in /db/ruta/key collection
 				//MMM: inserting secret key is not necessary anymore because of the use of the UUID
@@ -251,7 +251,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 				iFollower.setPartyID(partyID);
 				iFollower.add(partyID);
 				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, iFollower, transaction);
-				logger.info("Finished registering of the user " + username + " with the CDR service.");
+				logger.info("Finished registration of the user " + username + " with the CDR service.");
 			}
 			catch (XMLDBException e)
 			{

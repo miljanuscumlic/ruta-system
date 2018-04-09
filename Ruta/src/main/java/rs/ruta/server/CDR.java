@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,9 +24,13 @@ import javax.xml.ws.soap.MTOM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ResponseType;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
@@ -37,6 +42,7 @@ import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Followers;
+import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
@@ -110,7 +116,8 @@ public class CDR implements Server
 		}
 	}
 
-	/**Releases resources (e.g. docBoxPool pool of thread) before the removal of this {@code CDR} instance from the container.
+	/**
+	 * Releases resources (e.g. docBoxPool pool of thread) before the removal of this {@code CDR} instance from the container.
 	 */
 	@PreDestroy
 	private void shutdown()
@@ -122,7 +129,7 @@ public class CDR implements Server
 	{
 		logger.error("Exception is ", e);
 		if (e instanceof DetailException)
-			throw new RutaException(exceptionMsg, ((DetailException)e).getFaultInfo());
+			throw new RutaException(exceptionMsg, ((DetailException) e).getFaultInfo());
 		else
 			throw new RutaException(exceptionMsg, e.getMessage());
 	}
@@ -179,8 +186,53 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			processException(e, "Catalogue could not be updated to the CDR service!");
+			processException(e, "Catalogue could not be updated in the CDR!");
 		}
+	}
+
+	@Override
+	@WebMethod
+	public ApplicationResponseType updateCatalogueWithAppResponse(String username, CatalogueType catalogue) throws RutaException
+	{
+		ApplicationResponseType appResponse = null;
+		try
+		{
+			init();
+			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
+
+			appResponse = new ApplicationResponseType();
+			appResponse.setID(UUID.randomUUID().toString());
+			appResponse.setIssueDate(InstanceFactory.getDate());
+			appResponse.setSenderParty(catalogue.getReceiverParty());
+			appResponse.setReceiverParty(catalogue.getProviderParty());
+			final DocumentResponseType docResponse = new DocumentResponseType();
+			final ResponseType response = new ResponseType();
+			response.setResponseCode(InstanceFactory.APP_RESPONSE_POSITIVE);
+			docResponse.setResponse(response);
+			final DocumentReferenceType catReference = new DocumentReferenceType();
+			catReference.setID(catalogue.getID());
+			docResponse.getDocumentReference().add(catReference);
+			appResponse.getDocumentResponse().add(docResponse);
+
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute catalogue for the user: " + username + ".\n Exception is ", e);
+				}
+			});
+		}
+		catch(Exception e)
+		{
+			processException(e, "Catalogue could not be updated in the CDR!");
+		}
+		return appResponse;
 	}
 
 	@Override

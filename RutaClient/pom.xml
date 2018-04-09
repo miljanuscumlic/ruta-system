@@ -72,6 +72,11 @@
 			<artifactId>exist-start</artifactId>
 			<version>3.6.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>2.7.0</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>

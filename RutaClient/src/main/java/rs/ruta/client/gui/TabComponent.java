@@ -29,7 +29,7 @@ import javax.swing.tree.TreePath;
 import org.slf4j.Logger;
 
 /**
- * Abstract class {@code TabComponent} represents apstraction of one tab in the view of the {@link RutaClientFrame main frame}
+ * Abstract class {@code TabComponent} represents abstraction of one tab in the view of the {@link RutaClientFrame main frame}
  * of the {@code Ruta Client application}. Every tab is an instance of a {@code TabComponent}'s subclass. {@code TabComponent}
  * is a container of common methods used in its subclasses.
  */

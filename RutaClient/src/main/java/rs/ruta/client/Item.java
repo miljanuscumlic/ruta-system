@@ -61,9 +61,10 @@ public class Item extends ItemType
 	}
 
 	/**
-	 * Sets a new value for an {@link IDType ID} field. If ID is {@code null} it creates a new object.
+	 * Sets a new value for an {@link IDType ID} field. If ID is {@code null} it creates a new
+	 * {@link IDType ID} object.
 	 * @param value value to set
-	 * @return ID object
+	 * @return {@link IDType ID} object
 	 */
 	public IDType setID(@Nullable final String value)
 	{

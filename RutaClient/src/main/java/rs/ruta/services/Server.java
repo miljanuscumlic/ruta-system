@@ -13,6 +13,7 @@ import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.Response;
 import javax.xml.ws.ResponseWrapper;
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
@@ -394,6 +395,61 @@ public interface Server {
     public void notifyUpdate(
         @WebParam(name = "arg0", targetNamespace = "")
         RutaVersion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateCatalogueWithAppResponseResponse>
+     */
+    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
+    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
+    public Response<UpdateCatalogueWithAppResponseResponse> updateCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
+    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
+    public Future<?> updateCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<UpdateCatalogueWithAppResponseResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
+    public ApplicationResponseType updateCatalogueWithAppResponse(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1)
         throws RutaException
     ;
 

@@ -15,6 +15,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.error.list.IErrorList;
+import com.helger.ubl21.UBL21Validator;
+
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueLineType;
@@ -37,6 +40,14 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameTyp
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PackSizeNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PriceAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.UUIDType;
+import rs.ruta.client.correspondence.BuyingCorrespondence;
+import rs.ruta.client.correspondence.CatalogueCorrespondence;
+import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.client.correspondence.CreateCatalogueProcess;
+import rs.ruta.client.correspondence.CreateCatalogueProcessState;
+import rs.ruta.client.correspondence.RutaProcess;
+import rs.ruta.client.correspondence.RutaProcessState;
+import rs.ruta.client.correspondence.StateTransitionException;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
@@ -52,22 +63,16 @@ import rs.ruta.common.datamapper.MapperRegistry;
  * party and all of its correspondeces with other parties in {@code Ruta System}.
  */
 @XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType
 public class MyParty extends BusinessParty
 {
 	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
-	@XmlElement(name = "LocalUser")
-	private RutaUser localUser;
-	@XmlElement(name = "CDRUser")
-	private RutaUser cdrUser;
-	@XmlTransient
 	private List<Item> products;
 	/**
 	 * MyParty data retrieved from the CDR service.
 	 */
 //	@XmlElement(name = "MyFollowingParty")
-	@XmlTransient
 	@Nullable
 	private BusinessParty myFollowingParty;
 	/**
@@ -76,21 +81,18 @@ public class MyParty extends BusinessParty
 	 * method call unless prior to access is checked for {@code null}.
 	 */
 //	@XmlElement(name = "FollowingParty")
-	@XmlTransient
 	@Nullable
 	private List<BusinessParty> followingParties;
 	/**
 	 * List containing only business partners of MyParty.
 	 * Should always be accessed with {@link #getBusinessPartners()} method call unless prior to access is checked for {@code null}.
 	 */
-	@XmlTransient
 	@Nullable
 	private List<BusinessParty> businessPartners;
 	/**
 	 * List containing only following parties that are not business partners of MyParty.
 	 * Should always be accessed with {@link #getOtherParties()} method call unless prior to access is checked for {@code null}.
 	 */
-	@XmlTransient
 	@Nullable
 	private List<BusinessParty> otherParties;
 	/**
@@ -98,7 +100,6 @@ public class MyParty extends BusinessParty
 	 * Should always be accessed with {@link #getArchivedParties()} method call unless prior to access is checked for {@code null}.
 	 */
 //	@XmlElement(name = "ArchivedParty")
-	@XmlTransient
 	@Nullable
 	private List<BusinessParty> archivedParties;
 	/**
@@ -106,19 +107,22 @@ public class MyParty extends BusinessParty
 	 * Should always be accessed with {@link #getArchivedParties()} method call unless prior to access is checked for {@code null}.
 	 */
 //	@XmlElement(name = "DeregisteredParty")
-	@XmlTransient
 	@Nullable
 	private List<BusinessParty> deregisteredParties;
 //	@XmlElement(name = "PartySearch")
-	@XmlTransient
 	private List<Search<PartyType>> partySearches;
 //	@XmlElement(name = "CatalogueSearch")
-	@XmlTransient
 	private List<Search<CatalogueType>> catalogueSearches;
-	@XmlTransient
 //	private List<ActionListener> actionListeners;
-
 	private Map<Class<? extends ActionEvent>, List<ActionListener>> actionListeners;
+	private CatalogueCorrespondence catalogueCorrespondence;
+	private List<BuyingCorrespondence> buyingCorrespondences;
+//	private List<CreateCatalogueProcess> catalogueProcesses;
+
+	@XmlElement(name = "LocalUser")
+	private RutaUser localUser;
+	@XmlElement(name = "CDRUser")
+	private RutaUser cdrUser;
 	@XmlElement(name = "DirtyCatalogue")
 	private boolean dirtyCatalogue;
 	@XmlElement(name = "DirtyMyParty")
@@ -137,6 +141,8 @@ public class MyParty extends BusinessParty
 	protected XMLGregorianCalendar catalogueIssueDate;
 	@XmlAttribute(name = "JAXBVersion")
 	private String jaxb; // version of the MyParty class
+	@XmlTransient
+	private RutaClient client;
 
 	public MyParty()
 	{
@@ -148,6 +154,7 @@ public class MyParty extends BusinessParty
 		localUser = new RutaUser();
 		cdrUser = new RutaUser();
 		followingParties = businessPartners = otherParties = archivedParties = deregisteredParties = null;
+//		catalogueProcesses = null;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		catalogueIssueDate = null;
 		actionListeners = createListenerMap();
@@ -186,33 +193,58 @@ public class MyParty extends BusinessParty
 			else
 				myFollowingParty = businessPartyMapper.find(myPartyID);
 
-
-
-/*		criterion = new BusinessPartySearchCriterion();
-		criterion.setFollowing(true);
-		final List<BusinessParty> followings = mapperRegistry.getMapper(BusinessParty.class).findMany(criterion);
-		if(getPartyID() != null)
-		{
-			setMyFollowingParty(mapperRegistry.getMapper(BusinessParty.class).find(getPartyID()));
-			//extract myFollowingParty from all followings parties
-			try
-			{
-				final BusinessParty myFP = followings.stream().filter(party -> party.getPartyID().equals(getPartyID())).findFirst().get();
-				followings.remove(myFP);
-			}
-			catch(NoSuchElementException e) { } //OK; myFollowingParty is not among the following parties
-		}
-		setFollowingParties(followings);*/
-
-
 		criterion = new BusinessPartySearchCriterion();
 		criterion.setArchived(true);
 		setArchivedParties(businessPartyMapper.findMany(criterion));
 		criterion = new BusinessPartySearchCriterion();
 		criterion.setDeregistered(true);
 		setDeregisteredParties(businessPartyMapper.findMany(criterion));
-		setPartySearches(Search.listToListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
-		setCatalogueSearches(Search.listToListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
+		setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
+		setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
+
+
+
+		//TEST BEGIN
+		//TEST 1
+/*		setCatalogueProcesses(mapperRegistry.getMapper(CreateCatalogueProcess.class).findAll());
+		List<CreateCatalogueProcess> catProc = getCatalogueProcesses();
+
+		CreateCatalogueProcess process2;
+		if(!catProc.isEmpty())
+		{
+			process2 = catProc.get(0);
+//			process2.produceCatalogue();
+		}
+		else
+		{
+			process2 = new CreateCatalogueProcess();
+			process2.setId(new IDType(UUID.randomUUID().toString()));
+			process2.prepareCatalogue();
+		}
+
+		catProc.clear();
+		catProc.add(process2);*/
+
+		//TEST 2
+
+		List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
+		CatalogueCorrespondence cor = null;
+		if(corrs == null || corrs.isEmpty())
+		{
+			cor = CatalogueCorrespondence.newInstance(client);
+//			corrs.add((CatalogueCorrespondence) cor);
+//			((CatalogueCorrespondence) cor).createCatalogue();
+		}
+		else
+		{
+			cor = corrs.get(0);
+			cor.setClient(client);
+		}
+
+		setCatalogueCorrespondence(cor);
+
+		//TEST END
+
 	}
 
 	/**
@@ -239,14 +271,27 @@ public class MyParty extends BusinessParty
 			mapperRegistry.getMapper(BusinessParty.class).insert(null, myFollowingParty);
 		if(partySearches != null && !partySearches.isEmpty())
 		{
-			List<PartySearch> newList = Search.listFromLisfOfGenerics(getPartySearches());
+			List<PartySearch> newList = Search.fromLisfOfGenerics(getPartySearches());
 			mapperRegistry.getMapper(PartySearch.class).insertAll(null, newList);
 		}
 		if(catalogueSearches != null && !catalogueSearches.isEmpty())
 		{
-			List<CatalogueSearch> newList = Search.listFromLisfOfGenerics(getCatalogueSearches());
+			List<CatalogueSearch> newList = Search.fromLisfOfGenerics(getCatalogueSearches());
 			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
 		}
+/*		if(catalogueProcesses != null && !catalogueProcesses.isEmpty())
+		{
+			mapperRegistry.getMapper(CreateCatalogueProcess.class).insertAll(null, catalogueProcesses);
+		}*/
+		if(catalogueCorrespondence != null)
+		{
+			mapperRegistry.getMapper(CatalogueCorrespondence.class).insert(null, catalogueCorrespondence);
+		}
+		if(buyingCorrespondences != null && !buyingCorrespondences.isEmpty())
+		{
+			mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
+		}
+
 	}
 
 	/**
@@ -278,14 +323,30 @@ public class MyParty extends BusinessParty
 
 		if(partySearches != null && !partySearches.isEmpty())
 		{
-			List<PartySearch> newList = Search.listFromLisfOfGenerics(getPartySearches());
+			List<PartySearch> newList = Search.fromLisfOfGenerics(getPartySearches());
 			mapperRegistry.getMapper(PartySearch.class).insertAll(null, newList);
 		}
 		if(catalogueSearches != null && !catalogueSearches.isEmpty())
 		{
-			List<CatalogueSearch> newList = Search.listFromLisfOfGenerics(getCatalogueSearches());
+			List<CatalogueSearch> newList = Search.fromLisfOfGenerics(getCatalogueSearches());
 			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
 		}
+
+/*		if(catalogueProcesses != null && !catalogueProcesses.isEmpty())
+		{
+			mapperRegistry.getMapper(CreateCatalogueProcess.class).insertAll(null, catalogueProcesses);
+		}*/
+
+		if(catalogueCorrespondence != null)
+		{
+			mapperRegistry.getMapper(CatalogueCorrespondence.class).insert(null, catalogueCorrespondence);
+		}
+
+		if(buyingCorrespondences != null && !buyingCorrespondences.isEmpty())
+		{
+			mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
+		}
+
 	}
 
 	/**
@@ -301,6 +362,16 @@ public class MyParty extends BusinessParty
 		clearParties();
 		clearSearches();
 		clearProducts();
+	}
+
+	public RutaClient getClient()
+	{
+		return client;
+	}
+
+	public void setClient(RutaClient client)
+	{
+		this.client = client;
 	}
 
 	/**
@@ -819,8 +890,6 @@ public class MyParty extends BusinessParty
 	{
 		if(businessPartners == null)
 			businessPartners = new ArrayList<BusinessParty>();
-		//MMM: next line will be superfluos
-//		businessPartners = getFollowingParties().stream().filter(party -> party.isPartner()).collect(Collectors.toList());
 		return businessPartners;
 	}
 
@@ -914,8 +983,6 @@ public class MyParty extends BusinessParty
 	{
 		if(otherParties == null)
 			otherParties = new ArrayList<BusinessParty>();
-		//MMM: next line will be superfluos
-//		otherParties = getFollowingParties().stream().filter(party -> ! party.isPartner()).collect(Collectors.toList());
 		return otherParties;
 	}
 
@@ -1281,9 +1348,6 @@ public class MyParty extends BusinessParty
 	 */
 	public List<BusinessParty> getFollowingParties()
 	{
-		/*if (followingParties == null)
-			followingParties = new ArrayList<>();
-		return followingParties;*/
 		setFollowingParties(); //not optimized because this merges two lists every time method is invoked
 		return followingParties;
 	}
@@ -1295,7 +1359,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Populate the list of following parties by mearging the lists of business partner and
+	 * Populates the list of following parties by mearging the lists of business partner and
 	 * other parties.
 	 */
 	public void setFollowingParties()
@@ -1531,6 +1595,43 @@ public class MyParty extends BusinessParty
 		this.catalogueSearches = catalogueSearches;
 	}
 
+/*	public List<CreateCatalogueProcess> getCatalogueProcesses()
+	{
+		if(catalogueProcesses == null)
+			catalogueProcesses = new ArrayList<CreateCatalogueProcess>();
+		return catalogueProcesses;
+	}
+
+	public void setCatalogueProcesses(List<CreateCatalogueProcess> catalogueProcesses)
+	{
+		this.catalogueProcesses = catalogueProcesses;
+	}*/
+
+
+
+	public CatalogueCorrespondence getCatalogueCorrespondence()
+	{
+		return catalogueCorrespondence;
+	}
+
+	public void setCatalogueCorrespondence(CatalogueCorrespondence catalogueCorrespondence)
+	{
+		this.catalogueCorrespondence = catalogueCorrespondence;
+	}
+
+	public List<BuyingCorrespondence> getBuyingCorrespondences()
+	{
+		if(buyingCorrespondences == null)
+			buyingCorrespondences = new ArrayList<BuyingCorrespondence>();
+		return buyingCorrespondences;
+	}
+
+	public void setBuyingCorrespondences(List<BuyingCorrespondence> correspondences)
+	{
+		this.buyingCorrespondences = correspondences;
+	}
+
+
 	/**
 	 * Checks whether My Party is registered with the CDR service.
 	 * @return true if party is registered with the CDR service
@@ -1639,6 +1740,40 @@ public class MyParty extends BusinessParty
 			}
 		}
 		return catalogue;
+	}
+
+	//MMM: to finish
+	public CatalogueType produceCatalogue(Party receiverParty)
+	{
+		CatalogueType catalogue = createCatalogue(receiverParty);
+		boolean error = validateCatalogue(catalogue);
+
+		return !error ? catalogue : null;
+	}
+
+	//MMM: to finish
+	public boolean validateCatalogue(CatalogueType catalogue)
+	{
+		boolean error = false;
+
+		if(catalogue != null)
+		{
+			//validating UBL conformance
+			IErrorList errors = UBL21Validator.catalogue().validate(catalogue);
+			if(errors.containsAtLeastOneFailure())
+			{
+				error = true;
+//				frame.enableCatalogueMenuItems();
+				logger.error(errors.toString());
+			}
+		}
+		return error;
+	}
+
+	//MMM to finish
+	public void distributeCatalogue(CatalogueType catalogue)
+	{
+
 	}
 
 	/**
@@ -2347,6 +2482,24 @@ public class MyParty extends BusinessParty
 				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.PARTY_MOVED));
 				break;
 			}
+	}
+
+	/**
+	 * Executes the process of creation and updating of {@link CatalogueType} in the CDR.
+	 */
+	public void executeCreateCatalogueProcess()
+	{
+		catalogueCorrespondence.executeCreateCatalogueProcess();
+
+	}
+
+	/**
+	 * Executes the process of deletion of {@link CatalogueType} in the CDR.
+	 */
+	public void executeDeleteCatalogueProcess()
+	{
+		catalogueCorrespondence.executeDeleteCatalogueProcess();
+
 	}
 
 }

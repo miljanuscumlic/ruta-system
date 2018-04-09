@@ -524,7 +524,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					disableCatalogueMenuItems();
 					new Thread(()->
 					{
-						client.cdrSynchroniseMyCatalogue();
+						try
+						{
+//							client.getMyParty().cdrUpdateMyCatalogue();
+							client.cdrSynchroniseMyCatalogue();
+						}
+						catch(Exception e)
+						{
+							appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. ").
+									append(e.getMessage()), Color.RED);
+							enableCatalogueMenuItems();
+						}
 					}).start();
 				}
 				else

@@ -45,7 +45,7 @@ public abstract class MapperRegistry
 	}
 
 	/**
-	 * Sets a registry object to a passed concrete instance object of {@link MapperRegistry} subclass.
+	 * Sets a passed concrete instance object of {@link MapperRegistry} subclass as a singleton registry object.
 	 */
 	public static void setRegistry(MapperRegistry aRegistry)
 	{

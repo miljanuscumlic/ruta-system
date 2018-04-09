@@ -33,6 +33,7 @@ public class ObjectFactory {
     private final static QName _FindAllBugReportsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllBugReportsResponse");
     private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
     private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
+    private final static QName _UpdateCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponseResponse");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
     private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
@@ -78,6 +79,7 @@ public class ObjectFactory {
     private final static QName _AddBugReportCommentResponse_QNAME = new QName("http://ruta.rs/services", "AddBugReportCommentResponse");
     private final static QName _NotifyUpdate_QNAME = new QName("http://ruta.rs/services", "NotifyUpdate");
     private final static QName _SearchPartyResponse_QNAME = new QName("http://ruta.rs/services", "SearchPartyResponse");
+    private final static QName _UpdateCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponse");
     private final static QName _InsertAttachmentResponse_QNAME = new QName("http://ruta.rs/services", "InsertAttachmentResponse");
     private final static QName _UnfollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "UnfollowPartyResponse");
     private final static QName _ClearCacheResponse_QNAME = new QName("http://ruta.rs/services", "ClearCacheResponse");
@@ -185,6 +187,14 @@ public class ObjectFactory {
      */
     public SearchPartyResponse createSearchPartyResponse() {
         return new SearchPartyResponse();
+    }
+
+    /**
+     * Create an instance of {@link UpdateCatalogueWithAppResponse }
+     * 
+     */
+    public UpdateCatalogueWithAppResponse createUpdateCatalogueWithAppResponse() {
+        return new UpdateCatalogueWithAppResponse();
     }
 
     /**
@@ -452,6 +462,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link UpdateCatalogueWithAppResponseResponse }
+     * 
+     */
+    public UpdateCatalogueWithAppResponseResponse createUpdateCatalogueWithAppResponseResponse() {
+        return new UpdateCatalogueWithAppResponseResponse();
+    }
+
+    /**
      * Create an instance of {@link NewRegisterUserResponse }
      * 
      */
@@ -628,6 +646,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClient")
     public JAXBElement<UpdateRutaClient> createUpdateRutaClient(UpdateRutaClient value) {
         return new JAXBElement<UpdateRutaClient>(_UpdateRutaClient_QNAME, UpdateRutaClient.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueWithAppResponseResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogueWithAppResponseResponse")
+    public JAXBElement<UpdateCatalogueWithAppResponseResponse> createUpdateCatalogueWithAppResponseResponse(UpdateCatalogueWithAppResponseResponse value) {
+        return new JAXBElement<UpdateCatalogueWithAppResponseResponse>(_UpdateCatalogueWithAppResponseResponse_QNAME, UpdateCatalogueWithAppResponseResponse.class, null, value);
     }
 
     /**
@@ -1033,6 +1060,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchPartyResponse")
     public JAXBElement<SearchPartyResponse> createSearchPartyResponse(SearchPartyResponse value) {
         return new JAXBElement<SearchPartyResponse>(_SearchPartyResponse_QNAME, SearchPartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueWithAppResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogueWithAppResponse")
+    public JAXBElement<UpdateCatalogueWithAppResponse> createUpdateCatalogueWithAppResponse(UpdateCatalogueWithAppResponse value) {
+        return new JAXBElement<UpdateCatalogueWithAppResponse>(_UpdateCatalogueWithAppResponse_QNAME, UpdateCatalogueWithAppResponse.class, null, value);
     }
 
     /**

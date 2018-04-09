@@ -31,6 +31,9 @@ public final class InstanceFactory
 	public static TaxSchemeType TAX_SCHEME = new TaxSchemeType();
 	private static Map<String, TaxCategoryType> taxCategories;
 
+	public static String APP_RESPONSE_POSITIVE = "POSITIVE";
+	public static String APP_RESPONSE_NEGATIVE = "NEGATIVE";
+
 	static
 	{
 		TAX_SCHEME.setName("Serbian tax scheme");

@@ -78,13 +78,12 @@ public class Search<T>
 	 * Transforms a list of elements of generic type {@link Search}{@code <T>} to a list of elements of type
 	 * {@code U} that extends {@code Search<T>} generic class.
 	 * @param oldList list to transform
-	 * @param <T> type of objects that are queried and which results are contained in an element of
-	 * {@code Search<T>} type
-	 * @param <U> type of search to which elements of {@code Search<T>} type are casted
+	 * @param <T> type of objects that are contained in an element of {@code Search<T>} type
+	 * @param <U> type that extends {@code Search<T>} type to which list elements are casted in this method
 	 * @return transformed list or {@code null} if input list has a {@code null} value
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, U> List<U> listFromLisfOfGenerics(List<Search<T>> oldList)
+	public static <T, U> List<U> fromLisfOfGenerics(List<Search<T>> oldList)
 	{
 		List<U> newList = null;
 		if(oldList != null)
@@ -93,16 +92,14 @@ public class Search<T>
 	}
 
 	/**
-	 * Transforms a list of elements of type {@code U} which extends {@link Search}{@code <T>} generic type
-	 * to a list of elements of that generic type.
+	 * Transforms a list of elements of type {@code U} to a list of elements of generic type {@link Search}{@code <T>}.
 	 * @param oldList list to transform
-	 * @param <T> type of objects that are queried and which results are contained in an element of
-	 * {@code Search<T>} type
-	 * @param <U> type of search to which elements of {@code Search<T>} type are casted
+	 * @param <T> type of objects that are contained in an element of {@code Search<T>} type
+	 * @param <U> type that extends {@code Search<T>} type to which list elements are casted in this method
 	 * @return transformed list or {@code null} if input list has a {@code null} value
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, U> List<Search<T>> listToListOfGenerics(List<U> oldList)
+	public static <T, U> List<Search<T>> toListOfGenerics(List<U> oldList)
 	{
 		List<Search<T>> newList = null;
 		if(oldList != null)

@@ -13,6 +13,8 @@ import rs.ruta.client.CatalogueSearch;
 import rs.ruta.client.Item;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.PartySearch;
+import rs.ruta.client.correspondence.CatalogueCorrespondence;
+import rs.ruta.client.correspondence.CreateCatalogueProcess;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.Followers;
 import rs.ruta.common.PartyID;
@@ -78,8 +80,10 @@ public class ClientMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new PartySearchXmlMapper(getConnector());
 			else if(clazz == CatalogueSearch.class)
 				dataMapper = (DataMapper<S, String>) new CatalogueSearchXmlMapper(getConnector());
-/*			else if(clazz == Search.class)
-				dataMapper = (DataMapper<S, String>) new PartySearchXmlMapper(getConnector());*/
+			else if(clazz == CreateCatalogueProcess.class)
+				dataMapper = (DataMapper<S, String>) new CreateCatalogueProcessXmlMapper(getConnector());
+			else if(clazz == CatalogueCorrespondence.class)
+				dataMapper = (DataMapper<S, String>) new CatalogueCorrespondenceXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

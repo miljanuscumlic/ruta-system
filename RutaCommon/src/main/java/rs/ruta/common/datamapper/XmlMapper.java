@@ -706,6 +706,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 * @return unmarshalled object
 	 * @throws DataManipulationException if object could not be unmarshalled from the xml
 	 */
+	@SuppressWarnings("unchecked")
 	protected T unmarshalFromXML(String xml) throws DataManipulationException
 	{
 		T result = null;
@@ -718,15 +719,16 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			//System.out.println("*****\n" + xml + "\n*****");
 			//logger.info("*****\n" + xml + "\n*****");
 
-			//JAXBElement<?> jaxbElement = (JAXBElement<?>) u.unmarshal(new StringReader(xml));
-			@SuppressWarnings("unchecked")
+/*			@SuppressWarnings("unchecked")
 			JAXBElement<T> jaxbResult = (JAXBElement<T>) u.unmarshal(new StringReader(xml));
-			result = ((JAXBElement<T>) jaxbResult).getValue();
+			result = ((JAXBElement<T>) jaxbResult).getValue();*/
+
 			//MMM: maybe this if clause in superfluous
-			/*			if(jaxbResult instanceof JAXBElement)
+			Object jaxbResult = u.unmarshal(new StringReader(xml));
+			if(jaxbResult instanceof JAXBElement)
 				result = ((JAXBElement<T>)jaxbResult).getValue();
 			else
-				result = (T) jaxbResult;*/ // This is not used anymore ???
+				result = (T) jaxbResult; // This is not used anymore ???
 		}
 		catch(JAXBException e)
 		{
@@ -1057,7 +1059,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		{
 			documentName = id + getDocumentSufix();
 			xmlResult = marshalToXML(object);
-			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
+			logger.info("Started storing of the document " + documentName + " to the location " + colPath);
 			resource = collection.getResource(documentName);
 			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
 				copyResourceToDeleted(resource, (DatabaseTransaction) transaction, "UPDATE");
@@ -1114,7 +1116,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		try
 		{
 			documentName = object.getName();
-			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
+			logger.info("Started storing of the document " + documentName + " to the location " + colPath);
 			resource = collection.getResource(documentName);
 			//MMM: commented code in regard with the transaction should be removed and the code prilagodjen to the binary files
 			/*			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
@@ -1172,7 +1174,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		try
 		{
 			documentName = createCollectionID();
-			logger.info("Start of storing of the document " + documentName + " to the location " + colPath);
+			logger.info("Started storing of the document " + documentName + " to the location " + colPath);
 			resource = collection.getResource(documentName);
 			//MMM: commented code in regard with the transaction should be removed and the code prilagodjen to the binary files
 			/*			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
