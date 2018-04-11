@@ -78,6 +78,18 @@ public interface Server
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException;
 
 	/**
+	 * Deletes catalogue object from the database. Catalogue is referenced with the passed
+	 * CatalogueDeletion object.
+	 * @param username username of the user with catalogu should be deleted
+	 * @param catDeletion CatalogueDeletion object referencing Catalogue
+	 * @return {@link ApplicationResponseType} object describing the response on the catalogue deletion request
+	 * @throws RutaException if the Catalogue object cannot be deleted, or CatalogueDeletion
+	 * object cannot be inserted in the database
+	 */
+	@WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+	public ApplicationResponseType deleteCatalogueWithAppResponse(String username, CatalogueDeletionType catalogueDeletion) throws RutaException;
+
+	/**
 	 * Searches the database for all catalogue items that conforms to the search criterion.
 	 * @param criterion search criterion
 	 * @return list of catalogues containing only catalogue items conforming to the criterion or

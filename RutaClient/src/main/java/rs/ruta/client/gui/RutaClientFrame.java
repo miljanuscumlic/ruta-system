@@ -577,7 +577,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					EventQueue.invokeLater(() ->
 					{
 						int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-								"By deleting your catalogue from the CDR all your followers\nwill be notified about the catalogue deletion. Do you want to proceed?",
+								"By deleting your catalogue from the CDR all your followers will be\nnotified about the catalogue deletion. Do you want to proceed?",
 								"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if(option == JOptionPane.YES_OPTION)
 						{

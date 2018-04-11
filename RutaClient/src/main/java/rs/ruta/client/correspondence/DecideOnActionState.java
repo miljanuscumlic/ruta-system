@@ -1,15 +1,14 @@
 package rs.ruta.client.correspondence;
 
 import java.awt.EventQueue;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import rs.ruta.client.gui.RutaClientFrame;
 
 @XmlRootElement(name = "DecideOnActionState", namespace = "urn:rs:ruta:client")
-//@XmlType(name = "DecideOnActionState", namespace = "urn:rs:ruta:client")
 public class DecideOnActionState extends CreateCatalogueProcessState
 {
 	private static final DecideOnActionState INSTANCE = new DecideOnActionState();
@@ -20,9 +19,9 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void decideOnAction(final RutaProcess process) throws StateTransitionException
+	public void decideOnAction(final RutaProcess process, Semaphore decision) throws StateTransitionException
 	{
-		final RutaClientFrame clientFrame = ((RutaClientFrame) process.getState()).getClient().getClientFrame();
+		final RutaClientFrame clientFrame = process.getClient().getClientFrame();
 		EventQueue.invokeLater(() ->
 		{
 			int option = JOptionPane.showConfirmDialog(clientFrame,
@@ -32,6 +31,7 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 				changeState(process, PrepareCatalogueState.getInstance());
 			else
 				changeState(process, EndOfProcessState.getInstance());
+			decision.release();
 		});
 	}
 

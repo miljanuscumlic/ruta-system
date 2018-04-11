@@ -200,19 +200,11 @@ public class CDR implements Server
 			init();
 			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
 
-			appResponse = new ApplicationResponseType();
-			appResponse.setID(UUID.randomUUID().toString());
-			appResponse.setIssueDate(InstanceFactory.getDate());
-			appResponse.setSenderParty(catalogue.getReceiverParty());
-			appResponse.setReceiverParty(catalogue.getProviderParty());
-			final DocumentResponseType docResponse = new DocumentResponseType();
-			final ResponseType response = new ResponseType();
-			response.setResponseCode(InstanceFactory.APP_RESPONSE_POSITIVE);
-			docResponse.setResponse(response);
-			final DocumentReferenceType catReference = new DocumentReferenceType();
-			catReference.setID(catalogue.getID());
-			docResponse.getDocumentReference().add(catReference);
-			appResponse.getDocumentResponse().add(docResponse);
+			final PartyType receiverParty = catalogue.getReceiverParty();
+			final PartyType providerParty = catalogue.getProviderParty();
+			final String docUUID = catalogue.getUUIDValue();
+			final String docID = catalogue.getIDValue();
+			appResponse = createApplicationResponse(receiverParty, providerParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
 
 			docBoxPool.submit(() ->
 			{
@@ -278,6 +270,73 @@ public class CDR implements Server
 		{
 			processException(e, "Catalogue could not be deleted from the CDR service!");
 		}
+	}
+
+	@Override
+	public ApplicationResponseType deleteCatalogueWithAppResponse(String username, CatalogueDeletionType catalogueDeletion)
+			throws RutaException
+	{
+		ApplicationResponseType appResponse = null;
+		try
+		{
+			init();
+			final String id = mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catalogueDeletion);
+
+			final PartyType receiverParty = catalogueDeletion.getReceiverParty();
+			final PartyType providerParty = catalogueDeletion.getProviderParty();
+			final String docUUID = catalogueDeletion.getUUIDValue();
+			final String docID = catalogueDeletion.getIDValue();
+			appResponse = createApplicationResponse(receiverParty, providerParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final DocumentDistribution delDistribution = new DocumentDistribution(catalogueDeletion, followers);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, delDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute catalogue deletion for the user: " + username + ".\n Exception is ", e);
+				}
+			});
+		}
+		catch(Exception e)
+		{
+			processException(e, "Catalogue could not be deleted from the CDR service!");
+		}
+		return appResponse;
+
+	}
+
+	/**
+	 * Creates {@link ApplicationResponseType} document.
+	 * @param receiverParty receiver Party of the {@code Application Response} document
+	 * @param providerParty provider Party of the {@code Application Response} document
+	 * @param uuid UUID of the {@code Application Response} document
+	 * @param id ID of the {@code Application Response} document
+	 * @param responseCode response code of the {@code Application Response} document
+	 * @return {@code ApplicationResponseType}
+	 */
+	private ApplicationResponseType createApplicationResponse(
+			PartyType receiverParty, PartyType providerParty, String uuid, String id, String responseCode)
+	{
+		final ApplicationResponseType appResponse = new ApplicationResponseType();
+		appResponse.setID(UUID.randomUUID().toString());
+		appResponse.setIssueDate(InstanceFactory.getDate());
+		appResponse.setSenderParty(receiverParty);
+		appResponse.setReceiverParty(providerParty);
+		final DocumentResponseType docResponse = new DocumentResponseType();
+		final ResponseType response = new ResponseType();
+		response.setResponseCode(responseCode);
+		docResponse.setResponse(response);
+		final DocumentReferenceType catReference = new DocumentReferenceType();
+		catReference.setUUID(uuid);
+		catReference.setID(id);
+		docResponse.getDocumentReference().add(catReference);
+		appResponse.getDocumentResponse().add(docResponse);
+		return appResponse;
 	}
 
 /*	@Override

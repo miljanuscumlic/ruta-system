@@ -1,8 +1,9 @@
 package rs.ruta.common.datamapper;
 
-/**Factory class which subclasses generates objects of <code>DSTransaction</code>. Class
- *<code>DSTransactionFactory</code> is not used when there is no need for transactions
- *during the database operations or database has its own transaction manager.
+/**
+ * Factory class which subclasses generate objects of {@link DSTransaction}. Class
+ * {@code DSTransactionFactory} is not used when there is no need for a transaction
+ * during the data store operation or data store has its own transaction manager.
  */
 public class DSTransactionFactory
 {

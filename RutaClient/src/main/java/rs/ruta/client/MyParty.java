@@ -1726,14 +1726,15 @@ public class MyParty extends BusinessParty
 
 			for(Item prod : myProducts)
 			{
-				final ItemType item = (ItemType) prod.clone();// using only ItemType part of the Item ???
+				final ItemType item = (ItemType) prod.clone();//MMM using only ItemType part of the Item ???
 				final CatalogueLineType catLine = new CatalogueLineType();
-				final IDType catLineID = new IDType();
+/*				final IDType catLineID = new IDType();
 				catLineID.setValue(catID.getValue() + "-" + lineCnt++);
-				catLine.setID(catLineID);
+				catLine.setID(catLineID);*/
+				catLine.setID(catID.getValue() + "-" + lineCnt++);
 				catLine.setItem(item);
-				List<ItemLocationQuantityType> itemLocationList = catLine.getRequiredItemLocationQuantity();
-				ItemLocationQuantityType itemLocation = new ItemLocationQuantityType();
+				final List<ItemLocationQuantityType> itemLocationList = catLine.getRequiredItemLocationQuantity();
+				final ItemLocationQuantityType itemLocation = new ItemLocationQuantityType();
 				itemLocation.setPrice(prod.getPrice());
 				itemLocationList.add(itemLocation);
 				catalogue.addCatalogueLine(catLine);
@@ -1742,43 +1743,40 @@ public class MyParty extends BusinessParty
 		return catalogue;
 	}
 
-	//MMM: to finish
+	/**
+	 * Generates {@link CatalogueType} document that conforms to the {@code UBL} standard.
+	 * @param receiverParty receiver Party of the {@code Catalogue}
+	 * @return catalogue or {@code null} if catalogue does not not conform to the {@code UBL}
+	 */
 	public CatalogueType produceCatalogue(Party receiverParty)
 	{
 		CatalogueType catalogue = createCatalogue(receiverParty);
-		boolean error = validateCatalogue(catalogue);
-
-		return !error ? catalogue : null;
+		boolean valid = validateCatalogue(catalogue);
+		return valid ? catalogue : null;
 	}
 
-	//MMM: to finish
+	/**
+	 * Validates whether {@link CatalogueType} comforms to the {@code UBL} standard.
+	 * @param catalogue catalogue to check
+	 * @return true if catalogue has a {@code non-null} value and is valid
+	 */
 	public boolean validateCatalogue(CatalogueType catalogue)
 	{
-		boolean error = false;
-
+		boolean valid = false;
 		if(catalogue != null)
 		{
-			//validating UBL conformance
-			IErrorList errors = UBL21Validator.catalogue().validate(catalogue);
+			final IErrorList errors = UBL21Validator.catalogue().validate(catalogue);
 			if(errors.containsAtLeastOneFailure())
-			{
-				error = true;
-//				frame.enableCatalogueMenuItems();
 				logger.error(errors.toString());
-			}
+			else
+				valid = true;
 		}
-		return error;
-	}
-
-	//MMM to finish
-	public void distributeCatalogue(CatalogueType catalogue)
-	{
-
+		return valid;
 	}
 
 	/**
 	 * Generates {@link CatalogueDeletionType Catalogue Deletion Document}.
-	 * @return {@code CatalogueDeletionType Catalogue Deletion Document}.
+	 * @return {@code CatalogueDeletionType Catalogue Deletion Document}
 	 */
 	public CatalogueDeletionType createCatalogueDeletion(Party CDRParty)
 	{
@@ -2490,7 +2488,6 @@ public class MyParty extends BusinessParty
 	public void executeCreateCatalogueProcess()
 	{
 		catalogueCorrespondence.executeCreateCatalogueProcess();
-
 	}
 
 	/**
@@ -2499,7 +2496,6 @@ public class MyParty extends BusinessParty
 	public void executeDeleteCatalogueProcess()
 	{
 		catalogueCorrespondence.executeDeleteCatalogueProcess();
-
 	}
 
 }

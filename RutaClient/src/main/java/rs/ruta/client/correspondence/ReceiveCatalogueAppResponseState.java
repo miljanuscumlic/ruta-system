@@ -5,7 +5,6 @@ import java.util.concurrent.Future;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "ReceiveCatalogueAppResponseState", namespace = "urn:rs:ruta:client")
-//@XmlType(name = "ReceiveCatalogueAppResponseState", namespace = "urn:rs:ruta:client")
 public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessState
 {
 	private static final ReceiveCatalogueAppResponseState INSTANCE = new ReceiveCatalogueAppResponseState();
@@ -18,7 +17,7 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 	@Override
 	public void receiveCatalogueAppResponse(final RutaProcess process, Future<?> future) throws StateTransitionException
 	{
-		final RutaProcessState newState = process.getClient().cdrReceiveCatalogueAppResponse(future);
+		final RutaProcessState newState = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future);
 		if(newState != null)
 			changeState(process, newState);
 		else

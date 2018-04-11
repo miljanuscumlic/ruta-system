@@ -19,4 +19,9 @@ public class StateTransitionException extends RuntimeException
 	{
 		super(message);
 	}
+
+	public StateTransitionException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
 }

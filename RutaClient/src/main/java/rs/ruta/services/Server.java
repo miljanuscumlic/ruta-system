@@ -777,6 +777,61 @@ public interface Server {
      * @param arg1
      * @param arg0
      * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteCatalogueWithAppResponseResponse>
+     */
+    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
+    public Response<DeleteCatalogueWithAppResponseResponse> deleteCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
+    public Future<?> deleteCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeleteCatalogueWithAppResponseResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
+    public ApplicationResponseType deleteCatalogueWithAppResponse(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.InsertCatalogueResponse>
      */
     @WebMethod(operationName = "InsertCatalogue")

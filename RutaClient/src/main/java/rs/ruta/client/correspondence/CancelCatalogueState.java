@@ -1,5 +1,10 @@
 package rs.ruta.client.correspondence;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rs.ruta.client.MyParty;
+
+@XmlRootElement(name = "CancelCatalogueState", namespace = "urn:rs:ruta:client")
 public class CancelCatalogueState extends DeleteCatalogueProcessState
 {
 
@@ -11,9 +16,13 @@ public class CancelCatalogueState extends DeleteCatalogueProcessState
 	}
 
 	@Override
-	public void receiveCatalogueDeletionAppResp(final RutaProcess process) throws StateTransitionException
+	public void cancelCatalogue(final RutaProcess process) throws StateTransitionException
 	{
-		changeState(process, NotifyOfCatalogueDeletionState.getInstance());
+		final MyParty myParty = process.getClient().getMyParty();
+		myParty.setDirtyCatalogue(true);
+		myParty.setInsertMyCatalogue(true);
+		myParty.removeCatalogueIssueDate();
+		changeState(process, EndOfProcessState.getInstance());
 	}
 
 }

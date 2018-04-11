@@ -65,7 +65,6 @@ import com.helger.ubl21.UBL21Writer;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
-import oasis.names.specification.ubl.schema.xsd.catalogue_21.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
@@ -77,9 +76,10 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Sup
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.ClientHandlerResolver;
 import rs.ruta.RutaNode;
+import rs.ruta.client.correspondence.CancelCatalogueState;
 import rs.ruta.client.correspondence.DecideOnActionState;
 import rs.ruta.client.correspondence.EndOfProcessState;
-import rs.ruta.client.correspondence.RutaProcess;
+import rs.ruta.client.correspondence.ReviewDeletionOfCatalogueState;
 import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.datamapper.ClientMapperRegistry;
 import rs.ruta.client.datamapper.LocalExistConnector;
@@ -103,6 +103,7 @@ import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.MapperRegistry;
 import rs.ruta.services.CDRService;
+import rs.ruta.services.DeleteCatalogueWithAppResponseResponse;
 import rs.ruta.services.FindAllDocBoxDocumentIDsResponse;
 import rs.ruta.services.FindCatalogueResponse;
 import rs.ruta.services.FindDocBoxDocumentResponse;
@@ -683,8 +684,8 @@ public class RutaClient implements RutaNode
 				cdrUpdateMyCatalogue();*/
 
 		if(myParty.getProductCount() == 0) // delete My Catalogue from CDR
-			cdrDeleteMyCatalogue();
-			//myParty.executeDeleteCatalogueProcess();
+//			cdrDeleteMyCatalogue();
+			myParty.executeDeleteCatalogueProcess();
 		else
 //			cdrUpdateMyCatalogue();
 			myParty.executeCreateCatalogueProcess();
@@ -875,7 +876,7 @@ public class RutaClient implements RutaNode
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during the method invocation.
 	 */
-	public Future<?> cdrSendMyCatalogueUpdateRequest(CatalogueType catalogue) //MMM: to be renamed
+	public Future<?> cdrSendMyCatalogueUpdateRequest(CatalogueType catalogue)
 	{
 		Future<?> ret = null;
 		try
@@ -906,14 +907,13 @@ public class RutaClient implements RutaNode
 		return ret;
 	}
 
-
 	/**
 	 * Waits for the {@link ApplicationResponseType} document after {@code CatalogueType} update request had been
 	 * sent to the CDR service.
 	 * @param future {@link Future} on which is waited for a CDR response
 	 * @return new state which correspondence should transition to
 	 */
-	public RutaProcessState cdrReceiveCatalogueAppResponse(Future<?> future)
+	public RutaProcessState cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future)
 	{
 		RutaProcessState newState = null;
 		try
@@ -927,6 +927,7 @@ public class RutaClient implements RutaNode
 				myParty.setDirtyCatalogue(false);
 				frame.appendToConsole(new StringBuilder("My Catalogue has been successfully updated in the CDR service."),
 						Color.GREEN);
+//				newState = CreateCatalogueEndOfProcessState.getInstance();
 				newState = EndOfProcessState.getInstance();
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
@@ -940,6 +941,73 @@ public class RutaClient implements RutaNode
 		{
 			frame.processExceptionAndAppendToConsole(e,
 					new StringBuilder("My Catalogue has not been updated in the CDR service! "));
+		}
+		finally
+		{
+			frame.enableCatalogueMenuItems();
+		}
+		return newState;
+	}
+
+	/**
+	 * Sends update request of My Catalogue to the CDR service.
+	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
+	 * or {@code null} if no CDR request has been made during the method invocation.
+	 */
+	public Future<?> cdrSendMyCatalogueDeletionRequest(CatalogueDeletionType catalogueDeletion)
+	{
+		Future<?> ret = null;
+		try
+		{
+			Server port = getCDRPort();
+			String username = myParty.getCDRUsername();
+			ret = port.deleteCatalogueWithAppResponseAsync(username, catalogueDeletion, null);
+			frame.appendToConsole(new StringBuilder("Request for the Catalogue deletion has been sent to the CDR service.").
+					append(" Waiting for a response..."), Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole(new StringBuilder("Catalogue has not been deleted from the CDR service!").
+					append(" Server is not accessible. Please try again later."), Color.RED);
+			frame.enableCatalogueMenuItems();
+		}
+		return ret;
+	}
+
+	/**
+	 * Waits for the {@link ApplicationResponseType} document after {@link CatalogueDeletionType} request had been
+	 * sent to the CDR service.
+	 * @param future {@link Future} on which is waited for a CDR response
+	 * @return new state which correspondence should transition to
+	 */
+	public RutaProcessState cdrReceiveMyCatalogueDeletionAppResponse(Future<?> future)
+	{
+		RutaProcessState newState = null;
+		try
+		{
+			final DeleteCatalogueWithAppResponseResponse response = (DeleteCatalogueWithAppResponseResponse) future.get();
+			final ApplicationResponseType appResponse = response.getReturn();
+			final String responseCode = appResponse.getDocumentResponseAtIndex(0).getResponse().getResponseCodeValue();
+
+			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
+			{
+/*				myParty.setDirtyCatalogue(true);
+				myParty.setInsertMyCatalogue(true);
+				myParty.removeCatalogueIssueDate();*/
+				frame.appendToConsole(new StringBuilder("Catalogue has been successfully deleted from the CDR service."), Color.GREEN);
+				newState = CancelCatalogueState.getInstance();
+			}
+			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
+			{
+				frame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR service! There has been some kind of data error."),
+						Color.RED);
+				newState = ReviewDeletionOfCatalogueState.getInstance();
+			}
+		}
+		catch(Exception e)
+		{
+			frame.processExceptionAndAppendToConsole(e,
+					new StringBuilder("My Catalogue has not been deleted from the CDR service! "));
 		}
 		finally
 		{
@@ -1010,7 +1078,7 @@ public class RutaClient implements RutaNode
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation
 	 */
-	public Future<?> cdrDeleteMyCatalogue()
+	public Future<?> cdrDeleteMyCatalogueOLD()
 	{
 		Future<?> ret = null;
 		try
@@ -1048,6 +1116,11 @@ public class RutaClient implements RutaNode
 			frame.enableCatalogueMenuItems();
 		}
 		return ret;
+	}
+
+	public void cdrDeleteMyCatalogue()
+	{
+		myParty.executeDeleteCatalogueProcess();
 	}
 
 	/**

@@ -69,6 +69,7 @@ public class ObjectFactory {
     private final static QName _InsertFile_QNAME = new QName("http://ruta.rs/services", "InsertFile");
     private final static QName _SearchParty_QNAME = new QName("http://ruta.rs/services", "SearchParty");
     private final static QName _AddBugReportComment_QNAME = new QName("http://ruta.rs/services", "AddBugReportComment");
+    private final static QName _DeleteCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponseResponse");
     private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
     private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
     private final static QName _DeregisterUserResponse_QNAME = new QName("http://ruta.rs/services", "DeregisterUserResponse");
@@ -92,6 +93,7 @@ public class ObjectFactory {
     private final static QName _DocumentDistribution_QNAME = new QName("urn:rs:ruta:services", "DocumentDistribution");
     private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/services", "InsertBugReport");
     private final static QName _DatabaseTransaction_QNAME = new QName("urn:rs:ruta:services", "DatabaseTransaction");
+    private final static QName _DeleteCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponse");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
     private final static QName _Followers_QNAME = new QName("urn:rs:ruta:common", "Followers");
     private final static QName _DistributionTransaction_QNAME = new QName("urn:rs:ruta:services", "DistributionTransaction");
@@ -262,6 +264,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DeleteCatalogueWithAppResponseResponse }
+     * 
+     */
+    public DeleteCatalogueWithAppResponseResponse createDeleteCatalogueWithAppResponseResponse() {
+        return new DeleteCatalogueWithAppResponseResponse();
+    }
+
+    /**
      * Create an instance of {@link InsertFile }
      * 
      */
@@ -363,6 +373,14 @@ public class ObjectFactory {
      */
     public InsertCatalogueResponse createInsertCatalogueResponse() {
         return new InsertCatalogueResponse();
+    }
+
+    /**
+     * Create an instance of {@link DeleteCatalogueWithAppResponse }
+     * 
+     */
+    public DeleteCatalogueWithAppResponse createDeleteCatalogueWithAppResponse() {
+        return new DeleteCatalogueWithAppResponse();
     }
 
     /**
@@ -973,6 +991,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueWithAppResponseResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueWithAppResponseResponse")
+    public JAXBElement<DeleteCatalogueWithAppResponseResponse> createDeleteCatalogueWithAppResponseResponse(DeleteCatalogueWithAppResponseResponse value) {
+        return new JAXBElement<DeleteCatalogueWithAppResponseResponse>(_DeleteCatalogueWithAppResponseResponse_QNAME, DeleteCatalogueWithAppResponseResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueResponse }{@code >}}
      * 
      */
@@ -1177,6 +1204,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseTransaction")
     public JAXBElement<DatabaseTransaction> createDatabaseTransaction(DatabaseTransaction value) {
         return new JAXBElement<DatabaseTransaction>(_DatabaseTransaction_QNAME, DatabaseTransaction.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueWithAppResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueWithAppResponse")
+    public JAXBElement<DeleteCatalogueWithAppResponse> createDeleteCatalogueWithAppResponse(DeleteCatalogueWithAppResponse value) {
+        return new JAXBElement<DeleteCatalogueWithAppResponse>(_DeleteCatalogueWithAppResponse_QNAME, DeleteCatalogueWithAppResponse.class, null, value);
     }
 
     /**

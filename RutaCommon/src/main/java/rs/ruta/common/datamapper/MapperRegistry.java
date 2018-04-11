@@ -17,11 +17,12 @@ import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.RutaUser;
 
-/**Class that holds global variables accountable for the connection to the classes responsible for the
- * database manipulation. One field is the map containing all <code>DataMapper</code>s that maps domain
- * objects to the structures of the particular data store instace in use. Also, there is a
- * <code>DSTransactionFactory</code> field responsible for the instatiation and controlling of the
- * <code>DSTransaction</code> object.
+/**
+ * Abstract class that holds global variables accountable for the connection to the classes responsible for the
+ * data store manipulation. One field of a class is the map containing all {@link DataMapper}s that map domain
+ * objects to the structures of the particular data store instance in use. Also, there is a
+ * {@link DSTransactionFactory} field responsible for the instantiation and control of the
+ * {@link DSTransaction} object.
  */
 public abstract class MapperRegistry
 {

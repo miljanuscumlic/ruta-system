@@ -2,6 +2,7 @@ package rs.ruta.client.correspondence;
 
 import java.util.UUID;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,14 +53,36 @@ public class CreateCatalogueProcess extends CatalogueProcess
 	{
 		try
 		{
-			prepareCatalogue();
-			produceCatalogue();
-			Future<?> future = distributeCatalogue();
-			receiveCatalogueAppResp(future);
-			if(state instanceof DecideOnActionState)
-				decideOnAction();
-			else if(state instanceof EndOfProcessState)
-				endOfProcess();
+			boolean loop = true;
+			while(loop)
+			{
+				prepareCatalogue();
+				produceCatalogue();
+				Future<?> future = distributeCatalogue();
+				receiveCatalogueAppResponse(future);
+				if(state instanceof DecideOnActionState)
+				{
+					Semaphore decision = new Semaphore(0);
+					decideOnAction(decision);
+					decision.acquire();
+					if(state instanceof PrepareCatalogueState)
+						loop = true;
+					else if(state instanceof EndOfProcessState)
+					{
+						endOfProcess();
+						loop = false;
+					}
+				}
+				else if(state instanceof EndOfProcessState)
+				{
+					endOfProcess();
+					loop = false;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
 		}
 		finally
 		{
@@ -80,32 +103,34 @@ public class CreateCatalogueProcess extends CatalogueProcess
 	 */
 	public void produceCatalogue()
 	{
-		setCatalogue(((CreateCatalogueProcessState) state).produceCatalogue(this));
+		catalogue = ((CreateCatalogueProcessState) state).produceCatalogue(this);
 	}
 
 	/**
 	 * Sends {@link CatalogueType} {@code UBL document} to the CDR.
+	 * @return {@link Future} object that holds the CDR response
 	 */
 	public Future<?> distributeCatalogue()
 	{
-		return ((CreateCatalogueProcessState) state).distributeCatalogue(this, getCatalogue());
+		return ((CreateCatalogueProcessState) state).distributeCatalogue(this, catalogue);
 	}
 
 	/**
 	 * Waits to receive the response in the form of {@link ApplicationResponseType} document from the CDR service.
-	 * @param future TODO
+	 * @param future {@link Future} object that holds the CDR response
 	 */
-	public void receiveCatalogueAppResp(Future<?> future)
+	public void receiveCatalogueAppResponse(Future<?> future)
 	{
 		((CreateCatalogueProcessState) state).receiveCatalogueAppResponse(this, future);
 	}
 
 	/**
 	 * Decides what to do upon receipt of the {@link ApplicationResponseType} document from the CDR service.
+	 * @param decision {@link Semaphore} that enables calling method to wait for callee to finish its execution in its {@code Thread}
 	 */
-	public void decideOnAction()
+	public void decideOnAction(Semaphore decision)
 	{
-		((CreateCatalogueProcessState) state).decideOnAction(this);
+		((CreateCatalogueProcessState) state).decideOnAction(this, decision);
 	}
 
 	/**
@@ -113,8 +138,7 @@ public class CreateCatalogueProcess extends CatalogueProcess
 	 */
 	public void endOfProcess()
 	{
-		((CreateCatalogueProcessState) state).endOfProcess(this);
+		state.endOfProcess(this);
 	}
-
 
 }

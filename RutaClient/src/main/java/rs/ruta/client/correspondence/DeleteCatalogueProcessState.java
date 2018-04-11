@@ -1,21 +1,24 @@
 package rs.ruta.client.correspondence;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "DeleteCatalogueProcessState", namespace = "urn:rs:ruta:client")
 public abstract class DeleteCatalogueProcessState implements RutaProcessState
 {
-	public void notifyOfCatalogueDeletion(final RutaProcess process) throws StateTransitionException
+	public Future<?> notifyOfCatalogueDeletion(final RutaProcess process) throws StateTransitionException
 	{
 		throw new StateTransitionException();
 	}
 
-	public void receiveCatalogueDeletionAppResp(final RutaProcess process) throws StateTransitionException
+	public void receiveCatalogueDeletionAppResponse(final RutaProcess process, Future<?> future) throws StateTransitionException
 	{
 		throw new StateTransitionException();
 	}
 
-	public void reviewDeletionOfCatalogue(final RutaProcess process) throws StateTransitionException
+	public void reviewDeletionOfCatalogue(final RutaProcess process, Semaphore decision) throws StateTransitionException
 	{
 		throw new StateTransitionException();
 	}
@@ -25,5 +28,9 @@ public abstract class DeleteCatalogueProcessState implements RutaProcessState
 		throw new StateTransitionException();
 	}
 
+/*	public void endOfProcess(final RutaProcess process) throws StateTransitionException
+	{
+		throw new StateTransitionException();
+	}*/
 
 }

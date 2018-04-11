@@ -1,10 +1,10 @@
 package rs.ruta.client.correspondence;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 
-//@XmlType(name = "CreateCatalogueProcessState", namespace = "urn:rs:ruta:client")
 public abstract class CreateCatalogueProcessState implements RutaProcessState
 {
 	public void prepareCatalogue(final RutaProcess process) throws StateTransitionException
@@ -27,14 +27,14 @@ public abstract class CreateCatalogueProcessState implements RutaProcessState
 		throw new StateTransitionException();
 	}
 
-	public void decideOnAction(final RutaProcess process)
+	public void decideOnAction(final RutaProcess process, Semaphore decision)
 	{
 		throw new StateTransitionException();
 	}
 
-	public void endOfProcess(final RutaProcess process)
+/*	public void endOfProcess(final RutaProcess process)
 	{
 		throw new StateTransitionException();
-	}
+	}*/
 
 }

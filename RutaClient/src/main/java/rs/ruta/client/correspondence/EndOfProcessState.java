@@ -2,9 +2,11 @@ package rs.ruta.client.correspondence;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *	Common state denoting end of the process.
+ */
 @XmlRootElement(name = "EndOfProcessState", namespace = "urn:rs:ruta:client")
-//@XmlType(name = "EndOfProcessState", namespace = "urn:rs:ruta:client")
-public class EndOfProcessState extends CreateCatalogueProcessState
+public class EndOfProcessState implements RutaProcessState
 {
 	private static final EndOfProcessState INSTANCE = new EndOfProcessState();
 
@@ -14,9 +16,9 @@ public class EndOfProcessState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void endOfProcess(final RutaProcess process) throws StateTransitionException
+	public void endOfProcess(RutaProcess process)
 	{
-		changeState(process, PrepareCatalogueState.getInstance());
+		//do nothing
 	}
 
 }

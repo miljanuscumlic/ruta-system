@@ -32,8 +32,8 @@ import rs.ruta.common.datamapper.DatabaseTransaction;
 public class ClientMapperRegistry extends MapperRegistry
 {
 	/**
-	 * Constructs {@link MapperRegistry} object setting this concrete instace of
-	 * {@code ClientMapperRegistry} as a registry. Also, it initializes {@link ExistConnector} object
+	 * Constructs {@link MapperRegistry} object setting this concrete instance of {@code ClientMapperRegistry}
+	 * as a global registry of data mappers for application. Also, initializes {@link ExistConnector} object
 	 * with {@link LocalExistConnector} instance.
 	 */
 	public ClientMapperRegistry()

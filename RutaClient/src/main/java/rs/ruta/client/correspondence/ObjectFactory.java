@@ -22,6 +22,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory
 {
+	private static final QName _CatalogueCorrespondence_QNAME = new QName("urn:rs:ruta:client", "CatalogueCorrespondence");
 	private static final QName _CreateCatalogueProcess_QNAME = new QName("urn:rs:ruta:client", "CreateCatalogueProcess");
 	private static final QName _DeleteCatalogueProcess_QNAME = new QName("urn:rs:ruta:client", "DeleteCatalogueProcess");
 	private static final QName _ResolveNextProcess_QNAME = new QName("urn:rs:ruta:client", "ResolveNextCatalogueProcess");
@@ -35,13 +36,37 @@ public class ObjectFactory
 	private static final QName _DecideOnActionState_QNAME = new QName("urn:rs:ruta:client", "DecideOnActionState");
 	private static final QName _EndOfProcessState_QNAME = new QName("urn:rs:ruta:client", "EndOfProcessState");
 	private static final QName _NextCatalogueState_QNAME = new QName("urn:rs:ruta:client", "NextCatalogueState");
+	private static final QName _CancelCatalogueState_QNAME = new QName("urn:rs:ruta:client", "CancelCatalogueState");
+	private static final QName _NotifyOfCatalogueDeletionState_QNAME = new QName("urn:rs:ruta:client", "NotifyOfCatalogueDeletionState");
+	private static final QName _ReceiveCatalogueDeletionAppRespState_QNAME = new QName("urn:rs:ruta:client", "ReceiveCatalogueDeletionAppRespState");
+	private static final QName _ReviewDeletionOfCatalogueState_QNAME = new QName("urn:rs:ruta:client", "ReviewDeletionOfCatalogueState");
+
 
 	private static final QName _CreateCatalogueCorrespondenceState_QNAME = new QName("urn:rs:ruta:client", "CreateCatalogueCorrespondenceState");
 	private static final QName _DeleteCatalogueCorrespondenceState_QNAME = new QName("urn:rs:ruta:client", "DeleteCatalogueCorrespondenceState");
-	private static final QName _CatalogueCorrespondence_QNAME = new QName("urn:rs:ruta:client", "CatalogueCorrespondence");
 
 
-	//	private static final QName _RutaProcessState_QNAME = new QName("urn:rs:ruta:client", "RutaProcessState");
+	/**
+	 * Creates an instance of {@link CatalogueCorrespondence}.
+	 * @return created {@code CatalogueCorrespondence} object and never {@code null}
+	 */
+	@Nonnull
+	public CatalogueCorrespondence createCatalogueCorrespondence()
+	{
+		return new CatalogueCorrespondence();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CatalogueCorrespondence }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "CatalogueCorrespondence")
+	@Nonnull
+	public JAXBElement<CatalogueCorrespondence> createCatalogueCorrespondence(
+			@Nullable final CatalogueCorrespondence value)
+	{
+		return new JAXBElement<CatalogueCorrespondence>(_CatalogueCorrespondence_QNAME, CatalogueCorrespondence.class, null, value);
+	}
 
 	/**
 	 * Creates an instance of {@link CreateCatalogueProcess}.
@@ -90,7 +115,7 @@ public class ObjectFactory
 	 * @return created {@code ResolveNextCatalogueProcess} object and never {@code null}
 	 */
 	@Nonnull
-	public ResolveNextCatalogueProcess createResolveNextProcess()
+	public ResolveNextCatalogueProcess createResolveNextCatalogueProcess()
 	{
 		return new ResolveNextCatalogueProcess();
 	}
@@ -101,7 +126,7 @@ public class ObjectFactory
 	 */
 	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "ResolveNextCatalogueProcess")
 	@Nonnull
-	public JAXBElement<ResolveNextCatalogueProcess> createResolveNextProcess(@Nullable final ResolveNextCatalogueProcess value)
+	public JAXBElement<ResolveNextCatalogueProcess> createResolveNextCatalogueProcess(@Nullable final ResolveNextCatalogueProcess value)
 	{
 		return new JAXBElement<ResolveNextCatalogueProcess>(_ResolveNextProcess_QNAME, ResolveNextCatalogueProcess.class, null, value);
 	}
@@ -277,6 +302,111 @@ public class ObjectFactory
 	}
 
 	/**
+	 * Creates an instance of {@link NextCatalogueState}.
+	 * @return created {@code NextCatalogueState} object and never {@code null}
+	 */
+	@Nonnull
+	public NextCatalogueState createNextCatalogueState()
+	{
+		return new NextCatalogueState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link NextCatalogueState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "NextCatalogueState")
+	@Nonnull
+	public JAXBElement<NextCatalogueState> createNextCatalogueState(@Nullable final NextCatalogueState value)
+	{
+		return new JAXBElement<NextCatalogueState>(_NextCatalogueState_QNAME, NextCatalogueState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link CancelCatalogueState}.
+	 * @return created {@code CancelCatalogueState} object and never {@code null}
+	 */
+	@Nonnull
+	public CancelCatalogueState createCancelCatalogueState()
+	{
+		return new CancelCatalogueState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CancelCatalogueState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "CancelCatalogueState")
+	@Nonnull
+	public JAXBElement<CancelCatalogueState> createCancelCatalogueState(@Nullable final CancelCatalogueState value)
+	{
+		return new JAXBElement<CancelCatalogueState>(_CancelCatalogueState_QNAME, CancelCatalogueState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link NotifyOfCatalogueDeletionState}.
+	 * @return created {@code NotifyOfCatalogueDeletionState} object and never {@code null}
+	 */
+	@Nonnull
+	public NotifyOfCatalogueDeletionState createNotifyOfCatalogueDeletionState()
+	{
+		return new NotifyOfCatalogueDeletionState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link NotifyOfCatalogueDeletionState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "NotifyOfCatalogueDeletionState")
+	@Nonnull
+	public JAXBElement<NotifyOfCatalogueDeletionState> createNotifyOfCatalogueDeletionState(@Nullable final NotifyOfCatalogueDeletionState value)
+	{
+		return new JAXBElement<NotifyOfCatalogueDeletionState>(_NotifyOfCatalogueDeletionState_QNAME, NotifyOfCatalogueDeletionState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link ReceiveCatalogueDeletionAppRespState}.
+	 * @return created {@code ReceiveCatalogueDeletionAppRespState} object and never {@code null}
+	 */
+	@Nonnull
+	public ReceiveCatalogueDeletionAppRespState createReceiveCatalogueDeletionAppRespState()
+	{
+		return new ReceiveCatalogueDeletionAppRespState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link ReceiveCatalogueDeletionAppRespState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "ReceiveCatalogueDeletionAppRespState")
+	@Nonnull
+	public JAXBElement<ReceiveCatalogueDeletionAppRespState> createReceiveCatalogueDeletionAppRespState(@Nullable final ReceiveCatalogueDeletionAppRespState value)
+	{
+		return new JAXBElement<ReceiveCatalogueDeletionAppRespState>(_ReceiveCatalogueDeletionAppRespState_QNAME, ReceiveCatalogueDeletionAppRespState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link ReviewDeletionOfCatalogueState}.
+	 * @return created {@code ReviewDeletionOfCatalogueState} object and never {@code null}
+	 */
+	@Nonnull
+	public ReviewDeletionOfCatalogueState createReviewDeletionOfCatalogueState()
+	{
+		return new ReviewDeletionOfCatalogueState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link ReviewDeletionOfCatalogueState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "ReviewDeletionOfCatalogueState")
+	@Nonnull
+	public JAXBElement<ReviewDeletionOfCatalogueState> createReviewDeletionOfCatalogueState(@Nullable final ReviewDeletionOfCatalogueState value)
+	{
+		return new JAXBElement<ReviewDeletionOfCatalogueState>(_ReviewDeletionOfCatalogueState_QNAME, ReviewDeletionOfCatalogueState.class, null, value);
+	}
+
+	/**
 	 * Creates an instance of {@link EndOfProcessState}.
 	 * @return created {@code EndOfProcessState} object and never {@code null}
 	 */
@@ -297,26 +427,8 @@ public class ObjectFactory
 		return new JAXBElement<EndOfProcessState>(_EndOfProcessState_QNAME, EndOfProcessState.class, null, value);
 	}
 
-	/**
-	 * Creates an instance of {@link NextCatalogueState}.
-	 * @return created {@code NextCatalogueState} object and never {@code null}
-	 */
-	@Nonnull
-	public NextCatalogueState createNextCatalogueState()
-	{
-		return new NextCatalogueState();
-	}
 
-	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link NextCatalogueState }{@code >}.
-	 * @return created JAXBElement and never {@code null}
-	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "NextCatalogueState")
-	@Nonnull
-	public JAXBElement<NextCatalogueState> createNextCatalogueState(@Nullable final NextCatalogueState value)
-	{
-		return new JAXBElement<NextCatalogueState>(_NextCatalogueState_QNAME, NextCatalogueState.class, null, value);
-	}
+
 
 
 
@@ -365,29 +477,6 @@ public class ObjectFactory
 		return new JAXBElement<DeleteCatalogueCorrespondenceState>(_DeleteCatalogueCorrespondenceState_QNAME,
 				DeleteCatalogueCorrespondenceState.class, null, value);
 	}*/
-
-	/**
-	 * Creates an instance of {@link CatalogueCorrespondence}.
-	 * @return created {@code CatalogueCorrespondence} object and never {@code null}
-	 */
-	@Nonnull
-	public CatalogueCorrespondence createCatalogueCorrespondence()
-	{
-		return new CatalogueCorrespondence();
-	}
-
-	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link CatalogueCorrespondence }{@code >}.
-	 * @return created JAXBElement and never {@code null}
-	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "CatalogueCorrespondence")
-	@Nonnull
-	public JAXBElement<CatalogueCorrespondence> createCatalogueCorrespondence(
-			@Nullable final CatalogueCorrespondence value)
-	{
-		return new JAXBElement<CatalogueCorrespondence>(_CatalogueCorrespondence_QNAME, CatalogueCorrespondence.class, null, value);
-	}
-
 
 /*	public RutaProcessState createRutaProcessState()
 	{
