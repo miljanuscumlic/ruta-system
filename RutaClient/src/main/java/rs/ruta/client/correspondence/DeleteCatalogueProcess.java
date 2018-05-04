@@ -4,13 +4,26 @@ import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import rs.ruta.client.RutaClient;
 
+/**
+ * Encapsulating {@code UBL document process} for deletion
+ * of the {@link CatalogueType} document, called {@code Delete Catalogue Process}.
+ */
+@XmlRootElement(name = "DeleteCatalogueProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlType(name = "DeleteCatalogueProcess")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DeleteCatalogueProcess extends CatalogueProcess
 {
 	/**
 	 * Constructs new instance of a {@link DeleteCatalogueProcess} and sets its state to
-	 * default value and id to a random value.
+	 * default value and uuid to a random value.
+	 * @param {@link RutaClient} object
 	 * @return {@link DeleteCatalogueProcess}
 	 */
 	public static DeleteCatalogueProcess newInstance(RutaClient client)
@@ -19,6 +32,7 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 		process.setState(NotifyOfCatalogueDeletionState.getInstance());
 		process.setId(UUID.randomUUID().toString());
 		process.setClient(client);
+		process.setActive(true);
 		return process;
 	}
 
@@ -27,8 +41,8 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 	{
 		try
 		{
-			boolean loop = true;
-			while(loop)
+//			boolean loop = true;
+			while(active)
 			{
 				Future<?> future = notifyOfCatalogueDeletion();
 				receiveCatalogueDeletionAppResponse(future);
@@ -37,19 +51,18 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 					Semaphore decision = new Semaphore(0);
 					reviewDeletionOfCatalogue(decision);
 					decision.acquire();
-					if(state instanceof NotifyOfCatalogueDeletionState)
-						loop = true;
-					else if(state instanceof EndOfProcessState)
+					if(state instanceof EndOfProcessState)
 					{
 						endOfProcess();
-						loop = false;
+//						loop = false;
 					}
+//					else if(state instanceof NotifyOfCatalogueDeletionState) active = true;
 				}
 				else if(state instanceof CancelCatalogueState)
 				{
 					cancelCatalogue();
 					endOfProcess();
-					loop = false;
+//					loop = false;
 				}
 			}
 			correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
@@ -101,6 +114,7 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 	 */
 	public void endOfProcess()
 	{
+		active = false;
 		state.endOfProcess(this);
 	}
 }

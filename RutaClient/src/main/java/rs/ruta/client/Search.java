@@ -165,7 +165,7 @@ public class Search<T>
 	 *//*
 	public void setNextId()
 	{
-		id = num;
+		uuid = num;
 	}*/
 
 	public String getId()
@@ -179,7 +179,7 @@ public class Search<T>
 	}
 
 	/**
-	 * Sets id by generating new {@link UUID}.
+	 * Sets uuid by generating new {@link UUID}.
 	 */
 	public void setId()
 	{

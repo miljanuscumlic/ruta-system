@@ -13,6 +13,8 @@ import org.xmldb.api.modules.XMLResource;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
@@ -87,6 +89,13 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == DeregistrationNotice.class)
 					((DeregistrationNoticeXmlMapper) mapperRegistry.getMapper(DeregistrationNotice.class)).
 					insert(collection, (DeregistrationNotice) document, docID, null);
+				else if(documentClazz == OrderType.class)
+					((OrderXmlMapper) mapperRegistry.getMapper(OrderType.class)).
+					insert(collection, (OrderType) document, docID, null);
+				else if(documentClazz == OrderResponseSimpleType.class)
+					((OrderResponseSimpleXmlMapper) mapperRegistry.getMapper(OrderResponseSimpleType.class)).
+					insert(collection, (OrderResponseSimpleType) document, docID, null);
+
 				//TODO other document types
 
 				((DistributionTransaction) transaction).removeOperation();
@@ -258,7 +267,12 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((CatalogueDeletionXmlMapper) mapperRegistry.getMapper(CatalogueDeletionType.class)).unmarshalFromXML(result);
 			else if(objectClazz == DeregistrationNotice.class)
 				object = ((DeregistrationNoticeXmlMapper) mapperRegistry.getMapper(DeregistrationNotice.class)).unmarshalFromXML(result);
-			//TODO: other object types
+			else if(objectClazz == OrderType.class)
+				object = ((OrderXmlMapper) mapperRegistry.getMapper(OrderType.class)).unmarshalFromXML(result);
+			else if(objectClazz == OrderResponseSimpleType.class)
+				object = ((OrderResponseSimpleXmlMapper) mapperRegistry.getMapper(OrderResponseSimpleType.class)).unmarshalFromXML(result);
+
+			//TODO other types of the objects
 			document.setDocument(object);
 			return document;
 		}
@@ -266,7 +280,8 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return null;
 	}
 
-	/**Gets the {@link Class} object of the object that should be written in the database.
+	/**
+	 * Gets the {@link Class} object of the object that should be written in the database.
 	 * @param result xml {@code String} representation of the object
 	 * @return {@code Class} object or {@code null} if input argument is {@code null} or zero length {@code String}
 	 */
@@ -287,6 +302,10 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return CatalogueDeletionType.class;
 		else if(start.matches("<(.)+:DeregistrationNotice (.)+"))
 			return DeregistrationNotice.class;
+		else if(start.matches("<(.)+:OrderResponseSimple (.)+"))
+			return OrderResponseSimpleType.class;
+		else if(start.matches("<(.)+:Order (.)+"))
+			return OrderType.class;
 		//TODO other types of the objects
 		else
 			return null;

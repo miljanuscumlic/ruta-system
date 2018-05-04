@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import rs.ruta.client.MyParty;
 
-@XmlRootElement(name = "CancelCatalogueState", namespace = "urn:rs:ruta:client")
+@XmlRootElement(name = "CancelCatalogueState", namespace = "urn:rs:ruta:client:correspondence:catalogue:delete")
 public class CancelCatalogueState extends DeleteCatalogueProcessState
 {
 

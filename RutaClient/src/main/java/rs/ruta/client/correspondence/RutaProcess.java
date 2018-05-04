@@ -13,15 +13,20 @@ import rs.ruta.client.RutaClient;
  * Abstract class describing state machine as a process. Process can be something like an
  * {@code UBL} {@link DocumentProcess} or {@link Correspondence} between parties in the {@code Ruta System}.
  */
-@XmlType(name = "RutaProcess", namespace = "urn:rs:ruta:client")
+@XmlType(name = "RutaProcess", namespace = "urn:rs:ruta:client:correspondence")
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class RutaProcess
 {
 	@XmlAnyElement(lax = true)
 	protected RutaProcessState state;
-	@XmlElement
-	IDType id;
-	RutaClient client;
+	@XmlElement(name = "UUID")
+	protected IDType uuid;
+	/**
+	 * True when the process is in the middle of its execution.
+	 */
+	@XmlElement(name = "Active")
+	protected boolean active;
+	protected RutaClient client;
 
 	/**
 	 * Gets current state of the process.
@@ -33,7 +38,7 @@ public abstract class RutaProcess
 	}
 
 	/**
-	 * Sets the state of a process
+	 * Sets the state of a process.
 	 * @param state state to be set
 	 */
 	public void setState(RutaProcessState state)
@@ -42,7 +47,7 @@ public abstract class RutaProcess
 	}
 
 	/**
-	 * Changes state of a process
+	 * Changes state of a process.
 	 * @param state state to be transitioned to
 	 */
 	protected void changeState(RutaProcessState state)
@@ -50,26 +55,48 @@ public abstract class RutaProcess
 		setState(state);
 	}
 
-	public IDType getId()
+	/**
+	 * Checks whether the process is in the middle of its execution.
+	 * @return true if active
+	 */
+	public boolean isActive()
 	{
-		return id;
+		return active;
 	}
 
+	public void setActive(boolean active)
+	{
+		this.active = active;
+	}
+
+	/**
+	 * Gets UUID as a {@link IDType} or {@code null} if UUID is not set.
+	 * @return
+	 */
+	public IDType getId()
+	{
+		return uuid;
+	}
+
+	/**
+	 * Gets UUID as a {@code String} or {@code null} if UUID is not set.
+	 * @return
+	 */
 	public String getIdValue()
 	{
-		return id.getValue();
+		return uuid != null ? uuid.getValue() : null;
 	}
 
 	public void setId(IDType id)
 	{
-		this.id = id;
+		this.uuid = id;
 	}
 
 	public void setId(String value)
 	{
-		if(id == null)
-			id = new IDType();
-		id.setValue(value);
+		if(uuid == null)
+			uuid = new IDType();
+		uuid.setValue(value);
 	}
 
 	/**

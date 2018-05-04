@@ -9,12 +9,13 @@ import com.helger.commons.error.list.IErrorList;
 import com.helger.ubl21.UBL21Validator;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import rs.ruta.client.BusinessParty;
 import rs.ruta.client.Catalogue;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.gui.RutaClientFrame;
 
-@XmlRootElement(name = "ProduceCatalogueState", namespace = "urn:rs:ruta:client")
+@XmlRootElement(name = "ProduceCatalogueState", namespace = "urn:rs:ruta:client:correspondence:catalogue:create")
 public class ProduceCatalogueState extends CreateCatalogueProcessState
 {
 	private static final CreateCatalogueProcessState INSTANCE = new ProduceCatalogueState();
@@ -37,5 +38,22 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 		changeState(process, DistributeCatalogueState.getInstance());
 		return catalogue;
 	}
+
+	@Override
+	public void doActivity(Correspondence correspondence, RutaProcess process)
+	{
+		final RutaClient client = process.getClient();
+		final RutaClientFrame clientFrame = client.getClientFrame();
+		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing My Catalogue..."), Color.BLACK);
+		final MyParty myParty = client.getMyParty();
+		final CatalogueType catalogue = myParty.produceCatalogue(client.getCDRParty());
+		if(catalogue == null)
+			throw new StateTransitionException("My Catalogue is malformed. UBL validation has failed.");
+		else
+			((CreateCatalogueProcess) process).setCatalogue(catalogue);
+		changeState(process, DistributeCatalogueState.getInstance());
+	}
+
+
 
 }

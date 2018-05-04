@@ -64,14 +64,14 @@ public class RutaMyPartyExistMapper extends XmlMapper<MyParty>
 	}
 
 /*	@Override
-	public MyParty find(String id) throws DetailException
+	public MyParty find(String uuid) throws DetailException
 	{
-		MyParty party = loadedParties.get(id);
+		MyParty party = loadedParties.get(uuid);
 		if(party == null)
 		{
-			party =  super.find(id);
+			party =  super.find(uuid);
 			if(party != null)
-				loadedParties.put((String) id,  party);
+				loadedParties.put((String) uuid,  party);
 		}
 		return party;
 	}*/
@@ -114,7 +114,7 @@ public class RutaMyPartyExistMapper extends XmlMapper<MyParty>
 		super.insert(client.getMyParty());
 	}
 
-	//MMM: this could be more elegantly solved if the MyParty object has an id field - then just retrieve it
+	//MMM: this could be more elegantly solved if the MyParty object has an uuid field - then just retrieve it
 	//MMM: but this class is only temporary, so I shall no bother with elegancy
 	@Override
 	public String getID(MyParty object) throws DetailException

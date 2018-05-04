@@ -1,7 +1,6 @@
 package rs.ruta.client.correspondence;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 
@@ -27,14 +26,9 @@ public abstract class CreateCatalogueProcessState implements RutaProcessState
 		throw new StateTransitionException();
 	}
 
-	public void decideOnAction(final RutaProcess process, Semaphore decision)
+	public void decideOnAction(final RutaProcess process)
 	{
 		throw new StateTransitionException();
 	}
-
-/*	public void endOfProcess(final RutaProcess process)
-	{
-		throw new StateTransitionException();
-	}*/
 
 }

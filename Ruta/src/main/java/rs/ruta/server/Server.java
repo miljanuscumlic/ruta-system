@@ -12,6 +12,8 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
@@ -20,7 +22,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
@@ -69,7 +71,7 @@ public interface Server
 	/**
 	 * Deletes catalogue object from the database. Catalogue is referenced with the passed
 	 * CatalogueDeletion object.
-	 * @param username username of the user with catalogu should be deleted
+	 * @param username username of the user with catalogue should be deleted
 	 * @param catDeletion CatalogueDeletion object referencing Catalogue
 	 * @throws RutaException if the Catalogue object cannot be deleted, or CatalogueDeletion
 	 * object cannot be inserted in the database
@@ -80,7 +82,7 @@ public interface Server
 	/**
 	 * Deletes catalogue object from the database. Catalogue is referenced with the passed
 	 * CatalogueDeletion object.
-	 * @param username username of the user with catalogu should be deleted
+	 * @param username username of the user which catalogue should be deleted
 	 * @param catDeletion CatalogueDeletion object referencing Catalogue
 	 * @return {@link ApplicationResponseType} object describing the response on the catalogue deletion request
 	 * @throws RutaException if the Catalogue object cannot be deleted, or CatalogueDeletion
@@ -88,6 +90,24 @@ public interface Server
 	 */
 	@WebMethod(operationName = "DeleteCatalogueWithAppResponse")
 	public ApplicationResponseType deleteCatalogueWithAppResponse(String username, CatalogueDeletionType catalogueDeletion) throws RutaException;
+
+	/**
+	 * Inserts {@link OrderType order} in appropriate {@link DocBox docBox}
+	 * @param username username of the user which order should be distributed
+	 * @param order order to distribute
+	 * @throws RutaException if order could not be distributed
+	 */
+	@WebMethod(operationName = "DistributeOrder")
+	public void distributeOrder(String username, OrderType order) throws RutaException;
+
+	/**
+	 * Inserts {@link OrderResponseSimpleType Order Response Simple} in appropriate {@link DocBox docBox}
+	 * @param username username of the user which {@link OrderResponseSimpleType Order Response Simple} should be distributed
+	 * @param orderResponseSimple {@link OrderResponseSimpleType Order Response Simple} to distribute
+	 * @throws RutaException if {@link OrderResponseSimpleType Order Response Simple} could not be distributed
+	 */
+	@WebMethod(operationName = "DistributeOrderResponseSimple")
+	public void distributeOrderResponseSimple(String username, OrderResponseSimpleType orderResponseSimple) throws RutaException;
 
 	/**
 	 * Searches the database for all catalogue items that conforms to the search criterion.

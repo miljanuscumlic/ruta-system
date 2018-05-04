@@ -1,7 +1,10 @@
+
 package rs.ruta.client.gui;
 
 import java.awt.AWTEvent;
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -13,14 +16,19 @@ import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
 import javax.swing.DefaultRowSorter;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -31,14 +39,17 @@ import org.slf4j.Logger;
 /**
  * Abstract class {@code TabComponent} represents abstraction of one tab in the view of the {@link RutaClientFrame main frame}
  * of the {@code Ruta Client application}. Every tab is an instance of a {@code TabComponent}'s subclass. {@code TabComponent}
- * is a container of common methods used in its subclasses.
+ * contains common methods used in its subclasses.
  */
-//MMM: TabComponent does not have to be an ActionListener. It and its subclasses can deal with events through dispatchEvent methos.
-public abstract class TabComponent implements ActionListener
+//MMM: TabComponent does not have to be an ActionListener. It and its subclasses can deal with events through dispatchEvent methods.
+public abstract class TabComponent extends Container implements ActionListener
 {
+	private static final long serialVersionUID = 4341543994574335442L;
 	protected RutaClientFrame clientFrame;
-	protected Component component;
 	protected Logger logger;
+	protected JComponent leftPane;
+	protected JComponent rightPane;
+	protected JScrollPane rightScrollPane;
 
 	public TabComponent(RutaClientFrame clientFrame)
 	{
@@ -46,28 +57,21 @@ public abstract class TabComponent implements ActionListener
 		this.logger = RutaClientFrame.getLogger();
 	}
 
-	public Component getComponent()
-	{
-		return component;
-	}
-
-	public void setComponent(Component component)
-	{
-		this.component = component;
-	}
-
 	/**
 	 * Repaints containing component.
 	 */
+	@Override
 	public void repaint()
 	{
-		if(component != null)
-		{
-			component.revalidate();
-			component.repaint();
-		}
+		revalidate();
+		super.repaint();
 	}
 
+	/**
+	 * Creates table containing catalogue data of a party.
+	 * @param tableModel model containing catalogue data
+	 * @return constructed table object
+	 */
 	@SuppressWarnings("unchecked")
 	protected JTable createCatalogueTable(DefaultTableModel tableModel)
 	{
@@ -149,6 +153,32 @@ public abstract class TabComponent implements ActionListener
 	}
 
 	/**
+	 * Creates and formats the view of empty table that will contain data from the list of parties.
+	 * @param tableModel model representing the list of parties to be displayed
+	 * @return created table
+	 */
+	protected JTable newEmptyPartyListTable(DefaultTableModel tableModel)
+	{
+		JTable table = new JTable(tableModel);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		TableColumnModel colModel = table.getColumnModel();
+		colModel.getColumn(0).setPreferredWidth(20);
+		colModel.getColumn(1).setPreferredWidth(150);
+		colModel.getColumn(2).setPreferredWidth(200);
+		colModel.getColumn(3).setPreferredWidth(100);
+		colModel.getColumn(4).setPreferredWidth(100);
+		colModel.getColumn(5).setPreferredWidth(100);
+		colModel.getColumn(6).setPreferredWidth(100);
+		colModel.getColumn(7).setPreferredWidth(100);
+		colModel.getColumn(8).setPreferredWidth(100);
+		colModel.getColumn(9).setPreferredWidth(100);
+		colModel.getColumn(10).setPreferredWidth(100);
+		colModel.getColumn(11).setPreferredWidth(100);
+		table.setFillsViewportHeight(true);
+		return table;
+	}
+
+	/**
 	 * Renderer class that enables a column with the row numbers to appear as not to be sortable.
 	 */
 	public class RowNumberRenderer extends DefaultTableCellRenderer
@@ -159,10 +189,10 @@ public abstract class TabComponent implements ActionListener
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 				boolean hasFocus, int row, int column)
 		{
-			JLabel component = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-			component.setText(Integer.toString(row + 1));
-			component.setFont(getFont().deriveFont(Font.PLAIN));
-			return component;
+			JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			comp.setText(Integer.toString(row + 1));
+			comp.setFont(getFont().deriveFont(Font.PLAIN));
+			return comp;
 		}
 	}
 
@@ -383,6 +413,72 @@ public abstract class TabComponent implements ActionListener
 	public void dispatchEvent(ActionEvent event)
 	{
 		actionPerformed(event);
+	}
+
+	/**
+	 * Creates {@link TableRowSorter}, sets zeroth column with row numbers not to be sortable and sorts
+	 * the table by the first column.
+	 * @param tableModel
+	 * @return sorter created {@code TableSorter}
+	 */
+	protected TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel)
+	{
+		return createTableRowSorter(tableModel, 1, false);
+	}
+
+	/**
+	 * Creates {@link TableRowSorter}, sets zeroth column with row numbers not to be sortable and sorts
+	 * the table by the column with paseed {@code sortIndex}.
+	 * @param tableModel data model of the table
+	 * @param sortIndex index of the column by which the table should be sorted by default
+	 * @param descending true when sorting order should be descending
+	 * @return sorter created {@code TableSorter}
+	 */
+	protected TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel, int sortIndex, boolean descending)
+	{
+		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(tableModel);
+		sorter.setSortable(0, false);
+		sorter.toggleSortOrder(sortIndex);
+		if(descending)
+			sorter.toggleSortOrder(sortIndex);
+/*		sorter.addRowSorterListener(new RowSorterListener()
+		{
+			@Override
+			public void sorterChanged(RowSorterEvent evt)
+			{
+				//doesn't work in searchTree???!!!
+				int columnIndex = 0;
+				for (int i = 0; i < table.getRowCount(); i++)
+					table.setValueAt(i + 1, i, columnIndex);
+			}
+		});*/
+		return sorter;
+	}
+
+	/**
+	 * Notifies {@link TableRowSorter} about model change.
+	 * @param sorter
+	 */
+	protected void notifyRowSorter(TableRowSorter<DefaultTableModel> sorter, JTable table)
+	{
+//		sorter.setSortable(0, false);
+		sorter.allRowsChanged();
+	}
+
+	/**
+	 * Sets the left and right components of the {@link TabComponent}.
+	 * @param left
+	 * @param right
+	 */
+	protected void arrangeTab()
+	{
+		if(getComponentCount() == 0)
+			setLayout(new BorderLayout());
+		else
+			removeAll();
+		add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane));
+
+		repaint();
 	}
 
 }

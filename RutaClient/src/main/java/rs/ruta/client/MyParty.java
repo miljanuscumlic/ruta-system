@@ -5,10 +5,13 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -23,12 +26,17 @@ import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDe
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CommodityClassificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemLocationQuantityType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.LineItemType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PriceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BarcodeSymbologyIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.CommodityCodeType;
@@ -40,6 +48,9 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameTyp
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PackSizeNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PriceAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.UUIDType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
+import rs.ruta.client.correspondence.BuyerOrderingProcess;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
@@ -47,6 +58,7 @@ import rs.ruta.client.correspondence.CreateCatalogueProcess;
 import rs.ruta.client.correspondence.CreateCatalogueProcessState;
 import rs.ruta.client.correspondence.RutaProcess;
 import rs.ruta.client.correspondence.RutaProcessState;
+import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.client.correspondence.StateTransitionException;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.BusinessPartySearchCriterion;
@@ -117,7 +129,6 @@ public class MyParty extends BusinessParty
 	private Map<Class<? extends ActionEvent>, List<ActionListener>> actionListeners;
 	private CatalogueCorrespondence catalogueCorrespondence;
 	private List<BuyingCorrespondence> buyingCorrespondences;
-//	private List<CreateCatalogueProcess> catalogueProcesses;
 
 	@XmlElement(name = "LocalUser")
 	private RutaUser localUser;
@@ -202,57 +213,48 @@ public class MyParty extends BusinessParty
 		setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
 		setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
 
-
-
-		//TEST BEGIN
-		//TEST 1
-/*		setCatalogueProcesses(mapperRegistry.getMapper(CreateCatalogueProcess.class).findAll());
-		List<CreateCatalogueProcess> catProc = getCatalogueProcesses();
-
-		CreateCatalogueProcess process2;
-		if(!catProc.isEmpty())
-		{
-			process2 = catProc.get(0);
-//			process2.produceCatalogue();
-		}
-		else
-		{
-			process2 = new CreateCatalogueProcess();
-			process2.setId(new IDType(UUID.randomUUID().toString()));
-			process2.prepareCatalogue();
-		}
-
-		catProc.clear();
-		catProc.add(process2);*/
-
-		//TEST 2
-
-		List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
-		CatalogueCorrespondence cor = null;
+		final List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
+		CatalogueCorrespondence corr = null;
 		if(corrs == null || corrs.isEmpty())
 		{
-			cor = CatalogueCorrespondence.newInstance(client);
-//			corrs.add((CatalogueCorrespondence) cor);
-//			((CatalogueCorrespondence) cor).createCatalogue();
+			corr = CatalogueCorrespondence.newInstance(client);
 		}
 		else
 		{
-			cor = corrs.get(0);
-			cor.setClient(client);
+			corr = corrs.get(0);
+			corr.setClient(client);
+			((RutaProcess) corr.getState()).setClient(client);
 		}
+//		corr.start();
 
-		setCatalogueCorrespondence(cor);
+		setCatalogueCorrespondence(corr);
 
-		//TEST END
-
+		buyingCorrespondences = mapperRegistry.getMapper(BuyingCorrespondence.class).findAll();
+		if(buyingCorrespondences != null)
+			for(BuyingCorrespondence bCorr : buyingCorrespondences)
+			{
+/*				if(bCorr.isStopped())
+				{
+					bCorr.setActive(true);
+					((RutaProcess) bCorr.getState()).setActive(true);
+				}*/
+				if(bCorr.isActive())
+				{
+					bCorr.setClient(client);
+					((RutaProcess) bCorr.getState()).setClient(client);
+					bCorr.start();
+				}
+			}
+		int i = 2;
 	}
 
 	/**
-	 * Stores My Party data to a local data store.
+	 * Stores My Party's data to a local data store.
 	 * @throws Exception if data could not be stored to a data store
 	 */
 	public void storeAllData() throws Exception
 	{
+		stopCorrespondencies();
 		setSearchNumber(Search.getSearchNum());
 		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
 		mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
@@ -279,17 +281,28 @@ public class MyParty extends BusinessParty
 			List<CatalogueSearch> newList = Search.fromLisfOfGenerics(getCatalogueSearches());
 			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
 		}
-/*		if(catalogueProcesses != null && !catalogueProcesses.isEmpty())
-		{
-			mapperRegistry.getMapper(CreateCatalogueProcess.class).insertAll(null, catalogueProcesses);
-		}*/
+		waitCorrespondencesToStop();
 		if(catalogueCorrespondence != null)
 		{
+/*			JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			marshaller.marshal(catalogueCorrespondence, System.out);*/
+
 			mapperRegistry.getMapper(CatalogueCorrespondence.class).insert(null, catalogueCorrespondence);
 		}
 		if(buyingCorrespondences != null && !buyingCorrespondences.isEmpty())
 		{
-			mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
+			for(BuyingCorrespondence bCorr : buyingCorrespondences)
+			{
+/*				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				marshaller.marshal(bCorr, System.out);*/
+				if(bCorr.isActive() || bCorr.isStopped())
+					mapperRegistry.getMapper(BuyingCorrespondence.class).insert(null, bCorr);
+			}
+//			mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
 		}
 
 	}
@@ -331,12 +344,6 @@ public class MyParty extends BusinessParty
 			List<CatalogueSearch> newList = Search.fromLisfOfGenerics(getCatalogueSearches());
 			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
 		}
-
-/*		if(catalogueProcesses != null && !catalogueProcesses.isEmpty())
-		{
-			mapperRegistry.getMapper(CreateCatalogueProcess.class).insertAll(null, catalogueProcesses);
-		}*/
-
 		if(catalogueCorrespondence != null)
 		{
 			mapperRegistry.getMapper(CatalogueCorrespondence.class).insert(null, catalogueCorrespondence);
@@ -362,6 +369,7 @@ public class MyParty extends BusinessParty
 		clearParties();
 		clearSearches();
 		clearProducts();
+		clearCorrespondences();
 	}
 
 	public RutaClient getClient()
@@ -714,7 +722,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Tests whether the ID is unique in the list of all {@code Item product}s.
-	 * @param id ID to test
+	 * @param uuid ID to test
 	 * @return true if it is unique, false otherwise
 	 */
 	private boolean isUniqueProductID(String id)
@@ -865,6 +873,20 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
+	 * Removes all correspondences from the data model and data store.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
+	 * @throws DetailException if data could not be deleted from the database
+	 */
+	public void clearCorrespondences() throws DetailException
+	{
+		MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).deleteAll();
+		setCatalogueCorrespondence(null);
+		MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).deleteAll();
+		setBuyingCorrespondences(null);
+		//MMM:	TODO	notifyListeners(new BusinessPartyEvent(products, CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED));
+	}
+
+	/**
 	 * Gets the copy of MyParty previously retrieved from the CDR service.
 	 * @return MyParty object or {@code null}
 	 */
@@ -958,7 +980,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets the business partner with passed ID.
-	 * @param id following party's ID
+	 * @param uuid following party's ID
 	 * @return following party or {@code null} if there is no party with specified ID in the
 	 * list of following parties
 	 */
@@ -968,7 +990,7 @@ public class MyParty extends BusinessParty
 		{
 			return getBusinessPartners().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
 		}
-		catch(NoSuchElementException e) //if there is no party with passed id
+		catch(NoSuchElementException e) //if there is no party with passed uuid
 		{
 			return null;
 		}
@@ -1051,7 +1073,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets the other party with passed ID.
-	 * @param id following party's ID
+	 * @param uuid following party's ID
 	 * @return following party or {@code null} if there is no party with specified ID in the
 	 * list of following parties
 	 */
@@ -1061,7 +1083,7 @@ public class MyParty extends BusinessParty
 		{
 			return getOtherParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
 		}
-		catch(NoSuchElementException e) //if there is no party with passed id
+		catch(NoSuchElementException e) //if there is no party with passed uuid
 		{
 			return null;
 		}
@@ -1094,7 +1116,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets archived party with passed Party ID.
-	 * @param id archived party's ID
+	 * @param uuid archived party's ID
 	 * @return archived party or {@code null} if there is no party with specified ID in the list of
 	 * archived parties
 	 */
@@ -1104,7 +1126,7 @@ public class MyParty extends BusinessParty
 		{
 			return getArchivedParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
 		}
-		catch(NoSuchElementException e) //if there is no party with passed id
+		catch(NoSuchElementException e) //if there is no party with passed uuid
 		{
 			return null;
 		}
@@ -1230,7 +1252,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets the deregistered party with passed Party ID.
-	 * @param id deregistered party's ID
+	 * @param uuid deregistered party's ID
 	 * @return Deregistered party or {@code null} if there is no party with specified ID in the list of
 	 * Deregistered parties
 	 */
@@ -1240,7 +1262,7 @@ public class MyParty extends BusinessParty
 		{
 			return getDeregisteredParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
 		}
-		catch(NoSuchElementException e) //if there is no party with passed id
+		catch(NoSuchElementException e) //if there is no party with passed uuid
 		{
 			return null;
 		}
@@ -1315,7 +1337,7 @@ public class MyParty extends BusinessParty
 	 * Adds party to the deregistered list and removes it from the lists it is contained in.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be deregister
-	 * @throws DetailException if party could not be deleted from the data store
+	 * @throws DetailException if party could not be updated in the data store
 	 */
 	public void deregisterParty(BusinessParty party) throws DetailException
 	{
@@ -1395,7 +1417,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets the following party with passed ID.
-	 * @param id following party's ID
+	 * @param uuid following party's ID
 	 * @return following party or {@code null} if there is no party with specified ID in the
 	 * list of following parties
 	 */
@@ -1405,7 +1427,7 @@ public class MyParty extends BusinessParty
 		{
 			return getFollowingParties().stream().filter(party -> id.equals(party.getCoreParty().getPartyID())).findFirst().get();
 		}
-		catch(NoSuchElementException e) //if there is no party with passed id
+		catch(NoSuchElementException e) //if there is no party with passed uuid
 		{
 			return null;
 		}
@@ -1608,7 +1630,6 @@ public class MyParty extends BusinessParty
 	}*/
 
 
-
 	public CatalogueCorrespondence getCatalogueCorrespondence()
 	{
 		return catalogueCorrespondence;
@@ -1631,6 +1652,38 @@ public class MyParty extends BusinessParty
 		this.buyingCorrespondences = correspondences;
 	}
 
+	/**
+	 * Adds {@link BuyingCorrespondence} to the list of all buying correspondences.
+	 * @param thread correspondence to add
+	 */
+	public void addBuyingCorrespondence(BuyingCorrespondence correspondence)
+	{
+		getBuyingCorrespondences().add(correspondence);
+	}
+
+	/**
+	 * Stops working threads of all active {@link Correspondence}s.
+	 * @throws InterruptedException
+	 */
+	public void stopCorrespondencies() throws InterruptedException
+	{
+//		getCatalogueCorrespondence().stop();
+		for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
+			if(bCorr.isActive())
+				bCorr.stop();
+	}
+
+	/**
+	 * Wait for threads of all active {@link Correspondence}s to stop.
+	 * @throws InterruptedException
+	 */
+	public void waitCorrespondencesToStop() throws InterruptedException
+	{
+//		getCatalogueCorrespondence().getStoppedSemaphore().acquire();
+		for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
+			if(bCorr.isActive())
+				bCorr.getStoppedSemaphore().acquire();
+	}
 
 	/**
 	 * Checks whether My Party is registered with the CDR service.
@@ -1746,7 +1799,7 @@ public class MyParty extends BusinessParty
 	/**
 	 * Generates {@link CatalogueType} document that conforms to the {@code UBL} standard.
 	 * @param receiverParty receiver Party of the {@code Catalogue}
-	 * @return catalogue or {@code null} if catalogue does not not conform to the {@code UBL}
+	 * @return catalogue or {@code null} if catalogue does not conform to the {@code UBL}
 	 */
 	public CatalogueType produceCatalogue(Party receiverParty)
 	{
@@ -1760,7 +1813,7 @@ public class MyParty extends BusinessParty
 	 * @param catalogue catalogue to check
 	 * @return true if catalogue has a {@code non-null} value and is valid
 	 */
-	public boolean validateCatalogue(CatalogueType catalogue)
+	private boolean validateCatalogue(CatalogueType catalogue)
 	{
 		boolean valid = false;
 		if(catalogue != null)
@@ -1805,6 +1858,72 @@ public class MyParty extends BusinessParty
 		catRef.setUUID(getCatalogueUUID());
 		catRef.setIssueDate(getCatalogueIssueDate());
 		return catRef;
+	}
+
+	/**
+	 * Generates {@link OrderType} document that conforms to the {@code UBL} standard.
+	 * @param sellerID correspondent's ID
+	 * @return order or {@code null} if order does not conform to the {@code UBL} or correspondent
+	 * is not a business partner
+	 */
+	public OrderType produceOrder(String sellerID)
+	{
+		boolean valid = false;
+		final BusinessParty seller = getBusinessPartner(sellerID);
+		OrderType order = null;
+		if(seller != null)
+		{
+			order = createOrder(seller.getCoreParty());
+			valid = validateOrder(order);
+		}
+		return valid ? order : null;
+	}
+
+	/**
+	 * Generates {@link OrderType} document.
+	 * @param seller {@link PartyType seller party} which is a receiver of the {@link OrderType order}
+	 * @return order created {@link OrderType order}
+	 */
+	public OrderType createOrder(Party seller)
+	{
+		final OrderType order = new OrderType();
+		final CustomerPartyType buyer = new CustomerPartyType();
+		buyer.setParty(getCoreParty());
+		order.setBuyerCustomerParty(buyer);
+		//MMM put proper values for these recommended properties below
+		final SupplierPartyType sellerParty = new SupplierPartyType();
+		sellerParty.setParty(seller);
+		order.setSellerSupplierParty(sellerParty);
+		order.setID(UUID.randomUUID().toString());//MMM from MyParty's counter
+		order.setUUID(UUID.randomUUID().toString());
+		order.setIssueDate(InstanceFactory.getDate());
+		final OrderLineType orderLine = new OrderLineType();
+		final LineItemType lineItem = new LineItemType();
+		lineItem.setID(UUID.randomUUID().toString()); //MMM put ordered number here
+		lineItem.setItem(getCatalogue().getCatalogueLineAtIndex(0).getItem());
+		orderLine.setLineItem(lineItem);
+		order.getOrderLine().add(orderLine);
+		//MMM put some reference id? maybe of the correspondence into AdditionalDocumentReference
+		return order;
+	}
+
+	/**
+	 * Validates whether {@link OrderType} comforms to the {@code UBL} standard.
+	 * @param order order to check
+	 * @return true if order has a {@code non-null} value and is valid
+	 */
+	private boolean validateOrder(OrderType order)
+	{
+		boolean valid = false;
+		if(order != null)
+		{
+			final IErrorList errors = UBL21Validator.order().validate(order);
+			if(errors.containsAtLeastOneFailure())
+				logger.error(errors.toString());
+			else
+				valid = true;
+		}
+		return valid;
 	}
 
 	/**
@@ -2461,11 +2580,11 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Processes {@link DeregistrationNotice deregistration notice} document
-	 * by deregistering {@link BusinessParty party} specified in it.
+	 * Processes {@link DeregistrationNotice deregistration notice} document by moving
+	 * {@link BusinessParty party} specified in it to the list of deregistered parties.
 	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
-	 * @param notice notice to process
-	 * @throws DetailException if party could not be deleted from the data store
+	 * @param notice deregistration notice to process
+	 * @throws DetailException if party could not be updated in the data store
 	 */
 	public void processDocBoxDeregistrationNotice(DeregistrationNotice notice) throws DetailException
 	{
@@ -2483,11 +2602,53 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
+	 * Processes {@link OrderType order} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * @param order order to process
+	 */
+	public void processDocBoxOrder(OrderType order) throws DetailException
+	{
+		final String correspondentID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentID, false);
+		addBuyingCorrespondence(newCorr);
+		((SellerOrderingProcess) newCorr.getState()).setOrder(order);
+		newCorr.addDocumentReference(order.getUUIDValue(), order.getIDValue(), order.getClass().getName());
+		newCorr.start();
+	}
+
+	/**
+	 * Processes {@link OrderType order} document by appending it to proper {@link BuyingCorrespondence correspondence}.
+	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * @param orderResponseSimple order to process
+	 * @throws DetailException if proper {@link Correspondence} could not be found
+	 */
+	public void processDocBoxOrderResponseSimple(OrderResponseSimpleType orderResponseSimple) throws DetailException
+	{
+		final String correspondentID = orderResponseSimple.getSellerSupplierParty().getParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final IDType orderID = orderResponseSimple.getOrderReference().getDocumentReference().getID();
+		final Correspondence corr = findCorrespondence(correspondentID, orderID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence could not be found");
+		else
+		{
+			corr.addDocumentReference(orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
+				orderResponseSimple.getClass().getName());
+			((BuyerOrderingProcess) corr.getState()).setOrderResponseSimple(orderResponseSimple);
+			if(corr.isAlive())
+				corr.proceed();
+			else
+				corr.start();
+		}
+	}
+
+	/**
 	 * Executes the process of creation and updating of {@link CatalogueType} in the CDR.
 	 */
 	public void executeCreateCatalogueProcess()
 	{
-		catalogueCorrespondence.executeCreateCatalogueProcess();
+//		catalogueCorrespondence.executeCreateCatalogueProcess();
+		catalogueCorrespondence.start();
 	}
 
 	/**
@@ -2495,7 +2656,44 @@ public class MyParty extends BusinessParty
 	 */
 	public void executeDeleteCatalogueProcess()
 	{
-		catalogueCorrespondence.executeDeleteCatalogueProcess();
+//		catalogueCorrespondence.executeDeleteCatalogueProcess();
+		catalogueCorrespondence.start();
+	}
+
+	/**
+	 * Finds all {@link Correspondence}s with a particular party.
+	 * @param correspondentID ID of the correspondent party
+	 * @return list of correspondences or {@code null} if there are none
+	 */
+	public List<Correspondence> findAllCorrespondences(final String correspondentID)
+	{
+		final List<Correspondence> corrs = getBuyingCorrespondences().stream().
+				filter(bCorr -> correspondentID.equals(bCorr.getCorrespondentIdentification().getIDValue())).
+				collect(Collectors.toList());
+		return corrs.isEmpty() ? null : corrs;
+	}
+
+	/**
+	 * Finds {@link Correspondence} with particular party that contains particular document.
+	 * @param correspondentID ID of the correspondent party
+	 * @param docID {@link IDType id} of the document
+	 * @return {@code Correspondence} or {@code null} if no correspondence is found
+	 */
+	public Correspondence findCorrespondence(final String correspondentID, final IDType docID)
+	{
+		final List<Correspondence> corrs = findAllCorrespondences(correspondentID);
+		final List<Correspondence> foundCorrs;
+		Correspondence corr = null;
+		if(corrs != null)
+		{
+			foundCorrs = corrs.stream().filter(elem -> elem.isActive()).
+					filter(elem -> ! elem.getDocumentReferences().stream().
+							filter(ref -> docID.getValue().equals(ref.getIDValue())).collect(Collectors.toList()).isEmpty()).
+					collect(Collectors.toList());
+			if(foundCorrs.size() == 1)
+				corr = foundCorrs.get(0);
+		}
+		return corr;
 	}
 
 }

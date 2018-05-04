@@ -22,7 +22,7 @@ public class SearchEvent extends ActionEvent
 	/**
 	 * Creates new {@link ActionEvent} object describing change in a {@link Party} object in the data model.
 	 * @param source The object that originated the event
-	 * @param id An integer that identifies the event. Allowable values are,ActionEvent.ACTION_PERFORMED,
+	 * @param uuid An integer that identifies the event. Allowable values are,ActionEvent.ACTION_PERFORMED,
 	 * ITEM_STATE_CHANGED, ADJUSTMENT_VALUE_CHANGED, TEXT_VALUE_CHANGED
 	 * @param command A string that may specify a command (possibly one of several) associated with the event
 	 */

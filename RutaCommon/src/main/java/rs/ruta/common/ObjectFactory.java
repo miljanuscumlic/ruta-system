@@ -23,7 +23,7 @@ public class ObjectFactory
 	public final static QName _Attachment_QNAME = new QName("urn:rs:ruta:common", "Attachment");
 	public final static QName _PartyID_QNAME = new QName("urn:rs:ruta:services", "PartyID");
 	public final static QName _RutaUser_QNAME = new QName("urn:rs:ruta:common", "RutaUser");
-	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:common", "Followers");
+	public final static QName _Followers_QNAME = new QName("urn:rs:ruta:common", "Associates");
 	public final static QName _DocumentDistribution_QNAME = new QName("urn:rs:ruta:services", "DocumentDistribution");
 	public final static QName _DeregistrationNotice_QNAME = new QName("urn:rs:ruta:common", "DeregistrationNotice");
 
@@ -125,23 +125,23 @@ public class ObjectFactory
 	}
 
 	/**
-	 * Creates an instance of {@link Followers}.
-	 * @return created {@code Followers} object and never {@code null}
+	 * Creates an instance of {@link Associates}.
+	 * @return created {@code Associates} object and never {@code null}
 	 */
 	@Nonnull
-	public Followers createFollowers()
+	public Associates createFollowers()
 	{
-		return new Followers();
+		return new Associates();
 	}
 
-	/** Creates an instance of {@link JAXBElement }{@code <}{@link Followers }{@code >}.
+	/** Creates an instance of {@link JAXBElement }{@code <}{@link Associates }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:common", name = "Followers")
+	@XmlElementDecl(namespace = "urn:rs:ruta:common", name = "Associates")
 	@Nonnull
-	public JAXBElement<Followers> createFollowers(@Nullable final Followers value)
+	public JAXBElement<Associates> createFollowers(@Nullable final Associates value)
 	{
-		return new JAXBElement<Followers>(_Followers_QNAME, Followers.class, null, value);
+		return new JAXBElement<Associates>(_Followers_QNAME, Associates.class, null, value);
 	}
 
 	/**Creates an instance of {@link DocumentDistribution}.

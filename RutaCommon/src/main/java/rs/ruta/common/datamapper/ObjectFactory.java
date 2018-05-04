@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaUser;
 

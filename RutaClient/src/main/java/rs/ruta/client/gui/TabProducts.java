@@ -32,6 +32,7 @@ import rs.ruta.common.InstanceFactory;
 
 public class TabProducts extends TabComponent
 {
+	private static final long serialVersionUID = 7435742718848842547L;
 	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 
 	public TabProducts(final RutaClientFrame clientFrame)
@@ -71,8 +72,6 @@ public class TabProducts extends TabComponent
 		deleteItem.addActionListener( event ->
 		{
 			final int row = table.getSelectedRow();
-			int col = table.getSelectedColumn();
-
 			try
 			{
 				myParty.removeProduct(row);
@@ -88,7 +87,9 @@ public class TabProducts extends TabComponent
 			}
 		});
 
-		component = new JScrollPane(table);
+		leftPane = new JScrollPane(table);
+		rightPane = null;
+		arrangeTab();
 	}
 
 	@SuppressWarnings("unchecked")

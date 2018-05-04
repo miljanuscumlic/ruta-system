@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public interface DataMapper
 {
 
-	/**Reads the object from the data store wich have apropriate id
-	 * @param id id of the object in search
+	/**Reads the object from the data store wich have apropriate uuid
+	 * @param uuid uuid of the object in search
 	 * @return found object
 	 */
 	public Object find(String id);

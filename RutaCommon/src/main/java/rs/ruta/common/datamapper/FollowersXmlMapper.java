@@ -10,21 +10,21 @@ import org.xmldb.api.base.XMLDBException;
 
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.ObjectFactory;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.FollowersSearchCriterion;
 
-public class FollowersXmlMapper extends XmlMapper<Followers>
+public class FollowersXmlMapper extends XmlMapper<Associates>
 {
 	final private static String collectionPath = "/followers";
 	final private static String objectPackageName = "rs.ruta.common";
 	final private static String queryNameSearchFollowers = "search-followers.xq";
 	//MMM: This map should be some kind of most recently used collection bounded in size
-	private Map<String, Followers> loadedFollowers;
+	private Map<String, Associates> loadedFollowers;
 
 	public FollowersXmlMapper(DatastoreConnector connector) throws DetailException
 	{
 		super(connector);
-		loadedFollowers = new ConcurrentHashMap<String, Followers>();
+		loadedFollowers = new ConcurrentHashMap<String, Associates>();
 	}
 
 	@Override
@@ -39,25 +39,25 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	}
 
 	@Override
-	protected Followers getCachedObject(String id)
+	protected Associates getCachedObject(String id)
 	{
 		return loadedFollowers.get(id);
 	}
 
 	@Override
-	protected Followers removeCachedObject(String id)
+	protected Associates removeCachedObject(String id)
 	{
 		return loadedFollowers.remove(id);
 	}
 
 	@Override
-	protected void putCachedObject(String id, Followers object)
+	protected void putCachedObject(String id, Associates object)
 	{
 		loadedFollowers.put(id, object);
 	}
 
 	@Override
-	protected JAXBElement<Followers> getJAXBElement(Followers object)
+	protected JAXBElement<Associates> getJAXBElement(Associates object)
 	{
 		return new ObjectFactory().createFollowers(object);
 	}
@@ -65,7 +65,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	@Override
 	protected Class<?> getObjectClass()
 	{
-		return Followers.class;
+		return Associates.class;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	}
 
 	@Override
-	public String update(String username, Followers followers) throws DetailException
+	public String update(String username, Associates followers) throws DetailException
 	{
 		synchronized(followers)
 		{
@@ -97,13 +97,13 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	}*/
 
 	@Override
-	public ArrayList<Followers> findAll() throws DetailException
+	public ArrayList<Associates> findAll() throws DetailException
 	{
-		ArrayList<Followers> followings = new ArrayList<>();
+		ArrayList<Associates> followings = new ArrayList<>();
 		String ids[] = listAllDocumentIDs();
 		for(String id : ids)
 		{
-			final Followers f = find(trimID(id));
+			final Associates f = find(trimID(id));
 			if(f != null)
 				followings.add(f);
 		}
@@ -113,14 +113,14 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	@Override
 	protected void delete(String id, DSTransaction transaction) throws DetailException
 	{
-		//deletes ID entry in Followers documents of parties that the party with passed id is following
+		//deletes ID entry in Associates documents of parties that the party with passed id is following
 		//"search-following.xq" retrieves list of followers objects
 		final FollowersSearchCriterion criterion = new FollowersSearchCriterion();
 		final String userID = getUserIDByID(id);
 		criterion.setFollowerID(userID);
-		final ArrayList<Followers> followersList = findMany(criterion);
+		final ArrayList<Associates> followersList = findMany(criterion);
 		//delete myself from all objects from the list and update all objects
-		for(Followers followers : followersList)
+		for(Associates followers : followersList)
 		{
 			synchronized(followers) //MMM: might be done in few threads
 			{	//there is no need to delete followerID from its own followers object because if there is a case
@@ -133,15 +133,11 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 				}
 			}
 		}
-
 		super.delete(id, transaction);
-
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//TODO inform all followers that party is deregistered (e.g. send to their DocBox some kind of document - Application Response???)
 	}
 
 	@Override
-	protected String update(String username, Followers followers, DSTransaction transaction) throws DetailException
+	protected String update(String username, Associates followers, DSTransaction transaction) throws DetailException
 	{
 		synchronized(followers)
 		{
@@ -150,7 +146,7 @@ public class FollowersXmlMapper extends XmlMapper<Followers>
 	}
 
 	@Override
-	protected String doPrepareAndGetID(Followers followers, String username, DSTransaction transaction)
+	protected String doPrepareAndGetID(Associates followers, String username, DSTransaction transaction)
 			throws DetailException
 	{
 		return getIDByUserID(followers.getPartyID());

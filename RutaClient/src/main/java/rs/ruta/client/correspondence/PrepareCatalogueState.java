@@ -2,7 +2,7 @@ package rs.ruta.client.correspondence;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "PrepareCatalogueState", namespace = "urn:rs:ruta:client")
+@XmlRootElement(name = "PrepareCatalogueState", namespace = "urn:rs:ruta:client:correspondence:catalogue:create")
 public class PrepareCatalogueState extends CreateCatalogueProcessState
 {
 	private static CreateCatalogueProcessState INSTANCE = new PrepareCatalogueState();
@@ -18,4 +18,12 @@ public class PrepareCatalogueState extends CreateCatalogueProcessState
 		//nothing to do
 		changeState(process, ProduceCatalogueState.getInstance());
 	}
+
+	@Override
+	public void doActivity(Correspondence correspondence, RutaProcess process)
+	{
+		changeState(process, ProduceCatalogueState.getInstance());
+	}
+
+
 }

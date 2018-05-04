@@ -2,16 +2,19 @@ package rs.ruta.common;
 
 import java.util.List;
 
+/**
+ *	{@code DocBox} class encapsulates all docBoxes that the document should be inserted into.
+ */
 public class DocBox
 {
 	private Object document;
 	private String docID;
+	/**
+	 * Collection paths of all docBoxes.
+	 */
 	List<String> docCollectionPaths;
 
-	public DocBox()
-	{
-
-	}
+	public DocBox() { }
 
 	public DocBox(Object document, List<String> docCollectionPaths, String docID)
 	{
@@ -30,6 +33,10 @@ public class DocBox
 		this.document = document;
 	}
 
+	/**
+	 * Gets the list of all docBoxes' paths in which the document should be inserted into.
+	 * @return list of collection paths
+	 */
 	public List<String> getDocCollectionPaths()
 	{
 		return docCollectionPaths;

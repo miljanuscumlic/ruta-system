@@ -76,7 +76,7 @@ import rs.ruta.client.Search;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.RutaException;
 
@@ -88,8 +88,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	public static final int CDR_DATA_TAB = 0;
 	public static final int MY_PRODUCTS_TAB = 1;
-	public static final int DOCUMENTS_TAB = 2;
-	public static final int CORRESPONDENSCE_TAB = 3;
+	public static final int CORRESPONDENSCE_TAB = 2;
 
 	private RutaClient client;
 	private JTabbedPane tabbedPane;
@@ -127,6 +126,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 	private TabComponent tabCDR;
 	private TabComponent tabMyProducts;
+	private TabComponent tabCorrespondences;
 
 	public RutaClientFrame(RutaClient client)
 	{
@@ -189,11 +189,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		//setting tabs
 		tabbedPane = new JTabbedPane();
 		tabCDR = new TabCDRData(this);
-		tabbedPane.addTab("CDR Data", tabCDR.getComponent());
+		tabbedPane.addTab("CDR Data", tabCDR);
 		tabMyProducts = new TabProducts(this);
-		tabbedPane.addTab("Products & Services", tabMyProducts.getComponent());
-		tabbedPane.addTab("Documents", null);
-		tabbedPane.addTab("Correspondences", null);
+		tabbedPane.addTab("Products & Services", tabMyProducts);
+		tabCorrespondences = new TabCorrespondences(this);
+		tabbedPane.addTab("Correspondences", tabCorrespondences);
 
 		tabbedPane.addChangeListener(event ->
 		{
@@ -212,7 +212,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		JMenu localDataMenu = new JMenu("Local Data");
-		JMenu cdrMenu = new JMenu("Central Data Repository");
+		JMenu cdrMenu = new JMenu("Central Data");
 		JMenu helpMenu = new JMenu("Help");
 		menuBar.add(localDataMenu);
 		menuBar.add(cdrMenu);
@@ -256,7 +256,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}
 				catch(Exception e)
 				{
-					appendToConsole(new StringBuilder("There has been an error. Could not save data to the local data store!"), Color.RED);
+					appendToConsole(new StringBuilder("There has been an error. Could not save all the data to the local data store!"),
+							Color.RED);
 					getLogger().error("Could not save data to the local data store!", e);
 				}
 			}).start();
@@ -696,6 +697,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		tabbedPane.setSelectedIndex(1);
 	}
 
+	/**
+	 * Gets the {@link Logger} of the {@code RutaClientFrame}.
+	 * @return logger
+	 */
 	public static Logger getLogger()
 	{
 		return logger;
@@ -859,23 +864,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	private void loadTab(int tabIndex)
 	{
-		String title = tabbedPane.getTitleAt(tabIndex);
-		JComponent component = null;
+		Component component = null;
 		switch(tabIndex)
 		{
 		case CDR_DATA_TAB:
-			//			tabCDR.repaint(userObject, added, removed);
-			component = (JComponent) tabCDR.getComponent();
+			component = tabCDR;
 			break;
 		case MY_PRODUCTS_TAB:
-			//			tabMyProducts.repaint(userObject, added, removed);
-			component = (JComponent) tabMyProducts.getComponent();
-			break;
-		case DOCUMENTS_TAB:
-			component = new JLabel(title);
+			component = tabMyProducts;
 			break;
 		case CORRESPONDENSCE_TAB:
-			component = new JLabel(title);
+			component = tabCorrespondences;
 			break;
 		}
 		tabbedPane.setComponentAt(tabIndex, component);
@@ -889,7 +888,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * @param registration whether the dialog is shown during local database registration
 	 * @return {@code Party} with potentially changed data
 	 */
-	//MMM: boolean editable could be added; = false if party should only be displayed not changed
+	//MMM: boolean argument editable could be added; = false if party should only be displayed not changed
 	public Party showPartyDialog(Party party, String title, boolean registration)
 	{
 		partyDialog = new PartyDialog(RutaClientFrame.this, registration);

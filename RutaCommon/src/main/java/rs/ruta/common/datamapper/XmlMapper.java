@@ -57,7 +57,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.DataMapper;
 
@@ -1040,12 +1040,14 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Inserts object in the collection.
+	/**
+	 * Inserts object with passed {@code id} in the collection.
 	 * @param collection collection in which the object is to be stored
 	 * @param object object to be stored
 	 * @param transaction transaction object
-	 * @return id of the object, unique in the scope of the collection
-	 * @throws DetailException
+	 * @param id of the object
+	 * @throws DetailException if document could not be saved to the database, could not be made a copy of it
+	 * or database transaction journal document could not be updated
 	 */
 	public void insert(Collection collection, T object, String id, DSTransaction transaction) throws DetailException
 	{
@@ -1794,7 +1796,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			JAXBElement<T> element = getJAXBElement(object);
 			Marshaller m = jc.createMarshaller();
 //			m.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			//MMM: check why eXist is behavioing this way
+			//MMM: check why eXist is behavioring this way
 			//property set because without it xml string for DeregistrationNotice would be generated with
 			//xml prolog line <?xml version="1.0" encoding="UTF-8" standalone="yes"?> and eXist would not
 			//write that string to the database!!!

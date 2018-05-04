@@ -2,13 +2,23 @@ package rs.ruta.client.correspondence;
 
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import rs.ruta.client.RutaClient;
 
-public class OrderingProcess extends DocumentProcess
+@Deprecated //MMM now there are two separate classes BuyerOrderingProcess and SellerOrderingProcess
+@XmlRootElement(name = "OrderingProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlType(name = "OrderingProcess")
+@XmlAccessorType(XmlAccessType.NONE)
+public class OrderingProcess extends BuyingProcess
 {
 	/**
 	 * Constructs new instance of a {@link OrderingProcess} and sets its state to
-	 * default value and id to a random value.
+	 * default value and uuid to a random value.
+	 * @param {@link RutaClient} object
 	 * @return {@code OrderingProcess}
 	 */
 	public static OrderingProcess newInstance(RutaClient client)
@@ -19,6 +29,15 @@ public class OrderingProcess extends DocumentProcess
 		process.setClient(client);
 		return process;
 	}
+
+	@Override
+	public void ordering(Correspondence correspondence) throws StateTransitionException
+	{
+
+
+	}
+
+
 
 
 }

@@ -10,7 +10,7 @@ import rs.ruta.client.*;
 
 public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 {
-//	public static final String COLUMNS = " id, lastname, firstname, number_of_dependents ";
+//	public static final String COLUMNS = " uuid, lastname, firstname, number_of_dependents ";
 
 //	private static String FILENAME = "client-products.dat";
 
@@ -116,28 +116,28 @@ public class ItemTypeBinaryFileMapper<T> extends BinaryFileDataMapper<T>
 	{
 		return "SELECT " + COLUMNS +
 				" FROM people" +
-				" WHERE id = ?";
+				" WHERE uuid = ?";
 	}*/
 
-	/*	public ItemType find(long id)
+	/*	public ItemType find(long uuid)
 	{
-		return (ItemType) abstractFind(id);
+		return (ItemType) abstractFind(uuid);
 	}*/
 
-	/*	protected Object doLoad(Long id, ResultSet rs) throws SQLException {
+	/*	protected Object doLoad(Long uuid, ResultSet rs) throws SQLException {
 	String lastNameArg = rs.getString(2);
 	String firstNameArg = rs.getString(3);
 	int numDependentsArg = rs.getInt(4);
-	return new ItemType(id, lastNameArg, firstNameArg, numDependentsArg);
+	return new ItemType(uuid, lastNameArg, firstNameArg, numDependentsArg);
 }
  */
 
 	/*
-	 protected DomainObject doLoad(Long id, ResultSet rs) throws SQLException {
+	 protected DomainObject doLoad(Long uuid, ResultSet rs) throws SQLException {
 String lastNameArg = rs.getString(2);
 String firstNameArg = rs.getString(3);
 int numDependentsArg = rs.getInt(4);
-return new Person(id, lastNameArg, firstNameArg, numDependentsArg);
+return new Person(uuid, lastNameArg, firstNameArg, numDependentsArg);
 }
 
 	 */
@@ -182,7 +182,7 @@ return new Person(id, lastNameArg, firstNameArg, numDependentsArg);
 		{
 			mapID = nextID++;
 			name = myParty.getProductNameAsString(index);
-			//id = Long.valueOf(client.getProductID(index));
+			//uuid = Long.valueOf(client.getProductID(index));
 			id = myParty.getProductIDAsString(index);
 			description = myParty.getProductDescriptionAsString(index);
 			packSize = myParty.getProductPackSize(index);

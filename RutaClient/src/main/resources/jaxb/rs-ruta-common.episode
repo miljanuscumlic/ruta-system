@@ -70,8 +70,8 @@
 	</bindings>
 	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"
 		if-exists="true">
-		<bindings scd="~tns:Followers">
-			<class ref="rs.ruta.common.Followers" />
+		<bindings scd="~tns:Associates">
+			<class ref="rs.ruta.common.Associates" />
 		</bindings>
 	</bindings>
 	<bindings scd="x-schema::tns" xmlns:tns="http://ruta.rs/services"

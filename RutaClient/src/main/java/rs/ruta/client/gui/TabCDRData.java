@@ -10,8 +10,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -64,6 +62,7 @@ import rs.ruta.common.datamapper.DetailException;
 
 public class TabCDRData extends TabComponent
 {
+	private static final long serialVersionUID = -2833805682921078609L;
 	private static final String CATALOGUES = "Catalogues";
 	private static final String PARTIES = "Parties";
 	private static final String MY_PARTY = "My Party";
@@ -73,13 +72,9 @@ public class TabCDRData extends TabComponent
 	private static final String ARCHIVED_PARTIES = "Archived Parties";
 	private static final String OTHER_PARTIES = "Other Parties";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
-	private final RutaClientFrame clientFrame;
-	private final JComponent leftPane;
-	private final JComponent rightPane;
-	private JComponent tabPane;
+
 	private final JTree partyTree;
 	private final JTree searchTree;
-	private final JScrollPane rightScrollPane;
 	//	private final JScrollPane leftScroolPane;
 	private PartySearchTableModel searchesPartyTableModel;
 	private JTable searchesPartyTable;
@@ -95,14 +90,15 @@ public class TabCDRData extends TabComponent
 	private JTable partiesTable;
 	private final TableRowSorter<DefaultTableModel> partnerCatalogueSorter;
 	private final TableRowSorter<DefaultTableModel> partiesSorter;
+
 	/**
-	 * @param clientFrame
+	 * Creates tabbed pane for display of the CDR related data.
+	 * @param clientFrame parent frame
 	 */
 	@SuppressWarnings("unchecked")
 	public TabCDRData(RutaClientFrame clientFrame)
 	{
 		super(clientFrame);
-		this.clientFrame = clientFrame;
 		MyParty myParty = clientFrame.getClient().getMyParty();
 		//constructing left pane
 		DefaultTreeModel partyTreeModel = new PartyTreeModel(new DefaultMutableTreeNode(FOLLOWINGS), myParty);
@@ -137,13 +133,10 @@ public class TabCDRData extends TabComponent
 		partiesTable = createPartyListTable(partiesTableModel);
 		partiesTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
 
-		partnerCatalogueSorter = createTableRowSorter(partnerCatalogueTableModel, partnerCatalogueTable);
+		partnerCatalogueSorter = createTableRowSorter(partnerCatalogueTableModel);
 		partnerCatalogueTable.setRowSorter(partnerCatalogueSorter);
-		partiesSorter = createTableRowSorter(partiesTableModel, partiesTable);
+		partiesSorter = createTableRowSorter(partiesTableModel);
 		partiesTable.setRowSorter(partiesSorter);
-
-		JPopupMenu partyTreePopupMenu = new JPopupMenu();
-		JPopupMenu searchTreePopupMenu = new JPopupMenu();
 
 		//setting action listener for tab repaint on selection of the business party node
 		partyTree.addTreeSelectionListener(event ->
@@ -192,6 +185,7 @@ public class TabCDRData extends TabComponent
 			repaint();
 		});
 
+		JPopupMenu partyTreePopupMenu = new JPopupMenu();
 		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
 		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
 		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
@@ -450,9 +444,9 @@ public class TabCDRData extends TabComponent
 		searchesCatalogueTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
 		searchesTable = createSearchListTable(new SearchListTableModel<>());
 
-		searchesPartySorter = createTableRowSorter(searchesPartyTableModel, searchesPartyTable);
+		searchesPartySorter = createTableRowSorter(searchesPartyTableModel);
 		searchesPartyTable.setRowSorter(searchesPartySorter);
-		searchesCatalogueSorter = createTableRowSorter(searchesCatalogueTableModel, searchesCatalogueTable);
+		searchesCatalogueSorter = createTableRowSorter(searchesCatalogueTableModel);
 		searchesCatalogueTable.setRowSorter(searchesCatalogueSorter);
 		//there is no searchesTableModel and searchesTableSorter because there are a few different models that
 		//could be instantiated based on the type of the object that is searched for: PartyType, CatalogueType
@@ -492,7 +486,7 @@ public class TabCDRData extends TabComponent
 				{
 					searchesTable.setModel(searchesTableModel);
 					searchesTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-					searchesTable.setRowSorter(createTableRowSorter(searchesTableModel, searchesTable));
+					searchesTable.setRowSorter(createTableRowSorter(searchesTableModel));
 					rightScrollPane.setViewportView(searchesTable);
 				}
 				else
@@ -503,6 +497,7 @@ public class TabCDRData extends TabComponent
 			repaint();
 		});
 
+		JPopupMenu searchTreePopupMenu = new JPopupMenu();
 		JMenuItem againSearchItem = new JMenuItem("Search Again");
 		JMenuItem renameSearchItem = new JMenuItem("Rename");
 		JMenuItem deleteSearchItem = new JMenuItem("Delete");
@@ -604,70 +599,17 @@ public class TabCDRData extends TabComponent
 			}
 		});
 
-		arrangeTab(leftPane, rightPane);
-		component = tabPane;
+		arrangeTab();
 	}
 
 	/**
-	 * Creates {@link TableRowSorter}.
-	 * @param tableModel
-	 * @param table
-	 * @return sorter created {@code TableSorter}
-	 */
-	private TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel, JTable table)
-	{
-		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(tableModel);
-		sorter.setSortable(0, false);
-		sorter.toggleSortOrder(1);
-/*		sorter.addRowSorterListener(new RowSorterListener()
-		{
-			@Override
-			public void sorterChanged(RowSorterEvent evt)
-			{
-				//doesn't work in searchTree???!!!
-				int columnIndex = 0;
-				for (int i = 0; i < table.getRowCount(); i++)
-					table.setValueAt(i + 1, i, columnIndex);
-			}
-		});*/
-		return sorter;
-	}
-
-	/**
-	 * Notifies {@link TableRowSorter} about model change.
-	 * @param sorter
-	 */
-	private void notifyRowSorter(TableRowSorter<DefaultTableModel> sorter, JTable table)
-	{
-//		sorter.setSortable(0, false);
-		sorter.allRowsChanged();
-	}
-
-	/**
-	 * Sets the left and right {@code Component}s of the tab's pane.
-	 * @param left
-	 * @param right
-	 */
-	public void arrangeTab(Component left, Component right)
-	{
-		if(tabPane == null)
-			tabPane = new JPanel(new BorderLayout());
-		if(tabPane != null  && tabPane.getComponentCount() != 0)
-			tabPane.removeAll();
-		tabPane.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right));
-		repaint();
-	}
-
-	/**
-	 * Creates table showing list of parties e.g. Business Partners, Other Parties etc.
-	 * @param tableModel model containing party data to display
-	 * @param search true if the table displays search results, and false if it displays list of parties
+	 * Creates table containing list of parties e.g. Business Partners, Other Parties etc.
+	 * @param tableModel model containing party data
 	 * @return constructed table object
 	 */
 	private JTable createPartyListTable(DefaultTableModel tableModel)
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		final JPopupMenu partyTablePopupMenu = new JPopupMenu();
 		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
 		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
@@ -930,31 +872,10 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates and formats the view of empty table that will contain data from the list of parties.
-	 * @param tableModel model representing the list of parties to be displayed
-	 * @return created table
+	 * Creates table showing list of all searches of the CDR service.
+	 * @param tableModel model containing data
+	 * @return constructed table object
 	 */
-	private JTable newEmptyPartyListTable(DefaultTableModel tableModel)
-	{
-		JTable table = new JTable(tableModel);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		TableColumnModel colModel = table.getColumnModel();
-		colModel.getColumn(0).setPreferredWidth(20);
-		colModel.getColumn(1).setPreferredWidth(150);
-		colModel.getColumn(2).setPreferredWidth(200);
-		colModel.getColumn(3).setPreferredWidth(100);
-		colModel.getColumn(4).setPreferredWidth(100);
-		colModel.getColumn(5).setPreferredWidth(100);
-		colModel.getColumn(6).setPreferredWidth(100);
-		colModel.getColumn(7).setPreferredWidth(100);
-		colModel.getColumn(8).setPreferredWidth(100);
-		colModel.getColumn(9).setPreferredWidth(100);
-		colModel.getColumn(10).setPreferredWidth(100);
-		colModel.getColumn(11).setPreferredWidth(100);
-		table.setFillsViewportHeight(true);
-		return table;
-	}
-
 	private JTable createSearchListTable(DefaultTableModel tableModel)
 	{
 		final MyParty myParty = clientFrame.getClient().getMyParty();
@@ -1091,14 +1012,13 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates table displaying list of parties that are the result of quering the CDR.
-	 * @param tableModel model containing party data to display
+	 * Creates table containing list of parties that are the result of quering the CDR.
+	 * @param tableModel model containing party data
 	 * @return constructed table object
 	 */
 	private JTable createSearchPartyTable(DefaultTableModel tableModel)
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		final JPopupMenu popupMenu = new JPopupMenu();
 		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
 		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
@@ -1182,8 +1102,8 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates table displaying list of catalogue items that are the result of quering the CDR.
-	 * @param tableModel model containing party data to display
+	 * Creates table containing list of catalogue items that are the result of quering the CDR.
+	 * @param tableModel model containing catalogue data
 	 * @return constructed table object
 	 */
 	private JTable createSearchCatalogueTable(DefaultTableModel tableModel)

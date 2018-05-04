@@ -50,7 +50,7 @@ public class ItemXmlMapper extends XmlMapper<Item>
 	protected String doPrepareAndGetID(Item item, String username, DSTransaction transaction)
 	{
 		//MMM: this ID will be changed
-//		String id = InstanceFactory.getPropertyOrNull(item.getSellersItemIdentification().getID(), IDType::getValue);
+//		String uuid = InstanceFactory.getPropertyOrNull(item.getSellersItemIdentification().getID(), IDType::getValue);
 		String id = null;
 		try
 		{

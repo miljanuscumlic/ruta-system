@@ -1,17 +1,10 @@
 package rs.ruta.common.datamapper;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.xmldb.api.base.XMLDBException;
-
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.ObjectFactory;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;

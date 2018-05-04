@@ -4,12 +4,12 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "ReceiveCatalogueDeletionAppRespState", namespace = "urn:rs:ruta:client")
-public class ReceiveCatalogueDeletionAppRespState extends DeleteCatalogueProcessState
+@XmlRootElement(name = "ReceiveCatalogueDeletionAppResponseState", namespace = "urn:rs:ruta:client:correspondence:catalogue:delete")
+public class ReceiveCatalogueDeletionAppResponseState extends DeleteCatalogueProcessState
 {
-	private static ReceiveCatalogueDeletionAppRespState INSTANCE = new ReceiveCatalogueDeletionAppRespState();
+	private static ReceiveCatalogueDeletionAppResponseState INSTANCE = new ReceiveCatalogueDeletionAppResponseState();
 
-	public static ReceiveCatalogueDeletionAppRespState getInstance()
+	public static ReceiveCatalogueDeletionAppResponseState getInstance()
 	{
 		return INSTANCE;
 	}

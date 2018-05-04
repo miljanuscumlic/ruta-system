@@ -13,14 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.xmldb.api.base.Collection;
 
 import rs.ruta.common.DocumentDistribution;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 
 @XmlRootElement(name = "DistributionTransaction", namespace = "urn:rs:ruta:services")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DistributionTransaction extends ExistTransaction
 {
-	@XmlElement(name = "Followers")
-	private Followers followers;
+	@XmlElement(name = "Associates")
+	private Associates followers;
 
 	public DistributionTransaction()
 	{
@@ -59,16 +59,16 @@ public class DistributionTransaction extends ExistTransaction
 */	}
 
 	/**
-	 * Gets the list of all parties incorporated in the {@link Followers} object
+	 * Gets the list of all parties incorporated in the {@link Associates} object
 	 * that should get the document.
-	 * @return {@code Followers} object or {@code null}
+	 * @return {@code Associates} object or {@code null}
 	 */
-	public Followers getFollowers()
+	public Associates getFollowers()
 	{
 		return followers;
 	}
 
-	public void setFollowers(Followers followers)
+	public void setFollowers(Associates followers)
 	{
 		this.followers = followers;
 	}
@@ -109,24 +109,26 @@ public class DistributionTransaction extends ExistTransaction
 		MapperRegistry.getInstance().getMapper(DistributionTransaction.class).update(null, this);
 	}
 
-	/**Sets distribution operations to this transaction and stores the transaction in the database.
-	 * @param docCollectionPaths list of collection paths to which the document should be distributed
-	 * @param docCollectionPath collection path of the distributed document
+	/**
+	 * Sets distribution operations to this transaction and stores the transaction in the database.
+	 * @param destinationCollectionPaths list of collection paths to which the document should be distributed
+	 * @param sourceCollectionPath collection path of the distributed document
 	 * @param docDistributionName name of the distributed document
 	 * @throws DetailException if transaction could not be stored to the database
 	 */
-	public void addDistributionOperations(List<String> docCollectionPaths, String docCollectionPath, String docDistributionName)
+	public void addDistributionOperations(List<String> destinationCollectionPaths, String sourceCollectionPath, String docDistributionName)
 			throws DetailException
 	{
 		List<ExistOperation> operations = getOperations();
-		for(int i = 0; i < docCollectionPaths.size(); i++)
-			operations.add(0, new DistributionOperation(docCollectionPaths.get(i), docDistributionName, "INSERT",
-					docCollectionPath, docDistributionName, null));
-		operations.add(new DistributionOperation(docCollectionPath, docDistributionName, "DELETE", null, null, null));
+		for(int i = 0; i < destinationCollectionPaths.size(); i++)
+			operations.add(0, new DistributionOperation(destinationCollectionPaths.get(i), docDistributionName, "INSERT",
+					sourceCollectionPath, docDistributionName, null));
+		operations.add(new DistributionOperation(sourceCollectionPath, docDistributionName, "DELETE", null, null, null));
 		MapperRegistry.getInstance().getMapper(DistributionTransaction.class).update(null, this);
 	}
 
-	/**Removes first operation from the transaction and updates the transaction in the database.
+	/**
+	 * Removes first operation from the transaction and updates the transaction in the database.
 	 * @throws DetailException if transaction could not be updated in the database
 	 */
 	public void removeOperation() throws DetailException

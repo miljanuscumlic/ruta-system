@@ -189,8 +189,6 @@ public class PartyTreeModel extends RutaTreeModel
 				//add to business partners
 				businessPartners.add(sourceParty);
 				addNode(sourceParty, command);
-
-				//selectNode(sourceParty); //MMM:this should be notification to RutaClientFrame or TabXxx to select the node and repaint itself
 			}
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
 			{
@@ -200,8 +198,6 @@ public class PartyTreeModel extends RutaTreeModel
 				//add to business partners
 				businessPartners.add(sourceParty);
 				addNode(sourceParty, command);
-
-				//selectNode(sourceParty); //MMM:this should be notification to RutaClientFrame or TabXxx to select the node and repaint itself
 			}
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_REMOVED.equals(command))
 			{

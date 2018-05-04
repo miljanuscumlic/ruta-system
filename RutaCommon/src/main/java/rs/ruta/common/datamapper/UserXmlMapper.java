@@ -19,7 +19,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaUser;
@@ -47,7 +47,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 			try
 			{
 				String id = getID(username);
-				//deleting user's Catalogue, Catalogue Deletion and Followers documents
+				//deleting user's Catalogue, Catalogue Deletion and Associates documents
 				try
 				{
 					((CatalogueXmlMapper) mapperRegistry.getMapper(CatalogueType.class)).delete(id, transaction);
@@ -70,7 +70,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 
 				try
 				{
-					((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).delete(id, transaction);
+					((FollowersXmlMapper) mapperRegistry.getMapper(Associates.class)).delete(id, transaction);
 				}
 				catch(DetailException e)
 				{
@@ -192,10 +192,10 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 				String uuid = ((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(null, id), transaction);
 				insertMetadata(username, PARTY_ID, uuid);
 				//setting party as a follower of himself
-				Followers iFollower = new Followers();
+				Associates iFollower = new Associates();
 				iFollower.setPartyID(uuid);
 				iFollower.add(uuid);
-				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, iFollower, transaction);
+				((FollowersXmlMapper) mapperRegistry.getMapper(Associates.class)).insert(username, iFollower, transaction);
 				logger.info("Finished registering of the user " + username + " with the CDR service.");
 			}
 			catch (XMLDBException e)
@@ -247,10 +247,10 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 				insertMetadata(username, PARTY_ID, partyID);
 				((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).insert(username, new PartyID(partyID, documentID), transaction);
 				//setting party as a follower of himself
-				Followers iFollower = new Followers();
+				Associates iFollower = new Associates();
 				iFollower.setPartyID(partyID);
 				iFollower.add(partyID);
-				((FollowersXmlMapper) mapperRegistry.getMapper(Followers.class)).insert(username, iFollower, transaction);
+				((FollowersXmlMapper) mapperRegistry.getMapper(Associates.class)).insert(username, iFollower, transaction);
 				logger.info("Finished registration of the user " + username + " with the CDR service.");
 			}
 			catch (XMLDBException e)

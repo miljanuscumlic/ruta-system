@@ -37,7 +37,8 @@ public class PartyListTableModel extends DefaultTableModel
 		this.parties = parties;
 	}
 
-	/**Gets the {@link BusinessParty party} from the list of parties.
+	/**
+	 * Gets the {@link BusinessParty party} from the list of parties.
 	 * @param index party's index
 	 * @return party or {@code null} if parties field is {@code null}
 	 */

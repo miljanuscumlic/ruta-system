@@ -3,11 +3,12 @@ package rs.ruta.server.datamapper;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.RutaUser;
@@ -28,6 +29,7 @@ import rs.ruta.common.datamapper.DatabaseTransactionMapper;
 import rs.ruta.common.datamapper.DeregistrationNoticeXmlMapper;
 import rs.ruta.common.datamapper.FollowersXmlMapper;
 import rs.ruta.common.datamapper.MapperRegistry;
+import rs.ruta.common.datamapper.OrderXmlMapper;
 import rs.ruta.common.datamapper.PartyIDXmlMapper;
 import rs.ruta.common.datamapper.PartyXmlMapper;
 import rs.ruta.common.datamapper.RutaVersionXmlMapper;
@@ -84,7 +86,7 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new RutaVersionXmlMapper(getConnector());
 			else if(clazz == BugReport.class)
 				dataMapper = (DataMapper<S, String>) new BugReportXmlMapper(getConnector());
-			else if(clazz == Followers.class)
+			else if(clazz == Associates.class)
 				dataMapper = (DataMapper<S, String>) new FollowersXmlMapper(getConnector());
 			else if(clazz == DocumentDistribution.class)
 				dataMapper = (DataMapper<S, String>) new DocumentDistributionXmlMapper(getConnector());
@@ -92,6 +94,8 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new DocBoxXmlMapper(getConnector());
 			else if(clazz == DeregistrationNotice.class)
 				dataMapper = (DataMapper<S, String>) new DeregistrationNoticeXmlMapper(getConnector());
+			else if(clazz == OrderType.class)
+				dataMapper = (DataMapper<S, String>) new OrderXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

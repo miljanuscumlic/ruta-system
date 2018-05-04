@@ -162,7 +162,7 @@ public abstract class BinaryFileDataMapper<T> implements OLDDataMapper
 	abstract protected long getMapID(Object element);
 
 	/**Loads data from the input object to the domain model object.
-	 * @param id id of the object from the cache map of loaded objects
+	 * @param uuid uuid of the object from the cache map of loaded objects
 	 * @param element object to be processed
 	 * @return domain model object
 	 */
@@ -196,14 +196,14 @@ public abstract class BinaryFileDataMapper<T> implements OLDDataMapper
 
 //	abstract protected String findStatement();
 
-/*	protected Object abstractFind(Long id)
+/*	protected Object abstractFind(Long uuid)
 	{
-		Object result = (Object) loadedMap.get(id);
+		Object result = (Object) loadedMap.get(uuid);
 		if (result != null) return result;
 		PreparedStatement findStatement = null;
 		try {
 			findStatement = DB.prepare(findStatement());
-			findStatement.setLong(1, id.longValue());
+			findStatement.setLong(1, uuid.longValue());
 			ResultSet rs = findStatement.executeQuery();
 			rs.next();
 			result = load(rs);
@@ -217,14 +217,14 @@ public abstract class BinaryFileDataMapper<T> implements OLDDataMapper
 
 	/*	protected Object load(ResultSet rs) throws SQLException
 	{
-		Long id = new Long(rs.getLong(1));
-		if (loadedMap.containsKey(id)) return (Object) loadedMap.get(id);
-		Object result = doLoad(id, rs);
-		loadedMap.put(id, result);
+		Long uuid = new Long(rs.getLong(1));
+		if (loadedMap.containsKey(uuid)) return (Object) loadedMap.get(uuid);
+		Object result = doLoad(uuid, rs);
+		loadedMap.put(uuid, result);
 		return result;
 	}
 
-	abstract protected Object doLoad(Long id, ResultSet rs) throws SQLException;
+	abstract protected Object doLoad(Long uuid, ResultSet rs) throws SQLException;
 
 	protected List loadAll(ResultSet rs) throws SQLException
 	{

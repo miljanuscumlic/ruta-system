@@ -1,0 +1,95 @@
+package rs.ruta.client.gui;
+
+import java.util.List;
+
+import javax.swing.table.DefaultTableModel;
+
+import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.common.InstanceFactory;
+
+public class CorrespondenceListTableModel extends DefaultTableModel
+{
+	private static final long serialVersionUID = -1366607627023019652L;
+	private static String[] columnNames =
+		{
+				"No.", "Correspondence Name", "Number of Documents", "Creation Time", "Last Activity Time"
+		};
+	private List<Correspondence> correspondences = null;
+
+	public CorrespondenceListTableModel()
+	{
+		super();
+	}
+
+	public List<Correspondence> getCorrespondeces()
+	{
+		return correspondences;
+	}
+
+	public void setCorrespondences(List<Correspondence> correspondeces)
+	{
+		this.correspondences = correspondeces;
+	}
+
+	/**
+	 * Gets the {@link Correspondence correspondence} from the list of correspondences.
+	 * @param index party's index
+	 * @return party or {@code null} if correspondences field is {@code null}
+	 */
+	public Correspondence getCorrespondenceAtIndex(int index)
+	{
+		return correspondences != null ? correspondences.get(index) : null;
+	}
+
+	@Override
+	public int getRowCount()
+	{
+		return correspondences != null ? correspondences.size() : 0;
+	}
+
+	@Override
+	public int getColumnCount()
+	{
+		return columnNames.length;
+	}
+
+	@Override
+	public String getColumnName(int columnIndex)
+	{
+		return columnNames[columnIndex];
+	}
+
+	@Override
+	public Object getValueAt(int rowIndex, int columnIndex)
+	{
+		final Correspondence corr = correspondences.get(rowIndex);
+		try
+		{
+			switch(columnIndex)
+			{
+			case 0:
+				return rowIndex + 1;
+			case 1:
+				return corr.getName();
+			case 2:
+				return corr.getDocumentReferenceCount();
+			case 3:
+				return InstanceFactory.getLocalDateTimeAsString(corr.getCreationTime());
+			case 4:
+				return InstanceFactory.getLocalDateTimeAsString(corr.getLastActivityTime());
+			default:
+				return null;
+			}
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+	}
+
+	@Override
+	public boolean isCellEditable(int row, int column)
+	{
+		return false;
+	}
+}

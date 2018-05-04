@@ -473,7 +473,7 @@ public final class DeprecatedInstanceFactory
 	private static String synthesizeMethodName1(String prefix, String name)
 	{
 		StringBuilder sb = new StringBuilder(prefix);
-		if(name.equals("id"))
+		if(name.equals("uuid"))
 			sb.append("ID");
 		else
 			sb.append(name.substring(0, 1).toUpperCase()).append(name.substring(1));

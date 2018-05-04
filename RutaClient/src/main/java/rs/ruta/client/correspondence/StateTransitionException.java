@@ -2,7 +2,7 @@ package rs.ruta.client.correspondence;
 
 /**
  * {@code StateTransitionException} is a class of those exceptions thrown when illegal state transition is
- * acquired. It can be a cese when method that is not allowed to be executed in the current state is invoked.
+ * acquired. It can be a case when method that is not allowed to be executed in the current state is invoked.
  * <p>Using {@link RuntimeException} for avoiding dependancy on implementation exceptions. This helps in
  * decoupling.</p>
  */

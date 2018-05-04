@@ -31,6 +31,8 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Doc
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ResponseType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
@@ -41,7 +43,7 @@ import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
@@ -146,7 +148,7 @@ public class CDR implements Server
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
 				}
@@ -174,7 +176,7 @@ public class CDR implements Server
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
 				}
@@ -200,17 +202,17 @@ public class CDR implements Server
 			init();
 			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
 
-			final PartyType receiverParty = catalogue.getReceiverParty();
-			final PartyType providerParty = catalogue.getProviderParty();
+			final PartyType senderParty = catalogue.getReceiverParty();
+			final PartyType receiverParty = catalogue.getProviderParty();
 			final String docUUID = catalogue.getUUIDValue();
 			final String docID = catalogue.getIDValue();
-			appResponse = createApplicationResponse(receiverParty, providerParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+			appResponse = createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
 
 			docBoxPool.submit(() ->
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
 				}
@@ -256,7 +258,7 @@ public class CDR implements Server
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution delDistribution = new DocumentDistribution(catDeletion, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, delDistribution);
 				}
@@ -282,17 +284,17 @@ public class CDR implements Server
 			init();
 			final String id = mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catalogueDeletion);
 
-			final PartyType receiverParty = catalogueDeletion.getReceiverParty();
-			final PartyType providerParty = catalogueDeletion.getProviderParty();
+			final PartyType senderParty = catalogueDeletion.getReceiverParty();
+			final PartyType receiverParty = catalogueDeletion.getProviderParty();
 			final String docUUID = catalogueDeletion.getUUIDValue();
 			final String docID = catalogueDeletion.getIDValue();
-			appResponse = createApplicationResponse(receiverParty, providerParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+			appResponse = createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
 
 			docBoxPool.submit(() ->
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution delDistribution = new DocumentDistribution(catalogueDeletion, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, delDistribution);
 				}
@@ -312,21 +314,21 @@ public class CDR implements Server
 
 	/**
 	 * Creates {@link ApplicationResponseType} document.
+	 * @param senderParty sender Party of the {@code Application Response} document
 	 * @param receiverParty receiver Party of the {@code Application Response} document
-	 * @param providerParty provider Party of the {@code Application Response} document
-	 * @param uuid UUID of the {@code Application Response} document
-	 * @param id ID of the {@code Application Response} document
+	 * @param uuid UUID of referenced document
+	 * @param id ID of the referenced document
 	 * @param responseCode response code of the {@code Application Response} document
 	 * @return {@code ApplicationResponseType}
 	 */
 	private ApplicationResponseType createApplicationResponse(
-			PartyType receiverParty, PartyType providerParty, String uuid, String id, String responseCode)
+			PartyType senderParty, PartyType receiverParty, String uuid, String id, String responseCode)
 	{
 		final ApplicationResponseType appResponse = new ApplicationResponseType();
 		appResponse.setID(UUID.randomUUID().toString());
 		appResponse.setIssueDate(InstanceFactory.getDate());
-		appResponse.setSenderParty(receiverParty);
-		appResponse.setReceiverParty(providerParty);
+		appResponse.setSenderParty(senderParty);
+		appResponse.setReceiverParty(receiverParty);
 		final DocumentResponseType docResponse = new DocumentResponseType();
 		final ResponseType response = new ResponseType();
 		response.setResponseCode(responseCode);
@@ -370,7 +372,7 @@ public class CDR implements Server
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).findByUsername(username).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).findByUsername(username).clone();
 					final DocumentDistribution partyDistribution = new DocumentDistribution(party, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, partyDistribution);
 				}
@@ -417,7 +419,7 @@ public class CDR implements Server
 			{
 				try
 				{
-					final Followers followers = mapperRegistry.getMapper(Followers.class).find(id).clone();
+					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution partyDistribution = new DocumentDistribution(party, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, partyDistribution);
 				}
@@ -442,7 +444,7 @@ public class CDR implements Server
 			init();
 			//MMM: temporary clearing of cache
 			//((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
-			final Followers followers = mapperRegistry.getMapper(Followers.class).findByUsername(username).clone();
+			final Associates followers = mapperRegistry.getMapper(Associates.class).findByUsername(username).clone();
 			mapperRegistry.getMapper(RutaUser.class).deleteUser(username);
 			docBoxPool.submit(() ->
 			{
@@ -665,25 +667,25 @@ public class CDR implements Server
 		try
 		{
 			init();
-			Followers followers = mapperRegistry.getMapper(Followers.class).findByUserId(followID);
+			Associates followers = mapperRegistry.getMapper(Associates.class).findByUserId(followID);
 			if(followers == null)
 			{
 				String msg = null;
 				if(mapperRegistry.getMapper(RutaUser.class).findByUserId(followID) == null)
 					msg = "Party to follow does not exist in CDR.";
 				else
-					msg = "Followers document is missing for the party to follow.";
+					msg = "Associates document is missing for the party to follow.";
 				logger.error(msg);
 				throw new DatabaseException(msg);
 			}
 			synchronized(followers)
 			{
 				followers.add(partyID);
-				mapperRegistry.getMapper(Followers.class).update(null, followers);
+				mapperRegistry.getMapper(Associates.class).update(null, followers);
 			}
 			docBoxPool.submit(() ->
 			{
-				final Followers iFollower = new Followers();
+				final Associates iFollower = new Associates();
 				iFollower.add(partyID);
 				iFollower.setPartyID(followID);
 				try
@@ -716,21 +718,21 @@ public class CDR implements Server
 		try
 		{
 			init();
-			Followers followers = mapperRegistry.getMapper(Followers.class).findByUserId(followID);
+			Associates followers = mapperRegistry.getMapper(Associates.class).findByUserId(followID);
 			if(followers == null)
 			{
 				String msg = null;
 				if(mapperRegistry.getMapper(RutaUser.class).findByUserId(followID) == null)
 					msg = "Party to unfollow does not exist in CDR.";
 				else
-					msg = "Followers document is missing for the party to follow.";
+					msg = "Associates document is missing for the party to follow.";
 				logger.error(msg);
 				throw new DatabaseException(msg);
 			}
 			synchronized(followers)
 			{
 				followers.remove(partyID);
-				mapperRegistry.getMapper(Followers.class).update(null, followers);
+				mapperRegistry.getMapper(Associates.class).update(null, followers);
 			}
 		}
 		catch(Exception e)
@@ -906,4 +908,67 @@ public class CDR implements Server
 				throw new RutaException(exceptionMsg, e.getMessage());
 		}
 	}
+
+	@Override
+	public void distributeOrder(String username, OrderType order) throws RutaException
+	{
+		try
+		{
+			init();
+			final String sellerID = order.getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			final String buyerID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			//MMM check whether the Party with the sellerID is registered with the CDR service; if not throw an exception
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Associates receiver = new Associates();
+					receiver.setPartyID(buyerID);
+					receiver.add(sellerID);
+					final DocumentDistribution orderDistribution = new DocumentDistribution(order, receiver);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, orderDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute Order for the user: " + username + ".\n Exception is ", e);
+				}
+			});
+		}
+		catch(Exception e)
+		{
+			processException(e, "Order could not be distributed to the Seller Party!");
+		}
+	}
+
+	@Override
+	public void distributeOrderResponseSimple(String username, OrderResponseSimpleType orderResponseSimple) throws RutaException
+	{
+		try
+		{
+			init();
+			final String sellerID = orderResponseSimple.getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			final String buyerID = orderResponseSimple.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			//MMM check whether the Party with the buyerID is registered with the CDR service; if not throw an exception
+			docBoxPool.submit(() ->
+			{
+				try
+				{
+					final Associates receiver = new Associates();
+					receiver.setPartyID(sellerID);
+					receiver.add(buyerID);
+					final DocumentDistribution orderDistribution = new DocumentDistribution(orderResponseSimple, receiver);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, orderDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute Order Response Simple for the user: " + username + ".\n Exception is ", e);
+				}
+			});
+		}
+		catch(Exception e)
+		{
+			processException(e, "Order Response Simple could not be distributed to the Seller Party!");
+		}
+	}
+
 }

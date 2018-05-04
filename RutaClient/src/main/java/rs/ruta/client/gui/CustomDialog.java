@@ -8,6 +8,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+/**
+ * This Dialog is only for a test purpouse of experimenting with the custom dialog possibilities.
+ */
 class CustomDialog extends JDialog implements ActionListener, PropertyChangeListener {
 	private static final long serialVersionUID = -7052948397738881313L;
 	private String typedText = null;

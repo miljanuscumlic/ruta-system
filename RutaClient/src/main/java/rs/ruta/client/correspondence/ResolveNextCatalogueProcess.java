@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import rs.ruta.client.RutaClient;
 
-@XmlRootElement(name = "ResolveNextCatalogueProcess", namespace = "urn:rs:ruta:client")
+@XmlRootElement(name = "ResolveNextCatalogueProcess", namespace = "urn:rs:ruta:client:correspondence")
 public class ResolveNextCatalogueProcess extends CatalogueProcess
 {
 /*	public ResolveNextCatalogueProcess()
@@ -16,7 +16,8 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 
 	/**
 	 * Constructs new instance of a {@link ResolveNextCatalogueProcess} and sets its state to
-	 * default value and id to a random value.
+	 * default value and uuid to a random value.
+	 * @param {@link RutaClient} object
 	 * @return {@code ResolveNextCatalogueProcess}
 	 */
 	public static ResolveNextCatalogueProcess newInstance(RutaClient client)
@@ -25,6 +26,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		process.setState(NextCatalogueState.getInstance());
 		process.setId(UUID.randomUUID().toString());
 		process.setClient(client);
+		process.setActive(true);
 		return process;
 	}
 
@@ -45,6 +47,14 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 	{
 		correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
 		((CreateCatalogueProcess) correspondence.getState()).createCatalogue(correspondence);
+	}
+
+	@Override
+	public void createCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
+	{
+		correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
+//		((CreateCatalogueProcess) correspondence.getState()).createCatalogue(correspondence);
+		((CreateCatalogueProcess) correspondence.getState()).createCatalogueExecute(correspondence);
 	}
 
 	/**

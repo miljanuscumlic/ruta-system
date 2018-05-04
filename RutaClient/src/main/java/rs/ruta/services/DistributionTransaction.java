@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import rs.ruta.common.Followers;
+import rs.ruta.common.Associates;
 
 
 /**
@@ -18,7 +18,7 @@ import rs.ruta.common.Followers;
  *   &lt;complexContent>
  *     &lt;extension base="{http://ruta.rs/services}existTransaction">
  *       &lt;sequence>
- *         &lt;element name="Followers" type="{http://ruta.rs/services}Followers" minOccurs="0"/>
+ *         &lt;element name="Associates" type="{http://ruta.rs/services}Associates" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -29,37 +29,37 @@ import rs.ruta.common.Followers;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "distributionTransaction", propOrder = {
-    "followers"
+    "associates"
 })
 public class DistributionTransaction
     extends ExistTransaction
 {
 
-    @XmlElement(name = "Followers")
-    protected Followers followers;
+    @XmlElement(name = "Associates")
+    protected Associates associates;
 
     /**
-     * Gets the value of the followers property.
+     * Gets the value of the associates property.
      * 
      * @return
      *     possible object is
-     *     {@link Followers }
+     *     {@link Associates }
      *     
      */
-    public Followers getFollowers() {
-        return followers;
+    public Associates getAssociates() {
+        return associates;
     }
 
     /**
-     * Sets the value of the followers property.
+     * Sets the value of the associates property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Followers }
+     *     {@link Associates }
      *     
      */
-    public void setFollowers(Followers value) {
-        this.followers = value;
+    public void setAssociates(Associates value) {
+        this.associates = value;
     }
 
 }
