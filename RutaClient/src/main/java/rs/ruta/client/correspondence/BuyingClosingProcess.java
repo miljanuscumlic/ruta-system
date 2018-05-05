@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import rs.ruta.client.RutaClient;
 
-@XmlRootElement(name = "BuyingClosingProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "BuyingClosingProcess")
 @XmlType(name = "BuyingClosingProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public class BuyingClosingProcess extends DocumentProcess

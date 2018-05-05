@@ -14,7 +14,7 @@ import rs.ruta.common.InstanceFactory;
  * {@link InvoiceType} and alike {@code UBL} business documents are exchanged among parties
  * of the {@code Ruta system}.
  */
-@XmlRootElement(name = "BuyingCorrespondence", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "BuyingCorrespondence")
 public class BuyingCorrespondence extends Correspondence
 {
 	/**

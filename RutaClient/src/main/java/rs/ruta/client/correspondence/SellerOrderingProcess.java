@@ -12,7 +12,7 @@ import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.datamapper.MapperRegistry;
 
-@XmlRootElement(name = "SellerOrderingProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "SellerOrderingProcess")
 @XmlType(name = "SellerOrderingProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SellerOrderingProcess extends BuyingProcess

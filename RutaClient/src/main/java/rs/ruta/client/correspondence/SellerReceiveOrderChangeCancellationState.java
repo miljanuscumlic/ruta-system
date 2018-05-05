@@ -2,7 +2,7 @@ package rs.ruta.client.correspondence;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "SellerReceiveOrderChangeCancellationState", namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller")
+@XmlRootElement(name = "SellerReceiveOrderChangeCancellationState")
 public class SellerReceiveOrderChangeCancellationState extends SellerOrderingProcessState
 {
 	private static SellerOrderingProcessState INSTANCE = new SellerReceiveOrderChangeCancellationState();

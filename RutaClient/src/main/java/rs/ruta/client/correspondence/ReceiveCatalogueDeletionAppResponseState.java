@@ -4,7 +4,7 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "ReceiveCatalogueDeletionAppResponseState", namespace = "urn:rs:ruta:client:correspondence:catalogue:delete")
+@XmlRootElement(name = "ReceiveCatalogueDeletionAppResponseState")
 public class ReceiveCatalogueDeletionAppResponseState extends DeleteCatalogueProcessState
 {
 	private static ReceiveCatalogueDeletionAppResponseState INSTANCE = new ReceiveCatalogueDeletionAppResponseState();

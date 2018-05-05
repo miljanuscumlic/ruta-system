@@ -2,7 +2,7 @@ package rs.ruta.client.correspondence;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "BuyerChangeOrderState", namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer")
+@XmlRootElement(name = "BuyerChangeOrderState")
 public class BuyerChangeOrderState extends BuyerOrderingProcessState
 {
 	private static BuyerOrderingProcessState INSTANCE = new BuyerChangeOrderState();

@@ -15,7 +15,7 @@ import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.gui.RutaClientFrame;
 
-@XmlRootElement(name = "ProduceCatalogueState", namespace = "urn:rs:ruta:client:correspondence:catalogue:create")
+@XmlRootElement(name = "ProduceCatalogueState")
 public class ProduceCatalogueState extends CreateCatalogueProcessState
 {
 	private static final CreateCatalogueProcessState INSTANCE = new ProduceCatalogueState();

@@ -10,7 +10,7 @@ import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.InstanceFactory;
 
-@XmlRootElement(name = "BuyerAcceptOrderState", namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller")
+@XmlRootElement(name = "BuyerAcceptOrderState")
 public class SellerAcceptOrderState extends SellerOrderingProcessState
 {
 	private static SellerOrderingProcessState INSTANCE = new SellerAcceptOrderState();

@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import rs.ruta.client.gui.RutaClientFrame;
 
-@XmlRootElement(name = "ReviewDeletionOfCatalogueState", namespace = "urn:rs:ruta:client:correspondence:catalogue:delete")
+@XmlRootElement(name = "ReviewDeletionOfCatalogueState")
 public class ReviewDeletionOfCatalogueState extends DeleteCatalogueProcessState
 {
 	private static ReviewDeletionOfCatalogueState INSTANCE = new ReviewDeletionOfCatalogueState();

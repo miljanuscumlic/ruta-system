@@ -24,7 +24,7 @@ import javax.xml.namespace.QName;
  * It seems that JAXB is imposing this rule because of it.</p>
  */
 @XmlRegistry
-public class ObjectFactory
+public class ObjectFactoryOLD
 {
 	private static final QName _CatalogueCorrespondence_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "CatalogueCorrespondence");
@@ -32,31 +32,31 @@ public class ObjectFactory
 	private static final QName _CreateCatalogueProcess_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "CreateCatalogueProcess");
 	private static final QName _DecideOnActionState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "DecideOnActionState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:create", "DecideOnActionState");
 	private static final QName _DistributeCatalogueState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "DistributeCatalogueState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:create", "DistributeCatalogueState");
 	private static final QName _PrepareCatalogueState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "PrepareCatalogueState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:create", "PrepareCatalogueState");
 	private static final QName _ProduceCatalogueState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "ProduceCatalogueState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:create", "ProduceCatalogueState");
 	private static final QName _ReceiveCatalogueAppResponseState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "ReceiveCatalogueAppResponseState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:create", "ReceiveCatalogueAppResponseState");
 
 	private static final QName _DeleteCatalogueProcess_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "DeleteCatalogueProcess");
 	private static final QName _CancelCatalogueState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "CancelCatalogueState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:delete", "CancelCatalogueState");
 	private static final QName _NotifyOfCatalogueDeletionState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "NotifyOfCatalogueDeletionState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:delete", "NotifyOfCatalogueDeletionState");
 	private static final QName _ReceiveCatalogueDeletionAppResponseState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "ReceiveCatalogueDeletionAppResponseState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:delete", "ReceiveCatalogueDeletionAppResponseState");
 	private static final QName _ReviewDeletionOfCatalogueState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "ReviewDeletionOfCatalogueState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:delete", "ReviewDeletionOfCatalogueState");
 
 	private static final QName _ResolveNextProcess_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "ResolveNextCatalogueProcess");
 	private static final QName _NextCatalogueState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "NextCatalogueState");
+			new QName("urn:rs:ruta:client:correspondence:catalogue:resolve", "NextCatalogueState");
 
 	private static final QName _BuyingCorrespondence_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "BuyingCorrespondence");
@@ -66,40 +66,40 @@ public class ObjectFactory
 	private static final QName _BuyerOrderingProcess_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "BuyerOrderingProcess");
 	private static final QName _BuyerAcceptOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerAcceptOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerAcceptOrderState");
 	private static final QName _BuyerCancelOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerCancelOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerCancelOrderState");
 	private static final QName _BuyerChangeOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerChangeOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerChangeOrderState");
 	private static final QName _BuyerOrderAcceptedState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerOrderAcceptedState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerOrderAcceptedState");
 	private static final QName _BuyerOrderRejectedState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerOrderRejectedState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerOrderRejectedState");
 	private static final QName _BuyerPlaceOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerPlaceOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerPlaceOrderState");
 	private static final QName _BuyerProcessResponseState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerProcessResponseState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerProcessResponseState");
 	private static final QName _BuyerReceiveOrderResponseState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "BuyerReceiveOrderResponseState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:buyer", "BuyerReceiveOrderResponseState");
 
 	private static final QName _SellerOrderingProcess_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "SellerOrderingProcess");
 	private static final QName _SellerAcceptOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerAcceptOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerAcceptOrderState");
 	private static final QName _SellerAddDetailState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerAddDetailState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerAddDetailState");
 	private static final QName _SellerCancelOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerCancelOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerCancelOrderState");
 	private static final QName _SellerChangeOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerChangeOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerChangeOrderState");
 	private static final QName _SellerProcessOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerProcessOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerProcessOrderState");
 	private static final QName _SellerReceiveOrderChangeCancellationState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerReceiveOrderChangeCancellationState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerReceiveOrderChangeCancellationState");
 	private static final QName _SellerReceiveOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerReceiveOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerReceiveOrderState");
 	private static final QName _SellerRejectOrderState_QNAME =
-			new QName("urn:rs:ruta:client:correspondence", "SellerRejectOrderState");
+			new QName("urn:rs:ruta:client:correspondence:buying:ordering:seller", "SellerRejectOrderState");
 
 	private static final QName _BillingProcess_QNAME =
 			new QName("urn:rs:ruta:client:correspondence", "BillingProcess");
@@ -192,7 +192,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link DecideOnActionState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "DecideOnActionState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:create", name = "DecideOnActionState")
 	@Nonnull
 	public JAXBElement<DecideOnActionState> createDecideOnActionState(@Nullable final DecideOnActionState value)
 	{
@@ -213,7 +213,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link DistributeCatalogueState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "DistributeCatalogueState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:create", name = "DistributeCatalogueState")
 	@Nonnull
 	public JAXBElement<DistributeCatalogueState> createDistributeCatalogueState(@Nullable final DistributeCatalogueState value)
 	{
@@ -234,7 +234,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link PrepareCatalogueState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "PrepareCatalogueState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:create", name = "PrepareCatalogueState")
 	@Nonnull
 	public JAXBElement<PrepareCatalogueState> createPrepareCatalogueState(@Nullable final PrepareCatalogueState value)
 	{
@@ -255,7 +255,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link ProduceCatalogueState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "ProduceCatalogueState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:create", name = "ProduceCatalogueState")
 	@Nonnull
 	public JAXBElement<ProduceCatalogueState> createProduceCatalogueState(@Nullable final ProduceCatalogueState value)
 	{
@@ -276,7 +276,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link ReceiveCatalogueAppResponseState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "ReceiveCatalogueAppResponseState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:create", name = "ReceiveCatalogueAppResponseState")
 	@Nonnull
 	public JAXBElement<ReceiveCatalogueAppResponseState> createReceiveCatalogueAppResponseState(
 			@Nullable final ReceiveCatalogueAppResponseState value)
@@ -322,7 +322,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link CancelCatalogueState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "CancelCatalogueState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:delete", name = "CancelCatalogueState")
 	@Nonnull
 	public JAXBElement<CancelCatalogueState> createCancelCatalogueState(@Nullable final CancelCatalogueState value)
 	{
@@ -343,7 +343,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link NotifyOfCatalogueDeletionState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "NotifyOfCatalogueDeletionState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:delete", name = "NotifyOfCatalogueDeletionState")
 	@Nonnull
 	public JAXBElement<NotifyOfCatalogueDeletionState> createNotifyOfCatalogueDeletionState(
 			@Nullable final NotifyOfCatalogueDeletionState value)
@@ -366,7 +366,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link ReceiveCatalogueDeletionAppResponseState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence",
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:delete",
 			name = "ReceiveCatalogueDeletionAppResponseState")
 	@Nonnull
 	public JAXBElement<ReceiveCatalogueDeletionAppResponseState> createReceiveCatalogueDeletionAppRespState(
@@ -390,7 +390,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link ReviewDeletionOfCatalogueState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "ReviewDeletionOfCatalogueState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:delete", name = "ReviewDeletionOfCatalogueState")
 	@Nonnull
 	public JAXBElement<ReviewDeletionOfCatalogueState> createReviewDeletionOfCatalogueState(
 			@Nullable final ReviewDeletionOfCatalogueState value)
@@ -436,7 +436,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link NextCatalogueState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "NextCatalogueState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:catalogue:resolve", name = "NextCatalogueState")
 	@Nonnull
 	public JAXBElement<NextCatalogueState> createNextCatalogueState(@Nullable final NextCatalogueState value)
 	{
@@ -480,7 +480,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerAcceptOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerAcceptOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerAcceptOrderState")
 	@Nonnull
 	public JAXBElement<BuyerAcceptOrderState> createBuyerAcceptOrderState(@Nullable final BuyerAcceptOrderState value)
 	{
@@ -501,7 +501,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerCancelOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerCancelOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerCancelOrderState")
 	@Nonnull
 	public JAXBElement<BuyerCancelOrderState> createBuyerCancelOrderState(@Nullable final BuyerCancelOrderState value)
 	{
@@ -522,7 +522,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerChangeOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerChangeOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerChangeOrderState")
 	@Nonnull
 	public JAXBElement<BuyerChangeOrderState> createBuyerChangeOrderState(@Nullable final BuyerChangeOrderState value)
 	{
@@ -543,7 +543,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerOrderAcceptedState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerOrderAcceptedState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerOrderAcceptedState")
 	@Nonnull
 	public JAXBElement<BuyerOrderAcceptedState> createBuyerOrderAcceptedState(@Nullable final BuyerOrderAcceptedState value)
 	{
@@ -564,7 +564,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerOrderRejectedState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerOrderRejectedState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerOrderRejectedState")
 	@Nonnull
 	public JAXBElement<BuyerOrderRejectedState> createBuyerOrderRejectedState(@Nullable final BuyerOrderRejectedState value)
 	{
@@ -585,7 +585,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerPlaceOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerPlaceOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerPlaceOrderState")
 	@Nonnull
 	public JAXBElement<BuyerPlaceOrderState> createBuyerPlaceOrderState(@Nullable final BuyerPlaceOrderState value)
 	{
@@ -606,7 +606,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerProcessResponseState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerProcessResponseState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerProcessResponseState")
 	@Nonnull
 	public JAXBElement<BuyerProcessResponseState> createBuyerProcessResponseState(@Nullable final BuyerProcessResponseState value)
 	{
@@ -627,7 +627,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerReceiveOrderResponseState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "BuyerReceiveOrderResponseState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer", name = "BuyerReceiveOrderResponseState")
 	@Nonnull
 	public JAXBElement<BuyerReceiveOrderResponseState> createBuyerReceiveOrderResponseState(@Nullable final BuyerReceiveOrderResponseState value)
 	{
@@ -671,7 +671,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerAcceptOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerAcceptOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerAcceptOrderState")
 	@Nonnull
 	public JAXBElement<SellerAcceptOrderState> createSellerAcceptOrderState(@Nullable final SellerAcceptOrderState value)
 	{
@@ -692,7 +692,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerAddDetailState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerAddDetailState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerAddDetailState")
 	@Nonnull
 	public JAXBElement<SellerAddDetailState> createSellerAddDetailState(@Nullable final SellerAddDetailState value)
 	{
@@ -713,7 +713,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerCancelOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerCancelOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerCancelOrderState")
 	@Nonnull
 	public JAXBElement<SellerCancelOrderState> createSellerCancelOrderState(@Nullable final SellerCancelOrderState value)
 	{
@@ -734,7 +734,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerChangeOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerChangeOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerChangeOrderState")
 	@Nonnull
 	public JAXBElement<SellerChangeOrderState> createSellerChangeOrderState(@Nullable final SellerChangeOrderState value)
 	{
@@ -755,7 +755,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerProcessOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerProcessOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerProcessOrderState")
 	@Nonnull
 	public JAXBElement<SellerProcessOrderState> createSellerProcessOrderState(@Nullable final SellerProcessOrderState value)
 	{
@@ -776,7 +776,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerReceiveOrderChangeCancellationState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerReceiveOrderChangeCancellationState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerReceiveOrderChangeCancellationState")
 	@Nonnull
 	public JAXBElement<SellerReceiveOrderChangeCancellationState> createSellerReceiveOrderChangeCancellationState(
 			@Nullable final SellerReceiveOrderChangeCancellationState value)
@@ -799,7 +799,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerReceiveOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerReceiveOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerReceiveOrderState")
 	@Nonnull
 	public JAXBElement<SellerReceiveOrderState> createSellerReceiveOrderState(@Nullable final SellerReceiveOrderState value)
 	{
@@ -820,7 +820,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerRejectOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence", name = "SellerRejectOrderState")
+	@XmlElementDecl(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:seller", name = "SellerRejectOrderState")
 	@Nonnull
 	public JAXBElement<SellerRejectOrderState> createSellerRejectOrderState(@Nullable final SellerRejectOrderState value)
 	{

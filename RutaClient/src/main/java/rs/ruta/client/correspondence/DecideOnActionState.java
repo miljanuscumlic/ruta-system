@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import rs.ruta.client.gui.RutaClientFrame;
 
-@XmlRootElement(name = "DecideOnActionState", namespace = "urn:rs:ruta:client:correspondence:catalogue:create")
+@XmlRootElement(name = "DecideOnActionState")
 public class DecideOnActionState extends CreateCatalogueProcessState
 {
 	private static final DecideOnActionState INSTANCE = new DecideOnActionState();

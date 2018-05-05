@@ -15,7 +15,7 @@ import rs.ruta.client.RutaClient;
  * Encapsulating {@code UBL document process} for creation, validation and distribution
  * of the {@link CatalogueType} document, called {@code Create Catalogue Process}.
  */
-@XmlRootElement(name = "CreateCatalogueProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "CreateCatalogueProcess")
 @XmlType(name = "CreateCatalogueProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public class CreateCatalogueProcess extends CatalogueProcess

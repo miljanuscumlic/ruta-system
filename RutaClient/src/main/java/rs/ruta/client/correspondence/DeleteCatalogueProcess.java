@@ -15,7 +15,7 @@ import rs.ruta.client.RutaClient;
  * Encapsulating {@code UBL document process} for deletion
  * of the {@link CatalogueType} document, called {@code Delete Catalogue Process}.
  */
-@XmlRootElement(name = "DeleteCatalogueProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "DeleteCatalogueProcess")
 @XmlType(name = "DeleteCatalogueProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public class DeleteCatalogueProcess extends CatalogueProcess

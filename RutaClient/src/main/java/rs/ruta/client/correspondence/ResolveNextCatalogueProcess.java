@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import rs.ruta.client.RutaClient;
 
-@XmlRootElement(name = "ResolveNextCatalogueProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "ResolveNextCatalogueProcess")
 public class ResolveNextCatalogueProcess extends CatalogueProcess
 {
 /*	public ResolveNextCatalogueProcess()

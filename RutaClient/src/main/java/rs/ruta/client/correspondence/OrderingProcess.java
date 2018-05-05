@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import rs.ruta.client.RutaClient;
 
 @Deprecated //MMM now there are two separate classes BuyerOrderingProcess and SellerOrderingProcess
-@XmlRootElement(name = "OrderingProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "OrderingProcess")
 @XmlType(name = "OrderingProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public class OrderingProcess extends BuyingProcess

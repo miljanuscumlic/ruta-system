@@ -5,7 +5,7 @@ import java.util.concurrent.Future;
 import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 
-@XmlRootElement(name = "DistributeCatalogueState", namespace = "urn:rs:ruta:client:correspondence:catalogue:create")
+@XmlRootElement(name = "DistributeCatalogueState")
 public class DistributeCatalogueState extends CreateCatalogueProcessState
 {
 	private static final CreateCatalogueProcessState INSTANCE = new DistributeCatalogueState();

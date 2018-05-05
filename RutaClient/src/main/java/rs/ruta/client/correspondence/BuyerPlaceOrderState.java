@@ -8,7 +8,7 @@ import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.gui.RutaClientFrame;
 
-@XmlRootElement(name = "BuyerPlaceOrderState", namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer")
+@XmlRootElement(name = "BuyerPlaceOrderState")
 public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 {
 	private static BuyerOrderingProcessState INSTANCE = new BuyerPlaceOrderState();

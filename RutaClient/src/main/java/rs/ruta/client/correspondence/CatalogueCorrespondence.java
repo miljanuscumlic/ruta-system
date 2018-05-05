@@ -15,7 +15,7 @@ import rs.ruta.common.InstanceFactory;
  * correspondence is made between a {@link PartyType party} which is a user of the system and a
  * {@code Central Data Repository} as another party in this type of communication.
  */
-@XmlRootElement(name = "CatalogueCorrespondence", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "CatalogueCorrespondence")
 public class CatalogueCorrespondence extends Correspondence
 {
 	/**

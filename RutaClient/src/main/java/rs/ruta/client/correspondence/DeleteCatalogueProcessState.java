@@ -5,7 +5,7 @@ import java.util.concurrent.Semaphore;
 
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(name = "DeleteCatalogueProcessState", namespace = "urn:rs:ruta:client:correspondence:catalogue:delete")
+@XmlType(name = "DeleteCatalogueProcessState")
 public abstract class DeleteCatalogueProcessState implements RutaProcessState
 {
 	public Future<?> notifyOfCatalogueDeletion(final RutaProcess process) throws StateTransitionException

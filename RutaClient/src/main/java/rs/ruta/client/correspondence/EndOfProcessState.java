@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *	Common state denoting end of the process.
  */
-@XmlRootElement(name = "EndOfProcessState", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "EndOfProcessState")
 public class EndOfProcessState implements RutaProcessState
 {
 	private static final EndOfProcessState INSTANCE = new EndOfProcessState();

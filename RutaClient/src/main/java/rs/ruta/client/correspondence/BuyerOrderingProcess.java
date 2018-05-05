@@ -15,7 +15,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.datamapper.MapperRegistry;
 
-@XmlRootElement(name = "BuyerOrderingProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlRootElement(name = "BuyerOrderingProcess")
 @XmlType(name = "BuyerOrderingProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public class BuyerOrderingProcess extends BuyingProcess

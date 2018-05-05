@@ -4,7 +4,7 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "ReceiveCatalogueAppResponseState", namespace = "urn:rs:ruta:client:correspondence:catalogue:create")
+@XmlRootElement(name = "ReceiveCatalogueAppResponseState")
 public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessState
 {
 	private static final ReceiveCatalogueAppResponseState INSTANCE = new ReceiveCatalogueAppResponseState();

@@ -13,7 +13,7 @@ import rs.ruta.client.RutaClient;
  * Abstract class describing state machine as a process. Process can be something like an
  * {@code UBL} {@link DocumentProcess} or {@link Correspondence} between parties in the {@code Ruta System}.
  */
-@XmlType(name = "RutaProcess", namespace = "urn:rs:ruta:client:correspondence")
+@XmlType(name = "RutaProcess")
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class RutaProcess
 {

@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import rs.ruta.client.RutaClient;
 
-@XmlRootElement(name = "NotifyOfCatalogueDeletionState", namespace = "urn:rs:ruta:client:correspondence:catalogue:delete")
+@XmlRootElement(name = "NotifyOfCatalogueDeletionState")
 public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
 {
 	private static NotifyOfCatalogueDeletionState INSTANCE = new NotifyOfCatalogueDeletionState();
