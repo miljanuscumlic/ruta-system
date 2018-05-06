@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.Scanner;
@@ -212,7 +213,8 @@ public class RutaClient implements RutaNode
 			}
 		}
 		catch(DetailException e)
-		{ } //it's OK if user is not registered //MMM: maybe it should some error message to be displayed???
+		{ } //it's OK if user is not registered //MMM maybe it should some error message to be displayed???
+		//MMM but it is not OK if it cannot load the data -> display some error message
 	}
 
 	/**
@@ -539,7 +541,7 @@ public class RutaClient implements RutaNode
 							frame.appendToConsole(new StringBuilder("My Party has been successfully registered with the CDR service."),
 									Color.GREEN);
 							frame.appendToConsole(new StringBuilder("My Party has been added to the Following parties."), Color.BLACK);
-							frame.appendToConsole(new StringBuilder("Please update My Catalogue on the CDR service for everyone").
+							frame.appendToConsole(new StringBuilder("Please upload My Catalogue on the CDR service for everyone").
 									append(" to be able to see your products."), Color.GREEN);
 						}
 						catch(Exception e)
@@ -686,6 +688,7 @@ public class RutaClient implements RutaNode
 			else
 				cdrUpdateMyCatalogue();*/
 
+		//MMM check whether is this first upload of My Catalogue: if(myParty.isInsertMyCatalogue() == true) ???
 		if(myParty.getProductCount() == 0) // delete My Catalogue from CDR
 //			cdrDeleteMyCatalogue();
 			myParty.executeDeleteCatalogueProcess();
@@ -914,11 +917,13 @@ public class RutaClient implements RutaNode
 	 * Waits for the {@link ApplicationResponseType} document after {@code CatalogueType} update request had been
 	 * sent to the CDR service.
 	 * @param future {@link Future} on which is waited for a CDR response
-	 * @return new state which correspondence should transition to
+	 * @return true when CDR accepts sent Catalogue, false otherwise and {@code null} if exception
+	 * is thrown during calling the service
 	 */
-	public RutaProcessState cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future)
+	public Boolean cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future)
 	{
-		RutaProcessState newState = null;
+//		RutaProcessState newState = null;
+		Boolean positiveResponse = null; // true when CDR accept sent Catalogue
 		try
 		{
 			final UpdateCatalogueWithAppResponseResponse response = (UpdateCatalogueWithAppResponseResponse) future.get();
@@ -930,14 +935,16 @@ public class RutaClient implements RutaNode
 				myParty.setDirtyCatalogue(false);
 				frame.appendToConsole(new StringBuilder("My Catalogue has been successfully updated in the CDR service."),
 						Color.GREEN);
-//				newState = CreateCatalogueEndOfProcessState.getInstance();
-				newState = EndOfProcessState.getInstance();
+				positiveResponse = Boolean.TRUE;
+//				newState = EndOfProcessState.getInstance();
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 			{
-				frame.appendToConsole(new StringBuilder("My Catalogue has not been updated in the CDR service! Check My Catalogue data and try again."),
+				frame.appendToConsole(
+						new StringBuilder("My Catalogue has not been updated in the CDR service! Check My Catalogue data and try again."),
 						Color.RED);
-				newState = DecideOnActionState.getInstance();
+//				newState = DecideOnActionState.getInstance();
+				positiveResponse = Boolean.FALSE;
 			}
 		}
 		catch(Exception e)
@@ -949,7 +956,7 @@ public class RutaClient implements RutaNode
 		{
 			frame.enableCatalogueMenuItems();
 		}
-		return newState;
+		return positiveResponse;
 	}
 
 	/**

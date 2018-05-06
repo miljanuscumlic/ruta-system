@@ -18,7 +18,7 @@ import rs.ruta.common.BugReport;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{http://ruta.rs/services}BugReport" minOccurs="0"/>
+ *         &lt;element name="return" type="{http://www.ruta.rs/ns/common}BugReport" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

@@ -18,15 +18,13 @@ public class EndOfProcessState implements RutaProcessState
 	@Override
 	public void endOfProcess(RutaProcess process)
 	{
-		//do nothing
+		process.active = false;
 	}
 
 	@Override
 	public void doActivity(Correspondence correspondence, RutaProcess process)
 	{
-
+		process.active = false;
 	}
-
-
 
 }

@@ -18,11 +18,11 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 @XmlRegistry
 public class ObjectFactory
 {
-	public final static QName _MyParty_QNAME = new QName("urn:rs:ruta:client", "MyParty");
-	public final static QName _BusinessParty_QNAME = new QName("urn:rs:ruta:client", "BusinessParty");
-	public final static QName _PartySearch_QNAME = new QName("urn:rs:ruta:client", "PartySearch");
-	public final static QName _CatalogueSearch_QNAME = new QName("urn:rs:ruta:client", "CatalogueSearch");
-	public final static QName _Item_QNAME = new QName("urn:rs:ruta:client", "Item");
+	public final static QName _MyParty_QNAME = new QName("http://www.ruta.rs/ns/client", "MyParty");
+	public final static QName _BusinessParty_QNAME = new QName("http://www.ruta.rs/ns/client", "BusinessParty");
+	public final static QName _PartySearch_QNAME = new QName("http://www.ruta.rs/ns/client", "PartySearch");
+	public final static QName _CatalogueSearch_QNAME = new QName("http://www.ruta.rs/ns/client", "CatalogueSearch");
+	public final static QName _Item_QNAME = new QName("http://www.ruta.rs/ns/client", "Item");
 
 	/**
 	 * Creates an instance of {@link MyParty}.
@@ -38,7 +38,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link MyParty }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "MyParty")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "MyParty")
 	@Nonnull
 	public JAXBElement<MyParty> createMyParty(@Nullable final MyParty value)
 	{
@@ -59,7 +59,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link BusinessParty }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "BusinessParty")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BusinessParty")
 	@Nonnull
 	public JAXBElement<BusinessParty> createBusinessParty(@Nullable final BusinessParty value)
 	{
@@ -80,7 +80,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link PartySearch }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "PartySearch")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "PartySearch")
 	@Nonnull
 	public JAXBElement<PartySearch> createPartySearch(@Nullable final PartySearch value)
 	{
@@ -101,7 +101,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link CatalogueSearch }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "CatalogueSearch")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "CatalogueSearch")
 	@Nonnull
 	public JAXBElement<CatalogueSearch> createCatalogueSearch(@Nullable final CatalogueSearch value)
 	{
@@ -122,7 +122,7 @@ public class ObjectFactory
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link Item }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:client", name = "Item")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "Item")
 	@Nonnull
 	public JAXBElement<Item> createItem(@Nullable final Item value)
 	{

@@ -20,10 +20,10 @@ import rs.ruta.common.RutaUser;
 @XmlRegistry
 public class ObjectFactory
 {
-	public final static QName _DatabaseOperation_QNAME = new QName("urn:rs:ruta:services", "DatabaseOperation");
-	public final static QName _DistributionOperation_QNAME = new QName("urn:rs:ruta:services", "DistributionOperation");
-	public final static QName _DatabaseTransaction_QNAME = new QName("urn:rs:ruta:services", "DatabaseTransaction");
-	public final static QName _DistributionTransaction_QNAME = new QName("urn:rs:ruta:services", "DistributionTransaction");
+	public final static QName _DatabaseOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DatabaseOperation");
+	public final static QName _DistributionOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DistributionOperation");
+	public final static QName _DatabaseTransaction_QNAME = new QName("http://www.ruta.rs/ns/common", "DatabaseTransaction");
+	public final static QName _DistributionTransaction_QNAME = new QName("http://www.ruta.rs/ns/common", "DistributionTransaction");
 
 	/**Creates an instance of {@link DatabaseOperation}.
 	 * @return created {@code DatabaseOperation} object and never {@code null}
@@ -37,7 +37,7 @@ public class ObjectFactory
 	/** Creates an instance of {@link JAXBElement }{@code <}{@link DatabaseOperation }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseOperation")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "DatabaseOperation")
 	@Nonnull
 	public JAXBElement<DatabaseOperation> createDatabaseOperation(@Nullable final DatabaseOperation value)
 	{
@@ -56,7 +56,7 @@ public class ObjectFactory
 	/** Creates an instance of {@link JAXBElement }{@code <}{@link DistributionOperation }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionOperation")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "DistributionOperation")
 	@Nonnull
 	public JAXBElement<DistributionOperation> createDistributionOperation(@Nullable final DistributionOperation value)
 	{
@@ -75,7 +75,7 @@ public class ObjectFactory
 	/** Creates an instance of {@link JAXBElement }{@code <}{@link DatabaseTransaction }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DatabaseTransaction")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "DatabaseTransaction")
 	@Nonnull
 	public JAXBElement<DatabaseTransaction> createDatabaseTransaction(@Nullable final DatabaseTransaction value)
 	{
@@ -94,7 +94,7 @@ public class ObjectFactory
 	/** Creates an instance of {@link JAXBElement }{@code <}{@link DistributionTransaction }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "urn:rs:ruta:services", name = "DistributionTransaction")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "DistributionTransaction")
 	@Nonnull
 	public JAXBElement<DistributionTransaction> createDistributionTransaction(@Nullable final DistributionTransaction value)
 	{

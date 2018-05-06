@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Abstraction of the search criterion. JAXB can't handle interfaces so this is a class.
  */
-@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:common")
+@XmlRootElement(name = "SearchCriterion")
 @XmlType(name = "SearchCriterion")
 @XmlSeeAlso({ PartySearchCriterion.class, CatalogueSearchCriterion.class })
 public class SearchCriterion

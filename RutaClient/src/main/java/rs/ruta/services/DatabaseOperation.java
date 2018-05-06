@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="DatabaseOperation">
  *   &lt;complexContent>
- *     &lt;extension base="{http://ruta.rs/services}existOperation">
+ *     &lt;extension base="{http://www.ruta.rs/ns/common}existOperation">
  *       &lt;sequence>
  *       &lt;/sequence>
  *     &lt;/extension>
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DatabaseOperation")
+@XmlType(name = "DatabaseOperation", namespace = "http://www.ruta.rs/ns/common")
 public class DatabaseOperation
     extends ExistOperation
 {

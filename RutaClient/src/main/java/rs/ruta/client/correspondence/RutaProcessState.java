@@ -31,6 +31,10 @@ public interface RutaProcessState
 	 * @throws StateTransitionException if this method is invoked for the wrong {@link RutaProcessState state}
 	 * that is not the one that the state machine should transition to or if due some kind of error
 	 */
+/*	default public void doActivity(final Correspondence correspondence, final RutaProcess process)
+	{
+		throw new StateTransitionException();
+	}*/
 	default public void doActivity(final Correspondence correspondence, final RutaProcess process)
 	{
 		throw new StateTransitionException();

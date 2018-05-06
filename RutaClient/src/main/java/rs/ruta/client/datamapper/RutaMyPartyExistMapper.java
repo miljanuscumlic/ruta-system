@@ -97,7 +97,7 @@ public class RutaMyPartyExistMapper extends XmlMapper<MyParty>
 	@Override
 	protected JAXBElement<MyParty> getJAXBElement(MyParty object)
 	{
-		QName _Party_QNAME = new QName("urn:rs:ruta:client", "MyParty");
+		QName _Party_QNAME = new QName("http://www.ruta.rs/ns/client", "MyParty");
 		JAXBElement<MyParty> partyElement = new JAXBElement<MyParty>(_Party_QNAME, MyParty.class, client.getMyParty());
 		return partyElement;
 	}

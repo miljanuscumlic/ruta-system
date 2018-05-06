@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 /**
  * Defines the user of the {@code Ruta application} with his log-in credentials.
  */
-@XmlRootElement(name = "RutaUser", namespace = "urn:rs:ruta:common")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "RutaUser")
+@XmlAccessorType(XmlAccessType.NONE)
 public class RutaUser
 {
 	@XmlElement(name = "username")

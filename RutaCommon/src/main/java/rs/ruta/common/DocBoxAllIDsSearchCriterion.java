@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "DocBoxAllIDsSearchCriterion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class DocBoxAllIDsSearchCriterion extends SearchCriterion
 {
 	@XmlElement(name = "PartyID")

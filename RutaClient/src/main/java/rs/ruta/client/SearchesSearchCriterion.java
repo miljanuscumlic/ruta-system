@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import rs.ruta.common.SearchCriterion;
 
 @XmlType(name = "SearchesSearchCriterion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class SearchesSearchCriterion extends SearchCriterion
 {
 	@XmlElement(name = "Party")

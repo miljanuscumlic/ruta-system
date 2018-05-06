@@ -14,24 +14,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //@XmlRootElement(name = "ExistTransaction")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class ExistTransaction implements DSTransaction
 {
-	@XmlTransient
+//	@XmlTransient
 	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.common.datamapper");
 	@XmlElement(name = "TransactionID", required = true)
 	private String transactionID;
 	@XmlElement(name = "Timestamp")
 	private long timestamp;
-	@XmlTransient
+//	@XmlTransient
 	private boolean enabled;
 	/**
 	 * True when transaction should be kept alive and not closed i.e. when one transaction has multiple
 	 * database operations.
 	 */
-	@XmlTransient
+//	@XmlTransient
 	private boolean keepAlive; //MMM: obsolete field
-	@XmlTransient
+//	@XmlTransient
 	private boolean failed;
 	@XmlElement(name = "ExistOperation")
 	private List<ExistOperation> operations;

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "BusinessPartySearchCriterion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class BusinessPartySearchCriterion extends SearchCriterion
 {
 	@XmlElement(name = "Following")

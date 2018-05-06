@@ -28,7 +28,7 @@ public class CDRPartyTypeXMLFileMapper<T> extends XMLFileMapper<T>
 /*		JAXBElement<PartyType> partyElement = (new ObjectFactory()).createParty((PartyType) getObject());
 		return partyElement;*/
 
-		QName _Party_QNAME = new QName("urn:rs:ruta:client", "CDRParty");
+		QName _Party_QNAME = new QName("http://www.ruta.rs/ns/client", "CDRParty");
 		JAXBElement<Party> partyElement = new JAXBElement<Party>(_Party_QNAME, Party.class, (Party) getObject());
 		return partyElement;
 

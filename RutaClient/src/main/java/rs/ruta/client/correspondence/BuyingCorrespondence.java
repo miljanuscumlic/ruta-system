@@ -59,7 +59,8 @@ public class BuyingCorrespondence extends Correspondence
 				executePaymentNotificationProcess();
 		}
 		if(stopped)
-			stoppedSemaphore.release();
+			//stoppedSemaphore.release();
+			signalThreadStopped();
 	}
 
 	/**
@@ -68,7 +69,8 @@ public class BuyingCorrespondence extends Correspondence
 	public void executeOrderingProcess()
 	{
 //		((BuyingProcess) state).ordering(this);
-		((BuyingProcess) state).orderingActivity(this);
+//		((BuyingProcess) state).orderingActivity(this);
+		((BuyingProcess) state).doActivity(this, null);
 	}
 
 	/**
@@ -77,7 +79,8 @@ public class BuyingCorrespondence extends Correspondence
 	 */
 	public void executeBillingProcess()
 	{
-		((BuyingProcess) state).billing(this);
+//		((BuyingProcess) state).billing(this);
+		((BuyingProcess) state).doActivity(this, null);
 	}
 
 	/**
@@ -85,7 +88,8 @@ public class BuyingCorrespondence extends Correspondence
 	 */
 	public void executePaymentNotificationProcess()
 	{
-		((BuyingProcess) state).paymentNotification(this);
+//		((BuyingProcess) state).paymentNotification(this);
+		((BuyingProcess) state).doActivity(this, null);
 	}
 
 }

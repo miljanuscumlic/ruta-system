@@ -14,10 +14,11 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 /**
  * Wrapper class for {@link PartyType} with additional convinient methods.
  */
-@XmlRootElement(name = "Item", namespace = "urn:rs:ruta:client")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "Item")
 @XmlType(name = "Item")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Item extends ItemType
+
 {
 	private static final long serialVersionUID = -6958759984921980423L;
 	@XmlElement(name = "ID")

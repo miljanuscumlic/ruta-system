@@ -16,9 +16,9 @@ import rs.ruta.common.Associates;
  * <pre>
  * &lt;complexType name="distributionTransaction">
  *   &lt;complexContent>
- *     &lt;extension base="{http://ruta.rs/services}existTransaction">
+ *     &lt;extension base="{http://www.ruta.rs/ns/common}existTransaction">
  *       &lt;sequence>
- *         &lt;element name="Associates" type="{http://ruta.rs/services}Associates" minOccurs="0"/>
+ *         &lt;element ref="{http://www.ruta.rs/ns/common}Associates" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -28,14 +28,14 @@ import rs.ruta.common.Associates;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "distributionTransaction", propOrder = {
+@XmlType(name = "distributionTransaction", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "associates"
 })
 public class DistributionTransaction
     extends ExistTransaction
 {
 
-    @XmlElement(name = "Associates")
+    @XmlElement(name = "Associates", namespace = "http://www.ruta.rs/ns/common")
     protected Associates associates;
 
     /**

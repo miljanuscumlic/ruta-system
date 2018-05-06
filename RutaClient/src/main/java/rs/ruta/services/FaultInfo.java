@@ -3,6 +3,7 @@ package rs.ruta.services;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -26,11 +27,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "faultInfo", propOrder = {
+@XmlType(name = "faultInfo", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "detail"
 })
 public class FaultInfo {
 
+    @XmlElement(namespace = "http://www.ruta.rs/ns/common")
     protected String detail;
 
     /**

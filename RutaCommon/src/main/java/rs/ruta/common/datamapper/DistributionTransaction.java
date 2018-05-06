@@ -15,8 +15,8 @@ import org.xmldb.api.base.Collection;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.Associates;
 
-@XmlRootElement(name = "DistributionTransaction", namespace = "urn:rs:ruta:services")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "DistributionTransaction")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DistributionTransaction extends ExistTransaction
 {
 	@XmlElement(name = "Associates")

@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 @XmlType(name = "BugReportSearchCriterion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class BugReportSearchCriterion extends SearchCriterion
 {
 	@XmlElement(name = "ID")

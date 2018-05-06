@@ -20,8 +20,8 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
  * object for all instances of {@code Search<T>} class which means that it is not possible to differentiate among
  * them and choose the proper data mapper for particular class instance based on {@code Search.class} parameter.
  */
-@XmlRootElement(namespace = "urn:rs:ruta:client", name = "PartySearch")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "PartySearch")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PartySearch extends Search<PartyType>
 {
 	public PartySearch()

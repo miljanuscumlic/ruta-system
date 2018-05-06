@@ -27,7 +27,7 @@ import rs.ruta.common.InstanceFactory;
 /**
  * Wrapper class for {@link CatalogueType} with additional convinient methods.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Catalogue")
 public class Catalogue extends CatalogueType
 {

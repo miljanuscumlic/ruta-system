@@ -19,6 +19,10 @@ import rs.ruta.common.InstanceFactory;
 public class CatalogueCorrespondence extends Correspondence
 {
 	/**
+	 * True when Create Catalogue process should be invoked.
+	 */
+	private boolean createCatalogue;
+	/**
 	 * Constructs new instance of a {@link CatalogueCorrespondence} and sets its state to
 	 * default value and uuid to a random value.
 	 * @param {@link RutaClient} object
@@ -38,7 +42,26 @@ public class CatalogueCorrespondence extends Correspondence
 		corr.setLastActivityTime(currentDateTime);
 		corr.setActive(true);
 		corr.setStopped(false);
+		corr.createCatalogue = true;
 		return corr;
+	}
+
+	/**
+	 * Test whether Create Catalogue process should be invoked.
+	 * @return true if Create Catalogue process should be invoked
+	 */
+	public boolean isCreateCatalogue()
+	{
+		return createCatalogue;
+	}
+
+	/**
+	 * Sets boolean field telling whether Create Catalogue process should be invoked.
+	 * @param createCatalogue
+	 */
+	public void setCreateCatalogue(boolean createCatalogue)
+	{
+		this.createCatalogue = createCatalogue;
 	}
 
 	@Override
@@ -47,6 +70,8 @@ public class CatalogueCorrespondence extends Correspondence
 		final Thread myThread = Thread.currentThread();
 		while (thread == myThread && active && !stopped)
 		{
+			if(state instanceof ResolveNextCatalogueProcess)
+				executeResolveNextCatalogueProcess();
 			if(state instanceof CreateCatalogueProcess)
 				executeCreateCatalogueProcess();
 			else if(state instanceof DeleteCatalogueProcess)
@@ -56,10 +81,16 @@ public class CatalogueCorrespondence extends Correspondence
 		{
 			((RutaProcess) state).setActive(true);
 			setActive(true);
-			stoppedSemaphore.release();
+			signalThreadStopped();
 		}*/
 		if(stopped)
-			stoppedSemaphore.release();
+			signalThreadStopped();
+//			stoppedSemaphore.release();
+	}
+
+	private void executeResolveNextCatalogueProcess()
+	{
+		((CatalogueProcess) state).resolveNextCatalogueProcess(this);
 	}
 
 	/**
@@ -79,6 +110,18 @@ public class CatalogueCorrespondence extends Correspondence
 	public void executeDeleteCatalogueProcess()
 	{
 		((CatalogueProcess) state).deleteCatalogue(this);
+	}
+
+	@Override
+	public void signalThreadStopped()
+	{
+		//do nothing because Semaphore is not used
+	}
+
+	@Override
+	public void waitThreadStopped() throws InterruptedException
+	{
+		//do nothing because Semaphore is not used
 	}
 
 }

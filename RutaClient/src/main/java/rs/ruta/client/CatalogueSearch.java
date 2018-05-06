@@ -16,8 +16,8 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
  * object for all instances of {@code Search<T>} class which means that it is not possible to differentiate among
  * them and choose the proper data mapper for particular class instance based on {@code Search.class} parameter.
  */
-@XmlRootElement(namespace = "urn:rs:ruta:client", name = "CatalogueSearch")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "CatalogueSearch")
+@XmlAccessorType(XmlAccessType.NONE)
 public class CatalogueSearch extends Search<CatalogueType>
 {
 	public CatalogueSearch()

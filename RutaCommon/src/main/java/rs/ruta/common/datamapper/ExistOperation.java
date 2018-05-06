@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
  *update, insert, delete or alike and one or more of these operations could compose an
  *{@link DSTransaction}.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class ExistOperation
 {
 	@XmlElement(name = "OriginalCollectionPath")

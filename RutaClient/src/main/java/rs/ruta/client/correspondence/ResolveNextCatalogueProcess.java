@@ -2,18 +2,16 @@ package rs.ruta.client.correspondence;
 
 import java.util.UUID;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import rs.ruta.client.RutaClient;
+import rs.ruta.common.datamapper.MapperRegistry;
 
 @XmlRootElement(name = "ResolveNextCatalogueProcess")
 public class ResolveNextCatalogueProcess extends CatalogueProcess
 {
-/*	public ResolveNextCatalogueProcess()
-	{
-		state = NextCatalogueState.getInstance();
-	}*/
-
 	/**
 	 * Constructs new instance of a {@link ResolveNextCatalogueProcess} and sets its state to
 	 * default value and uuid to a random value.
@@ -30,7 +28,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		return process;
 	}
 
-	@Deprecated
+/*	@Deprecated
 	@Override
 	public void resolveNextCatalogueProcess(final Correspondence correspondence) throws StateTransitionException
 	{
@@ -40,7 +38,49 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 			correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
 		else
 			correspondence.changeState(DeleteCatalogueProcess.newInstance(correspondence.getClient()));
+	}*/
+
+	@Override
+	public void resolveNextCatalogueProcess(final Correspondence correspondence) throws StateTransitionException
+	{
+		try
+		{
+			while(active && !correspondence.isStopped())
+			{
+				doActivity(correspondence, this);
+
+				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				marshaller.marshal(correspondence, System.out);
+
+				MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).
+				insert(null, (CatalogueCorrespondence) correspondence);
+				int i = 1;
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StateTransitionException("Interrupted execution of Buyer Ordering Process!", e);
+		}
+		finally
+		{
+			if(correspondence.isActive() && !correspondence.isStopped())
+			{
+				if(((CatalogueCorrespondence) correspondence).isCreateCatalogue())
+					correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
+				else
+					correspondence.changeState(DeleteCatalogueProcess.newInstance(correspondence.getClient()));
+			}
+		}
 	}
+
+	@Override
+	public void doActivity(Correspondence correspondence, RutaProcess process)
+	{
+		state.doActivity(correspondence, process);
+	}
+
 
 	@Override
 	public void createCatalogue(final Correspondence correspondence) throws StateTransitionException
@@ -54,14 +94,9 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 	{
 		correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
 //		((CreateCatalogueProcess) correspondence.getState()).createCatalogue(correspondence);
-		((CreateCatalogueProcess) correspondence.getState()).createCatalogueExecute(correspondence);
+//		((CreateCatalogueProcess) correspondence.getState()).createCatalogueExecute(correspondence);
 	}
 
-	/**
-	 * Deletes {@link CatalogueType} document from the {@code Ruta System}
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
 	@Override
 	public void deleteCatalogue(final Correspondence correspondence) throws StateTransitionException
 	{
@@ -69,9 +104,18 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		((DeleteCatalogueProcess) correspondence.getState()).deleteCatalogue(correspondence);
 	}
 
+	@Override
+	public void deleteCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
+	{
+		correspondence.changeState(DeleteCatalogueProcess.newInstance(correspondence.getClient()));
+//		((DeleteCatalogueProcess) correspondence.getState()).deleteCatalogue(correspondence);
+	}
+
+
 	@Deprecated
 	public void resolveNextProcess()
 	{
 		((NextCatalogueState) state).resolveNextProcess(this);
 	}
+
 }

@@ -3,6 +3,7 @@ package rs.ruta.services;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import rs.ruta.common.Associates;
 
@@ -17,7 +18,7 @@ import rs.ruta.common.Associates;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="associates" type="{http://ruta.rs/services}Associates" minOccurs="0"/>
+ *         &lt;element name="associates" type="{http://www.ruta.rs/ns/common}Associates" minOccurs="0"/>
  *         &lt;element name="document" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -28,13 +29,15 @@ import rs.ruta.common.Associates;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "documentDistribution", propOrder = {
+@XmlType(name = "documentDistribution", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "associates",
     "document"
 })
 public class DocumentDistribution {
 
+    @XmlElement(namespace = "http://www.ruta.rs/ns/common")
     protected Associates associates;
+    @XmlElement(namespace = "http://www.ruta.rs/ns/common")
     protected Object document;
 
     /**

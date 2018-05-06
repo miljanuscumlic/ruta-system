@@ -8,12 +8,11 @@ import javax.xml.bind.annotation.XmlType;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 
-@XmlRootElement(name = "DeregistrationNotice", namespace = "urn:rs:ruta:common")
+@XmlRootElement(name = "DeregistrationNotice")
 @XmlType(name = "DeregistrationNotice")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class DeregistrationNotice
 {
-//	@XmlElement(name = "Party", namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")
 	@XmlElement(name = "Party")
 	private PartyType party;
 

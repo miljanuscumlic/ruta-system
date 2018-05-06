@@ -27,12 +27,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "partyID", propOrder = {
+@XmlType(name = "partyID", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "documentID"
 })
 public class PartyID {
 
-    @XmlElement(name = "DocumentID")
+    @XmlElement(name = "DocumentID", namespace = "http://www.ruta.rs/ns/common")
     protected String documentID;
 
     /**

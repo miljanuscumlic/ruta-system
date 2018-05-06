@@ -20,8 +20,8 @@ import rs.ruta.common.InstanceFactory;
 /**
  *Wrapper class for {@link PartyType} with additional convinient methods.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Party")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Party extends PartyType
 {
 	private static final long serialVersionUID = 7205209787239807571L;

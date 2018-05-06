@@ -17,7 +17,7 @@ import rs.ruta.common.ReportAttachment;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="arg0" type="{http://ruta.rs/services}ReportAttachment" minOccurs="0"/>
+ *         &lt;element name="arg0" type="{http://www.ruta.rs/ns/common}ReportAttachment" minOccurs="0"/>
  *         &lt;element name="arg1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>

@@ -9,10 +9,10 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
 /**
- * Representing common caracteristics of the party of {@code Ruta application}.
+ * Represents common caracteristics of the party of {@code Ruta application}.
  */
-@XmlRootElement(name = "BussinesParty", namespace = "urn:rs:ruta:client")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "BussinesParty")
+@XmlAccessorType(XmlAccessType.NONE)
 public class BusinessParty
 {
 	@XmlElement(name ="Catalogue")

@@ -4,7 +4,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "BuyerReceiveOrderResponseState")
-//@XmlType(namespace = "urn:rs:ruta:client:correspondence:buying:ordering:buyer")
 public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
 {
 	private static BuyerOrderingProcessState INSTANCE = new BuyerReceiveOrderResponseState();
@@ -30,12 +29,12 @@ public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
 		}
 		catch(InterruptedException e)
 		{
-			if(! correspondence.isStopped()) //non-intentional interruption
+			if(!correspondence.isStopped()) //non-intentional interruption
 				throw new StateTransitionException("Correspondence has been interrupted!");
 		}
 
-		//after the correspondence is notified the Order Response should be processed
-		if(! correspondence.isStopped())
+		//after the correspondence is notified Order Response should be processed
+		if(!correspondence.isStopped())
 			changeState(process, BuyerProcessResponseState.getInstance());
 
 	}

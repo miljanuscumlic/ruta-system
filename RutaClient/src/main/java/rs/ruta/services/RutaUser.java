@@ -3,6 +3,7 @@ package rs.ruta.services;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -28,15 +29,18 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "rutaUser", propOrder = {
+@XmlType(name = "rutaUser", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "username",
     "password",
     "secretKey"
 })
 public class RutaUser {
 
+    @XmlElement(namespace = "http://www.ruta.rs/ns/common")
     protected String username;
+    @XmlElement(namespace = "http://www.ruta.rs/ns/common")
     protected String password;
+    @XmlElement(namespace = "http://www.ruta.rs/ns/common")
     protected String secretKey;
 
     /**

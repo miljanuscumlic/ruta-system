@@ -20,9 +20,9 @@ import javax.xml.bind.annotation.XmlAccessType;
  * Class containig the list of UUIDs of all Parties that are some kind of associates of one particular
  * {@code Party}. For example, associates could be followers or parties that the document should be sent to.
  */
-@XmlRootElement(name = "Associates", namespace = "urn:rs:ruta:common")
+@XmlRootElement(name = "Associates")
 @XmlType(name = "Associates")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Associates
 {
 	/**

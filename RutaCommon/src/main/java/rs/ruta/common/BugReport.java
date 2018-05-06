@@ -14,16 +14,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**Class containing data about a bug reported by the user. Most of the fields are
  *filled by the user submitting the bug, but some are added on the service side.
  */
-@XmlRootElement(name = "BugReport", namespace = "urn:rs:ruta:common")
+@XmlRootElement(name = "BugReport")
 @XmlType(name = "BugReport")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class BugReport
 {
-	@XmlTransient
+//	@XmlTransient
 	private static final String[] STATUS = {"NEW", "UNCONFIRMED", "CONFIRMED", "ASSIGNED", "REOPENED", "VERIFIED", "RESOLVED", "CLOSED"};
-	@XmlTransient
+//	@XmlTransient
 	private static final String[] SEVERITY = {"BLOCKER", "CRITICAL", "MAJOR", "NORMAL", "MINOR", "TRIVIAL", "ENHANCEMENT"};
-	@XmlTransient
+//	@XmlTransient
 	private static final String[] RESOLUTION = {"FIXED", "DUPLICATE", "WONTFIX", "WORKSFORME", "INVALID"};
 	@XmlElement(name = "ID")
 	private String id;

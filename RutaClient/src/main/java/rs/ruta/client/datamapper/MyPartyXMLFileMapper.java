@@ -84,7 +84,7 @@ public class MyPartyXMLFileMapper<T> extends XMLFileMapper<T>
 	@Override
 	protected JAXBElement<?> getJAXBElement()
 	{
-		QName _Party_QNAME = new QName("urn:rs:ruta:client", "MyParty");
+		QName _Party_QNAME = new QName("http://www.ruta.rs/ns/client", "MyParty");
 		JAXBElement<MyParty> partyElement = new JAXBElement<MyParty>(_Party_QNAME, MyParty.class, (MyParty) getObject());
 		return partyElement;
 	}

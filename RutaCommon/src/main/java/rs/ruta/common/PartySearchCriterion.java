@@ -9,9 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Class represents a {@code SearchCriterion} for {@link PartyType party} searches.
  */
-//@XmlRootElement(name = "PartySearchCriterion", namespace = "urn:rs:ruta:common")
 @XmlType(name = "PartySearchCriterion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class PartySearchCriterion extends SearchCriterion
 {
 	@XmlElement(name = "PartyName")

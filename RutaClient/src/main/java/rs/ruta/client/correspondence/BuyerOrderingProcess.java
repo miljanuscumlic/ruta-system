@@ -125,6 +125,7 @@ public class BuyerOrderingProcess extends BuyingProcess
 	}
 
 	@Override
+	@Deprecated
 	public void orderingActivity(Correspondence correspondence) throws StateTransitionException
 	{
 		try
@@ -235,9 +236,36 @@ public class BuyerOrderingProcess extends BuyingProcess
 	@Override
 	public void doActivity(Correspondence correspondence, RutaProcess process)
 	{
-		state.doActivity(correspondence, process);
-	}
+		try
+		{
+			while(active && !correspondence.isStopped())
+			{
+				state.doActivity(correspondence, this);
 
+				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				marshaller.marshal(correspondence, System.out);
+
+				MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
+				int i = 1;
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StateTransitionException("Interrupted execution of Buyer Ordering Process!", e);
+		}
+		finally
+		{
+			if(correspondence.isActive() && !correspondence.isStopped())
+			{
+				if(active)
+					correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
+				else //MMM check whether this is the right test for transition to BuyingClosingProcess
+					correspondence.changeState(BuyingClosingProcess.newInstance(correspondence.getClient()));
+			}
+		}
+	}
 
 
 }

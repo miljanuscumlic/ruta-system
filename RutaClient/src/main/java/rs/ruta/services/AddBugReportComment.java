@@ -18,7 +18,7 @@ import rs.ruta.common.ReportComment;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="arg0" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="arg1" type="{http://ruta.rs/services}ReportComment" minOccurs="0"/>
+ *         &lt;element name="arg1" type="{http://www.ruta.rs/ns/common}ReportComment" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

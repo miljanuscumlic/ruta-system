@@ -14,8 +14,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.SearchCriterion;
 
-@XmlRootElement(namespace = "urn:rs:ruta:client", name = "Search")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "Search")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Search<T>
 {
 	@XmlTransient

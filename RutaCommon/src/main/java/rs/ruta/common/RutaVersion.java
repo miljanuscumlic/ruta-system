@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "RutaVersion", namespace = "urn:rs:ruta:common")
+@XmlRootElement(name = "RutaVersion")
 @XmlType(name = "RutaVersion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class RutaVersion
 {
 	@XmlTransient

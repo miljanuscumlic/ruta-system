@@ -15,7 +15,24 @@ public class NextCatalogueState extends ResolveNextCatalogueProcessState
 	@Override
 	public void resolveNextProcess(final RutaProcess process) throws StateTransitionException
 	{
-		//TODO nothing?
+		//TODO
 	}
 
+	@Override
+	public void doActivity(Correspondence correspondence, RutaProcess process)
+	{
+		try
+		{
+			correspondence.block();
+		}
+		catch(InterruptedException e)
+		{
+			if(!correspondence.isStopped()) //non-intentional interruption
+				throw new StateTransitionException("Correspondence has been interrupted!");
+		}
+		finally
+		{
+			process.setActive(false);
+		}
+	}
 }

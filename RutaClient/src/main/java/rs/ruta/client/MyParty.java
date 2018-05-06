@@ -74,7 +74,7 @@ import rs.ruta.common.datamapper.MapperRegistry;
  * Class representing party of {@code Ruta application} containing all the data pertaining that
  * party and all of its correspondeces with other parties in {@code Ruta System}.
  */
-@XmlRootElement(name = "MyParty", namespace = "urn:rs:ruta:client")
+@XmlRootElement(name = "MyParty")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType
 public class MyParty extends BusinessParty
@@ -225,7 +225,7 @@ public class MyParty extends BusinessParty
 			corr.setClient(client);
 			((RutaProcess) corr.getState()).setClient(client);
 		}
-//		corr.start();
+		corr.start();
 
 		setCatalogueCorrespondence(corr);
 
@@ -1682,7 +1682,8 @@ public class MyParty extends BusinessParty
 //		getCatalogueCorrespondence().getStoppedSemaphore().acquire();
 		for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
 			if(bCorr.isActive())
-				bCorr.getStoppedSemaphore().acquire();
+				bCorr.waitThreadStopped();
+//				bCorr.getStoppedSemaphore().acquire();
 	}
 
 	/**
@@ -2648,7 +2649,8 @@ public class MyParty extends BusinessParty
 	public void executeCreateCatalogueProcess()
 	{
 //		catalogueCorrespondence.executeCreateCatalogueProcess();
-		catalogueCorrespondence.start();
+		catalogueCorrespondence.setCreateCatalogue(true);
+		catalogueCorrespondence.proceed();//start();
 	}
 
 	/**
@@ -2657,7 +2659,8 @@ public class MyParty extends BusinessParty
 	public void executeDeleteCatalogueProcess()
 	{
 //		catalogueCorrespondence.executeDeleteCatalogueProcess();
-		catalogueCorrespondence.start();
+		catalogueCorrespondence.setCreateCatalogue(false);
+		catalogueCorrespondence.proceed();//start();
 	}
 
 	/**

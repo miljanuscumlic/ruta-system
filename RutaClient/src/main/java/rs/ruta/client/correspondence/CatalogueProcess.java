@@ -38,11 +38,20 @@ public class CatalogueProcess extends DocumentProcess
 	}
 
 	/**
+	 * Deletes {@link CatalogueType} document from the {@code Ruta System}
+	 * @param correspondence correspondence to which process belongs
+	 * @throws StateTransitionException
+	 */
+	public void deleteCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
+	{
+		throw new StateTransitionException();
+	}
+
+	/**
 	 * Resolves which processes should be the next one: for deletion of the catalogue, or new creation of the catalogue.
 	 * @param correspondence correspondence to which process belongs
 	 * @throws StateTransitionException
 	 */
-	@Deprecated
 	public void resolveNextCatalogueProcess(final Correspondence correspondence) throws StateTransitionException
 	{
 		throw new StateTransitionException();

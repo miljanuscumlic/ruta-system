@@ -162,13 +162,17 @@ public class CreateCatalogueProcess extends CatalogueProcess
 		}
 		finally
 		{
-			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+			if(correspondence.isActive() && !correspondence.isStopped())
+			{
+				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+//				correspondence.setStopped(true);
+			}
 		}
 	}
 
 	public void execute(Correspondence correspondence)
 	{
-		state.doActivity(null, this);
+		state.doActivity(correspondence, this);
 	}
 
 }

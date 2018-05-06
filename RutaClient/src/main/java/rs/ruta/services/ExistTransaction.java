@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="TransactionID" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="Timestamp" type="{http://www.w3.org/2001/XMLSchema}long"/>
- *         &lt;element name="ExistOperation" type="{http://ruta.rs/services}existOperation" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="ExistOperation" type="{http://www.ruta.rs/ns/common}existOperation" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -32,22 +32,22 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "existTransaction", propOrder = {
+@XmlType(name = "existTransaction", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "transactionID",
     "timestamp",
     "existOperation"
 })
 @XmlSeeAlso({
-    DistributionTransaction.class,
-    DatabaseTransaction.class
+    DatabaseTransaction.class,
+    DistributionTransaction.class
 })
 public abstract class ExistTransaction {
 
-    @XmlElement(name = "TransactionID", required = true)
+    @XmlElement(name = "TransactionID", namespace = "http://www.ruta.rs/ns/common", required = true)
     protected String transactionID;
-    @XmlElement(name = "Timestamp")
+    @XmlElement(name = "Timestamp", namespace = "http://www.ruta.rs/ns/common")
     protected long timestamp;
-    @XmlElement(name = "ExistOperation")
+    @XmlElement(name = "ExistOperation", namespace = "http://www.ruta.rs/ns/common")
     protected List<ExistOperation> existOperation;
 
     /**

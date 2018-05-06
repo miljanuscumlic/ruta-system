@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlAccessType;
  * of all ACID properties is implemented. Atomicity ensures that all constituent operations inside
  * the transaction are accepted or none of them is.
  */
-@XmlRootElement(name = "DatabaseTransaction", namespace = "urn:rs:ruta:services")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "DatabaseTransaction")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DatabaseTransaction extends ExistTransaction
 {
 	public DatabaseTransaction()

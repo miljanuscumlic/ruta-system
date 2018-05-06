@@ -20,13 +20,13 @@ import javax.xml.bind.annotation.XmlType;
 
 /**Attachment added to a {@link BugReport}.
  */
-@XmlRootElement(name = "ReportAttachment", namespace = "urn:rs:ruta:common")
+@XmlRootElement(name = "ReportAttachment")
 @XmlType(name = "ReportAttachment")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class ReportAttachment
 {
 
-	@XmlTransient
+//	@XmlTransient
 	private byte[] rawData; //MMM: this field is not used ???
 
 	@XmlMimeType("application/octet-stream")

@@ -6,13 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlAccessType;
 
-@XmlRootElement(name = "PartyID", namespace = "urn:rs:ruta:services")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "PartyID")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PartyID
 {
 	@XmlElement(name = "DocumentID")
 	private String documentID;
-	@XmlTransient
+//	@XmlTransient
 	private String partyID;
 
 	public PartyID() {}

@@ -231,7 +231,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 				logger.info("Started registration of the user " + username + " with the CDR service.");
 				registerUserWithExist(username, password, transaction);
 				//reservation of unique secretKey in /db/ruta/key collection
-				//MMM: inserting secret key is not necessary anymore because of the use of the UUID
+				//MMM: inserting secret key is not necessary anymore because of the use of the UUID ???
 				secretKey = insert(username, new RutaUser(), transaction);
 				//insertMetadata(username, MetaSchemaType.SECRET_KEY, secretKey); //doesn't work - bug in eXist
 				insertMetadata(username, SECRET_KEY, secretKey);
@@ -263,6 +263,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 			catch(/*DetailException*/ Exception e)
 			{
 //				logger.error("Exception is ", e);
+
 				rollbackTransaction(transaction);
 				throw e;
 			}
@@ -274,7 +275,8 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 		return secretKey;
 	}
 
-	/**Registers new user with the eXist database user management system.
+	/**
+	 * Registers new user with the eXist database user management system.
 	 * @param username user's username
 	 * @param password user's password
 	 * @param transaction
@@ -326,7 +328,8 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 		}
 	}
 
-	/**Checks if the user has proper credentials to make changes to this user account.
+	/**
+	 * Checks whether the user has proper credentials to make changes to this user account.
 	 * @param username user's username
 	 * @param password user's password
 	 * @param sekretKey user's secret key

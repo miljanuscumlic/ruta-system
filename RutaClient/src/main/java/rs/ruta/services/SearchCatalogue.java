@@ -17,7 +17,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="arg0" type="{http://ruta.rs/services}CatalogueSearchCriterion" minOccurs="0"/>
+ *         &lt;element name="arg0" type="{http://www.ruta.rs/ns/common}CatalogueSearchCriterion" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

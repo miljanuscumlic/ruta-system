@@ -14,9 +14,9 @@ import rs.ruta.common.RutaUser;
  *is rolled back it is removed from the list of outstanding {@code DatabaseOperation}s. Until then it is kept
  *in the {@link DatabaseTransaction transaction journal}.
  */
-@XmlRootElement(name = "DatabaseOperation", namespace = "urn:rs:ruta:services")
+@XmlRootElement(name = "DatabaseOperation")
 @XmlType(name = "DatabaseOperation")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class DatabaseOperation extends ExistOperation
 {
 	public DatabaseOperation()

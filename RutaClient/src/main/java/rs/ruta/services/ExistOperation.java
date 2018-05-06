@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "existOperation", propOrder = {
+@XmlType(name = "existOperation", namespace = "http://www.ruta.rs/ns/common", propOrder = {
     "originalCollectionPath",
     "originalDocumentName",
     "operationType",
@@ -47,17 +47,17 @@ import javax.xml.bind.annotation.XmlType;
 })
 public abstract class ExistOperation {
 
-    @XmlElement(name = "OriginalCollectionPath")
+    @XmlElement(name = "OriginalCollectionPath", namespace = "http://www.ruta.rs/ns/common")
     protected String originalCollectionPath;
-    @XmlElement(name = "OriginalDocumentName")
+    @XmlElement(name = "OriginalDocumentName", namespace = "http://www.ruta.rs/ns/common")
     protected String originalDocumentName;
-    @XmlElement(name = "OperationType")
+    @XmlElement(name = "OperationType", namespace = "http://www.ruta.rs/ns/common")
     protected String operationType;
-    @XmlElement(name = "BackupCollectionPath")
+    @XmlElement(name = "BackupCollectionPath", namespace = "http://www.ruta.rs/ns/common")
     protected String backupCollectionPath;
-    @XmlElement(name = "BackupDocumentName")
+    @XmlElement(name = "BackupDocumentName", namespace = "http://www.ruta.rs/ns/common")
     protected String backupDocumentName;
-    @XmlElement(name = "RutaUser")
+    @XmlElement(name = "RutaUser", namespace = "http://www.ruta.rs/ns/common")
     protected String rutaUser;
 
     /**

@@ -12,9 +12,9 @@ import javax.xml.bind.annotation.XmlAccessType;
  *When {@code DistributionOperation} is done it is removed from the list of outstanding {@code DistributionOperation}s.
  *Until then it is kept in the {@link DistributionTransaction transaction journal}.
  */
-@XmlRootElement(name = "DistributionOperation", namespace = "urn:rs:ruta:services")
+@XmlRootElement(name = "DistributionOperation")
 @XmlType(name = "DistributionOperation")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class DistributionOperation extends ExistOperation
 {
 	public DistributionOperation()

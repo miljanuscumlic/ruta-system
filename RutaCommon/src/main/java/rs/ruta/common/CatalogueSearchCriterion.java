@@ -5,12 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-//@XmlRootElement(name = "SearchCriterion", namespace = "urn:rs:ruta:common")
 /**
  *Class represents a {@code SearchCriterion} for {@link CatalogueType catalogue} searches.
  */
 @XmlType(name = "CatalogueSearchCriterion")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class CatalogueSearchCriterion extends SearchCriterion
 {
 	@XmlElement(name = "PartyName")

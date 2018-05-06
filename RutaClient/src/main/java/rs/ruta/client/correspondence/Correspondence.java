@@ -28,7 +28,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 * Signals that correspondence thread is close to be finished. Signaling is by {@link Semaphore#release()}
 	 * method which is invoked at the end of the correspondence's {@link Runnable#run()} method.
 	 */
-	protected Semaphore stoppedSemaphore =  new Semaphore(0);
+	private Semaphore threadStopped =  new Semaphore(0);
 	/**
 	 * True when correspondence is stopped by {@link #stop()} method call (invoked usually on closing
 	 * of the application).
@@ -53,7 +53,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	private XMLGregorianCalendar lastActivityTime;
 
 	/**
-	 * Starts correspondence thread.
+	 * Starts correspondence thread or continues its execution.
 	 */
 	public void start()
 	{
@@ -298,21 +298,38 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	/**
 	 * Gets {@link Semaphore} that tells whether the {@code Correspondence}'s thread is about to be
 	 * stopped.
-	 * @return the stoppedSemaphore
+	 * @return the threadStopped
 	 */
 	public Semaphore getStoppedSemaphore()
 	{
-		return stoppedSemaphore;
+		return threadStopped;
 	}
 
 	/**
 	 * Sets {@link Semaphore} that tells whether the {@code Correspondence}'s thread is about to be
 	 * stopped.
-	 * @param stoppedSemaphore the stoppedSemaphore to set
+	 * @param threadStopped the threadStopped to set
 	 */
 	public void setStoppedSemaphore(Semaphore sem)
 	{
-		this.stoppedSemaphore = sem;
+		this.threadStopped = sem;
+	}
+
+	/**
+	 * Signals that the thread is about to be stopped.
+	 */
+	public void signalThreadStopped()
+	{
+		threadStopped.release();
+	}
+
+	/**
+	 * Waits for the signal that the thread is about to be stopped.
+	 * @throws InterruptedException
+	 */
+	public void waitThreadStopped() throws InterruptedException
+	{
+		threadStopped.acquire();
 	}
 
 }
