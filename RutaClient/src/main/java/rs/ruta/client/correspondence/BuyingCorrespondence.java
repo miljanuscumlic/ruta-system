@@ -70,7 +70,7 @@ public class BuyingCorrespondence extends Correspondence
 	{
 //		((BuyingProcess) state).ordering(this);
 //		((BuyingProcess) state).orderingActivity(this);
-		((BuyingProcess) state).doActivity(this, null);
+		((BuyingProcess) state).doActivity(this);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class BuyingCorrespondence extends Correspondence
 	public void executeBillingProcess()
 	{
 //		((BuyingProcess) state).billing(this);
-		((BuyingProcess) state).doActivity(this, null);
+		((BuyingProcess) state).doActivity(this);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class BuyingCorrespondence extends Correspondence
 	public void executePaymentNotificationProcess()
 	{
 //		((BuyingProcess) state).paymentNotification(this);
-		((BuyingProcess) state).doActivity(this, null);
+		((BuyingProcess) state).doActivity(this);
 	}
 
 }

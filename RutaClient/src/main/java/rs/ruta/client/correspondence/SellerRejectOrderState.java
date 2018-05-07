@@ -12,7 +12,7 @@ public class SellerRejectOrderState extends SellerOrderingProcessState
 		return INSTANCE;
 	}
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
 		//MMM to implement
 		//changeState(process, BuyerOrderAcceptedState.getInstance());

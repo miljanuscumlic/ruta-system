@@ -22,9 +22,9 @@ public class EndOfProcessState implements RutaProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
-		process.active = false;
+		((RutaProcess) correspondence.getState()).setActive(false);
 	}
 
 }

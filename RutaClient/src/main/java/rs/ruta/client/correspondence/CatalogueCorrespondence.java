@@ -70,12 +70,14 @@ public class CatalogueCorrespondence extends Correspondence
 		final Thread myThread = Thread.currentThread();
 		while (thread == myThread && active && !stopped)
 		{
-			if(state instanceof ResolveNextCatalogueProcess)
+			state.doActivity(this);
+
+/*			if(state instanceof ResolveNextCatalogueProcess)
 				executeResolveNextCatalogueProcess();
 			if(state instanceof CreateCatalogueProcess)
 				executeCreateCatalogueProcess();
 			else if(state instanceof DeleteCatalogueProcess)
-				executeDeleteCatalogueProcess();
+				executeDeleteCatalogueProcess();*/
 		}
 /*		if(!active && !((RutaProcess) state).isActive()) //true when correspondence is stopped
 		{

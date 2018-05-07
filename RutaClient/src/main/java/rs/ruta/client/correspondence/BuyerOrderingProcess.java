@@ -132,7 +132,7 @@ public class BuyerOrderingProcess extends BuyingProcess
 		{
 			while(active && !correspondence.isStopped())
 			{
-				doActivity(correspondence, this);
+				doActivity(correspondence);
 
 				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
@@ -234,13 +234,13 @@ public class BuyerOrderingProcess extends BuyingProcess
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
 		try
 		{
 			while(active && !correspondence.isStopped())
 			{
-				state.doActivity(correspondence, this);
+				state.doActivity(correspondence);
 
 				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();

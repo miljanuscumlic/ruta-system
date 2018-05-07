@@ -46,8 +46,9 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
+		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final RutaClientFrame clientFrame = process.getClient().getClientFrame();
 		Semaphore decision = new Semaphore(0);
 		EventQueue.invokeLater(() ->

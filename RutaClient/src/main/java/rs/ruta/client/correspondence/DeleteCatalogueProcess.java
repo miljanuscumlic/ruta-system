@@ -37,6 +37,7 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 	}
 
 	@Override
+	@Deprecated
 	public void deleteCatalogue(Correspondence correspondence) throws StateTransitionException
 	{
 		try
@@ -73,6 +74,70 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 			throw new StateTransitionException("Interrupted execution of Delete Catalogue Process!", e);
 		}
 	}
+
+	//MMM change in the way CreateCatalogueProcess,doActivity has been made
+	@Override
+	public void doActivity(Correspondence correspondence) throws StateTransitionException
+	{
+		try
+		{
+//			boolean loop = true;
+			while(active)
+			{
+				Future<?> future = notifyOfCatalogueDeletion();
+				receiveCatalogueDeletionAppResponse(future);
+				if(state instanceof ReviewDeletionOfCatalogueState)
+				{
+					Semaphore decision = new Semaphore(0);
+					reviewDeletionOfCatalogue(decision);
+					decision.acquire();
+					if(state instanceof EndOfProcessState)
+					{
+						endOfProcess();
+//						loop = false;
+					}
+//					else if(state instanceof NotifyOfCatalogueDeletionState) active = true;
+				}
+				else if(state instanceof CancelCatalogueState)
+				{
+					cancelCatalogue();
+					endOfProcess();
+//					loop = false;
+				}
+			}
+			correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
+		}
+		catch(Exception e)
+		{
+			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+			throw new StateTransitionException("Interrupted execution of Delete Catalogue Process!", e);
+		}
+	}
+
+/*	@Override
+	public void doActivity(final Correspondence correspondence) throws StateTransitionException
+	{
+		try
+		{
+			while(active)
+			{
+				state.doActivity(correspondence);
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
+		}
+		finally
+		{
+			if(correspondence.isActive() && !correspondence.isStopped())
+			{
+				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+			}
+		}
+	}*/
+
+
 
 	/**
 	 * Sends {@link CatalogueDeletionType} {@code UBL document} to the CDR.

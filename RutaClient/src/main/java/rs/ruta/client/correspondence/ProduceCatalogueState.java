@@ -40,8 +40,9 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
+		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
 		final RutaClientFrame clientFrame = client.getClientFrame();
 		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing My Catalogue..."), Color.BLACK);

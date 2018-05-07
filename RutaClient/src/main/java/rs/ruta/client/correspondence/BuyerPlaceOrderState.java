@@ -28,8 +28,9 @@ public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
+		final RutaProcess process = (RutaProcess) correspondence.getState();
 		produceOrder(process, correspondence.getCorrespondentIdentification().getIDValue());
 		sendOrder(process);
 		changeState(process, BuyerReceiveOrderResponseState.getInstance());

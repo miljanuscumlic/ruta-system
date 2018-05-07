@@ -32,9 +32,10 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
-		Future<?> future = ((CreateCatalogueProcess) process).getFuture();
+		final RutaProcess process = (RutaProcess) correspondence.getState();
+		final Future<?> future = ((CreateCatalogueProcess) process).getFuture();
 		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future);
 		if(accepted != null)
 		{

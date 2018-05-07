@@ -21,7 +21,7 @@ public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
 		try
 		{
@@ -35,7 +35,7 @@ public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
 
 		//after the correspondence is notified Order Response should be processed
 		if(!correspondence.isStopped())
-			changeState(process, BuyerProcessResponseState.getInstance());
+			changeState((RutaProcess) correspondence.getState(), BuyerProcessResponseState.getInstance());
 
 	}
 

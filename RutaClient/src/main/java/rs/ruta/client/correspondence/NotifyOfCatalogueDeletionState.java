@@ -27,5 +27,18 @@ public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
 		return ret;
 	}
 
+/*	@Override
+	public void doActivity(Correspondence correspondence)
+	{
+		final RutaProcess process = (RutaProcess) correspondence.getState();
+		final RutaClient client = process.getClient();
+		final CatalogueDeletionType catalogueDeletion = client.getMyParty().createCatalogueDeletion(client.getCDRParty());
+		final Future<?> ret = client.cdrSendMyCatalogueDeletionRequest(catalogueDeletion);
+		changeState(process, ReceiveCatalogueDeletionAppResponseState.getInstance());
+		return ret;
+	}*/
+
+
+
 
 }

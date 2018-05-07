@@ -60,6 +60,7 @@ public class CreateCatalogueProcess extends CatalogueProcess
 	}
 
 	@Override
+	@Deprecated
 	public void createCatalogue(final Correspondence correspondence) throws StateTransitionException
 	{
 		try
@@ -147,6 +148,7 @@ public class CreateCatalogueProcess extends CatalogueProcess
 	}
 
 	@Override
+	@Deprecated
 	public void createCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
 	{
 		try
@@ -170,9 +172,33 @@ public class CreateCatalogueProcess extends CatalogueProcess
 		}
 	}
 
+	@Deprecated
 	public void execute(Correspondence correspondence)
 	{
-		state.doActivity(correspondence, this);
+		state.doActivity(correspondence);
+	}
+
+	@Override
+	public void doActivity(final Correspondence correspondence) throws StateTransitionException
+	{
+		try
+		{
+			while(active)
+			{
+				state.doActivity(correspondence);
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
+		}
+		finally
+		{
+			if(correspondence.isActive() && !correspondence.isStopped())
+			{
+				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+			}
+		}
 	}
 
 }

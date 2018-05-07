@@ -20,8 +20,9 @@ public class SellerAcceptOrderState extends SellerOrderingProcessState
 		return INSTANCE;
 	}
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
+		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final OrderType order = ((SellerOrderingProcess) process).getOrder();
 		final OrderResponseSimpleType orderResponseSimple = new OrderResponseSimpleType();
 		orderResponseSimple.setID(UUID.randomUUID().toString());

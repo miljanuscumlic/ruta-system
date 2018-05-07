@@ -63,7 +63,7 @@ public class SellerOrderingProcess extends BuyingProcess
 		{
 			while(active && !correspondence.isStopped())
 			{
-				doActivity(correspondence, this);
+				doActivity(correspondence);
 				MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
 			}
 		}
@@ -81,9 +81,9 @@ public class SellerOrderingProcess extends BuyingProcess
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
-		((SellerOrderingProcessState) state).doActivity(correspondence, process);
+		((SellerOrderingProcessState) state).doActivity(correspondence);
 	}
 
 }

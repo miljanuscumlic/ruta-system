@@ -19,7 +19,7 @@ public class NextCatalogueState extends ResolveNextCatalogueProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
 		try
 		{
@@ -32,7 +32,7 @@ public class NextCatalogueState extends ResolveNextCatalogueProcessState
 		}
 		finally
 		{
-			process.setActive(false);
+			((RutaProcess) correspondence.getState()).setActive(false);
 		}
 	}
 }

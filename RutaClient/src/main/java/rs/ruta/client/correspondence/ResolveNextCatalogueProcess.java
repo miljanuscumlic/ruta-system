@@ -47,7 +47,48 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		{
 			while(active && !correspondence.isStopped())
 			{
-				doActivity(correspondence, this);
+				doActivity(correspondence);
+
+				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				marshaller.marshal(correspondence, System.out);
+
+				MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).
+				insert(null, (CatalogueCorrespondence) correspondence);
+				int i = 1;
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StateTransitionException("Interrupted execution of Buyer Ordering Process!", e);
+		}
+		finally
+		{
+			if(correspondence.isActive() && !correspondence.isStopped())
+			{
+				if(((CatalogueCorrespondence) correspondence).isCreateCatalogue())
+					correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
+				else
+					correspondence.changeState(DeleteCatalogueProcess.newInstance(correspondence.getClient()));
+			}
+		}
+	}
+
+/*	@Override
+	public void doActivity(Correspondence correspondence)
+	{
+		state.doActivity(correspondence);
+	}*/
+
+	@Override
+	public void doActivity(Correspondence correspondence)
+	{
+		try
+		{
+			while(active && !correspondence.isStopped())
+			{
+				state.doActivity(correspondence);
 
 				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
@@ -76,13 +117,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
-	{
-		state.doActivity(correspondence, process);
-	}
-
-
-	@Override
+	@Deprecated
 	public void createCatalogue(final Correspondence correspondence) throws StateTransitionException
 	{
 		correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
@@ -90,6 +125,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 	}
 
 	@Override
+	@Deprecated
 	public void createCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
 	{
 		correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));

@@ -13,11 +13,11 @@ public class SellerReceiveOrderChangeCancellationState extends SellerOrderingPro
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
 		//MMM to implement
 
 		//implementing timeout
-		changeState(process, EndOfProcessState.getInstance());
+		changeState((RutaProcess) correspondence.getState(), EndOfProcessState.getInstance());
 	}
 }

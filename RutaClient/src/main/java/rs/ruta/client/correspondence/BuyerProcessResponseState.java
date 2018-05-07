@@ -26,7 +26,7 @@ public class BuyerProcessResponseState extends BuyerOrderingProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
+	public void doActivity(Correspondence correspondence)
 	{
 		OrderResponseSimpleType orderResponseSimple;
 		OrderType order;
@@ -35,7 +35,7 @@ public class BuyerProcessResponseState extends BuyerOrderingProcessState
 		{
 			final DocumentReferenceType docReference = correspondence.getDocumentReferenceAtIndex(docCount - 1);
 			final String docType = docReference.getDocumentTypeValue();
-			//class object is not neccessary
+			//class object is not neccessary MMM check this
 			Class<?> docClazz = null;
 			try
 			{
@@ -45,7 +45,7 @@ public class BuyerProcessResponseState extends BuyerOrderingProcessState
 			{
 				throw new StateTransitionException("No definition for the class with the specified name could be found.", e);
 			}
-
+			final RutaProcess process = (RutaProcess) correspondence.getState();
 			if(docType.contains("OrderResponseSimpleType"))
 			{
 				orderResponseSimple = ((BuyerOrderingProcess) process).getOrderResponseSimple();
