@@ -174,6 +174,26 @@ public final class InstanceFactory
 	}
 
 	/**
+	 * Merges date and time {@code XMLGregorianCalendar} objects into one. Merge is done in a way
+	 * that the date part is taken from the {@code date} argument, and the time part is taken from
+	 * the {@code time} argument.  If either of these two are {@code null} returned result is also
+	 * {@code null}.
+	 * @param date
+	 * @param time
+	 * @return merged {@link XMLGregorianCalendar datetime} object or {@code null}
+	 */
+	public static XMLGregorianCalendar mergeDateTime(XMLGregorianCalendar date, XMLGregorianCalendar time)
+	{
+		XMLGregorianCalendar dateTime = null;
+		if(date != null && time != null)
+		{
+			dateTime = date;
+			dateTime.setTime(time.getHour(), time.getMinute(), time.getSecond());
+		}
+		return dateTime;
+	}
+
+	/**
 	 * Gets the object representing specific {@link TaxCategoryType tax category}.
 	 * @param taxType parameter designating tax category. May be:
 	 * <br>TAX_CATEGORY_0 for 0% tax rate

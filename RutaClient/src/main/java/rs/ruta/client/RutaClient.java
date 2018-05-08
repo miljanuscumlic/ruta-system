@@ -1042,8 +1042,8 @@ public class RutaClient implements RutaNode
 					try
 					{
 						future.get();
-						frame.appendToConsole(new StringBuilder("Order has been successfully deposited to the CDR."),
-								Color.GREEN);
+						frame.appendToConsole(new StringBuilder("Order with the ID: " + order.getIDValue() +
+								" has been successfully deposited to the CDR."), Color.GREEN);
 					}
 					catch(Exception e)
 					{
@@ -1051,8 +1051,8 @@ public class RutaClient implements RutaNode
 								new StringBuilder("Order has not been deposited to the CDR! "));
 					}
 				});
-				frame.appendToConsole(new StringBuilder("Order has been sent to the CDR service. Waiting for a response..."),
-						Color.BLACK);
+				frame.appendToConsole(new StringBuilder("Order with the ID: " + order.getIDValue() +
+						" has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 			}
 			else
 			{
@@ -1127,7 +1127,8 @@ public class RutaClient implements RutaNode
 					try
 					{
 						future.get();
-						frame.appendToConsole(new StringBuilder("Order Response Simple has been successfully deposited to the CDR."),
+						frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: " +
+								orderResponseSimple.getIDValue() + " has been successfully deposited to the CDR."),
 								Color.GREEN);
 					}
 					catch(Exception e)
@@ -1136,8 +1137,8 @@ public class RutaClient implements RutaNode
 								new StringBuilder("Order Response Simple has not been deposited to the CDR! "));
 					}
 				});
-				frame.appendToConsole(
-						new StringBuilder("Order Response Simple has been sent to the CDR service. Waiting for a response..."),
+				frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: " +
+								orderResponseSimple.getIDValue() + " has been sent to the CDR service. Waiting for a response..."),
 						Color.BLACK);
 			}
 			else
@@ -1439,8 +1440,8 @@ public class RutaClient implements RutaNode
 				try
 				{
 					final FindAllDocBoxDocumentIDsResponse response = future.get();
-					final List<String> docBoxIDs = response.getReturn();
-					final int docCount = docBoxIDs.size();
+					final List<String> docBoxDocumentIDs = response.getReturn();
+					final int docCount = docBoxDocumentIDs.size();
 					if(docCount != 0)
 					{
 						String plural = docCount + " documents";
@@ -1455,7 +1456,7 @@ public class RutaClient implements RutaNode
 						AtomicInteger downloadCount = new AtomicInteger(0);
 						CountDownLatch finished = new CountDownLatch(docCount);
 						Semaphore oneAtATime = new Semaphore(1);
-						for(String docID : docBoxIDs)
+						for(String docID : docBoxDocumentIDs)
 						{
 							oneAtATime.acquire();
 							DocBoxDocumentSearchCriterion docCriterion = new DocBoxDocumentSearchCriterion();
@@ -1463,16 +1464,16 @@ public class RutaClient implements RutaNode
 							docCriterion.setDocumentID(docID);
 							port.findDocBoxDocumentAsync(docCriterion, docFuture ->
 							{
+								Object document = null;
 								try
 								{
 									final FindDocBoxDocumentResponse res = docFuture.get();
-									final Object document = res.getReturn();
+									document = res.getReturn();
 									oneAtATime.release();
 									if(document != null)
 									{
 										downloadCount.incrementAndGet();
 										processDocBoxDocument(document, docID);
-										port.deleteDocBoxDocumentAsync(myParty.getCDRUsername(), docID, deleteFuture -> {});
 									}
 									else
 										frame.appendToConsole(new StringBuilder("Document ").append(docID).
@@ -1492,6 +1493,8 @@ public class RutaClient implements RutaNode
 								}
 								finally
 								{
+									if(document != null)
+										port.deleteDocBoxDocumentAsync(myParty.getCDRUsername(), docID, deleteFuture -> {});
 									finished.countDown();
 								}
 							});
@@ -1621,9 +1624,10 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == OrderType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Order with the ID: ").append(docID).
+			frame.appendToConsole(new StringBuilder("Order with the ID: ").append(((OrderType) document).getIDValue()).//append(docID).
 					append(" has been successfully retrieved."), Color.GREEN);
-			myParty.processDocBoxOrder((OrderType) document);
+			String corrName = myParty.processDocBoxOrder((OrderType) document);
+			frame.appendToConsole(new StringBuilder("New correspondence: ").append(corrName).append(" has been opened."), Color.BLACK);
 			String partyName;
 			try
 			{
@@ -1640,14 +1644,15 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == OrderResponseSimpleType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: ").append(docID).
+			frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: ").
+					append(((OrderResponseSimpleType) document).getIDValue()).//append(docID).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxOrderResponseSimple((OrderResponseSimpleType) document);
 			String partyName;
 			try
 			{
 				partyName = InstanceFactory.getPropertyOrNull(
-						((OrderResponseSimpleType) document).getBuyerCustomerParty().getParty().getPartyName().get(0),
+						((OrderResponseSimpleType) document).getSellerSupplierParty().getParty().getPartyName().get(0),
 						PartyNameType::getNameValue);
 			}
 			catch(Exception e)
@@ -1660,7 +1665,7 @@ public class RutaClient implements RutaNode
 		}
 		else
 			frame.appendToConsole(new StringBuilder("Document with the ID: ").append(docID).
-					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to trash."),
+					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
 					Color.GREEN);
 	}
 

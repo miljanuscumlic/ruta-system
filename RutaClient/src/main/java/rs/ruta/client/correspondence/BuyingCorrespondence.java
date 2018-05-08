@@ -8,6 +8,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.MapperRegistry;
 
 /**
  * Class encapsulating {@link Correspondence} between parties during which {@link OrderType},
@@ -50,13 +52,14 @@ public class BuyingCorrespondence extends Correspondence
 		final Thread myThread = Thread.currentThread();
 		while (thread == myThread && active && !stopped)
 		{
-			if(state instanceof BuyerOrderingProcess ||
+			state.doActivity(this);
+/*			if(state instanceof BuyerOrderingProcess ||
 					state instanceof SellerOrderingProcess)
 				executeOrderingProcess();
 			else if(state instanceof BillingProcess)
 				executeBillingProcess();
 			else if(state instanceof PaymentNotificationProcess)
-				executePaymentNotificationProcess();
+				executePaymentNotificationProcess();*/
 		}
 		if(stopped)
 			//stoppedSemaphore.release();
@@ -70,7 +73,7 @@ public class BuyingCorrespondence extends Correspondence
 	{
 //		((BuyingProcess) state).ordering(this);
 //		((BuyingProcess) state).orderingActivity(this);
-		((BuyingProcess) state).doActivity(this);
+		state.doActivity(this);
 	}
 
 	/**
@@ -80,7 +83,7 @@ public class BuyingCorrespondence extends Correspondence
 	public void executeBillingProcess()
 	{
 //		((BuyingProcess) state).billing(this);
-		((BuyingProcess) state).doActivity(this);
+		state.doActivity(this);
 	}
 
 	/**
@@ -89,7 +92,13 @@ public class BuyingCorrespondence extends Correspondence
 	public void executePaymentNotificationProcess()
 	{
 //		((BuyingProcess) state).paymentNotification(this);
-		((BuyingProcess) state).doActivity(this);
+		state.doActivity(this);
+	}
+
+	@Override
+	protected void doStore() throws DetailException
+	{
+		MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, this);
 	}
 
 }

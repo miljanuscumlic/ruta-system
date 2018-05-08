@@ -390,7 +390,8 @@ public class ExistConnector implements DatastoreConnector
 		return getOrCreateCollection(current, segments);
 	}
 
-	/**Creates all subcollections of the passed {@code Collection} argument.
+	/**
+	 * Creates all subcollections of the passed {@code Collection} argument.
 	 * @param current {@code Collection} which subcollections are created
 	 * @param descendants all subcollections that should be created or traversed on the path
 	 * @return a {@code Collection} instance for the passed collection

@@ -1226,7 +1226,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return trimmed;
 	}
 
-	/**Gets the collection from the database as a database admin. Retrieved collection is defined
+	/**
+	 * Gets the collection from the database as a database admin. Retrieved collection is defined
 	 * in the subclass of the {@code XmlMapper}.
 	 * @return a {@code Collection} instance for the requested collection or {@code null} if the collection could not be found
 	 * @throws XMLDBException if there was an database connectivity issue
@@ -1238,7 +1239,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		//				DatabaseAdmin.getInstance().getUsername(), DatabaseAdmin.getInstance().getPassword());
 	}
 
-	/**Gets the collection from the database as a database admin. Reletive path to retrieved collection
+	/**
+	 * Gets the collection from the database as a database admin. Reletive path to retrieved collection
 	 * is passed as a argument.
 	 * @param collectionPath relative path to the collection
 	 * @return a {@code Collection} instance for the requested collection or {@code null} if the collection could not be found
@@ -1251,7 +1253,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		//						DatabaseAdmin.getInstance().getUsername(), DatabaseAdmin.getInstance().getPassword());
 	}
 
-	/**Gets the collection from the database as a specified user. Collection that is retrieved
+	/**
+	 * Gets the collection from the database as a specified user. Collection that is retrieved
 	 * is defined in the subclasses of the {@code XmlMapper}.
 	 * @return a {@code Collection} instance for the requested collection or {@code null} if the collection could not be found
 	 * @throws XMLDBException if there was an database connectivity issue

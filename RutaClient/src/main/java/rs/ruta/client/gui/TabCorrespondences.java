@@ -229,9 +229,10 @@ public class TabCorrespondences extends TabComponent
 		TableColumnModel colModel = table.getColumnModel();
 		colModel.getColumn(0).setPreferredWidth(25);
 		colModel.getColumn(1).setPreferredWidth(200);
-		colModel.getColumn(2).setPreferredWidth(200);
+		colModel.getColumn(2).setPreferredWidth(150);
 		colModel.getColumn(3).setPreferredWidth(150);
 		colModel.getColumn(4).setPreferredWidth(150);
+		colModel.getColumn(5).setPreferredWidth(150);
 		return table;
 	}
 
@@ -284,8 +285,8 @@ public class TabCorrespondences extends TabComponent
 		colModel.getColumn(1).setPreferredWidth(200);
 		colModel.getColumn(2).setPreferredWidth(200);
 		colModel.getColumn(3).setPreferredWidth(200);
-		colModel.getColumn(4).setPreferredWidth(200);
-
+		colModel.getColumn(4).setPreferredWidth(150);
+		colModel.getColumn(5).setPreferredWidth(150);
 		return table;
 	}
 

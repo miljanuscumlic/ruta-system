@@ -29,4 +29,12 @@ public class BuyingClosingProcess extends DocumentProcess
 		return process;
 	}
 
+	@Override
+	public void doActivity(Correspondence correspondence)
+	{
+		correspondence.setActive(false);
+	}
+
+
+
 }

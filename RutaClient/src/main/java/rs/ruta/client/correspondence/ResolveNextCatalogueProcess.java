@@ -88,16 +88,14 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		{
 			while(active && !correspondence.isStopped())
 			{
+				//MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).insert(null, (CatalogueCorrespondence) correspondence);
+				correspondence.store();
 				state.doActivity(correspondence);
 
-				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
+/*				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				marshaller.marshal(correspondence, System.out);
-
-				MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).
-				insert(null, (CatalogueCorrespondence) correspondence);
-				int i = 1;
+				marshaller.marshal(correspondence, System.out);*/
 			}
 		}
 		catch (Exception e)

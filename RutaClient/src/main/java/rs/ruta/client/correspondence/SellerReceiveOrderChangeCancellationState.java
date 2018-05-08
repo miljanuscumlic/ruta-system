@@ -15,9 +15,20 @@ public class SellerReceiveOrderChangeCancellationState extends SellerOrderingPro
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		//MMM to implement
+		try
+		{
+			//MMM: implementing timeout : temporary commented
+//			long timeout = 5000;
+//			correspondence.block(timeout);
+			correspondence.block();
+		}
+		catch(InterruptedException e)
+		{
+			if(!correspondence.isStopped())
+				throw new StateTransitionException("Correspondence has been interrupted!");
+		}
 
-		//implementing timeout
-		changeState((RutaProcess) correspondence.getState(), EndOfProcessState.getInstance());
+		if(!correspondence.isStopped())
+			changeState((RutaProcess) correspondence.getState(), EndOfProcessState.getInstance());
 	}
 }

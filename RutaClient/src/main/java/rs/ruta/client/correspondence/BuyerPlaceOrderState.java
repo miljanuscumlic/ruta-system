@@ -32,7 +32,10 @@ public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 	{
 		final RutaProcess process = (RutaProcess) correspondence.getState();
 		produceOrder(process, correspondence.getCorrespondentIdentification().getIDValue());
+		final OrderType order = ((BuyerOrderingProcess) process).getOrder();
 		sendOrder(process);
+		correspondence.addDocumentReference(order.getUUIDValue(), order.getIDValue(),
+				order.getIssueDateValue(), order.getIssueTimeValue(), order.getClass().getName());
 		changeState(process, BuyerReceiveOrderResponseState.getInstance());
 	}
 
@@ -45,7 +48,6 @@ public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 		final OrderType order = myParty.produceOrder(correspondentID);
 		if(order == null)
 			throw new StateTransitionException("Order is malformed. UBL validation has failed.");
-		else
 			((BuyerOrderingProcess) process).setOrder(order);
 	}
 

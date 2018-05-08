@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.RutaClient;
+import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;
 
 @XmlRootElement(name = "BuyerOrderingProcess")
@@ -240,15 +241,31 @@ public class BuyerOrderingProcess extends BuyingProcess
 		{
 			while(active && !correspondence.isStopped())
 			{
+				//MMM refactor database store in a new method of Correspondence
+		/*		new Thread( () ->
+				{
+					try
+					{
+						MapperRegistry.getInstance().
+						getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
+					}
+					catch (DetailException e)
+					{
+						//MMM log error;
+					}
+				}
+				).start();*/
+
+				correspondence.store();
+
 				state.doActivity(correspondence);
 
-				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
+/*				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				marshaller.marshal(correspondence, System.out);
+				marshaller.marshal(correspondence, System.out);*/
 
-				MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
-				int i = 1;
+
 			}
 		}
 		catch (Exception e)

@@ -5,13 +5,10 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -27,7 +24,6 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Cat
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CommodityClassificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemLocationQuantityType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
@@ -54,13 +50,8 @@ import rs.ruta.client.correspondence.BuyerOrderingProcess;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
-import rs.ruta.client.correspondence.CreateCatalogueProcess;
-import rs.ruta.client.correspondence.CreateCatalogueProcessState;
 import rs.ruta.client.correspondence.RutaProcess;
-import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
-import rs.ruta.client.correspondence.StateTransitionException;
-import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.InstanceFactory;
@@ -1057,7 +1048,7 @@ public class MyParty extends BusinessParty
 		if(party != null)
 		{
 			try
-			{
+			{//if(getOtherParties().contains(party))
 				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
 				party.setPartner(false);
 				success = getOtherParties().remove(party);
@@ -1547,8 +1538,8 @@ public class MyParty extends BusinessParty
 		//if following party is archived sometime before, object representing that party and referenced
 		//in the archived list has the same Party ID
 		//but is not the same object as the one passed to this method. There should be removed the
-		//object with the same Party ID, not the same object like it would be done by this method call:
-		//getArchivedParties().remove(party). That's way this is invoked:
+		//object with the same Party ID, not the same object like it would be done by method call:
+		//getArchivedParties().remove(party). That's why this is invoked:
 		final BusinessParty archivedParty = getArchivedParty(party.getPartyID());
 		boolean archived = removeArchivedParty(archivedParty);
 		if(archived)
@@ -1558,7 +1549,8 @@ public class MyParty extends BusinessParty
 		boolean other = false, partner = false;
 		if(party.isPartner())
 		{
-			other = removeOtherParty(party);
+//			if(getOtherParties().contains(party))
+				other = removeOtherParty(party);
 			addBusinessPartner(party);
 			if(other)
 				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED));
@@ -1897,7 +1889,11 @@ public class MyParty extends BusinessParty
 		order.setSellerSupplierParty(sellerParty);
 		order.setID(UUID.randomUUID().toString());//MMM from MyParty's counter
 		order.setUUID(UUID.randomUUID().toString());
-		order.setIssueDate(InstanceFactory.getDate());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		order.setIssueDate(now);
+		order.setIssueTime(now);
+		System.out.println(order.getIssueDate().toString());
+		System.out.println(order.getIssueTime().toString());
 		final OrderLineType orderLine = new OrderLineType();
 		final LineItemType lineItem = new LineItemType();
 		lineItem.setID(UUID.randomUUID().toString()); //MMM put ordered number here
@@ -2606,15 +2602,18 @@ public class MyParty extends BusinessParty
 	 * Processes {@link OrderType order} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
 	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
 	 * @param order order to process
+	 * @return TODO
 	 */
-	public void processDocBoxOrder(OrderType order) throws DetailException
+	public String processDocBoxOrder(OrderType order) throws DetailException
 	{
 		final String correspondentID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentID, false);
-		addBuyingCorrespondence(newCorr);
 		((SellerOrderingProcess) newCorr.getState()).setOrder(order);
-		newCorr.addDocumentReference(order.getUUIDValue(), order.getIDValue(), order.getClass().getName());
+		newCorr.addDocumentReference(order.getUUIDValue(), order.getIDValue(),
+				order.getIssueDateValue(), order.getIssueTimeValue(), order.getClass().getName());
+		addBuyingCorrespondence(newCorr);
 		newCorr.start();
+		return newCorr.getName();
 	}
 
 	/**
@@ -2630,11 +2629,12 @@ public class MyParty extends BusinessParty
 		final IDType orderID = orderResponseSimple.getOrderReference().getDocumentReference().getID();
 		final Correspondence corr = findCorrespondence(correspondentID, orderID);
 		if(corr == null)
-			throw new DetailException("Matching correspondence could not be found");
+			throw new DetailException("Matching correspondence could not be found.");
 		else
 		{
 			corr.addDocumentReference(orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
-				orderResponseSimple.getClass().getName());
+					orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
+					orderResponseSimple.getClass().getName());
 			((BuyerOrderingProcess) corr.getState()).setOrderResponseSimple(orderResponseSimple);
 			if(corr.isAlive())
 				corr.proceed();

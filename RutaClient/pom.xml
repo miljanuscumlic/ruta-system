@@ -239,6 +239,10 @@
 											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
 											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Suma\${project.artifactId}-${project.version}.jar</destinationFile>
 										</fileSet>
+										<fileSet>
+											<sourceFile>${project.build.directory}/${project.artifactId}.jar</sourceFile>
+											<destinationFile>C:\Documents and Settings\miljan\Desktop\Ruta Client Livada\${project.artifactId}-${project.version}.jar</destinationFile>
+										</fileSet>
 									</fileSets>
 								</configuration>
 							</execution>

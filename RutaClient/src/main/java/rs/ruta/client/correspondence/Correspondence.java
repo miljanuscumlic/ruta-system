@@ -9,9 +9,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.MapperRegistry;
 
 /**
  * Abstract class that serves as a marker class for all correspondences in {@code Ruta System}.
@@ -23,6 +29,7 @@ import rs.ruta.common.InstanceFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class Correspondence extends RutaProcess implements Runnable
 {
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	protected volatile Thread thread = null;
 	/**
 	 * Signals that correspondence thread is close to be finished. Signaling is by {@link Semaphore#release()}
@@ -33,15 +40,16 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 * True when correspondence is stopped by {@link #stop()} method call (invoked usually on closing
 	 * of the application).
 	 */
+
 	@XmlElement(name = "Stopped")
 	protected boolean stopped;
 	@XmlElement(name = "CorrespondentIdentification")
 	protected PartyIdentificationType correspondentIdentification;
 	/**
-	 * {@link DocumentReferenceType Document references} of all documents of the {@code Correspondence}.
+	 * {@link DocumentReference Document references} of all documents of the {@code Correspondence}.
 	 */
 	@XmlElement(name = "DocumentReference")
-	protected ArrayList<DocumentReferenceType> documentReferences;
+	protected ArrayList<DocumentReference> documentReferences;
 	/**
 	 * Correspondence's name.
 	 */
@@ -168,10 +176,10 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Gets {@link DocumentReferenceType Document references} of all documents of the {@code Correspondence}.
+	 * Gets {@link DocumentReference Document references} of all documents of the {@code Correspondence}.
 	 * @return
 	 */
-	public ArrayList<DocumentReferenceType> getDocumentReferences()
+	public ArrayList<DocumentReference> getDocumentReferences()
 	{
 		if(documentReferences == null)
 			documentReferences = new ArrayList<>();
@@ -179,18 +187,18 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	public void setDocumentReferences(
-			ArrayList<DocumentReferenceType> documentReferences)
+			ArrayList<DocumentReference> documentReferences)
 	{
 		this.documentReferences = documentReferences;
 	}
 
 	/**
-	 * Gets the {@link DocumentReferenceType} at passed index.
+	 * Gets the {@link DocumentReference} at passed index.
 	 * @param index index of the document reference
 	 * @return document reference
 	 * @throws IndexOutOfBoundsException if there is no document reference with the passed index
 	 */
-	public DocumentReferenceType getDocumentReferenceAtIndex(int index)
+	public DocumentReference getDocumentReferenceAtIndex(int index)
 	{
 		if(documentReferences == null)
 			documentReferences = new ArrayList<>();
@@ -207,18 +215,57 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Adds new {@link DocumentReferenceType document reference}.
+	 * Adds new {@link DocumentReference document reference}.
 	 * @param uuid document's UUID
 	 * @param id document's ID
+	 * @param issueDate issue date of referenced document
+	 * @param issueTime issue time of referenced document
 	 * @param docType document's type as fully qualified name
 	 */
-	public void addDocumentReference(String uuid, String id, String docType)
+	public void addDocumentReference(String uuid, String id, XMLGregorianCalendar issueDate,
+			XMLGregorianCalendar issueTime, String docType)
 	{
-		final DocumentReferenceType docReference = new DocumentReferenceType();
+		final DocumentReference docReference = new DocumentReference();
+		docReference.setDocumentType(docType);
 		docReference.setUUID(uuid);
 		docReference.setID(id);
-		docReference.setDocumentType(docType);
+		docReference.setIssueDate(issueDate);
+		docReference.setIssueTime(issueTime);
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		docReference.setReceivedTime(now);
 		getDocumentReferences().add(docReference);
+//		System.out.println(InstanceFactory.getLocalDateTimeAsString(lastActivityTime));
+//		System.out.println(InstanceFactory.getLocalDateTimeAsString(issueDate));
+//		System.out.println(InstanceFactory.getLocalDateTimeAsString(issueTime));
+/*		final XMLGregorianCalendar issueDateTime = issueDate;
+		issueDateTime.setTime(issueTime.getHour(), issueTime.getMinute(), issueTime.getSecond());
+		System.out.println(InstanceFactory.getLocalDateTimeAsString(issueDateTime));*/
+		setLastActivityTime(now);
+//		System.out.println(InstanceFactory.getLocalDateTimeAsString(lastActivityTime));
+	}
+
+	/**
+	 * Adds new {@link DocumentReferenceType document reference}. This is just convinient method.
+	 * @param docReference document reference to add
+	 */
+	public void addDocumentReference(DocumentReferenceType docReference)
+	{
+		addDocumentReference(new DocumentReference(docReference));
+	}
+
+	/**
+	 * Adds new {@link DocumentReference document reference}.
+	 * @param docReference document reference to add
+	 */
+	public void addDocumentReference(DocumentReference docReference)
+	{
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		docReference.setReceivedTime(now);
+		getDocumentReferences().add(docReference);
+/*		final XMLGregorianCalendar issueDateTime = docReference.getIssueDateValue();
+		final XMLGregorianCalendar issueTime = docReference.getIssueTimeValue();
+		issueDateTime.setTime(issueTime.getHour(), issueTime.getMinute(), issueTime.getSecond());*/
+		setLastActivityTime(now);
 	}
 
 	/**
@@ -235,16 +282,16 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 * Gets the time of last update of the {@link Correspondence}.
 	 * @return time as String
 	 */
-	//MMM this method may be superfluos because getLastActivityTime should be used
+	//MMM this method may be superfluos because getLastActivityTime is to be used
 	public String getTime()
 	{
-		DocumentReferenceType lastRef = null;
+		DocumentReference lastRef = null;
 		final int count = getDocumentReferenceCount();
 		String time = null;
 		if(count != 0)
 		{
 			lastRef = getDocumentReferenceAtIndex(count - 1);
-			time = InstanceFactory.getLocalDateTimeAsString(lastRef.getIssueTimeValue());
+			time = InstanceFactory.getLocalDateTimeAsString(lastRef.getReceivedTime());
 		}
 		return time;
 	}
@@ -296,6 +343,22 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
+	 * Gets the issue date and time of the last document in the correspondence.
+	 * @return time of the last document in the correspondence
+	 */
+	public XMLGregorianCalendar getLastDocumentIssueTime()
+	{
+		XMLGregorianCalendar issueDateTime = null;
+		final int referenceCount = getDocumentReferenceCount();
+		if(referenceCount != 0)
+		{
+			final DocumentReference lastDocRef = getDocumentReferenceAtIndex(referenceCount - 1);
+			issueDateTime = InstanceFactory.mergeDateTime(lastDocRef.getIssueDateValue(), lastDocRef.getIssueTimeValue());
+		}
+		return issueDateTime;
+	}
+
+	/**
 	 * Gets {@link Semaphore} that tells whether the {@code Correspondence}'s thread is about to be
 	 * stopped.
 	 * @return the threadStopped
@@ -331,5 +394,29 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	{
 		threadStopped.acquire();
 	}
+
+	/**
+	 * Stores {@link Correspondence} to the database.
+	 */
+	public void store()
+	{
+		new Thread( () ->
+		{
+			try
+			{
+				doStore();
+			}
+			catch (DetailException e)
+			{
+				logger.error("Correspondence could not be stored to the database. Exception is: ", e);
+			}
+		}).start();
+	}
+
+	/**
+	 * Subclass specific method for storing object of {@link Correspondence}'s subclasses.
+	 * @throws DetailException if object could not be stored to the database
+	 */
+	protected abstract void doStore() throws DetailException;
 
 }

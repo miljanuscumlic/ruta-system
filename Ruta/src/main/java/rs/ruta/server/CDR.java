@@ -17,6 +17,7 @@ import javax.jws.*;
 import javax.servlet.ServletContext;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.MTOM;
@@ -326,7 +327,9 @@ public class CDR implements Server
 	{
 		final ApplicationResponseType appResponse = new ApplicationResponseType();
 		appResponse.setID(UUID.randomUUID().toString());
-		appResponse.setIssueDate(InstanceFactory.getDate());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		appResponse.setIssueDate(now);
+		appResponse.setIssueTime(now);
 		appResponse.setSenderParty(senderParty);
 		appResponse.setReceiverParty(receiverParty);
 		final DocumentResponseType docResponse = new DocumentResponseType();

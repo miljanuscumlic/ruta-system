@@ -8,6 +8,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.datamapper.MapperRegistry;
 
 /**
  * Class encapsulating {@link Correspondence} between parties when exchanging {@link CatalogueType}
@@ -124,6 +126,12 @@ public class CatalogueCorrespondence extends Correspondence
 	public void waitThreadStopped() throws InterruptedException
 	{
 		//do nothing because Semaphore is not used
+	}
+
+	@Override
+	protected void doStore() throws DetailException
+	{
+		MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).insert(null, this);
 	}
 
 }
