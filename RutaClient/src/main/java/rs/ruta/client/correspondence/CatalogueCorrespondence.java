@@ -39,6 +39,7 @@ public class CatalogueCorrespondence extends Correspondence
 		corr.setClient(client);
 		corr.setName(corr.uuid.getValue());
 		corr.setCorrespondentIdentification(client.getCDRParty().getPartyID());
+		corr.setCorrespondentParty(client.getCDRParty());
 		final XMLGregorianCalendar currentDateTime = InstanceFactory.getDate();
 		corr.setCreationTime(currentDateTime);
 		corr.setLastActivityTime(currentDateTime);

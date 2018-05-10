@@ -88,7 +88,7 @@ public class RutaClientTest
 		boolean secondTry = false;
 		CountDownLatch latch = new CountDownLatch(1);
 
-		final JOptionPane awhilePane = new JOptionPane("Trying to open Ruta Client application.        \nThis could take a while. Please wait...",
+		final JOptionPane awhilePane = new JOptionPane("Opening Ruta Client application.        \nThis could take a while. Please wait...",
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
 		final JDialog awhileDialog = awhilePane.createDialog(null, "Ruta Client");
 		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

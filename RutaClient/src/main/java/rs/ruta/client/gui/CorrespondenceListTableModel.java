@@ -21,11 +21,6 @@ public class CorrespondenceListTableModel extends DefaultTableModel
 		super();
 	}
 
-	public List<Correspondence> getCorrespondeces()
-	{
-		return correspondences;
-	}
-
 	public void setCorrespondences(List<Correspondence> correspondeces)
 	{
 		this.correspondences = correspondeces;

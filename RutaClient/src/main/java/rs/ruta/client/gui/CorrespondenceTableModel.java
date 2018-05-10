@@ -7,7 +7,7 @@ import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.common.InstanceFactory;
 
 /**
- * Data model for a table displaying {@link Correspondence} of a party.
+ * Data model for a table displaying one {@link Correspondence} of a party.
  */
 public class CorrespondenceTableModel extends DefaultTableModel
 {
@@ -15,7 +15,7 @@ public class CorrespondenceTableModel extends DefaultTableModel
 
 	private static String[] columnNames =
 		{
-				"No.", "From", "Document", "ID", "Issue Time", "Received Time"
+				"No.", "From", "Document Type", "ID", "Issue Time", "Receipt Time"
 		};
 
 	private Correspondence corr;
@@ -62,9 +62,9 @@ public class CorrespondenceTableModel extends DefaultTableModel
 		case 0:
 			return rowIndex + 1;
 		case 1:
-			return corr.getDocumentReferenceAtIndex(rowIndex).getIssuerParty().getPartyNameAtIndex(0);
+			return corr.getCorrespondentPartyName();
 		case 2:
-			return corr.getDocumentReferenceAtIndex(rowIndex).getDocumentTypeValue();
+			return getDocumentType(rowIndex);
 		case 3:
 			return corr.getDocumentReferenceAtIndex(rowIndex).getIDValue();
 		case 4:
@@ -77,5 +77,20 @@ public class CorrespondenceTableModel extends DefaultTableModel
 		default:
 			return null;
 		}
+	}
+
+	/**
+	 * Strips the string so that just name of the document type is returned.
+	 * @param index index of document reference inside the correspondence
+	 * @return document type name
+	 */
+	private String getDocumentType(int index)
+	{
+		String docType = corr.getDocumentReferenceAtIndex(index).getDocumentTypeValue();
+		if(docType.contains("."))
+			docType = docType.substring(docType.lastIndexOf(".") + 1);
+		if(docType.endsWith("Type"))
+			docType = docType.substring(0, docType.lastIndexOf("Type"));
+		return docType;
 	}
 }

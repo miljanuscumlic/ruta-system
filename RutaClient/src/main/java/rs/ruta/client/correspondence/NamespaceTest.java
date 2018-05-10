@@ -9,7 +9,7 @@ public class NamespaceTest
 	{
 		try
 		{
-			BuyingCorrespondence corr = BuyingCorrespondence.newInstance(null, "234", true);
+			BuyingCorrespondence corr = BuyingCorrespondence.newInstance(null, null, "234", true);
 			JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 			Marshaller m = (Marshaller) jaxbContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

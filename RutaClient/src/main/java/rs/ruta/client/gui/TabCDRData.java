@@ -625,7 +625,7 @@ public class TabCDRData extends TabComponent
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
 					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
@@ -657,7 +657,7 @@ public class TabCDRData extends TabComponent
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
 					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
@@ -689,7 +689,7 @@ public class TabCDRData extends TabComponent
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
 			new Thread(()->
 			{
 				try
@@ -715,7 +715,7 @@ public class TabCDRData extends TabComponent
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
 			new Thread(() ->
 			{
 				selectedParty.setPartner(true);
@@ -740,7 +740,7 @@ public class TabCDRData extends TabComponent
 		{
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
 			{
 				selectedParty.setPartner(false);
 				try
@@ -763,7 +763,7 @@ public class TabCDRData extends TabComponent
 		deleteArchivedItem.addActionListener(event ->
 		{
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
 			new Thread(() ->
 			{
 				final String partyName = selectedParty.getPartySimpleName();
@@ -787,7 +787,7 @@ public class TabCDRData extends TabComponent
 		deleteDeregisteredItem.addActionListener(event ->
 		{
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
 			new Thread(() ->
 			{
 				final String partyName = selectedParty.getPartySimpleName();
@@ -859,7 +859,7 @@ public class TabCDRData extends TabComponent
 					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
 						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
-						final BusinessParty party = partyListTableModel.getParty(realRowIndex);
+						final BusinessParty party = partyListTableModel.getPartyAtIndex(realRowIndex);
 						partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
 						rightScrollPane.setViewportView(partnerCatalogueTable);
 						selectNode(partyTree, party);

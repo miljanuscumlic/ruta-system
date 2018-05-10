@@ -42,7 +42,7 @@ public class PartyListTableModel extends DefaultTableModel
 	 * @param index party's index
 	 * @return party or {@code null} if parties field is {@code null}
 	 */
-	public BusinessParty getParty(int index)
+	public BusinessParty getPartyAtIndex(int index)
 	{
 		return parties != null ? parties.get(index) : null;
 	}

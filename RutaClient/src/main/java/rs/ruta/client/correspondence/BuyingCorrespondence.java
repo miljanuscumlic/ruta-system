@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.InstanceFactory;
@@ -23,11 +24,12 @@ public class BuyingCorrespondence extends Correspondence
 	 * Constructs new instance of a {@link BuyingCorrespondence} and sets its state to
 	 * default value and uuid to a random value.
 	 * @param client {@link RutaClient} object
+	 * @param correspondentParty correspondent {@link PartyType}
 	 * @param correspondentID ID of the correspondent party
 	 * @param buyer true if correspondence is on the Buyer's Party side, false if on the Seller's Party side
 	 * @return {@code BuyingCorrespondence}
 	 */
-	public static BuyingCorrespondence newInstance(RutaClient client, String correspondentID, boolean buyer)
+	public static BuyingCorrespondence newInstance(RutaClient client, PartyType correspondentParty, String correspondentID, boolean buyer)
 	{
 		BuyingCorrespondence corr = new BuyingCorrespondence();
 		corr.setId(UUID.randomUUID().toString());
@@ -38,6 +40,7 @@ public class BuyingCorrespondence extends Correspondence
 		corr.setClient(client);
 		corr.setName(corr.uuid.getValue());
 		corr.setCorrespondentIdentification(correspondentID);
+		corr.setCorrespondentParty(correspondentParty);
 		final XMLGregorianCalendar currentDateTime = InstanceFactory.getDate();
 		corr.setCreationTime(currentDateTime);
 		corr.setLastActivityTime(currentDateTime);

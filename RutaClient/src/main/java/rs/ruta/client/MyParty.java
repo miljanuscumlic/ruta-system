@@ -2607,7 +2607,8 @@ public class MyParty extends BusinessParty
 	public String processDocBoxOrder(OrderType order) throws DetailException
 	{
 		final String correspondentID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
-		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentID, false);
+		final PartyType correspondentParty = order.getBuyerCustomerParty().getParty();
+		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, false);
 		((SellerOrderingProcess) newCorr.getState()).setOrder(order);
 		newCorr.addDocumentReference(order.getUUIDValue(), order.getIDValue(),
 				order.getIssueDateValue(), order.getIssueTimeValue(), order.getClass().getName());

@@ -22,15 +22,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
+import rs.ruta.client.correspondence.Correspondence;
 
 /**
  * Class for displaying of {@link Correspondence}s of My Party.
@@ -127,7 +130,7 @@ public class TabCorrespondences extends TabComponent
 				{
 					partiesTableModel.setParties(partyList);
 					partiesTableModel.fireTableDataChanged();
-//					partiesSorter.allRowsChanged();
+					//					partiesSorter.allRowsChanged();
 					rightScrollPane.setViewportView(partiesTable);
 				}
 				else
@@ -148,11 +151,12 @@ public class TabCorrespondences extends TabComponent
 			new Thread(() ->
 			{
 				final String correspondentID = selectedParty.getPartyID();
-				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, correspondentID, true);
+				final PartyType correspondentParty = selectedParty.getCoreParty();
+				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, true);
 				myParty.addBuyingCorrespondence(corr);
 				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(correspondentID));
 				EventQueue.invokeLater(() -> { partnerCorrespondenceListTableModel.fireTableDataChanged(); });
-//				corr.executeOrderingProcess();
+				//				corr.executeOrderingProcess();
 				corr.start();
 			}).start();
 		});
@@ -186,7 +190,7 @@ public class TabCorrespondences extends TabComponent
 	private JTable createCorrespondenceListTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
-/*		{
+		/*		{
 			private static final long serialVersionUID = -2879401192820075582L;
 			//implementing column header's tooltips
 			@Override
@@ -217,13 +221,7 @@ public class TabCorrespondences extends TabComponent
 			}
 		};*/
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-/*		table.setFillsViewportHeight(true);
-		table.setAutoCreateRowSorter(true);
-
-		table.getRowSorter();
-		table.getRowSorter().getModelRowCount();
-		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);*/
-
+		table.setFillsViewportHeight(true);
 		table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());
 
 		TableColumnModel colModel = table.getColumnModel();
@@ -233,6 +231,27 @@ public class TabCorrespondences extends TabComponent
 		colModel.getColumn(3).setPreferredWidth(150);
 		colModel.getColumn(4).setPreferredWidth(150);
 		colModel.getColumn(5).setPreferredWidth(150);
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				final int rowIndex = table.rowAtPoint(event.getPoint());
+				final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+				if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+				{
+					final Correspondence corr = ((CorrespondenceListTableModel) tableModel).getCorrespondenceAtIndex(realRowIndex);
+//					final Correspondence corr = ((CorrespondenceListTableModel) table.getModel()).getCorrespondenceAtIndex(realRowIndex);
+					partnerCorrespondenceTableModel.setCorrespondence(corr);
+					((DefaultTableModel) partnerCorrespondenceTableModel).fireTableDataChanged();
+					rightScrollPane.setViewportView(partnerCorrespondenceTable);
+					selectNode(partyTree, null);
+					repaint();
+				}
+			}
+		});
+
 		return table;
 	}
 
@@ -240,7 +259,7 @@ public class TabCorrespondences extends TabComponent
 	private JTable createCorrespondenceTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
-/*		{
+		/*		{
 			private static final long serialVersionUID = -2879401192820075582L;
 			//implementing column header's tooltips
 			@Override
@@ -271,13 +290,7 @@ public class TabCorrespondences extends TabComponent
 			}
 		};*/
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-/*		table.setFillsViewportHeight(true);
-		table.setAutoCreateRowSorter(true);
-
-		table.getRowSorter();
-		table.getRowSorter().getModelRowCount();
-		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);*/
-
+		table.setFillsViewportHeight(true);
 		table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());
 
 		TableColumnModel colModel = table.getColumnModel();
@@ -311,7 +324,7 @@ public class TabCorrespondences extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
@@ -342,7 +355,7 @@ public class TabCorrespondences extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
@@ -373,7 +386,7 @@ public class TabCorrespondences extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			new Thread(()->
 			{
@@ -398,7 +411,7 @@ public class TabCorrespondences extends TabComponent
 
 		addPartnerItem.addActionListener(event ->
 		{
-/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			new Thread(() ->
 			{
@@ -422,7 +435,7 @@ public class TabCorrespondences extends TabComponent
 
 		removePartnerItem.addActionListener(event ->
 		{
-/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			{
@@ -449,41 +462,39 @@ public class TabCorrespondences extends TabComponent
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
-				EventQueue.invokeLater(() ->
+				final int rowIndex = table.rowAtPoint(event.getPoint());
+				final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+				if(SwingUtilities.isRightMouseButton(event))
 				{
-					final int rowIndex = table.rowAtPoint(event.getPoint());
-					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
-					if(SwingUtilities.isRightMouseButton(event))
-					{
-						table.setRowSelectionInterval(rowIndex, rowIndex);
+					table.setRowSelectionInterval(rowIndex, rowIndex);
 
-						final Object selectedParty = getSelectedUserObject(partyTree);
-						if(selectedParty == null) return;
-						if(selectedParty instanceof String)
-						{
-							final String nodeTitle = (String) selectedParty;
-							if(BUSINESS_PARTNERS.equals(nodeTitle))
-							{
-								partyTablePopupMenu.removeAll();
-								partyTablePopupMenu.add(removePartnerItem);
-								partyTablePopupMenu.add(unfollowPartyItem);
-							}
-							else
-								partyTablePopupMenu.removeAll();
-							partyTablePopupMenu.show(table, event.getX(), event.getY());
-						}
-					}
-					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+					final Object selectedParty = getSelectedUserObject(partyTree);
+					if(selectedParty == null) return;
+					if(selectedParty instanceof String)
 					{
-						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
-						final BusinessParty party = partyListTableModel.getParty(realRowIndex);
-						final String partyID = party.getPartyID();
-						partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
-						rightScrollPane.setViewportView(partnerCorrespondenceListTable);
-						selectNode(partyTree, party);
-						repaint();
+						final String nodeTitle = (String) selectedParty;
+						if(BUSINESS_PARTNERS.equals(nodeTitle))
+						{
+							partyTablePopupMenu.removeAll();
+							partyTablePopupMenu.add(removePartnerItem);
+							partyTablePopupMenu.add(unfollowPartyItem);
+						}
+						else
+							partyTablePopupMenu.removeAll();
+						partyTablePopupMenu.show(table, event.getX(), event.getY());
 					}
-				});
+				}
+				else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+				{
+					final BusinessParty party = ((PartyListTableModel) tableModel).getPartyAtIndex(realRowIndex);
+//					final BusinessParty party = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
+					final String partyID = party.getPartyID();
+					partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
+					((DefaultTableModel) partnerCorrespondenceListTableModel).fireTableDataChanged();
+					rightScrollPane.setViewportView(partnerCorrespondenceListTable);
+					selectNode(partyTree, party);
+					repaint();
+				}
 			}
 		});
 		return table;

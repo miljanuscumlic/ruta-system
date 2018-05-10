@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.DetailException;
@@ -40,11 +41,12 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 * True when correspondence is stopped by {@link #stop()} method call (invoked usually on closing
 	 * of the application).
 	 */
-
 	@XmlElement(name = "Stopped")
 	protected boolean stopped;
 	@XmlElement(name = "CorrespondentIdentification")
 	protected PartyIdentificationType correspondentIdentification;
+	@XmlElement(name = "CorrespondentParty")
+	protected PartyType correspondentParty;
 	/**
 	 * {@link DocumentReference Document references} of all documents of the {@code Correspondence}.
 	 */
@@ -168,6 +170,35 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		this.correspondentIdentification = partyIdentification;
 	}
 
+	public PartyType getCorrespondentParty()
+	{
+		return correspondentParty;
+	}
+
+	/**
+	 * Gets the name of the Party which MyParty is corresponding to.
+	 * @return party name or {@code null} if name is not set
+	 */
+	public String getCorrespondentPartyName()
+	{
+		String partyName = null;
+		if(correspondentParty != null)
+		{
+			try
+			{
+				partyName = correspondentParty.getPartyNameAtIndex(0).getNameValue();
+			}
+			catch(Exception e)
+			{}
+		}
+		return partyName;
+	}
+
+	public void setCorrespondentParty(PartyType correspondentParty)
+	{
+		this.correspondentParty = correspondentParty;
+	}
+
 	public void setCorrespondentIdentification(String correspondentID)
 	{
 		if(correspondentIdentification == null)
@@ -266,16 +297,6 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		final XMLGregorianCalendar issueTime = docReference.getIssueTimeValue();
 		issueDateTime.setTime(issueTime.getHour(), issueTime.getMinute(), issueTime.getSecond());*/
 		setLastActivityTime(now);
-	}
-
-	/**
-	 * Gets the name of the Party which MyParty is corresponding to.
-	 * @return party name or {@code null} if name is not set
-	 */
-	public String getCorrespondentPartyName()
-	{
-		// MMM to implement - is it necessary?
-		return null;
 	}
 
 	/**
