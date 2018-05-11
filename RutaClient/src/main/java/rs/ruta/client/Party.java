@@ -931,7 +931,8 @@ public class Party extends PartyType
 		return missingField;
 	}
 
-	/**Checks whether two parties are the same. Check is based on equality of party IDs.
+	/**
+	 * Checks whether two parties are the same. Check is based on equality of party IDs.
 	 * @param partyOne
 	 * @param partyTwo
 	 * @return true if parties are the same, false if they are not the same or some party has not set
@@ -942,6 +943,16 @@ public class Party extends PartyType
 		String partyOneID = getPartyID(partyOne);
 		String otherPartyID = getPartyID(partyTwo);
 		return partyOneID != null ? partyOneID.equals(otherPartyID) : false;
+	}
+
+	/**
+	 * Returns String representing Party class. Used as the node name in the tree model for a CD Party.
+	 * @return the name of the core Party or null if core Party is not set
+	 */
+	@Override
+	public String toString()
+	{
+		return InstanceFactory.getPropertyOrNull(getPartyName().get(0).getName(), NameType::getValue);
 	}
 
 }

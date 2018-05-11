@@ -49,10 +49,10 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 			{
 				doActivity(correspondence);
 
-				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
+/*				JAXBContext jaxbContext = JAXBContext.newInstance(CatalogueCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				marshaller.marshal(correspondence, System.out);
+				marshaller.marshal(correspondence, System.out);*/
 
 				MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).
 				insert(null, (CatalogueCorrespondence) correspondence);

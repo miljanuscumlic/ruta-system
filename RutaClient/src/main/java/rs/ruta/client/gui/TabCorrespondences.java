@@ -3,6 +3,7 @@ package rs.ruta.client.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -32,7 +33,9 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
+import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
+import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 
 /**
@@ -44,7 +47,7 @@ public class TabCorrespondences extends TabComponent
 	private static final String BUSINESS_PARTNERS = "Business Partners";
 	private static final String MY_PARTY ="My Party";
 	private static final String CORRESPONDECES = "Correspondences";
-	private final JTree partyTree;
+	private final JTree correspondenceTree;
 
 	private CorrespondenceListTableModel partnerCorrespondenceListTableModel;
 	private CorrespondenceTableModel partnerCorrespondenceTableModel;
@@ -65,17 +68,20 @@ public class TabCorrespondences extends TabComponent
 		super(clientFrame);
 		final RutaClient client = clientFrame.getClient();
 		final MyParty myParty = client.getMyParty();
-		final DefaultTreeModel partyTreeModel = new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty);
-		partyTree = new JTree(partyTreeModel);
-		final PartyTreeCellRenderer partyTreeCellRenderer = new PartyTreeCellRenderer();
-		partyTree.setCellRenderer(partyTreeCellRenderer);
+		final BusinessParty cdrParty = new BusinessParty();
+		cdrParty.setCoreParty(client.getCDRParty());
+		final DefaultTreeModel correspondenceTreeModel =
+				new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
+		correspondenceTree = new JTree(correspondenceTreeModel);
+		final CorrespondenceCellRenderer correspondenceTreeCellRenderer = new CorrespondenceCellRenderer();
+		correspondenceTree.setCellRenderer(correspondenceTreeCellRenderer);
 		final JPanel treePanel = new JPanel(new BorderLayout());
-		treePanel.add(partyTree, BorderLayout.CENTER);
+		treePanel.add(correspondenceTree, BorderLayout.CENTER);
 
 		final JLabel blankLabel = new JLabel();
 
 		leftPane = new JScrollPane(treePanel);
-		leftPane.setPreferredSize(new Dimension(250, 500));
+		leftPane.setPreferredSize(new Dimension(310, 500));
 
 		rightPane = new JPanel(new BorderLayout());
 		rightScrollPane = new JScrollPane();
@@ -100,33 +106,39 @@ public class TabCorrespondences extends TabComponent
 		partiesTable.setRowSorter(partiesSorter);
 
 		//setting action listener for tab repaint on selection of the business party node
-		partyTree.addTreeSelectionListener(event ->
+		correspondenceTree.addTreeSelectionListener(event ->
 		{
-			final Object selectedParty = getSelectedUserObject(partyTree);
-			if(selectedParty == null) return;
-			if(selectedParty instanceof BusinessParty)
+			final Object selectedObject = getSelectedUserObject(correspondenceTree);
+			if(selectedObject == null) return;
+			if(selectedObject instanceof BusinessParty)
 			{
-				((BusinessParty) selectedParty).setRecentlyUpdated(false);
-
-				final String partyID = ((BusinessParty) selectedParty).getPartyID();
+				final String partyID = ((BusinessParty) selectedObject).getPartyID();
 				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
 				partnerCorrespondenceListTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCorrespondenceListTable);
 			}
-			else //String
+			else if(selectedObject instanceof Correspondence)
+			{
+				((Correspondence) selectedObject).setRecentlyUpdated(false);
+				final Correspondence corr = ((Correspondence) selectedObject);
+				partnerCorrespondenceTableModel.setCorrespondence(corr);
+				((DefaultTableModel) partnerCorrespondenceTableModel).fireTableDataChanged();
+				rightScrollPane.setViewportView(partnerCorrespondenceTable);
+			}
+			else if(selectedObject instanceof String)
 			{
 				List<BusinessParty> partyList = new ArrayList<>();
-				if(MY_PARTY.equals((String) selectedParty))
+				if(MY_PARTY.equals((String) selectedObject))
 				{
 					final BusinessParty my = myParty.getMyFollowingParty();
 					if(my != null)
 						partyList.add(my);
 				}
-				else if(BUSINESS_PARTNERS.equals((String) selectedParty))
+				else if(BUSINESS_PARTNERS.equals((String) selectedObject))
 					partyList = myParty.getBusinessPartners();
 
 
-				if(!CORRESPONDECES.equals((String) selectedParty))
+				if(!CORRESPONDECES.equals((String) selectedObject))
 				{
 					partiesTableModel.setParties(partyList);
 					partiesTableModel.fireTableDataChanged();
@@ -146,7 +158,7 @@ public class TabCorrespondences extends TabComponent
 
 		newOrderItem.addActionListener(event ->
 		{
-			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(partyTree);
+			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(correspondenceTree);
 			if(selectedParty == null) return;
 			new Thread(() ->
 			{
@@ -155,28 +167,27 @@ public class TabCorrespondences extends TabComponent
 				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, true);
 				myParty.addBuyingCorrespondence(corr);
 				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(correspondentID));
-				EventQueue.invokeLater(() -> { partnerCorrespondenceListTableModel.fireTableDataChanged(); });
-				//				corr.executeOrderingProcess();
+//				EventQueue.invokeLater(() -> { partnerCorrespondenceListTableModel.fireTableDataChanged(); });
 				corr.start();
 			}).start();
 		});
 
-		partyTree.addMouseListener(new MouseAdapter()
+		correspondenceTree.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					TreePath path = partyTree.getPathForLocation(event.getX(), event.getY());
+					TreePath path = correspondenceTree.getPathForLocation(event.getX(), event.getY());
 					Object selectedParty = getSelectedUserObject(path);
 					if(selectedParty == null) return;
-					partyTree.setSelectionPath(path);
-					if(!(selectedParty instanceof String) && selectedParty != clientFrame.getClient().getMyParty().getMyFollowingParty())
+					correspondenceTree.setSelectionPath(path);
+					if(selectedParty instanceof BusinessParty)
 					{
 						partyTreePopupMenu.removeAll();
 						partyTreePopupMenu.add(newOrderItem);
-						partyTreePopupMenu.show(partyTree, event.getX(), event.getY());
+						partyTreePopupMenu.show(correspondenceTree, event.getX(), event.getY());
 					}
 
 				}
@@ -238,16 +249,19 @@ public class TabCorrespondences extends TabComponent
 			public void mouseClicked(MouseEvent event)
 			{
 				final int rowIndex = table.rowAtPoint(event.getPoint());
-				final int realRowIndex = table.convertRowIndexToModel(rowIndex);
-				if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+				if(rowIndex != -1)
 				{
-					final Correspondence corr = ((CorrespondenceListTableModel) tableModel).getCorrespondenceAtIndex(realRowIndex);
-//					final Correspondence corr = ((CorrespondenceListTableModel) table.getModel()).getCorrespondenceAtIndex(realRowIndex);
-					partnerCorrespondenceTableModel.setCorrespondence(corr);
-					((DefaultTableModel) partnerCorrespondenceTableModel).fireTableDataChanged();
-					rightScrollPane.setViewportView(partnerCorrespondenceTable);
-					selectNode(partyTree, null);
-					repaint();
+					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+					if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+					{
+						//					final Correspondence corr = ((CorrespondenceListTableModel) tableModel).getCorrespondenceAtIndex(realRowIndex);
+						final Correspondence corr = ((CorrespondenceListTableModel) table.getModel()).getCorrespondenceAtIndex(realRowIndex);
+						partnerCorrespondenceTableModel.setCorrespondence(corr);
+						((DefaultTableModel) partnerCorrespondenceTableModel).fireTableDataChanged();
+						rightScrollPane.setViewportView(partnerCorrespondenceTable);
+						selectNode(correspondenceTree, corr);
+						repaint();
+					}
 				}
 			}
 		});
@@ -341,7 +355,7 @@ public class TabCorrespondences extends TabComponent
 						ret.get();
 						partiesTableModel.fireTableDataChanged();
 						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+						EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, followedParty));
 					}
 				}
 				catch(Exception e)
@@ -372,7 +386,7 @@ public class TabCorrespondences extends TabComponent
 						ret.get();
 						partiesTableModel.fireTableDataChanged();
 						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+						EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, followedParty));
 					}
 				}
 				catch(Exception e)
@@ -397,7 +411,7 @@ public class TabCorrespondences extends TabComponent
 					{
 						ret.get();
 						partiesTableModel.fireTableDataChanged();
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+						EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, selectedParty));
 					}
 				}
 				catch(Exception e)
@@ -420,7 +434,7 @@ public class TabCorrespondences extends TabComponent
 				{
 					myParty.followParty(selectedParty);
 					partiesTableModel.fireTableDataChanged();
-					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+					EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, selectedParty));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
 							append(" has been moved from Other Parties to Business Partners.").
 							append(" Party is still followed by My Party."), Color.GREEN);
@@ -444,7 +458,7 @@ public class TabCorrespondences extends TabComponent
 				{
 					myParty.followParty(selectedParty);
 					partiesTableModel.fireTableDataChanged();
-					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+					EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, selectedParty));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
 							append(" has been moved from Business Partners to Other Parties.").
 							append(" Party is still followed by My Party."), Color.GREEN);
@@ -463,40 +477,90 @@ public class TabCorrespondences extends TabComponent
 			public void mouseClicked(MouseEvent event)
 			{
 				final int rowIndex = table.rowAtPoint(event.getPoint());
-				final int realRowIndex = table.convertRowIndexToModel(rowIndex);
-				if(SwingUtilities.isRightMouseButton(event))
+				if(rowIndex != -1)
 				{
-					table.setRowSelectionInterval(rowIndex, rowIndex);
-
-					final Object selectedParty = getSelectedUserObject(partyTree);
-					if(selectedParty == null) return;
-					if(selectedParty instanceof String)
+					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+					if(SwingUtilities.isRightMouseButton(event))
 					{
-						final String nodeTitle = (String) selectedParty;
-						if(BUSINESS_PARTNERS.equals(nodeTitle))
+						table.setRowSelectionInterval(rowIndex, rowIndex);
+
+						final Object selectedParty = getSelectedUserObject(correspondenceTree);
+						if(selectedParty == null) return;
+						if(selectedParty instanceof String)
 						{
-							partyTablePopupMenu.removeAll();
-							partyTablePopupMenu.add(removePartnerItem);
-							partyTablePopupMenu.add(unfollowPartyItem);
+							final String nodeTitle = (String) selectedParty;
+							if(BUSINESS_PARTNERS.equals(nodeTitle))
+							{
+								partyTablePopupMenu.removeAll();
+								partyTablePopupMenu.add(removePartnerItem);
+								partyTablePopupMenu.add(unfollowPartyItem);
+							}
+							else
+								partyTablePopupMenu.removeAll();
+							partyTablePopupMenu.show(table, event.getX(), event.getY());
 						}
-						else
-							partyTablePopupMenu.removeAll();
-						partyTablePopupMenu.show(table, event.getX(), event.getY());
 					}
-				}
-				else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
-				{
-					final BusinessParty party = ((PartyListTableModel) tableModel).getPartyAtIndex(realRowIndex);
-//					final BusinessParty party = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
-					final String partyID = party.getPartyID();
-					partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
-					((DefaultTableModel) partnerCorrespondenceListTableModel).fireTableDataChanged();
-					rightScrollPane.setViewportView(partnerCorrespondenceListTable);
-					selectNode(partyTree, party);
-					repaint();
+					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+					{
+						//					final BusinessParty party = ((PartyListTableModel) tableModel).getPartyAtIndex(realRowIndex);
+						final BusinessParty party = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
+						final String partyID = party.getPartyID();
+						partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
+						((DefaultTableModel) partnerCorrespondenceListTableModel).fireTableDataChanged();
+						rightScrollPane.setViewportView(partnerCorrespondenceListTable);
+						selectNode(correspondenceTree, party);
+						repaint();
+					}
 				}
 			}
 		});
 		return table;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event)
+	{
+		Object source = event.getSource();
+		String command = event.getActionCommand();
+		if(source.getClass() == BuyingCorrespondence.class)
+		{
+			BuyingCorrespondence corr = (BuyingCorrespondence) source;
+			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					makeVisibleNode(correspondenceTree, corr);
+					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+					if(selectedUserObject instanceof BusinessParty)
+					{
+						if(((BusinessParty) selectedUserObject).getPartyID().equals(corr.getCorrespondentID()))
+							partnerCorrespondenceListTableModel.fireTableDataChanged();
+					}
+					else if(selectedUserObject instanceof BuyingCorrespondence)
+					{
+						if(corr == selectedUserObject)
+							partnerCorrespondenceTableModel.fireTableDataChanged();
+					}
+				});
+			}
+			else if(RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					makeVisibleNode(correspondenceTree, corr);
+					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+					if(selectedUserObject instanceof BuyingCorrespondence)
+						if(corr == selectedUserObject)
+							partnerCorrespondenceTableModel.fireTableDataChanged();
+				});
+			}
+		}
+		else if(source.getClass() == CatalogueCorrespondence.class)
+		{
+			//MMM TODO
+		}
+
+
+
 	}
 }

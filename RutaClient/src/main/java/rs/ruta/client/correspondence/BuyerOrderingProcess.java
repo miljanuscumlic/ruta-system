@@ -135,10 +135,10 @@ public class BuyerOrderingProcess extends BuyingProcess
 			{
 				doActivity(correspondence);
 
-				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
+/*				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				marshaller.marshal(correspondence, System.out);
+				marshaller.marshal(correspondence, System.out);*/
 
 				MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
 				int i = 1;

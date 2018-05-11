@@ -46,6 +46,7 @@ public class BuyingCorrespondence extends Correspondence
 		corr.setLastActivityTime(currentDateTime);
 		corr.setActive(true);
 		corr.setStopped(false);
+		corr.setRecentlyUpdated(true);
 		return corr;
 	}
 

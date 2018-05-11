@@ -56,10 +56,10 @@ public class TabProducts extends TabComponent
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					final int row = table.rowAtPoint(event.getPoint());
-					if(row < table.getRowCount() - 1) //except the last row
+					final int rowIndex = table.rowAtPoint(event.getPoint());
+					if(rowIndex > -1 && rowIndex < table.getRowCount() - 1) //except the last row
 					{
-						table.setRowSelectionInterval(row, row);
+						table.setRowSelectionInterval(rowIndex, rowIndex);
 						cataloguePopupMenu.show(table, event.getX(), event.getY());
 					}
 				}
@@ -100,8 +100,8 @@ public class TabProducts extends TabComponent
 		comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN));
 		tableColumn.setCellEditor(new DefaultCellEditor(comboBox));
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-	    renderer.setToolTipText("Click for combo box");
-	    tableColumn.setCellRenderer(renderer);
+		renderer.setToolTipText("Click for combo box");
+		tableColumn.setCellRenderer(renderer);
 	}
 
 	private class ComBoxCellRenderer extends BasicComboBoxRenderer
@@ -122,7 +122,7 @@ public class TabProducts extends TabComponent
 				setBackground(Color.LIGHT_GRAY);
 			else
 				setBackground(Color.WHITE);
-//			component.setFont(component.getFont().deriveFont(Font.PLAIN));
+			//			component.setFont(component.getFont().deriveFont(Font.PLAIN));
 
 			return this;
 		}

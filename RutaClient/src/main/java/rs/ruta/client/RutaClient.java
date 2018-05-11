@@ -1930,16 +1930,16 @@ public class RutaClient implements RutaNode
 //									myParty.listCatalogueSearch(newSearch);
 
 /*								if(exist)
-									frame.repaint(RutaClientFrame.CDR_DATA_TAB);
+									frame.repaint(RutaClientFrame.TAB_CDR_DATA);
 								else
-									frame.repaint(RutaClientFrame.CDR_DATA_TAB);*/
+									frame.repaint(RutaClientFrame.TAB_CDR_DATA);*/
 							}
 							else
 								if(exist)
 								{
 									myParty.removeCatalogueSearch(newSearch);
 //									myParty.delistCatalogueSearch(newSearch);
-//									frame.repaint(RutaClientFrame.CDR_DATA_TAB);
+//									frame.repaint(RutaClientFrame.TAB_CDR_DATA);
 									frame.appendToConsole(new StringBuilder("Search \"").append(newSearch.getSearchName()).
 											append("\" has been deleted."), Color.GREEN);
 								}
@@ -1957,9 +1957,9 @@ public class RutaClient implements RutaNode
 									append(newSearch.getSearchName()).append("\" have been successfully retrieved from the CDR service."),
 									Color.GREEN);
 /*							if(exist)
-								frame.repaint(RutaClientFrame.CDR_DATA_TAB);
+								frame.repaint(RutaClientFrame.TAB_CDR_DATA);
 							else
-								frame.repaint(RutaClientFrame.CDR_DATA_TAB);*/
+								frame.repaint(RutaClientFrame.TAB_CDR_DATA);*/
 						}
 					}
 					catch(Exception e)
@@ -2004,16 +2004,16 @@ public class RutaClient implements RutaNode
 //									myParty.listPartySearch(newSearch);
 
 /*								if(exist)
-									frame.repaint(RutaClientFrame.CDR_DATA_TAB);
+									frame.repaint(RutaClientFrame.TAB_CDR_DATA);
 								else
-									frame.repaint(RutaClientFrame.CDR_DATA_TAB);*/
+									frame.repaint(RutaClientFrame.TAB_CDR_DATA);*/
 							}
 							else
 								if(exist)
 								{
 									myParty.removePartySearch(newSearch);
 //									myParty.delistPartySearch(newSearch);
-//									frame.repaint(RutaClientFrame.CDR_DATA_TAB);
+//									frame.repaint(RutaClientFrame.TAB_CDR_DATA);
 									frame.appendToConsole(new StringBuilder("Search \"").append(newSearch.getSearchName()).
 											append("\" has been deleted."), Color.GREEN);
 								}
@@ -2032,9 +2032,9 @@ public class RutaClient implements RutaNode
 									append(newSearch.getSearchName()).append("\" have been successfully retrieved from the CDR service."),
 									Color.GREEN);
 /*							if(exist)
-								frame.repaint(RutaClientFrame.CDR_DATA_TAB);
+								frame.repaint(RutaClientFrame.TAB_CDR_DATA);
 							else
-								frame.repaint(RutaClientFrame.CDR_DATA_TAB);*/
+								frame.repaint(RutaClientFrame.TAB_CDR_DATA);*/
 						}
 					}
 					catch(Exception e)

@@ -2,6 +2,8 @@ package rs.ruta.client;
 
 import java.awt.event.ActionEvent;
 
+import rs.ruta.client.gui.RutaClientFrame;
+
 /**
  * Class that describes updates of the view of a {@link RutaClientFrame}.
  */
@@ -12,6 +14,9 @@ public class RutaClientFrameEvent extends ActionEvent
 	public static final String CATALOGUE_UPDATED = "Party's catalogue updated";
 	public static final String PARTY_MOVED = "Party moved from one list to another";
 	public static final String SELECT_NEXT = "Select next node in a tree";
+	public static final String CORRESPONDENCE_ADDED = "Partner's correspondence added";
+	public static final String CORRESPONDENCE_REMOVED = "Partner's correspondence removed";
+	public static final String CORRESPONDENCE_UPDATED = "Partner's correspondence updated";
 
 	public RutaClientFrameEvent(Object source, String command)
 	{

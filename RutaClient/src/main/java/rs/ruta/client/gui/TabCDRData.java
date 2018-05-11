@@ -111,12 +111,12 @@ public class TabCDRData extends TabComponent
 		treePanel.add(partyTree, BorderLayout.NORTH);
 		treePanel.add(searchTree, BorderLayout.CENTER);
 
-/*		JPanel treePanel = new JPanel(new GridLayout(2,1));
+		/*		JPanel treePanel = new JPanel(new GridLayout(2,1));
 		treePanel.add(partyTree);
 		treePanel.add(searchTree);*/
 
 		leftPane = new JScrollPane(treePanel);
-		leftPane.setPreferredSize(new Dimension(250, 500));
+		leftPane.setPreferredSize(new Dimension(310, 500));
 
 		rightPane = new JPanel(new BorderLayout());
 		rightScrollPane = new JScrollPane();
@@ -148,7 +148,7 @@ public class TabCDRData extends TabComponent
 			{
 				((BusinessParty) selectedParty).setRecentlyUpdated(false);
 				partnerCatalogueTableModel.setCatalogue(((BusinessParty) selectedParty).getCatalogue());
-//				partnerCatalogueSorter.allRowsChanged();
+				//				partnerCatalogueSorter.allRowsChanged();
 				partnerCatalogueTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCatalogueTable);
 			}
@@ -346,7 +346,7 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					//commented line is a privious variant of a selection
-//					selectNextNode(partyTree, selectedParty);
+					//					selectNextNode(partyTree, selectedParty);
 					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
 					myParty.purgeParty(selectedParty);
 					partiesSorter.allRowsChanged();
@@ -373,7 +373,7 @@ public class TabCDRData extends TabComponent
 				final String partyName = selectedParty.getPartySimpleName();
 				try
 				{
-//					selectNextNode(partyTree, selectedParty);
+					//					selectNextNode(partyTree, selectedParty);
 					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
 					myParty.purgeParty(selectedParty);
 					partiesSorter.allRowsChanged();
@@ -486,7 +486,7 @@ public class TabCDRData extends TabComponent
 				{
 					searchesTable.setModel(searchesTableModel);
 					searchesTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-					searchesTable.setRowSorter(createTableRowSorter(searchesTableModel));
+					searchesTable.setRowSorter(createTableRowSorter(searchesTableModel, 3, true));
 					rightScrollPane.setViewportView(searchesTable);
 				}
 				else
@@ -816,54 +816,57 @@ public class TabCDRData extends TabComponent
 				EventQueue.invokeLater(() ->
 				{
 					final int rowIndex = table.rowAtPoint(event.getPoint());
-					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
-					if(SwingUtilities.isRightMouseButton(event))
+					if(rowIndex != -1)
 					{
-						table.setRowSelectionInterval(rowIndex, rowIndex);
-
-						final Object selectedParty = getSelectedUserObject(partyTree);
-						if(selectedParty == null) return;
-						if(selectedParty instanceof String)
+						final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+						if(SwingUtilities.isRightMouseButton(event))
 						{
-							final String nodeTitle = (String) selectedParty;
-							if(BUSINESS_PARTNERS.equals(nodeTitle))
+							table.setRowSelectionInterval(rowIndex, rowIndex);
+
+							final Object selectedParty = getSelectedUserObject(partyTree);
+							if(selectedParty == null) return;
+							if(selectedParty instanceof String)
 							{
-								partyTablePopupMenu.removeAll();
-								partyTablePopupMenu.add(removePartnerItem);
-								partyTablePopupMenu.add(unfollowPartyItem);
+								final String nodeTitle = (String) selectedParty;
+								if(BUSINESS_PARTNERS.equals(nodeTitle))
+								{
+									partyTablePopupMenu.removeAll();
+									partyTablePopupMenu.add(removePartnerItem);
+									partyTablePopupMenu.add(unfollowPartyItem);
+								}
+								else if(OTHER_PARTIES.equals(nodeTitle))
+								{
+									partyTablePopupMenu.removeAll();
+									partyTablePopupMenu.add(addPartnerItem);
+									partyTablePopupMenu.add(unfollowPartyItem);
+								}
+								else if(ARCHIVED_PARTIES.equals(nodeTitle))
+								{
+									partyTablePopupMenu.removeAll();
+									partyTablePopupMenu.add(followPartnerItem);
+									partyTablePopupMenu.add(followPartyItem);
+									partyTablePopupMenu.addSeparator();
+									partyTablePopupMenu.add(deleteArchivedItem);
+								}
+								else if(DEREGISTERED_PARTIES.equals(nodeTitle))
+								{
+									partyTablePopupMenu.removeAll();
+									partyTablePopupMenu.add(deleteDeregisteredItem);
+								}
+								else
+									partyTablePopupMenu.removeAll();
+								partyTablePopupMenu.show(table, event.getX(), event.getY());
 							}
-							else if(OTHER_PARTIES.equals(nodeTitle))
-							{
-								partyTablePopupMenu.removeAll();
-								partyTablePopupMenu.add(addPartnerItem);
-								partyTablePopupMenu.add(unfollowPartyItem);
-							}
-							else if(ARCHIVED_PARTIES.equals(nodeTitle))
-							{
-								partyTablePopupMenu.removeAll();
-								partyTablePopupMenu.add(followPartnerItem);
-								partyTablePopupMenu.add(followPartyItem);
-								partyTablePopupMenu.addSeparator();
-								partyTablePopupMenu.add(deleteArchivedItem);
-							}
-							else if(DEREGISTERED_PARTIES.equals(nodeTitle))
-							{
-								partyTablePopupMenu.removeAll();
-								partyTablePopupMenu.add(deleteDeregisteredItem);
-							}
-							else
-								partyTablePopupMenu.removeAll();
-							partyTablePopupMenu.show(table, event.getX(), event.getY());
 						}
-					}
-					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
-					{
-						final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
-						final BusinessParty party = partyListTableModel.getPartyAtIndex(realRowIndex);
-						partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
-						rightScrollPane.setViewportView(partnerCatalogueTable);
-						selectNode(partyTree, party);
-						repaint();
+						else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+						{
+							final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
+							final BusinessParty party = partyListTableModel.getPartyAtIndex(realRowIndex);
+							partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
+							rightScrollPane.setViewportView(partnerCatalogueTable);
+							selectNode(partyTree, party);
+							repaint();
+						}
 					}
 				});
 			}
@@ -917,7 +920,7 @@ public class TabCDRData extends TabComponent
 						{
 							selectNode(searchTree, selectedSearch);
 						});
-//						((DefaultTableModel) table.getModel()).fireTableDataChanged();
+						//						((DefaultTableModel) table.getModel()).fireTableDataChanged();
 					}
 				}
 				catch(Exception e)
@@ -975,36 +978,41 @@ public class TabCDRData extends TabComponent
 			public void mouseClicked(MouseEvent event)
 			{
 				final int rowIndex = table.rowAtPoint(event.getPoint());
-				final int realRowIndex = table.convertRowIndexToModel(rowIndex);
-				if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+				if(rowIndex != -1)
 				{
-					final Object selectedSearchListNode = getSelectedUserObject(searchTree);
-					if(selectedSearchListNode == null) return;
-					if(selectedSearchListNode instanceof String)
+					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+					if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
-						final String nodeTitle = (String) selectedSearchListNode;
-						if(PARTIES.equals(nodeTitle))
+						final Object selectedSearchListNode = getSelectedUserObject(searchTree);
+						if(selectedSearchListNode == null) return;
+						if(selectedSearchListNode instanceof String)
 						{
-							final Search<PartyType> selectedSearch = myParty.getPartySearches().get(realRowIndex);
-							searchesPartyTableModel.setSearch(selectedSearch);
-							selectNode(searchTree, selectedSearch);
-							rightScrollPane.setViewportView(searchesPartyTable);
+							final String nodeTitle = (String) selectedSearchListNode;
+							if(PARTIES.equals(nodeTitle))
+							{
+								final Search<PartyType> selectedSearch = myParty.getPartySearches().get(realRowIndex);
+								searchesPartyTableModel.setSearch(selectedSearch);
+								selectNode(searchTree, selectedSearch);
+								rightScrollPane.setViewportView(searchesPartyTable);
+							}
+							else if(CATALOGUES.equals(nodeTitle))
+							{
+								final Search<CatalogueType> selectedSearch = myParty.getCatalogueSearches().get(realRowIndex);
+								searchesCatalogueTableModel.setSearch(selectedSearch);
+								selectNode(searchTree, selectedSearch);
+								rightScrollPane.setViewportView(searchesCatalogueTable);
+							}
 						}
-						else if(CATALOGUES.equals(nodeTitle))
+					}
+					else
+					{
+						if(SwingUtilities.isRightMouseButton(event))
 						{
-							final Search<CatalogueType> selectedSearch = myParty.getCatalogueSearches().get(realRowIndex);
-							searchesCatalogueTableModel.setSearch(selectedSearch);
-							selectNode(searchTree, selectedSearch);
-							rightScrollPane.setViewportView(searchesCatalogueTable);
+							table.setRowSelectionInterval(rowIndex, rowIndex);
+							searchTablePopupMenu.show(table, event.getX(), event.getY());
 						}
 					}
 				}
-				else
-					if(SwingUtilities.isRightMouseButton(event))
-					{
-						table.setRowSelectionInterval(rowIndex, rowIndex);
-						searchTablePopupMenu.show(table, event.getX(), event.getY());
-					}
 			}
 		});
 
@@ -1030,7 +1038,8 @@ public class TabCDRData extends TabComponent
 			//			int rowIndex = table.getSelectedRow();
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
-			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingName =
+					InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
 					PartyIdentificationType::getIDValue);
 			new Thread(()->
@@ -1058,7 +1067,8 @@ public class TabCDRData extends TabComponent
 			//			int rowIndex = table.getSelectedRow();
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
-			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+			final String followingName =
+					InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
 					PartyIdentificationType::getIDValue);
 			new Thread(()->
@@ -1091,8 +1101,11 @@ public class TabCDRData extends TabComponent
 					if(SwingUtilities.isRightMouseButton(event))
 					{
 						final int rowIndex = table.rowAtPoint(event.getPoint());
-						table.setRowSelectionInterval(rowIndex, rowIndex);
-						popupMenu.show(table, event.getX(), event.getY());
+						if(rowIndex != -1)
+						{
+							table.setRowSelectionInterval(rowIndex, rowIndex);
+							popupMenu.show(table, event.getX(), event.getY());
+						}
 					}
 				});
 			}
@@ -1190,8 +1203,11 @@ public class TabCDRData extends TabComponent
 				if(SwingUtilities.isRightMouseButton(event))
 				{
 					final int rowIndex = table.rowAtPoint(event.getPoint());
-					table.addRowSelectionInterval(rowIndex, rowIndex);
-					popupMenu.show(table, event.getX(), event.getY());
+					if(rowIndex != -1)
+					{
+						table.addRowSelectionInterval(rowIndex, rowIndex);
+						popupMenu.show(table, event.getX(), event.getY());
+					}
 				}
 			}
 		});
@@ -1235,7 +1251,7 @@ public class TabCDRData extends TabComponent
 				EventQueue.invokeLater(() ->
 				{
 					makeVisibleNode(partyTree, party);
-/*					final Object selectedUserObject = getSelectedUserObject(partyTree);
+					/*					final Object selectedUserObject = getSelectedUserObject(partyTree);
 					if(!(selectedUserObject instanceof BusinessParty))
 						partiesTableModel.fireTableDataChanged();*/
 				});

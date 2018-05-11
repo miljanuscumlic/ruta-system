@@ -46,6 +46,7 @@ public class CatalogueCorrespondence extends Correspondence
 		corr.setActive(true);
 		corr.setStopped(false);
 		corr.createCatalogue = true;
+		corr.setRecentlyUpdated(true);
 		return corr;
 	}
 

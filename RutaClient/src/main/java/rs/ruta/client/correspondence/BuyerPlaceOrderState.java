@@ -34,8 +34,10 @@ public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 		produceOrder(process, correspondence.getCorrespondentIdentification().getIDValue());
 		final OrderType order = ((BuyerOrderingProcess) process).getOrder();
 		sendOrder(process);
-		correspondence.addDocumentReference(order.getUUIDValue(), order.getIDValue(),
-				order.getIssueDateValue(), order.getIssueTimeValue(), order.getClass().getName());
+		correspondence.addDocumentReference(correspondence.getClient().getMyParty().getCoreParty(),
+				order.getUUIDValue(), order.getIDValue(), order.getIssueDateValue(),
+				order.getIssueTimeValue(), order.getClass().getName(),
+				correspondence.getClient().getMyParty());
 		changeState(process, BuyerReceiveOrderResponseState.getInstance());
 	}
 

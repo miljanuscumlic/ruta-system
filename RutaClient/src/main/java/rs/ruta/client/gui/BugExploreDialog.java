@@ -305,38 +305,40 @@ public class BugExploreDialog extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
-				int row = bugReportTable.rowAtPoint(event.getPoint());
-
-				if(SwingUtilities.isRightMouseButton(event))
+				int rowIndex = bugReportTable.rowAtPoint(event.getPoint());
+				if(rowIndex != -1)
 				{
-					BugReport bugReport = ((BugReportTableModel) bugReportModel).getBugReport();
-					String rowName = bugReportModel.getValueAt(row, 0).toString();
-					if(rowName.contains("Attach")) //attachment row
+					if(SwingUtilities.isRightMouseButton(event))
 					{
-						int attchNum = -1; // ordered number of an attachment
-						attchNum += Integer.parseInt(rowName.replaceFirst("Attachment ", ""));
-						JFileChooser chooser = new JFileChooser();
-						chooser.setCurrentDirectory(new File("."));
-						chooser.setDialogTitle("Save attachment");
-
-						final ReportAttachment attch = bugReport.getAttachments().get(attchNum);
-						chooser.setSelectedFile(new File(attch.getName()));
-						int result = chooser.showSaveDialog(BugExploreDialog.this);
-
-						if(result == JFileChooser.APPROVE_OPTION)
+						BugReport bugReport = ((BugReportTableModel) bugReportModel).getBugReport();
+						String rowName = bugReportModel.getValueAt(rowIndex, 0).toString();
+						if(rowName.contains("Attach")) //attachment row
 						{
-							String selectedFilePath = chooser.getSelectedFile().getPath();
-							try
+							int attchNum = -1; // ordered number of an attachment
+							attchNum += Integer.parseInt(rowName.replaceFirst("Attachment ", ""));
+							JFileChooser chooser = new JFileChooser();
+							chooser.setCurrentDirectory(new File("."));
+							chooser.setDialogTitle("Save attachment");
+
+							final ReportAttachment attch = bugReport.getAttachments().get(attchNum);
+							chooser.setSelectedFile(new File(attch.getName()));
+							int result = chooser.showSaveDialog(BugExploreDialog.this);
+
+							if(result == JFileChooser.APPROVE_OPTION)
 							{
-								attch.createFile(selectedFilePath);
-							}
-							catch (IOException e)
-							{
-								logger.error("Exception is ", e);
-								EventQueue.invokeLater( () ->
-								JOptionPane.showMessageDialog(BugExploreDialog.this,
-										"There has been an error during the saving of the attachment to a file system.",
-										"Error", JOptionPane.ERROR_MESSAGE));
+								String selectedFilePath = chooser.getSelectedFile().getPath();
+								try
+								{
+									attch.createFile(selectedFilePath);
+								}
+								catch (IOException e)
+								{
+									logger.error("Exception is ", e);
+									EventQueue.invokeLater( () ->
+									JOptionPane.showMessageDialog(BugExploreDialog.this,
+											"There has been an error during the saving of the attachment to a file system.",
+											"Error", JOptionPane.ERROR_MESSAGE));
+								}
 							}
 						}
 					}
@@ -738,12 +740,12 @@ public class BugExploreDialog extends JDialog
 					JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{});
 
 			setContentPane(waitingPane);
-//			setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-/*			JLabel label = new JLabel("<html>Request has been sent to the CDR service.<br>Waiting for a response...</html>");
+			//			setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+			/*			JLabel label = new JLabel("<html>Request has been sent to the CDR service.<br>Waiting for a response...</html>");
 			JPanel panel = new JPanel();
 			panel.add(label);
 			add(panel, BorderLayout.CENTER);*/
-//			pack();
+			//			pack();
 			setLocationRelativeTo(parent);
 
 			addWindowListener(new WindowAdapter()

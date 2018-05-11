@@ -26,13 +26,16 @@ public class SellerAcceptOrderState extends SellerOrderingProcessState
 		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final OrderType order = ((SellerOrderingProcess) process).getOrder();
 		final OrderResponseSimpleType orderResponseSimple = new OrderResponseSimpleType();
-		orderResponseSimple.setID(UUID.randomUUID().toString());
+		final String orsID = UUID.randomUUID().toString();
+		final String orsUUID = UUID.randomUUID().toString();
+		orderResponseSimple.setID(orsID);
+		orderResponseSimple.setUUID(orsUUID);
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		orderResponseSimple.setIssueDate(now);
 		orderResponseSimple.setIssueTime(now);
 		orderResponseSimple.setAcceptedIndicator(true);
 		final OrderReferenceType orderReference = new OrderReferenceType();
-		orderReference.setID(UUID.randomUUID().toString());
+		orderReference.setID(orsID);
 		final DocumentReferenceType docReference = new DocumentReferenceType();
 		docReference.setID(order.getID());
 		docReference.setUUID(order.getUUIDValue());
@@ -45,7 +48,10 @@ public class SellerAcceptOrderState extends SellerOrderingProcessState
 		orderResponseSimple.setBuyerCustomerParty(order.getBuyerCustomerParty());
 
 		process.getClient().cdrSendOrderResponseSimple(orderResponseSimple);
-		correspondence.addDocumentReference(docReference);
+
+		correspondence.addDocumentReference(correspondence.getClient().getMyParty().getCoreParty(),
+				orsUUID, orsID, now, now, orderResponseSimple.getClass().getName(),
+				correspondence.getClient().getMyParty());
 
 		try
 		{

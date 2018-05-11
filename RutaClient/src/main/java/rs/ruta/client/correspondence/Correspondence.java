@@ -16,6 +16,9 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Doc
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
+import rs.ruta.client.CorrespondenceEvent;
+import rs.ruta.client.MyParty;
+import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;
@@ -43,6 +46,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 */
 	@XmlElement(name = "Stopped")
 	protected boolean stopped;
+	//MMM superfluous ???
 	@XmlElement(name = "CorrespondentIdentification")
 	protected PartyIdentificationType correspondentIdentification;
 	@XmlElement(name = "CorrespondentParty")
@@ -61,6 +65,11 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	private XMLGregorianCalendar creationTime;
 	@XmlElement(name = "LastActivityTime")
 	private XMLGregorianCalendar lastActivityTime;
+	/**
+	 * True when there is a recent update for this correspondence from the CDR service.
+	 */
+	@XmlElement(name = "RecentlyUpdated")
+	private boolean recentlyUpdated;
 
 	/**
 	 * Starts correspondence thread or continues its execution.
@@ -160,19 +169,24 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		this.stopped = stopped;
 	}
 
-	public PartyIdentificationType getCorrespondentIdentification()
+	public boolean isRecentlyUpdated()
 	{
-		return correspondentIdentification;
+		return recentlyUpdated;
 	}
 
-	public void setCorrespondentIdentification(PartyIdentificationType partyIdentification)
+	public void setRecentlyUpdated(boolean recentlyUpdated)
 	{
-		this.correspondentIdentification = partyIdentification;
+		this.recentlyUpdated = recentlyUpdated;
 	}
 
 	public PartyType getCorrespondentParty()
 	{
 		return correspondentParty;
+	}
+
+	public void setCorrespondentParty(PartyType correspondentParty)
+	{
+		this.correspondentParty = correspondentParty;
 	}
 
 	/**
@@ -194,9 +208,14 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		return partyName;
 	}
 
-	public void setCorrespondentParty(PartyType correspondentParty)
+	public PartyIdentificationType getCorrespondentIdentification()
 	{
-		this.correspondentParty = correspondentParty;
+		return correspondentIdentification;
+	}
+
+	public void setCorrespondentIdentification(PartyIdentificationType partyIdentification)
+	{
+		this.correspondentIdentification = partyIdentification;
 	}
 
 	public void setCorrespondentIdentification(String correspondentID)
@@ -204,6 +223,27 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		if(correspondentIdentification == null)
 			correspondentIdentification = new PartyIdentificationType();
 		correspondentIdentification.setID(correspondentID);
+	}
+
+	/**
+	 * Gets correspondence's ID or {@code null} if it is not set.
+	 * @return id or {@code null}
+	 */
+	public String getCorrespondentID()
+	{
+		String id = null;
+		if(correspondentParty != null)
+		{
+			try
+			{
+				id = correspondentParty.getPartyIdentificationAtIndex(0).getIDValue();
+			}
+			catch(Exception e)
+			{
+				id = null;
+			}
+		}
+		return id;
 	}
 
 	/**
@@ -247,16 +287,20 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 
 	/**
 	 * Adds new {@link DocumentReference document reference}.
+	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * @param issuerParty Party that issued referenced document
 	 * @param uuid document's UUID
 	 * @param id document's ID
 	 * @param issueDate issue date of referenced document
 	 * @param issueTime issue time of referenced document
 	 * @param docType document's type as fully qualified name
+	 * @param myParty MyParty object
 	 */
-	public void addDocumentReference(String uuid, String id, XMLGregorianCalendar issueDate,
-			XMLGregorianCalendar issueTime, String docType)
+	public void addDocumentReference(PartyType issuerParty, String uuid, String id,
+			XMLGregorianCalendar issueDate, XMLGregorianCalendar issueTime, String docType, MyParty myParty)
 	{
 		final DocumentReference docReference = new DocumentReference();
+		docReference.setIssuerParty(issuerParty);
 		docReference.setDocumentType(docType);
 		docReference.setUUID(uuid);
 		docReference.setID(id);
@@ -265,14 +309,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		docReference.setReceivedTime(now);
 		getDocumentReferences().add(docReference);
-//		System.out.println(InstanceFactory.getLocalDateTimeAsString(lastActivityTime));
-//		System.out.println(InstanceFactory.getLocalDateTimeAsString(issueDate));
-//		System.out.println(InstanceFactory.getLocalDateTimeAsString(issueTime));
-/*		final XMLGregorianCalendar issueDateTime = issueDate;
-		issueDateTime.setTime(issueTime.getHour(), issueTime.getMinute(), issueTime.getSecond());
-		System.out.println(InstanceFactory.getLocalDateTimeAsString(issueDateTime));*/
 		setLastActivityTime(now);
-//		System.out.println(InstanceFactory.getLocalDateTimeAsString(lastActivityTime));
+		myParty.notifyListeners(new RutaClientFrameEvent(this, RutaClientFrameEvent.CORRESPONDENCE_UPDATED));
 	}
 
 	/**
@@ -293,9 +331,6 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		docReference.setReceivedTime(now);
 		getDocumentReferences().add(docReference);
-/*		final XMLGregorianCalendar issueDateTime = docReference.getIssueDateValue();
-		final XMLGregorianCalendar issueTime = docReference.getIssueTimeValue();
-		issueDateTime.setTime(issueTime.getHour(), issueTime.getMinute(), issueTime.getSecond());*/
 		setLastActivityTime(now);
 	}
 
@@ -303,7 +338,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 * Gets the time of last update of the {@link Correspondence}.
 	 * @return time as String
 	 */
-	//MMM this method may be superfluos because getLastActivityTime is to be used
+	//MMM this method may be superfluos because getLastActivityTime is used
 	public String getTime()
 	{
 		DocumentReference lastRef = null;
@@ -417,7 +452,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Stores {@link Correspondence} to the database.
+	 * Stores {@link Correspondence} to the database in a new Thread.
 	 */
 	public void store()
 	{
@@ -432,6 +467,16 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 				logger.error("Correspondence could not be stored to the database. Exception is: ", e);
 			}
 		}).start();
+	}
+
+	/**
+	 * Returns String representing object of {@link Correspondence} class. Used as the node name in the tree model.
+	 * @return the name of the correspondence or null if name is not set
+	 */
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 
 	/**

@@ -2,11 +2,15 @@ package rs.ruta.client.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+
+import rs.ruta.client.MyParty;
 
 public abstract class RutaTreeModel extends DefaultTreeModel  implements ActionListener
 {
@@ -22,6 +26,12 @@ public abstract class RutaTreeModel extends DefaultTreeModel  implements ActionL
 	 * @return {@link TreeNode root node}
 	 */
 	protected abstract TreeNode populateTree();
+
+	/**
+	 * Populates data model.
+	 * @param myParty
+	 */
+	protected abstract void populateModel(MyParty myParty);
 
 	/**
 	 * Searches for a node in the tree.
@@ -56,9 +66,8 @@ public abstract class RutaTreeModel extends DefaultTreeModel  implements ActionL
 	/**
 	 * Adds node to the model.
 	 * @param userObject object contained in new node
-	 * @param command event command that is resulting in node addition to the model
 	 */
-	protected abstract void addNode(Object userObject, String command);
+	protected abstract void addNode(Object userObject);
 
 	/**
 	 * Deletes {@link DefaultMutableTreeNode node} from the tree model.
@@ -94,14 +103,22 @@ public abstract class RutaTreeModel extends DefaultTreeModel  implements ActionL
 	}
 
 	/**
-	 * Checks whether the model listens for some particular {@link ActionEvent}.
-	 * @param eventClazz class object of the {@code ActionEvent}
-	 * @return true if model listens for event
+	 * Gets the index of the node in the tree, relative to its parent.
+	 * @param <T> type of the object in the set
+	 * @param userObject contained object of the node
+	 * @param collection collection of objects to be searched
+	 * @return index of the node in the tree or -1 if node has not been found
 	 */
-	@Deprecated
-	public boolean listensFor(Class<? extends ActionEvent> eventClazz)
+	protected <T> int getIndex(T userObject, Collection<T> collection) //Set<T> collection
 	{
-		return false;
+		int index = -1;
+		for(T element: collection)
+		{
+			index++;
+			if(userObject.equals(element))
+				break;
+		}
+		return index < collection.size() ? index : -1;
 	}
 
 

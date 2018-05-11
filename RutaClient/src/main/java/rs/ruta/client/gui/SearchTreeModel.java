@@ -35,18 +35,17 @@ public class SearchTreeModel extends RutaTreeModel
 	{
 		super(root);
 		this.myParty = myParty;
-		partySearches = myParty.getPartySearches();
-		catalogueSearches = myParty.getCatalogueSearches();
+		populateModel(myParty);
 		populateTree();
 		setAsksAllowsChildren(true);
 		myParty.addActionListener(this, SearchEvent.class);
 	}
 
-	@Deprecated
 	@Override
-	public boolean listensFor(Class<? extends ActionEvent> eventClazz)
+	protected void populateModel(MyParty myParty)
 	{
-		return eventClazz == null ? false : eventClazz == SearchEvent.class;
+		partySearches = myParty.getPartySearches();
+		catalogueSearches = myParty.getCatalogueSearches();
 	}
 
 	@Override
@@ -95,26 +94,17 @@ public class SearchTreeModel extends RutaTreeModel
 	/**
 	 * Adds node to the model right after the parent node i.e. at the index 0.
 	 * @param userObject object contained in new node
-	 * @param command event command that is resulting in node addition to the model
 	 */
 	@Override
-	public void addNode(Object userObject, String command)
+	public void addNode(Object userObject)
 	{
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(userObject);
 		node.setAllowsChildren(false);
-//		if(((Search<?>) userObject).getResultType() == CatalogueType.class)
-		if(SearchEvent.CATALOGUE_SEARCH_ADDED.equals(command))
-			insertNodeInto(node, searchNode(CATALOGUES), 0);
-//		else if(((Search<?>) userObject).getResultType() == PartyType.class)
-		if(SearchEvent.PARTY_SEARCH_ADDED.equals(command))
-			insertNodeInto(node, searchNode(PARTIES), 0);
-
-/*		if(((Search<?>) userObject).getClass() == CatalogueSearch.class)
+		if(((Search<?>) userObject).getResultType() == CatalogueType.class)
 			insertNodeInto(node, searchNode(CATALOGUES), 0);
 		else if(((Search<?>) userObject).getResultType() == PartyType.class)
-			insertNodeInto(node, searchNode(PARTIES), 0);*/
-
-		nodeChanged(node); //necessary if display name is longer than the one's which place this node is taking upon insert
+			insertNodeInto(node, searchNode(PARTIES), 0);
+		nodeChanged(node); //necessary if display name is longer than the one's which place this node is taking up after insert
 	}
 
 	/**
@@ -207,7 +197,7 @@ public class SearchTreeModel extends RutaTreeModel
 
 			if(SearchEvent.PARTY_SEARCH_ADDED.equals(command))
 			{
-				addNode(sourceSearch, command);
+				addNode(sourceSearch);
 				//selectNode(sourceSearch); //MMM:this should be notification to RutaClientFrame or TabXxx to select the node and repaint itself
 			}
 			else if(SearchEvent.PARTY_SEARCH_REMOVED.equals(command))
@@ -225,7 +215,7 @@ public class SearchTreeModel extends RutaTreeModel
 
 			if(SearchEvent.CATALOGUE_SEARCH_ADDED.equals(command))
 			{
-				addNode(sourceSearch, command);
+				addNode(sourceSearch);
 			}
 			else if(SearchEvent.CATALOGUE_SEARCH_REMOVED.equals(command))
 			{

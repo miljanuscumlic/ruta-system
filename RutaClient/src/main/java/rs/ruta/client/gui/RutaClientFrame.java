@@ -73,6 +73,7 @@ import rs.ruta.client.Party;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.Search;
+import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
@@ -86,9 +87,9 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private static final String DEFAULT_WIDTH = "1000";
 	private static final String DEFAULT_HEIGHT = "800";
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.client");
-	public static final int CDR_DATA_TAB = 0;
-	public static final int MY_PRODUCTS_TAB = 1;
-	public static final int CORRESPONDENSCE_TAB = 2;
+	public static final int TAB_PRODUCTS = 0;
+	public static final int TAB_CORRESPONDENSCES = 1;
+	public static final int TAB_CDR_DATA = 2;
 
 	private RutaClient client;
 	private JTabbedPane tabbedPane;
@@ -188,12 +189,12 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		//setting tabs
 		tabbedPane = new JTabbedPane();
-		tabCDR = new TabCDRData(this);
-		tabbedPane.addTab("CDR Data", tabCDR);
 		tabMyProducts = new TabProducts(this);
 		tabbedPane.addTab("Products & Services", tabMyProducts);
 		tabCorrespondences = new TabCorrespondences(this);
 		tabbedPane.addTab("Correspondences", tabCorrespondences);
+		tabCDR = new TabCDRData(this);
+		tabbedPane.addTab("CDR Data", tabCDR);
 
 		tabbedPane.addChangeListener(event ->
 		{
@@ -235,7 +236,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		myCatalogueItem.addActionListener(event ->
 		{
-			tabbedPane.setSelectedIndex(MY_PRODUCTS_TAB);
+			tabbedPane.setSelectedIndex(TAB_PRODUCTS);
 		});
 
 		saveDataItem.addActionListener(event ->
@@ -694,7 +695,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}).start();
 		});
 
-		tabbedPane.setSelectedIndex(1);
+		tabbedPane.setSelectedIndex(TAB_PRODUCTS);
 	}
 
 	/**
@@ -867,13 +868,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		Component component = null;
 		switch(tabIndex)
 		{
-		case CDR_DATA_TAB:
+		case TAB_CDR_DATA:
 			component = tabCDR;
 			break;
-		case MY_PRODUCTS_TAB:
+		case TAB_PRODUCTS:
 			component = tabMyProducts;
 			break;
-		case CORRESPONDENSCE_TAB:
+		case TAB_CORRESPONDENSCES:
 			component = tabCorrespondences;
 			break;
 		}
@@ -1080,12 +1081,19 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					RutaClientFrameEvent.SELECT_NEXT.equals(command))
 			{
 				tabCDR.dispatchEvent(event);
-				repaint(CDR_DATA_TAB);
+				repaint(TAB_CDR_DATA);
 			}
-
-
 		}
-
+		else if(source.getClass() == BuyingCorrespondence.class)
+		{
+			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command) ||
+					RutaClientFrameEvent.CORRESPONDENCE_REMOVED.equals(command) ||
+					RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
+			{
+				tabCorrespondences.dispatchEvent(event);
+				repaint(TAB_CORRESPONDENSCES);
+			}
+		}
 	}
 
 	/**

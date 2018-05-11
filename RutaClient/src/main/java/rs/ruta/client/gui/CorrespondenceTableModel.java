@@ -62,7 +62,14 @@ public class CorrespondenceTableModel extends DefaultTableModel
 		case 0:
 			return rowIndex + 1;
 		case 1:
-			return corr.getCorrespondentPartyName();
+			try
+			{
+				return corr.getDocumentReferenceAtIndex(rowIndex).getIssuerParty().getPartyNameAtIndex(0).getNameValue();
+			}
+			catch(Exception e)
+			{
+				return null;
+			}
 		case 2:
 			return getDocumentType(rowIndex);
 		case 3:

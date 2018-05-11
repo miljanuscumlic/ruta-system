@@ -41,17 +41,14 @@ public class PartyTreeModel extends RutaTreeModel
 	{
 		super(root);
 		this.myParty = myParty;
+		populateModel(myParty);
 		populateTree();
 		setAsksAllowsChildren(true);
 		myParty.addActionListener(this, BusinessPartyEvent.class);
 	}
 
-	/**
-	 * Constructs {@link DefaultMutableTreeNode nodes} from objects of the model and populates the tree with them.
-	 * @return {@link TreeNode root node}
-	 */
 	@Override
-	protected TreeNode populateTree()
+	protected void populateModel(MyParty myParty)
 	{
 		Comparator<BusinessParty> partyNameComparator = (first, second)  ->
 		{
@@ -83,7 +80,15 @@ public class PartyTreeModel extends RutaTreeModel
 		otherParties.addAll(myParty.getOtherParties());
 		archivedParties.addAll(myParty.getArchivedParties());
 		deregisteredParties.addAll(myParty.getDeregisteredParties());
+	}
 
+	/**
+	 * Constructs {@link DefaultMutableTreeNode nodes} from objects of the model and populates the tree with them.
+	 * @return {@link TreeNode root node}
+	 */
+	@Override
+	protected TreeNode populateTree()
+	{
 		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
 		((DefaultMutableTreeNode) root).add(myPartyNode);
 		if(myParty.getMyFollowingParty() != null)
@@ -133,30 +138,11 @@ public class PartyTreeModel extends RutaTreeModel
 	}
 
 	/**
-	 * Gets the index of the node in the tree, relative to its parent.
-	 * @param party contained object of the node
-	 * @param collection set to be searched
-	 * @return index of the node in the tree or -1 if node has not been found
-	 */
-	private int getIndex(BusinessParty party, Set<BusinessParty> collection)
-	{
-		int index = -1;
-		for(BusinessParty element: collection)
-		{
-			index++;
-			if(party.equals(element))
-				break;
-		}
-		return index < collection.size() ? index : -1;
-	}
-
-	/**
 	 * Adds node to the model right after the parent node i.e. at the index 0.
 	 * @param userObject object contained in new node
-	 * @param command event command that is resulting in node addition to the model
 	 */
 	@Override
-	public void addNode(Object userObject, String command)
+	protected void addNode(Object userObject)
 	{
 		final BusinessParty userParty = (BusinessParty) userObject;
 		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(userParty);
@@ -188,7 +174,7 @@ public class PartyTreeModel extends RutaTreeModel
 			{
 				//add to business partners
 				businessPartners.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
 			{
@@ -197,7 +183,7 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteNode(sourceParty);
 				//add to business partners
 				businessPartners.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_REMOVED.equals(command))
 			{
@@ -206,13 +192,13 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteNode(sourceParty);
 				//add to archived parties
 				archivedParties.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.OTHER_PARTY_ADDED.equals(command))
 			{
 				//add to other parties
 				otherParties.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.OTHER_PARTY_TRANSFERED.equals(command))
 			{
@@ -221,7 +207,7 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteNode(sourceParty);
 				//add to other parties
 				otherParties.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.OTHER_PARTY_REMOVED.equals(command))
 			{
@@ -230,13 +216,13 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteNode(sourceParty);
 				//add to archived parties
 				archivedParties.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_ADDED.equals(command))
 			{
 				//add to archived parties
 				archivedParties.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
 			{
@@ -253,7 +239,7 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteNode(sourceParty);
 				//add to deregistered parties
 				deregisteredParties.add(sourceParty);
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.DEREGISTERED_PARTY_REMOVED.equals(command))
 			{
@@ -264,7 +250,7 @@ public class PartyTreeModel extends RutaTreeModel
 			else if(BusinessPartyEvent.MY_FOLLOWING_PARTY_ADDED.equals(command))
 			{
 				//add following party
-				addNode(sourceParty, command);
+				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.MY_FOLLOWING_PARTY_REMOVED.equals(command))
 			{
@@ -311,12 +297,5 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteChildrenNodes(OTHER_PARTIES);
 			}
 		}
-	}
-
-	@Deprecated
-	@Override
-	public boolean listensFor(Class<? extends ActionEvent> eventClazz)
-	{
-		return eventClazz == null ? false : eventClazz == BusinessPartyEvent.class;
 	}
 }

@@ -159,7 +159,7 @@ public class MyParty extends BusinessParty
 //		catalogueProcesses = null;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		catalogueIssueDate = null;
-		actionListeners = createListenerMap();
+		createListenerMap();
 		jaxb = RutaClient.getVersion().getJaxbVersion();
 	}
 
@@ -376,15 +376,14 @@ public class MyParty extends BusinessParty
 	/**
 	 * Creates a {@link HashMap map} with (key, value) pairs where the key is a {@link Class} object of the
 	 * event and the value is a list of all listeners that are listening for that event.
-	 * @return map of listeners
 	 */
-	private Map<Class<? extends ActionEvent>, List<ActionListener>> createListenerMap()
+	private void createListenerMap()
 	{
-		Map<Class<? extends ActionEvent>, List<ActionListener>> listeners = new HashMap<>();
-		listeners.put(BusinessPartyEvent.class, new ArrayList<>());
-		listeners.put(SearchEvent.class, new ArrayList<>());
-		listeners.put(RutaClientFrameEvent.class, new ArrayList<>());
-		return listeners;
+		actionListeners = new HashMap<>();
+		actionListeners.put(BusinessPartyEvent.class, new ArrayList<>());
+		actionListeners.put(SearchEvent.class, new ArrayList<>());
+		actionListeners.put(RutaClientFrameEvent.class, new ArrayList<>());
+		actionListeners.put(CorrespondenceEvent.class, new ArrayList<>());
 	}
 
 	public Map<Class<? extends ActionEvent>, List<ActionListener>> getActionListeners()
@@ -409,11 +408,6 @@ public class MyParty extends BusinessParty
 	 */
 	public void notifyListeners(ActionEvent event)
 	{
-/*		actionListeners.stream().
-		filter(listener -> listener.getClass() == RutaTreeModel.class && ((RutaTreeModel) listener).listensFor(event.getClass())).
-//		filter(listener -> ((RutaTreeModel) listener).listenFor(event.getClass())).
-		forEach(listener -> listener.actionPerformed(event));*/
-
 /*		List<ActionListener> listeners = actionListeners.stream().filter(listener -> ((RutaTreeModel) listener).
 				listenFor(event.getClass())).collect(Collectors.toList());
 		for(ActionListener listener : listeners)
@@ -1646,11 +1640,31 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Adds {@link BuyingCorrespondence} to the list of all buying correspondences.
-	 * @param thread correspondence to add
+	 * <p>Notifies listeners registered for this type of the {@link CorrespondenceEvent event}
+	 * and {@link RutaClientFrameEvent event}.</p>
+	 * @param correspondence correspondence to add
 	 */
 	public void addBuyingCorrespondence(BuyingCorrespondence correspondence)
 	{
 		getBuyingCorrespondences().add(correspondence);
+		notifyListeners(new CorrespondenceEvent(correspondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
+		notifyListeners(new RutaClientFrameEvent(correspondence, RutaClientFrameEvent.CORRESPONDENCE_ADDED));
+	}
+
+	/**
+	 * Removes {@link BuyingCorrespondence} from the list of all buying correspondences.
+	 * <p>Notifies listeners registered for this type of the {@link CorrespondenceEvent event}
+	 * and {@link RutaClientFrameEvent event}.</p>
+	 * @param correspondence correspondence to add
+	 */
+	public void removeBuyingCorrespondence(BuyingCorrespondence correspondence)
+	{
+		if(correspondence != null)
+		{
+			getBuyingCorrespondences().add(correspondence);
+			notifyListeners(new CorrespondenceEvent(correspondence, CorrespondenceEvent.CORRESPONDENCE_REMOVED));
+			notifyListeners(new RutaClientFrameEvent(correspondence, RutaClientFrameEvent.CORRESPONDENCE_REMOVED));
+		}
 	}
 
 	/**
@@ -1892,8 +1906,8 @@ public class MyParty extends BusinessParty
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		order.setIssueDate(now);
 		order.setIssueTime(now);
-		System.out.println(order.getIssueDate().toString());
-		System.out.println(order.getIssueTime().toString());
+//		System.out.println(order.getIssueDate().toString());
+//		System.out.println(order.getIssueTime().toString());
 		final OrderLineType orderLine = new OrderLineType();
 		final LineItemType lineItem = new LineItemType();
 		lineItem.setID(UUID.randomUUID().toString()); //MMM put ordered number here
@@ -2610,10 +2624,12 @@ public class MyParty extends BusinessParty
 		final PartyType correspondentParty = order.getBuyerCustomerParty().getParty();
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, false);
 		((SellerOrderingProcess) newCorr.getState()).setOrder(order);
-		newCorr.addDocumentReference(order.getUUIDValue(), order.getIDValue(),
-				order.getIssueDateValue(), order.getIssueTimeValue(), order.getClass().getName());
 		addBuyingCorrespondence(newCorr);
+		newCorr.addDocumentReference(order.getBuyerCustomerParty().getParty(), order.getUUIDValue(),
+				order.getIDValue(), order.getIssueDateValue(), order.getIssueTimeValue(),
+				order.getClass().getName(), this);
 		newCorr.start();
+		newCorr.setRecentlyUpdated(true);
 		return newCorr.getName();
 	}
 
@@ -2633,10 +2649,12 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence could not be found.");
 		else
 		{
-			corr.addDocumentReference(orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
+			corr.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
+					orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
 					orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
-					orderResponseSimple.getClass().getName());
+					orderResponseSimple.getClass().getName(), this);
 			((BuyerOrderingProcess) corr.getState()).setOrderResponseSimple(orderResponseSimple);
+			corr.setRecentlyUpdated(true);
 			if(corr.isAlive())
 				corr.proceed();
 			else
