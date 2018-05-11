@@ -137,10 +137,6 @@ public class PartyTreeModel extends RutaTreeModel
 		return root;
 	}
 
-	/**
-	 * Adds node to the model right after the parent node i.e. at the index 0.
-	 * @param userObject object contained in new node
-	 */
 	@Override
 	protected void addNode(Object userObject)
 	{

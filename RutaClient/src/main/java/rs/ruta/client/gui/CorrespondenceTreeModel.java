@@ -30,9 +30,10 @@ import rs.ruta.client.CorrespondenceEvent;
 public class CorrespondenceTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = -841281945123956954L;
+	private static final String ARCHIVED_PARTNERS = "Archived";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
-	private static final String MY_PARTY = "My Party";
 	private static final String CDR = "CDR";
+	private static final String MY_PARTY = "My Party";
 	private MyParty myParty;
 	//using sets for keeping sorted collection of parties and because they are faster than lists
 	//when it comes to the sorting; sets should be maintained and representing current view of the data model
@@ -82,7 +83,6 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 		correspondences = new HashMap<>();
 		for(BusinessParty bParty: businessPartners)
 			correspondences.put(bParty, myParty.findAllCorrespondences(bParty.getPartyID()));
-
 	}
 
 	/**
@@ -92,16 +92,19 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 	@Override
 	protected TreeNode populateTree()
 	{
-		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
+		final DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
 		((DefaultMutableTreeNode) root).add(myPartyNode);
 		if(myParty.getMyFollowingParty() != null)
 		{
-			DefaultMutableTreeNode myFollowingPartyNode = new DefaultMutableTreeNode(cdrParty);
-			myFollowingPartyNode.setAllowsChildren(false);
-			myPartyNode.add(myFollowingPartyNode);
+			final DefaultMutableTreeNode cdrPartyNode = new DefaultMutableTreeNode(cdrParty);
+			myPartyNode.add(cdrPartyNode);
+//			addNode(myParty.getCatalogueCorrespondence(), cdrParty);
+			final DefaultMutableTreeNode corrNode = new DefaultMutableTreeNode(myParty.getCatalogueCorrespondence());
+			corrNode.setAllowsChildren(false);
+			cdrPartyNode.add(corrNode);
 		}
 
-		DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode(BUSINESS_PARTNERS);
+		final DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode(BUSINESS_PARTNERS);
 		((DefaultMutableTreeNode) root).add(businessPartnersNode);
 		for(BusinessParty bParty: businessPartners)
 		{
@@ -110,19 +113,22 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			businessPartnersNode.add(partnerNode);*/
 			addNode(bParty);
 		}
+
+		final DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(ARCHIVED_PARTNERS);
+		((DefaultMutableTreeNode) root).add(archivedNode);
+		//MMM add all archived business parties
 		return root;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Object source = event.getSource();
-		String command = event.getActionCommand();
+		final Object source = event.getSource();
+		final String command = event.getActionCommand();
 
 		if(source.getClass() == BusinessParty.class)
 		{
 			final BusinessParty sourceParty = (BusinessParty) source;
-
 			if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
 			{
 				//add to business partners
@@ -146,7 +152,6 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 		else if(source.getClass() == BuyingCorrespondence.class)
 		{
 			final Correspondence corr = (Correspondence) source;
-
 			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
 			{
 				final BusinessParty bParty = myParty.getBusinessPartner(corr.getCorrespondentID());
@@ -159,23 +164,29 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 	protected void addNode(Object userObject)
 	{
 		final BusinessParty party = (BusinessParty) userObject;
-		DefaultMutableTreeNode partyNode = new DefaultMutableTreeNode(party);
+		final DefaultMutableTreeNode partyNode = new DefaultMutableTreeNode(party);
 		partyNode.setAllowsChildren(true);
-		insertNodeInto(partyNode, searchNode(BUSINESS_PARTNERS), getIndex(party, businessPartners));
+		if(party.isPartner())
+			insertNodeInto(partyNode, searchNode(BUSINESS_PARTNERS), getIndex(party, businessPartners));
 
-		List<Correspondence> partyCorrespondences = myParty.findAllCorrespondences(party.getPartyID());
+		final List<Correspondence> partyCorrespondences = myParty.findAllCorrespondences(party.getPartyID());
 		if(partyCorrespondences != null)
 		{
 			correspondences.put(party, partyCorrespondences);
 			for(Correspondence corr: partyCorrespondences)
 			{
-				DefaultMutableTreeNode corrNode = new DefaultMutableTreeNode(corr);
+				final DefaultMutableTreeNode corrNode = new DefaultMutableTreeNode(corr);
 				corrNode.setAllowsChildren(false);
 				insertNodeInto(corrNode, partyNode, getIndex(corr, partyCorrespondences));
 			}
 		}
 	}
 
+	/**
+	 * Adds node as a child to a parent node.
+	 * @param userObject object contained in adding node
+	 * @param parentObject object contained in parent node
+	 */
 	private void addNode(Object userObject, Object parentObject)
 	{
 		final BusinessParty party = (BusinessParty) parentObject;

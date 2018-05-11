@@ -81,7 +81,7 @@ public class TabCorrespondences extends TabComponent
 		final JLabel blankLabel = new JLabel();
 
 		leftPane = new JScrollPane(treePanel);
-		leftPane.setPreferredSize(new Dimension(310, 500));
+		leftPane.setPreferredSize(new Dimension(315, 500));
 
 		rightPane = new JPanel(new BorderLayout());
 		rightScrollPane = new JScrollPane();
@@ -142,13 +142,10 @@ public class TabCorrespondences extends TabComponent
 				{
 					partiesTableModel.setParties(partyList);
 					partiesTableModel.fireTableDataChanged();
-					//					partiesSorter.allRowsChanged();
 					rightScrollPane.setViewportView(partiesTable);
 				}
 				else
-				{
 					rightScrollPane.setViewportView(blankLabel);
-				}
 			}
 			repaint();
 		});
@@ -167,7 +164,6 @@ public class TabCorrespondences extends TabComponent
 				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, true);
 				myParty.addBuyingCorrespondence(corr);
 				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(correspondentID));
-//				EventQueue.invokeLater(() -> { partnerCorrespondenceListTableModel.fireTableDataChanged(); });
 				corr.start();
 			}).start();
 		});
@@ -189,7 +185,6 @@ public class TabCorrespondences extends TabComponent
 						partyTreePopupMenu.add(newOrderItem);
 						partyTreePopupMenu.show(correspondenceTree, event.getX(), event.getY());
 					}
-
 				}
 			}
 		});
@@ -522,6 +517,45 @@ public class TabCorrespondences extends TabComponent
 	{
 		Object source = event.getSource();
 		String command = event.getActionCommand();
+		if(source instanceof Correspondence)
+		{
+			Correspondence corr = (Correspondence) source;
+			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					makeVisibleNode(correspondenceTree, corr);
+					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+					if(selectedUserObject instanceof BusinessParty)
+					{
+						if(((BusinessParty) selectedUserObject).getPartyID().equals(corr.getCorrespondentID()))
+							partnerCorrespondenceListTableModel.fireTableDataChanged();
+					}
+					else if(selectedUserObject instanceof Correspondence)
+					{
+						if(corr == selectedUserObject)
+							partnerCorrespondenceTableModel.fireTableDataChanged();
+					}
+				});
+			}
+			else if(RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					makeVisibleNode(correspondenceTree, corr);
+					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+					if(selectedUserObject instanceof Correspondence)
+						if(corr == selectedUserObject)
+							partnerCorrespondenceTableModel.fireTableDataChanged();
+				});
+			}
+		}
+
+
+
+
+/*		Object source = event.getSource();
+		String command = event.getActionCommand();
 		if(source.getClass() == BuyingCorrespondence.class)
 		{
 			BuyingCorrespondence corr = (BuyingCorrespondence) source;
@@ -558,7 +592,7 @@ public class TabCorrespondences extends TabComponent
 		else if(source.getClass() == CatalogueCorrespondence.class)
 		{
 			//MMM TODO
-		}
+		}*/
 
 
 

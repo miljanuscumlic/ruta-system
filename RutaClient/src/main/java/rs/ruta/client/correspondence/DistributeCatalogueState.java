@@ -30,6 +30,11 @@ public class DistributeCatalogueState extends CreateCatalogueProcessState
 		final CatalogueType catalogue = ((CreateCatalogueProcess) process).getCatalogue();
 		final Future<?> ret = process.getClient().cdrSendMyCatalogueUpdateRequest(catalogue);
 		((CreateCatalogueProcess) process).setFuture(ret);
+		correspondence.addDocumentReference(catalogue.getProviderParty(), //correspondence.getClient().getMyParty().getCoreParty(),
+				catalogue.getUUIDValue(), catalogue.getIDValue(), catalogue.getIssueDateValue(),
+				catalogue.getIssueTimeValue(), catalogue.getClass().getName(),
+				correspondence.getClient().getMyParty());
+		correspondence.setRecentlyUpdated(true);
 		changeState(process, ReceiveCatalogueAppResponseState.getInstance());
 	}
 

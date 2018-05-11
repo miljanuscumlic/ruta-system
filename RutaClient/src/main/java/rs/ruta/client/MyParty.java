@@ -1775,12 +1775,11 @@ public class MyParty extends BusinessParty
 			final String strID = String.valueOf(nextCatalogueID());
 			catID.setValue(strID);
 			catalogue.setID(catID);
-			final UUIDType catUUID = new UUIDType();
-			catUUID.setValue(getCatalogueUUID());
-			catalogue.setUUID(catUUID);
-			final IssueDateType date = new IssueDateType();
-			date.setValue(setCatalogueIssueDate());
-			catalogue.setIssueDate(date);
+			catalogue.setID(String.valueOf(getCatalogueID()));
+			catalogue.setUUID(getCatalogueUUID());
+			final XMLGregorianCalendar catDate = setCatalogueIssueDate();
+			catalogue.setIssueDate(catDate);
+			catalogue.setIssueTime(catDate);
 			catalogue.setProviderParty((PartyType) getCoreParty());
 			catalogue.setReceiverParty((PartyType) receiverParty);
 

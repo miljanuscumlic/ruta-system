@@ -74,6 +74,7 @@ import rs.ruta.client.RutaClient;
 import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.Search;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
+import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
@@ -107,7 +108,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private JFileChooser chooser;
 
 	private JMenuItem myPartyItem = new JMenuItem("My Party");
-	private JMenuItem myCatalogueItem = new JMenuItem("My Products");
+	private JMenuItem myCatalogueItem = new JMenuItem("My Products & Services");
 	private JMenuItem saveDataItem = new JMenuItem("Save");
 	private JMenuItem exportDataItem = new JMenuItem("Export");
 	private JMenuItem importDataItem = new JMenuItem("Import");
@@ -1073,34 +1074,37 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final String command = event.getActionCommand();
 		if(source.getClass() == BusinessParty.class)
 		{
-			BusinessParty party = (BusinessParty) source;
-
 			if(RutaClientFrameEvent.PARTY_UPDATED.equals(command) ||
 					RutaClientFrameEvent.CATALOGUE_UPDATED.equals(command) ||
 					RutaClientFrameEvent.PARTY_MOVED.equals(command) ||
 					RutaClientFrameEvent.SELECT_NEXT.equals(command))
 			{
 				tabCDR.dispatchEvent(event);
-				repaint(TAB_CDR_DATA);
+				if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)
+					repaint();
+				//repaint(TAB_CDR_DATA);
 			}
 		}
-		else if(source.getClass() == BuyingCorrespondence.class)
+		else if(source instanceof Correspondence)
 		{
 			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command) ||
 					RutaClientFrameEvent.CORRESPONDENCE_REMOVED.equals(command) ||
 					RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
 			{
 				tabCorrespondences.dispatchEvent(event);
-				repaint(TAB_CORRESPONDENSCES);
+				if(tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
+					repaint();
+					//repaint(TAB_CORRESPONDENSCES);
 			}
 		}
+
 	}
 
 	/**
 	 * Processes exception thrown by called webmethod or some local one.
 	 * @param e exception to be processed
-	 * @param msg {@link StringBuilder message} to be displayed on the console
-	 * @return TODO
+	 * @param msg {@link StringBuilder message} to be processed for display on the console
+	 * @return message to be displayed on the console
 	 */
 	public StringBuilder processException(Exception e, StringBuilder msgBuilder)
 	{
