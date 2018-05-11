@@ -45,8 +45,9 @@ public class TabCorrespondences extends TabComponent
 {
 	private static final long serialVersionUID = -7541063217643235335L;
 	private static final String BUSINESS_PARTNERS = "Business Partners";
-	private static final String MY_PARTY ="My Party";
+	private static final String CDR = "CDR";
 	private static final String CORRESPONDECES = "Correspondences";
+	private static final String MY_PARTY = "My Party";
 	private final JTree correspondenceTree;
 
 	private CorrespondenceListTableModel partnerCorrespondenceListTableModel;
@@ -112,8 +113,18 @@ public class TabCorrespondences extends TabComponent
 			if(selectedObject == null) return;
 			if(selectedObject instanceof BusinessParty)
 			{
-				final String partyID = ((BusinessParty) selectedObject).getPartyID();
-				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
+				List<Correspondence> correspondences;
+				if(((BusinessParty) selectedObject).getPartySimpleName().equals(CDR))
+				{
+					correspondences = new ArrayList<>();
+					correspondences.add(myParty.getCatalogueCorrespondence());
+				}
+				else
+				{
+					final String partyID = ((BusinessParty) selectedObject).getPartyID();
+					correspondences = myParty.findAllCorrespondences(partyID);
+				}
+				partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
 				partnerCorrespondenceListTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCorrespondenceListTable);
 			}
