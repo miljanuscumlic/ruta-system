@@ -1082,7 +1082,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				tabCDR.dispatchEvent(event);
 				if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)
 					repaint();
-				//repaint(TAB_CDR_DATA);
 			}
 		}
 		else if(source instanceof Correspondence)
@@ -1094,10 +1093,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				tabCorrespondences.dispatchEvent(event);
 				if(tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
 					repaint();
-					//repaint(TAB_CORRESPONDENSCES);
 			}
 		}
-
 	}
 
 	/**

@@ -1216,7 +1216,7 @@ public class TabCDRData extends TabComponent
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event)
+	public void dispatchEvent(ActionEvent event)
 	{
 		final Object source = event.getSource();
 		final String command = event.getActionCommand();

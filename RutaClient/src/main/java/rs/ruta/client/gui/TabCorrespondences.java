@@ -524,7 +524,7 @@ public class TabCorrespondences extends TabComponent
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event)
+	public void dispatchEvent(ActionEvent event)
 	{
 		Object source = event.getSource();
 		String command = event.getActionCommand();

@@ -41,8 +41,7 @@ import org.slf4j.Logger;
  * of the {@code Ruta Client application}. Every tab is an instance of a {@code TabComponent}'s subclass. {@code TabComponent}
  * contains common methods used in its subclasses.
  */
-//MMM: TabComponent does not have to be an ActionListener. It and its subclasses can deal with events through dispatchEvent methods.
-public abstract class TabComponent extends Container implements ActionListener
+public abstract class TabComponent extends Container
 {
 	private static final long serialVersionUID = 4341543994574335442L;
 	protected RutaClientFrame clientFrame;
@@ -399,21 +398,11 @@ public abstract class TabComponent extends Container implements ActionListener
 			return null;
 	}
 
-	/* (non-Javadoc)
-	 *  Should be overriden by subclasses intereseted in listeneting to events.
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent event) { }
-
 	/**
-	 * Dispatches {@link ActionEvent event} to particular subclass of {@link TabComponent}.
+	 * Dispatches {@link ActionEvent event} to process to particular subclass of {@link TabComponent}.
 	 * @param event event to dispatch
 	 */
-	public void dispatchEvent(ActionEvent event)
-	{
-		actionPerformed(event);
-	}
+	public void dispatchEvent(ActionEvent event) { }
 
 	/**
 	 * Creates {@link TableRowSorter}, sets zeroth column with row numbers not to be sortable and sorts
