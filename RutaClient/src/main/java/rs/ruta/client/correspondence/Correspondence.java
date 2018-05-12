@@ -46,9 +46,6 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 */
 	@XmlElement(name = "Stopped")
 	protected boolean stopped;
-	//MMM superfluous ??? check this
-	@XmlElement(name = "CorrespondentIdentification")
-	protected PartyIdentificationType correspondentIdentification;
 	@XmlElement(name = "CorrespondentParty")
 	protected PartyType correspondentParty;
 	/**
@@ -206,23 +203,6 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			{}
 		}
 		return partyName;
-	}
-
-	public PartyIdentificationType getCorrespondentIdentification()
-	{
-		return correspondentIdentification;
-	}
-
-	public void setCorrespondentIdentification(PartyIdentificationType partyIdentification)
-	{
-		this.correspondentIdentification = partyIdentification;
-	}
-
-	public void setCorrespondentIdentification(String correspondentID)
-	{
-		if(correspondentIdentification == null)
-			correspondentIdentification = new PartyIdentificationType();
-		correspondentIdentification.setID(correspondentID);
 	}
 
 	/**

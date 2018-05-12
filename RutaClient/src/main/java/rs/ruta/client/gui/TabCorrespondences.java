@@ -84,7 +84,7 @@ public class TabCorrespondences extends TabComponent
 		final JLabel blankLabel = new JLabel();
 
 		leftPane = new JScrollPane(treePanel);
-		leftPane.setPreferredSize(new Dimension(315, 500));
+		leftPane.setPreferredSize(new Dimension(320, 500));
 
 		rightPane = new JPanel(new BorderLayout());
 		rightScrollPane = new JScrollPane();
