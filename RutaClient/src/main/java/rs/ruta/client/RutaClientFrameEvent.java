@@ -10,13 +10,8 @@ import rs.ruta.client.gui.RutaClientFrame;
 public class RutaClientFrameEvent extends ActionEvent
 {
 	private static final long serialVersionUID = -4405562652384954954L;
-	public static final String PARTY_UPDATED = "Party's core party updated";
-	public static final String CATALOGUE_UPDATED = "Party's catalogue updated";
-	public static final String PARTY_MOVED = "Party moved from one list to another";
+	//MMM not used - could be deleted if is obsolete and also the whole RutaClientFrameEvent class
 	public static final String SELECT_NEXT = "Select next node in a tree";
-	public static final String CORRESPONDENCE_ADDED = "Partner's correspondence added";
-	public static final String CORRESPONDENCE_REMOVED = "Partner's correspondence removed";
-	public static final String CORRESPONDENCE_UPDATED = "Partner's correspondence updated";
 
 	public RutaClientFrameEvent(Object source, String command)
 	{

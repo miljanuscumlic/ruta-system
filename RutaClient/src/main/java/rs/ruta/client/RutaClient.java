@@ -237,6 +237,9 @@ public class RutaClient implements RutaNode
 			}).start();
 		}
 		myParty.addActionListener(frame, RutaClientFrameEvent.class);
+		myParty.addActionListener(frame, SearchEvent.class);
+		myParty.addActionListener(frame, CorrespondenceEvent.class);
+		myParty.addActionListener(frame, BusinessPartyEvent.class);
 	}
 
 	/**

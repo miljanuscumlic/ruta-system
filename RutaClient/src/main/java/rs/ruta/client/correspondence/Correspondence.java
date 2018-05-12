@@ -310,7 +310,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		docReference.setReceivedTime(now);
 		getDocumentReferences().add(docReference);
 		setLastActivityTime(now);
-		myParty.notifyListeners(new RutaClientFrameEvent(this, RutaClientFrameEvent.CORRESPONDENCE_UPDATED));
+		myParty.notifyListeners(new CorrespondenceEvent(this, CorrespondenceEvent.CORRESPONDENCE_UPDATED));
 	}
 
 	/**

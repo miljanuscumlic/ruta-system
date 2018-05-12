@@ -31,6 +31,7 @@ import javax.swing.tree.TreePath;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.BusinessParty;
+import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.RutaClientFrameEvent;
@@ -541,7 +542,7 @@ public class TabCorrespondences extends TabComponent
 		if(source instanceof Correspondence)
 		{
 			Correspondence corr = (Correspondence) source;
-			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command))
+			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
 			{
 				EventQueue.invokeLater(() ->
 				{
@@ -565,9 +566,10 @@ public class TabCorrespondences extends TabComponent
 						if(corr == selectedUserObject)
 							partnerCorrespondenceTableModel.fireTableDataChanged();
 					}
+					repaint();
 				});
 			}
-			else if(RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
+			else if(CorrespondenceEvent.CORRESPONDENCE_UPDATED.equals(command))
 			{
 				EventQueue.invokeLater(() ->
 				{
@@ -576,6 +578,7 @@ public class TabCorrespondences extends TabComponent
 					if(selectedUserObject instanceof Correspondence)
 						if(corr == selectedUserObject)
 							partnerCorrespondenceTableModel.fireTableDataChanged();
+					repaint();
 				});
 			}
 		}

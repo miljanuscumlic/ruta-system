@@ -399,7 +399,8 @@ public abstract class TabComponent extends Container
 	}
 
 	/**
-	 * Dispatches {@link ActionEvent event} to process to particular subclass of {@link TabComponent}.
+	 * Dispatches {@link ActionEvent event} to particular subclass of {@link TabComponent}. Events that are
+	 * dispatched are ones that update the view, like selecting tree node, updating table view etc.
 	 * @param event event to dispatch
 	 */
 	public void dispatchEvent(ActionEvent event) { }

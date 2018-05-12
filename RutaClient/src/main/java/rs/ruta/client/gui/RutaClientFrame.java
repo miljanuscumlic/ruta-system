@@ -68,6 +68,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.BusinessParty;
+import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
 import rs.ruta.client.RutaClient;
@@ -1074,10 +1075,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final String command = event.getActionCommand();
 		if(source.getClass() == BusinessParty.class)
 		{
-			if(RutaClientFrameEvent.PARTY_UPDATED.equals(command) ||
+/*			if(RutaClientFrameEvent.PARTY_UPDATED.equals(command) ||
 					RutaClientFrameEvent.CATALOGUE_UPDATED.equals(command) ||
 					RutaClientFrameEvent.PARTY_MOVED.equals(command) ||
-					RutaClientFrameEvent.SELECT_NEXT.equals(command))
+					RutaClientFrameEvent.SELECT_NEXT.equals(command))*/
+
 			{
 				tabCDR.dispatchEvent(event);
 				if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)
@@ -1086,14 +1088,19 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		}
 		else if(source instanceof Correspondence)
 		{
-			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command) ||
-					RutaClientFrameEvent.CORRESPONDENCE_REMOVED.equals(command) ||
-					RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
+/*			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command) ||
+					CorrespondenceEvent.CORRESPONDENCE_REMOVED.equals(command) ||
+					CorrespondenceEvent.CORRESPONDENCE_UPDATED.equals(command))*/
 			{
 				tabCorrespondences.dispatchEvent(event);
 				if(tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
 					repaint();
 			}
+		}
+		else if(source instanceof Search)
+		{
+			tabCDR.dispatchEvent(event);
+			repaint(TAB_CDR_DATA);
 		}
 	}
 

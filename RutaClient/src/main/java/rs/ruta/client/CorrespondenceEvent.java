@@ -12,6 +12,7 @@ public class CorrespondenceEvent extends ActionEvent
 	private static final long serialVersionUID = -6038373567746479191L;
 	public static final String CORRESPONDENCE_ADDED = "Correspondence added";
 	public static final String CORRESPONDENCE_REMOVED = "Correspondence removed";
+	public static final String CORRESPONDENCE_UPDATED = "Correspondence updated";
 
 	public CorrespondenceEvent(Object source, String command)
 	{

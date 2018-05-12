@@ -136,31 +136,31 @@ public class RutaClientTest
 			Locale myLocale = Locale.forLanguageTag("sr-RS");
 			Locale.setDefault(myLocale);
 
+			//			logger.info("Starting client.preInitialize()");
 			client.preInitialize();
+			//			logger.info("Ending client.preInitialize()");
 			RutaClient aClient = client;
 			EventQueue.invokeLater(() ->
 			{
-
+				//				logger.info("//////Starting Ruta Client Frame initialization.\\\\\\");
 				JFrame frame = new RutaClientFrame(aClient);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setVisible(true);
-//				new Thread(() ->
-//				{
-					try
+				try
+				{
+					aClient.initialize();
+				}
+				catch (DetailException e)
+				{
+					logger.error("Fatal error! Data could not be read from the database. Exception is ", e);
+					EventQueue.invokeLater( () ->
 					{
-						aClient.initialize();
-					}
-					catch (DetailException e)
-					{
-						logger.error("Fatal error! Data could not be read from the database. Exception is ", e);
-						EventQueue.invokeLater( () ->
-						{
-							JOptionPane.showMessageDialog(null, "Unable to read data from the database.\n" + e.getMessage(),
-									"Ruta Client - Critical error", JOptionPane.ERROR_MESSAGE);
-							System.exit(1);
-						});
-					}
-//				}).start();
+						JOptionPane.showMessageDialog(null, "Unable to read data from the database.\n" + e.getMessage(),
+								"Ruta Client - Critical error", JOptionPane.ERROR_MESSAGE);
+						System.exit(1);
+					});
+				}
+				//				logger.info("//////Ending Ruta Client Frame initialization.\\\\\\");
 			});
 		}
 		catch(Exception e)

@@ -25,7 +25,9 @@ public class BusinessPartyEvent extends ActionEvent
 	public static final String BUSINESS_LIST_REMOVED = "Business Partners list removed";
 	public static final String OTHER_LIST_REMOVED = "Other parties list removed";
 	public static final String DEREGISTERED_LIST_REMOVED = "Deregistered list removed";
-	public static final String PARTY_UPDATED = "Part updated";
+	public static final String PARTY_UPDATED = "Party updated";
+	public static final String PARTY_MOVED = "Party moved from one list to another";
+	public static final String CATALOGUE_UPDATED = "Party's catalogue updated";
 
 	public BusinessPartyEvent(Object source, String command)
 	{

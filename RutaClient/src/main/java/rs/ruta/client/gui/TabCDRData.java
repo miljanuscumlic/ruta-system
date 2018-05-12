@@ -44,6 +44,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.BusinessParty;
+import rs.ruta.client.BusinessPartyEvent;
 import rs.ruta.client.CatalogueSearch;
 import rs.ruta.client.gui.CatalogueSearchTableModel;
 import rs.ruta.client.gui.CatalogueTableModel;
@@ -55,6 +56,7 @@ import rs.ruta.client.gui.PartyListTableModel;
 import rs.ruta.client.gui.PartySearchTableModel;
 import rs.ruta.client.gui.PartyTreeModel;
 import rs.ruta.client.Search;
+import rs.ruta.client.SearchEvent;
 import rs.ruta.client.gui.SearchListTableModel;
 import rs.ruta.client.gui.SearchTreeModel;
 import rs.ruta.common.InstanceFactory;
@@ -525,10 +527,6 @@ public class TabCDRData extends TabComponent
 							repaint();
 						});
 					}
-
-					/*					((SearchTreeModel) searchTreeModel).changeNode((Search<?>) selectedSearch);
-					selectNode(searchTree, selectedSearch);
-					repaint(null, false, false);*/
 				}
 				catch(Exception e)
 				{
@@ -1224,9 +1222,10 @@ public class TabCDRData extends TabComponent
 		{
 			BusinessParty party = (BusinessParty) source;
 			//MMM: there should be more commands; every command responsible for an update of a specific table
-			if(RutaClientFrameEvent.CATALOGUE_UPDATED.equals(command))
+			if(BusinessPartyEvent.CATALOGUE_UPDATED.equals(command))
 			{
-				EventQueue.invokeLater(() -> {
+				EventQueue.invokeLater(() ->
+				{
 					makeVisibleNode(partyTree, party);
 					final Object selectedUserObject = getSelectedUserObject(partyTree);
 					if(selectedUserObject instanceof BusinessParty)
@@ -1237,16 +1236,17 @@ public class TabCDRData extends TabComponent
 					}
 				});
 			}
-			else if(RutaClientFrameEvent.PARTY_UPDATED.equals(command))
+			else if(BusinessPartyEvent.PARTY_UPDATED.equals(command))
 			{
-				EventQueue.invokeLater(() -> {
+				EventQueue.invokeLater(() ->
+				{
 					makeVisibleNode(partyTree, party);
 					final Object selectedUserObject = getSelectedUserObject(partyTree);
 					if(!(selectedUserObject instanceof BusinessParty))
 						partiesTableModel.fireTableDataChanged();
 				});
 			}
-			else if(RutaClientFrameEvent.PARTY_MOVED.equals(command))
+			else if(BusinessPartyEvent.PARTY_MOVED.equals(command))
 			{
 				EventQueue.invokeLater(() ->
 				{
@@ -1261,6 +1261,23 @@ public class TabCDRData extends TabComponent
 				EventQueue.invokeLater(() ->
 				{
 					selectNextNode(partyTree, party);
+				});
+			}
+		}
+		else if(source instanceof Search)
+		{
+			if(SearchEvent.PARTY_SEARCH_ADDED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					selectNode(searchTree, source);
+				});
+			}
+			else if(SearchEvent.CATALOGUE_SEARCH_ADDED.equals(command))
+			{
+				EventQueue.invokeLater(() ->
+				{
+					selectNode(searchTree, source);
 				});
 			}
 		}

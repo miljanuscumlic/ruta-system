@@ -188,8 +188,8 @@ public class SearchTreeModel extends RutaTreeModel
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Object source = event.getSource();
-		String command = event.getActionCommand();
+		final Object source = event.getSource();
+		final String command = event.getActionCommand();
 
 		if(source.getClass() == PartySearch.class)
 		{
@@ -198,7 +198,6 @@ public class SearchTreeModel extends RutaTreeModel
 			if(SearchEvent.PARTY_SEARCH_ADDED.equals(command))
 			{
 				addNode(sourceSearch);
-				//selectNode(sourceSearch); //MMM:this should be notification to RutaClientFrame or TabXxx to select the node and repaint itself
 			}
 			else if(SearchEvent.PARTY_SEARCH_REMOVED.equals(command))
 			{
