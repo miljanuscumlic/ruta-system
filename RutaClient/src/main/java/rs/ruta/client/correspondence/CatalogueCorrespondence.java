@@ -2,6 +2,9 @@ package rs.ruta.client.correspondence;
 
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -18,16 +21,20 @@ import rs.ruta.common.datamapper.MapperRegistry;
  * {@code Central Data Repository} as another party in this type of communication.
  */
 @XmlRootElement(name = "CatalogueCorrespondence")
+@XmlAccessorType(XmlAccessType.NONE)
 public class CatalogueCorrespondence extends Correspondence
 {
 	/**
-	 * True when Create Catalogue process should be invoked.
+	 * True when Create Catalogue Process should be invoked. False when Delete CAtalogue Pprocess
+	 * is next to execute.
 	 */
-	private boolean createCatalogue;
+	@XmlElement(name = "CreateCatalogueProcess")
+	private boolean createCatalogueProcess;
+
 	/**
 	 * Constructs new instance of a {@link CatalogueCorrespondence} and sets its state to
-	 * default value and uuid to a random value.
-	 * @param {@link RutaClient} object
+	 * {@link ResolveNextCatalogueProcess}.
+	 * @param client {@link RutaClient} object
 	 * @return {@code CatalogueCorrespondence}
 	 */
 	public static CatalogueCorrespondence newInstance(RutaClient client)
@@ -35,37 +42,37 @@ public class CatalogueCorrespondence extends Correspondence
 		CatalogueCorrespondence corr = new CatalogueCorrespondence();
 		corr.setId(UUID.randomUUID().toString());
 		corr.setState(ResolveNextCatalogueProcess.newInstance(client));
-//		corr.setState(CreateCatalogueProcess.newInstance(client));
 		corr.setClient(client);
 		corr.setName(corr.uuid.getValue());
-		corr.setCorrespondentIdentification(client.getCDRParty().getPartyID());
+//		@Deprecated MMM test and delete
+//		corr.setCorrespondentIdentification(client.getCDRParty().getPartyID());
 		corr.setCorrespondentParty(client.getCDRParty());
 		final XMLGregorianCalendar currentDateTime = InstanceFactory.getDate();
 		corr.setCreationTime(currentDateTime);
 		corr.setLastActivityTime(currentDateTime);
 		corr.setActive(true);
 		corr.setStopped(false);
-		corr.createCatalogue = true;
+		corr.createCatalogueProcess = true;
 		corr.setRecentlyUpdated(true);
 		return corr;
 	}
 
 	/**
-	 * Test whether Create Catalogue process should be invoked.
+	 * Tests whether Create Catalogue Process should be invoked.
 	 * @return true if Create Catalogue process should be invoked
 	 */
-	public boolean isCreateCatalogue()
+	public boolean isCreateCatalogueProcess()
 	{
-		return createCatalogue;
+		return createCatalogueProcess;
 	}
 
 	/**
-	 * Sets boolean field telling whether Create Catalogue process should be invoked.
-	 * @param createCatalogue
+	 * Sets boolean field telling whether Create Catalogue Process should be invoked.
+	 * @param createCatalogueProcess
 	 */
-	public void setCreateCatalogue(boolean createCatalogue)
+	public void setCreateCatalogueProcess(boolean createCatalogueProcess)
 	{
-		this.createCatalogue = createCatalogue;
+		this.createCatalogueProcess = createCatalogueProcess;
 	}
 
 	@Override

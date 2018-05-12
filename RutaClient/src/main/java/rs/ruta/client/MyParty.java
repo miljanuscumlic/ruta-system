@@ -50,6 +50,11 @@ import rs.ruta.client.correspondence.BuyerOrderingProcess;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.client.correspondence.CreateCatalogueProcess;
+import rs.ruta.client.correspondence.CreateCatalogueProcessState;
+import rs.ruta.client.correspondence.DeleteCatalogueProcess;
+import rs.ruta.client.correspondence.NotifyOfCatalogueDeletionState;
+import rs.ruta.client.correspondence.PrepareCatalogueState;
 import rs.ruta.client.correspondence.RutaProcess;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.common.BusinessPartySearchCriterion;
@@ -204,7 +209,7 @@ public class MyParty extends BusinessParty
 		setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
 		setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
 
-		final List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
+  		final List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
 		CatalogueCorrespondence corr = null;
 		if(corrs == null || corrs.isEmpty())
 		{
@@ -1615,7 +1620,10 @@ public class MyParty extends BusinessParty
 		this.catalogueProcesses = catalogueProcesses;
 	}*/
 
-
+	/**
+	 * Gets {@link CatalogueCorrespondence}. If it has a {@code null} value new one is instantiated.
+	 * @return {@code CatalogueCorrespondence}
+	 */
 	public CatalogueCorrespondence getCatalogueCorrespondence()
 	{
 		return catalogueCorrespondence;
@@ -1771,11 +1779,12 @@ public class MyParty extends BusinessParty
 		{
 			//populating Catalogue document
 			catalogue = new CatalogueType();
-			final IDType catID = new IDType();
+/*			final IDType catID = new IDType();
 			final String strID = String.valueOf(nextCatalogueID());
 			catID.setValue(strID);
+			catalogue.setID(catID);*/
+			final String catID = String.valueOf(nextCatalogueID());
 			catalogue.setID(catID);
-			catalogue.setID(String.valueOf(getCatalogueID()));
 			catalogue.setUUID(getCatalogueUUID());
 			final XMLGregorianCalendar catDate = setCatalogueIssueDate();
 			catalogue.setIssueDate(catDate);
@@ -1790,7 +1799,7 @@ public class MyParty extends BusinessParty
 /*				final IDType catLineID = new IDType();
 				catLineID.setValue(catID.getValue() + "-" + lineCnt++);
 				catLine.setID(catLineID);*/
-				catLine.setID(catID.getValue() + "-" + lineCnt++);
+				catLine.setID(catID/*.getValue()*/ + "-" + lineCnt++);
 				catLine.setItem(item);
 				final List<ItemLocationQuantityType> itemLocationList = catLine.getRequiredItemLocationQuantity();
 				final ItemLocationQuantityType itemLocation = new ItemLocationQuantityType();
@@ -2667,8 +2676,23 @@ public class MyParty extends BusinessParty
 	public void executeCreateCatalogueProcess()
 	{
 //		catalogueCorrespondence.executeCreateCatalogueProcess();
-		catalogueCorrespondence.setCreateCatalogue(true);
-		catalogueCorrespondence.proceed();//start();
+//		getCatalogueCorrespondence().setCreateCatalogue(true);
+//		catalogueCorrespondence.proceed();//start();
+
+		if(catalogueCorrespondence == null)
+		{
+			catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
+			catalogueCorrespondence.setCreateCatalogueProcess(true);
+			catalogueCorrespondence.setState(CreateCatalogueProcess.newInstance(client));
+			catalogueCorrespondence.start();
+			notifyListeners(new RutaClientFrameEvent(catalogueCorrespondence, RutaClientFrameEvent.CORRESPONDENCE_ADDED));
+			notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
+		}
+		else
+		{
+			catalogueCorrespondence.setCreateCatalogueProcess(true);
+			catalogueCorrespondence.proceed();
+		}
 	}
 
 	/**
@@ -2677,8 +2701,20 @@ public class MyParty extends BusinessParty
 	public void executeDeleteCatalogueProcess()
 	{
 //		catalogueCorrespondence.executeDeleteCatalogueProcess();
-		catalogueCorrespondence.setCreateCatalogue(false);
-		catalogueCorrespondence.proceed();//start();
+		if(catalogueCorrespondence == null)
+		{
+			catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
+			catalogueCorrespondence.setCreateCatalogueProcess(false);
+			catalogueCorrespondence.setState(DeleteCatalogueProcess.newInstance(client));
+			catalogueCorrespondence.start();
+			notifyListeners(new RutaClientFrameEvent(catalogueCorrespondence, RutaClientFrameEvent.CORRESPONDENCE_ADDED));
+			notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
+		}
+		else
+		{
+			catalogueCorrespondence.setCreateCatalogueProcess(false);
+			catalogueCorrespondence.proceed();
+		}
 	}
 
 	/**
@@ -2689,7 +2725,7 @@ public class MyParty extends BusinessParty
 	public List<Correspondence> findAllCorrespondences(final String correspondentID)
 	{
 		final List<Correspondence> corrs = getBuyingCorrespondences().stream().
-				filter(bCorr -> correspondentID.equals(bCorr.getCorrespondentIdentification().getIDValue())).
+				filter(bCorr -> correspondentID.equals(bCorr.getCorrespondentID())).
 				collect(Collectors.toList());
 		return corrs.isEmpty() ? null : corrs;
 	}

@@ -53,7 +53,6 @@ public class Catalogue extends CatalogueType
 		return ret;
 	}
 
-
 	public String getProductNameAsString(int index)
 	{
 		try

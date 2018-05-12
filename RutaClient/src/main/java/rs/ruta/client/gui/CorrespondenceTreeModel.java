@@ -20,6 +20,7 @@ import rs.ruta.client.BusinessParty;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
+import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.BusinessPartyEvent;
 import rs.ruta.client.CorrespondenceEvent;
@@ -92,17 +93,31 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 	@Override
 	protected TreeNode populateTree()
 	{
-		final DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
+		final DefaultMutableTreeNode cdrPartyNode = new DefaultMutableTreeNode(cdrParty);
+		((DefaultMutableTreeNode) root).add(cdrPartyNode);
+		final CatalogueCorrespondence catalogueCorrespondence = myParty.getCatalogueCorrespondence();
+		if(catalogueCorrespondence != null)
+		{
+			final DefaultMutableTreeNode corrNode = new DefaultMutableTreeNode(catalogueCorrespondence);
+			corrNode.setAllowsChildren(false);
+			cdrPartyNode.add(corrNode);
+		}
+
+/*		final DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
 		((DefaultMutableTreeNode) root).add(myPartyNode);
 		if(myParty.getMyFollowingParty() != null)
 		{
 			final DefaultMutableTreeNode cdrPartyNode = new DefaultMutableTreeNode(cdrParty);
 			myPartyNode.add(cdrPartyNode);
 //			addNode(myParty.getCatalogueCorrespondence(), cdrParty);
-			final DefaultMutableTreeNode corrNode = new DefaultMutableTreeNode(myParty.getCatalogueCorrespondence());
-			corrNode.setAllowsChildren(false);
-			cdrPartyNode.add(corrNode);
-		}
+			final CatalogueCorrespondence catalogueCorrespondence = myParty.getCatalogueCorrespondence();
+			if(catalogueCorrespondence != null)
+			{
+				final DefaultMutableTreeNode corrNode = new DefaultMutableTreeNode(catalogueCorrespondence);
+				corrNode.setAllowsChildren(false);
+				cdrPartyNode.add(corrNode);
+			}
+		}*/
 
 		final DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode(BUSINESS_PARTNERS);
 		((DefaultMutableTreeNode) root).add(businessPartnersNode);
@@ -114,9 +129,12 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			addNode(bParty);
 		}
 
-		final DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(ARCHIVED_PARTNERS);
+/*		MMM TODO
+ * 		final DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(ARCHIVED_PARTNERS);
 		((DefaultMutableTreeNode) root).add(archivedNode);
 		//MMM add all archived business parties
+*/
+
 		return root;
 	}
 
@@ -156,6 +174,14 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			{
 				final BusinessParty bParty = myParty.getBusinessPartner(corr.getCorrespondentID());
 				addNode(corr, bParty);
+			}
+		}
+		else if(source.getClass() == CatalogueCorrespondence.class)
+		{
+			final Correspondence corr = (Correspondence) source;
+			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
+			{
+				addNode(corr, cdrParty);
 			}
 		}
 	}

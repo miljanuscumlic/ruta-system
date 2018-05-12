@@ -171,13 +171,13 @@ public class BusinessParty
 
 	/**
 	 * Sets the {@link CatalogueType catalogue} by cloning the passed one.
-	 * @param catalogueType
+	 * @param catalogue
 	 */
-	public void setCatalogue(CatalogueType catalogueType)
+	public void setCatalogue(CatalogueType catalogue)
 	{
-		if(catalogue == null)
-			catalogue = new Catalogue();
-		catalogueType.cloneTo(catalogue);
+		if(this.catalogue == null)
+			this.catalogue = new Catalogue();
+		catalogue.cloneTo(this.catalogue);
 	}
 
 	/**

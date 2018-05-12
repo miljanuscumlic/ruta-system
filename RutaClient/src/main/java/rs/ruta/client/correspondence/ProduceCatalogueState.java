@@ -55,6 +55,4 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 		changeState(process, DistributeCatalogueState.getInstance());
 	}
 
-
-
 }

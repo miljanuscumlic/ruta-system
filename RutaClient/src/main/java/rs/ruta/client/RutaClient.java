@@ -542,7 +542,7 @@ public class RutaClient implements RutaNode
 									Color.GREEN);
 							frame.appendToConsole(new StringBuilder("My Party has been added to the Following parties."), Color.BLACK);
 							frame.appendToConsole(new StringBuilder("Please upload My Catalogue on the CDR service for everyone").
-									append(" to be able to see your products."), Color.GREEN);
+									append(" to be able to see your products."), Color.BLACK);
 						}
 						catch(Exception e)
 						{
@@ -641,7 +641,7 @@ public class RutaClient implements RutaNode
 					frame.appendToConsole(new StringBuilder("My Party has been successfully deregistered from the CDR service."),
 							Color.GREEN);
 					frame.appendToConsole(new StringBuilder("All CDR related data in regard with parties has been deleted from").
-							append(" the local data store."), Color.GREEN);
+							append(" the local data store."), Color.BLACK);
 //					frame.repaint();
 				}
 				catch (InterruptedException | ExecutionException e)
@@ -923,7 +923,7 @@ public class RutaClient implements RutaNode
 	public Boolean cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future)
 	{
 //		RutaProcessState newState = null;
-		Boolean positiveResponse = null; // true when CDR accept sent Catalogue
+		Boolean positiveResponse = null; // true when CDR accepts sent Catalogue
 		try
 		{
 			final UpdateCatalogueWithAppResponseResponse response = (UpdateCatalogueWithAppResponseResponse) future.get();
@@ -1001,6 +1001,7 @@ public class RutaClient implements RutaNode
 
 			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
 			{
+				//MMM check why is this commented below
 /*				myParty.setDirtyCatalogue(true);
 				myParty.setInsertMyCatalogue(true);
 				myParty.removeCatalogueIssueDate();*/
@@ -1569,7 +1570,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			frame.appendToConsole(new StringBuilder("Catalogue of the party ").append(partyName).append(" has been updated."), Color.GREEN);
+			frame.appendToConsole(new StringBuilder("Catalogue of the party ").append(partyName).append(" has been updated."),
+					Color.BLACK);
 		}
 		else if(documentClazz == PartyType.class)
 		{
@@ -1586,7 +1588,7 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			frame.appendToConsole(new StringBuilder("Party ").append(partyName).append(" has been updated."), Color.GREEN);
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).append(" has been updated."), Color.BLACK);
 		}
 		else if(documentClazz == CatalogueDeletionType.class)
 		{
@@ -1603,7 +1605,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			frame.appendToConsole(new StringBuilder("Catalogue of the party ").append(partyName).append(" has been deleted."), Color.GREEN);
+			frame.appendToConsole(new StringBuilder("Catalogue of the party ").append(partyName).append(" has been deleted."),
+					Color.BLACK);
 		}
 		else if(documentClazz == DeregistrationNotice.class)
 		{
@@ -1620,7 +1623,7 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			frame.appendToConsole(new StringBuilder("Party ").append(partyName).append(" has been deregistered."), Color.GREEN);
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).append(" has been deregistered."), Color.BLACK);
 		}
 		else if(documentClazz == OrderType.class)
 		{
@@ -1639,8 +1642,9 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			frame.appendToConsole(new StringBuilder("Party ").append(partyName).append("'s order has been appended to its correspondence."),
-					Color.GREEN);
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s order has been appended to its correspondence."),
+					Color.BLACK);
 		}
 		else if(documentClazz == OrderResponseSimpleType.class)
 		{
@@ -1661,15 +1665,16 @@ public class RutaClient implements RutaNode
 			}
 			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
 					append("'s Order Response Simple has been appended to its correspondence."),
-					Color.GREEN);
+					Color.BLACK);
 		}
 		else
 			frame.appendToConsole(new StringBuilder("Document with the ID: ").append(docID).
 					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
-					Color.GREEN);
+					Color.BLACK);
 	}
 
-	/**Testing of storing two parties to the CDR database.
+	/**
+	 * Testing of storing two parties to the CDR database.
 	 *
 	 */
 	public void testParty()
@@ -1835,12 +1840,16 @@ public class RutaClient implements RutaNode
 		myParty = party;
 	}
 
+	/**
+	 * Gets the {@code CDR} party instance. Creates it if it has a {@code null} value prior this method invocation.
+	 * @return {@code CDR} party
+	 */
 	public Party getCDRParty()
 	{
 		if (CDRParty == null)
 		{
 			CDRParty = new Party();
-			CDRParty.setPartyID("1234567890");
+			CDRParty.setPartyID("CDR1234567890");
 			CDRParty.setPartySimpleName("CDR");
 		}
 		return CDRParty;

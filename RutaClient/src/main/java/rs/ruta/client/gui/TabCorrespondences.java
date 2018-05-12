@@ -44,6 +44,7 @@ import rs.ruta.client.correspondence.Correspondence;
 public class TabCorrespondences extends TabComponent
 {
 	private static final long serialVersionUID = -7541063217643235335L;
+	private static final String ARCHIVED = "Archived";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
 	private static final String CDR = "CDR";
 	private static final String CORRESPONDECES = "Correspondences";
@@ -74,7 +75,7 @@ public class TabCorrespondences extends TabComponent
 		final DefaultTreeModel correspondenceTreeModel =
 				new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
 		correspondenceTree = new JTree(correspondenceTreeModel);
-		final CorrespondenceCellRenderer correspondenceTreeCellRenderer = new CorrespondenceCellRenderer();
+		final CorrespondenceTreeCellRenderer correspondenceTreeCellRenderer = new CorrespondenceTreeCellRenderer();
 		correspondenceTree.setCellRenderer(correspondenceTreeCellRenderer);
 		final JPanel treePanel = new JPanel(new BorderLayout());
 		treePanel.add(correspondenceTree, BorderLayout.CENTER);
@@ -113,17 +114,22 @@ public class TabCorrespondences extends TabComponent
 			if(selectedObject == null) return;
 			if(selectedObject instanceof BusinessParty)
 			{
-				List<Correspondence> correspondences;
+				List<Correspondence> correspondences = null;
 				if(((BusinessParty) selectedObject).getPartySimpleName().equals(CDR))
 				{
-					correspondences = new ArrayList<>();
-					correspondences.add(myParty.getCatalogueCorrespondence());
+					final CatalogueCorrespondence catalogueCorrespondence = myParty.getCatalogueCorrespondence();
+					if(catalogueCorrespondence != null)
+					{
+						correspondences = new ArrayList<>();
+						correspondences.add(catalogueCorrespondence);
+					}
 				}
 				else
 				{
 					final String partyID = ((BusinessParty) selectedObject).getPartyID();
 					correspondences = myParty.findAllCorrespondences(partyID);
 				}
+//				if(correspondences != null)
 				partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
 				partnerCorrespondenceListTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCorrespondenceListTable);
@@ -139,17 +145,21 @@ public class TabCorrespondences extends TabComponent
 			else if(selectedObject instanceof String)
 			{
 				List<BusinessParty> partyList = new ArrayList<>();
-				if(MY_PARTY.equals((String) selectedObject))
+				final String secondLevelObject = (String) selectedObject;
+				if(MY_PARTY.equals(secondLevelObject))
 				{
 					final BusinessParty my = myParty.getMyFollowingParty();
 					if(my != null)
 						partyList.add(my);
 				}
-				else if(BUSINESS_PARTNERS.equals((String) selectedObject))
+				else if(BUSINESS_PARTNERS.equals(secondLevelObject))
 					partyList = myParty.getBusinessPartners();
 
+/*				MMM TODO
+ 				else if(ARCHIVED.equals((String) selectedObject))
+					partyList = myParty.getArchivedParties();*/
 
-				if(!CORRESPONDECES.equals((String) selectedObject))
+				if(!CORRESPONDECES.equals(secondLevelObject))
 				{
 					partiesTableModel.setParties(partyList);
 					partiesTableModel.fireTableDataChanged();
@@ -540,7 +550,15 @@ public class TabCorrespondences extends TabComponent
 					if(selectedUserObject instanceof BusinessParty)
 					{
 						if(((BusinessParty) selectedUserObject).getPartyID().equals(corr.getCorrespondentID()))
+						{
+							if(corr.getCorrespondentPartyName().equals(CDR))
+							{
+								List<Correspondence> correspondeces = new ArrayList<>();
+								correspondeces.add(corr);
+								partnerCorrespondenceListTableModel.setCorrespondences(correspondeces);
+							}
 							partnerCorrespondenceListTableModel.fireTableDataChanged();
+						}
 					}
 					else if(selectedUserObject instanceof Correspondence)
 					{
@@ -561,51 +579,5 @@ public class TabCorrespondences extends TabComponent
 				});
 			}
 		}
-
-
-
-
-/*		Object source = event.getSource();
-		String command = event.getActionCommand();
-		if(source.getClass() == BuyingCorrespondence.class)
-		{
-			BuyingCorrespondence corr = (BuyingCorrespondence) source;
-			if(RutaClientFrameEvent.CORRESPONDENCE_ADDED.equals(command))
-			{
-				EventQueue.invokeLater(() ->
-				{
-					makeVisibleNode(correspondenceTree, corr);
-					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
-					if(selectedUserObject instanceof BusinessParty)
-					{
-						if(((BusinessParty) selectedUserObject).getPartyID().equals(corr.getCorrespondentID()))
-							partnerCorrespondenceListTableModel.fireTableDataChanged();
-					}
-					else if(selectedUserObject instanceof BuyingCorrespondence)
-					{
-						if(corr == selectedUserObject)
-							partnerCorrespondenceTableModel.fireTableDataChanged();
-					}
-				});
-			}
-			else if(RutaClientFrameEvent.CORRESPONDENCE_UPDATED.equals(command))
-			{
-				EventQueue.invokeLater(() ->
-				{
-					makeVisibleNode(correspondenceTree, corr);
-					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
-					if(selectedUserObject instanceof BuyingCorrespondence)
-						if(corr == selectedUserObject)
-							partnerCorrespondenceTableModel.fireTableDataChanged();
-				});
-			}
-		}
-		else if(source.getClass() == CatalogueCorrespondence.class)
-		{
-			//MMM TODO
-		}*/
-
-
-
 	}
 }

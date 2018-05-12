@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
+import rs.ruta.common.InstanceFactory;
 
 @XmlType(name = "DocumentReference")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -35,6 +36,8 @@ public class DocumentReference extends DocumentReferenceType
 	public void cloneTo(DocumentReference docReference)
 	{
 		super.cloneTo(docReference);
+		if(receivedTime != null)
+			docReference.setReceivedTime(InstanceFactory.getDate(receivedTime.toGregorianCalendar()));
 	}
 
 	public XMLGregorianCalendar getReceivedTime()

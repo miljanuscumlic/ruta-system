@@ -47,29 +47,27 @@ public class Search<T>
 		this.id = UUID.randomUUID().toString();
 	}
 
+	//MMM not finished - have to test it
 	@Override
 	public Search<T> clone()
 	{
 		Search<T> newSearch = new Search<T>();
-		newSearch.searchName = searchName;
-		newSearch.timestamp = timestamp;
+		newSearch.searchName = new String(searchName);
+		newSearch.timestamp = InstanceFactory.getDate(timestamp.toGregorianCalendar());
 		//newSearch.criterion = criterion.clone();
 		newSearch.resultType = resultType;
 		newSearch.id = id;
-		//MMM: not finished - have to test it
-
 
 		return newSearch;
 	}
-
+	//MMM not finished - have to test it
 	public Search<T> cloneTo(Search<T> newSearch)
 	{
-		newSearch.searchName = searchName;
-		newSearch.timestamp = timestamp;
+		newSearch.searchName = new String(searchName);
+		newSearch.timestamp = InstanceFactory.getDate(timestamp.toGregorianCalendar());
 		//newSearch.criterion = criterion.clone();
 		newSearch.resultType = resultType;
 		newSearch.id = id;
-		//MMM: not finished - have to test it
 
 		return newSearch;
 	}

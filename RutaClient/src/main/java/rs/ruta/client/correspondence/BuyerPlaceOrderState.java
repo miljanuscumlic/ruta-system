@@ -31,7 +31,7 @@ public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 	public void doActivity(Correspondence correspondence)
 	{
 		final RutaProcess process = (RutaProcess) correspondence.getState();
-		produceOrder(process, correspondence.getCorrespondentIdentification().getIDValue());
+		produceOrder(process, correspondence.getCorrespondentID());
 		final OrderType order = ((BuyerOrderingProcess) process).getOrder();
 		sendOrder(process);
 		correspondence.addDocumentReference(correspondence.getClient().getMyParty().getCoreParty(),

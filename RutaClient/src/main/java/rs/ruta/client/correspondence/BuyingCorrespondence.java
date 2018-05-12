@@ -39,7 +39,8 @@ public class BuyingCorrespondence extends Correspondence
 			corr.setState(SellerOrderingProcess.newInstance(client));
 		corr.setClient(client);
 		corr.setName(corr.uuid.getValue());
-		corr.setCorrespondentIdentification(correspondentID);
+//		@Deprecated MMM test and delete
+//		corr.setCorrespondentIdentification(correspondentID);
 		corr.setCorrespondentParty(correspondentParty);
 		final XMLGregorianCalendar currentDateTime = InstanceFactory.getDate();
 		corr.setCreationTime(currentDateTime);

@@ -1784,7 +1784,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return present;
 	}
 
-	/**Serializes object to an XML document respresented as String.
+	/**
+	 * Serializes object to an XML document respresented as a String.
 	 * @param object object to marshall
 	 * @return XML as string
 	 * @throws JAXBException
@@ -1799,7 +1800,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			JAXBElement<T> element = getJAXBElement(object);
 			Marshaller m = jc.createMarshaller();
 //			m.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			//MMM: check why eXist is behavioring this way
+			//MMM check why eXist is behaving this way
 			//property set because without it xml string for DeregistrationNotice would be generated with
 			//xml prolog line <?xml version="1.0" encoding="UTF-8" standalone="yes"?> and eXist would not
 			//write that string to the database!!!
@@ -1818,7 +1819,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return sw.toString();
 	}
 
-	/**Storing document as a file on the filesystem.
+	/**
+	 * Storing document as a file on the filesystem.
 	 * @param res resource representing document
 	 * @param document filename of the document
 	 */

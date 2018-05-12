@@ -24,7 +24,8 @@ import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
 
-/**ExistConnector encapsulates common data and methods related to the connection to eXist database.
+/**
+ * ExistConnector encapsulates common data and methods related to the connection to eXist database.
  */
 public class ExistConnector implements DatastoreConnector
 {
@@ -245,7 +246,8 @@ public class ExistConnector implements DatastoreConnector
 		return server;
 	}
 
-	/**Sets the IP of the eXist database server
+	/**
+	 * Sets the IP of the eXist database server
 	 * @param server the server to set
 	 */
 	public static void setServer(String server)
@@ -253,7 +255,8 @@ public class ExistConnector implements DatastoreConnector
 		ExistConnector.server = server;
 	}
 
-	/**Retrieves the port of the eXist database server
+	/**
+	 * Retrieves the port of the eXist database server
 	 * @return the port
 	 */
 	public static String getPort()
@@ -261,7 +264,8 @@ public class ExistConnector implements DatastoreConnector
 		return port;
 	}
 
-	/**Sets the port of the eXist database server
+	/**
+	 * Sets the port of the eXist database server
 	 * @param port the port to set
 	 */
 	public static void setPort(String port)
@@ -269,7 +273,8 @@ public class ExistConnector implements DatastoreConnector
 		ExistConnector.port = port;
 	}
 
-	/**Returns base part of the URI of the eXist database.
+	/**
+	 * Returns base part of the URI of the eXist database.
 	 * @return the uri of the eXist database
 	 */
 	public static String getBaseUri()
@@ -277,14 +282,16 @@ public class ExistConnector implements DatastoreConnector
 		return baseUri;
 	}
 
-	/**Sets static fields so that the local XMLDB API is called.
+	/**
+	 * Sets static fields so that the local XMLDB API is called.
 	 */
 	public void setLocalAPI()
 	{
 		baseUri = uriPrefix;
 	}
 
-	/**Gets the extension of the document name i.e. it can be .xml.
+	/**
+	 * Gets the extension of the document name i.e. it can be .xml.
 	 */
 	public static String getDocumentSufix() { return docSufix; }
 
@@ -549,10 +556,12 @@ public class ExistConnector implements DatastoreConnector
 	 * Stores a File or Directory of Files into a Collection in eXist.
 	 * Given a Directory, all files and sub-directories are stored recursively.
 	 */
-	private static void storeDocuments(final Collection coll, final File source) throws XMLDBException {
+	private static void storeDocuments(final Collection coll, final File source) throws XMLDBException
+	{
 		if(source.isDirectory())
 		{
-			final CollectionManagementService mgmtService = (CollectionManagementService) coll.getService("CollectionManagementService", "1.0");
+			final CollectionManagementService mgmtService =
+					(CollectionManagementService) coll.getService("CollectionManagementService", "1.0");
 			final Collection subColl = mgmtService.createCollection(source.getName());
 			try
 			{
@@ -567,7 +576,7 @@ public class ExistConnector implements DatastoreConnector
 		}
 		else
 		{
-			//determine the files type
+			//determine the file type
 			final MimeTable mimeTable = MimeTable.getInstance();
 			final MimeType mimeType = mimeTable.getContentTypeFor(source.getName());
 			final String resourceType = mimeType != null && mimeType.isXMLType() ? "XMLResource" : "BinaryResource";

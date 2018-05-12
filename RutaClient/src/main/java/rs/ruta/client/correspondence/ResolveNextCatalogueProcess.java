@@ -67,7 +67,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		{
 			if(correspondence.isActive() && !correspondence.isStopped())
 			{
-				if(((CatalogueCorrespondence) correspondence).isCreateCatalogue())
+				if(((CatalogueCorrespondence) correspondence).isCreateCatalogueProcess())
 					correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
 				else
 					correspondence.changeState(DeleteCatalogueProcess.newInstance(correspondence.getClient()));
@@ -106,7 +106,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		{
 			if(correspondence.isActive() && !correspondence.isStopped())
 			{
-				if(((CatalogueCorrespondence) correspondence).isCreateCatalogue())
+				if(((CatalogueCorrespondence) correspondence).isCreateCatalogueProcess())
 					correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
 				else
 					correspondence.changeState(DeleteCatalogueProcess.newInstance(correspondence.getClient()));

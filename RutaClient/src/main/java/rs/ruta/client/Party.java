@@ -35,7 +35,6 @@ public class Party extends PartyType
 	 */
 	public Party(PartyType party)
 	{
-		super();
 		party.cloneTo(this);
 	}
 

@@ -46,7 +46,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 */
 	@XmlElement(name = "Stopped")
 	protected boolean stopped;
-	//MMM superfluous ???
+	//MMM superfluous ??? check this
 	@XmlElement(name = "CorrespondentIdentification")
 	protected PartyIdentificationType correspondentIdentification;
 	@XmlElement(name = "CorrespondentParty")
@@ -400,7 +400,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 
 	/**
 	 * Gets the issue date and time of the last document in the correspondence.
-	 * @return time of the last document in the correspondence
+	 * @return issue time of the last document in the correspondence or {@code null} if there are
+	 * no documents in it
 	 */
 	public XMLGregorianCalendar getLastDocumentIssueTime()
 	{
@@ -470,8 +471,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Returns String representing object of {@link Correspondence} class. Used as the node name in the tree model.
-	 * @return the name of the correspondence or null if name is not set
+	 * Returns String representing object of {@link Correspondence} class. Used as a node name in the tree model.
+	 * @return the name of the correspondence or {@code null} if name is not set
 	 */
 	@Override
 	public String toString()

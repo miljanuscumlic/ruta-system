@@ -37,8 +37,17 @@ public class Item extends ItemType
 	public Item clone()
 	{
 		Item ret = new Item();
-		super.cloneTo(ret);
+		cloneTo(ret);
 		return ret;
+	}
+
+	public void cloneTo(Item item)
+	{
+		super.cloneTo(item);
+		if(id != null)
+			item.id = id.clone();
+		if(price != null)
+			item.price = price.clone();
 	}
 
 	public PriceType getPrice()
