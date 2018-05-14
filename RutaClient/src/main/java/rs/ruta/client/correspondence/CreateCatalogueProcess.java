@@ -20,7 +20,7 @@ import rs.ruta.client.RutaClient;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CreateCatalogueProcess extends CatalogueProcess
 {
-	private CatalogueType catalogue;//MMM maybe this should be persisted also?
+	private CatalogueType catalogue;
 	private Future<?> future;
 
 	/**
@@ -57,125 +57,6 @@ public class CreateCatalogueProcess extends CatalogueProcess
 	public void setFuture(Future<?> future)
 	{
 		this.future = future;
-	}
-
-	@Override
-	@Deprecated
-	public void createCatalogue(final Correspondence correspondence) throws StateTransitionException
-	{
-		try
-		{
-			while(active)
-			{
-				prepareCatalogue();
-				produceCatalogue();
-				Future<?> future = distributeCatalogue();
-				receiveCatalogueAppResponse(future);
-				if(state instanceof DecideOnActionState)
-				{
-					decideOnAction();
-					if(state instanceof EndOfProcessState)
-					{
-						endOfProcess();
-					}
-					//else if(state instanceof PrepareCatalogueState) active = true;
-				}
-				else if(state instanceof EndOfProcessState)
-				{
-					endOfProcess();
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
-		}
-		finally
-		{
-			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
-		}
-	}
-
-	/**
-	 * Prepares {@link CatalogueType} information.
-	 */
-	public void prepareCatalogue()
-	{
-		((CreateCatalogueProcessState) state).prepareCatalogue(this);
-	}
-
-	/**
-	 * Constructs {@link CatalogueType} {@code UBL document}.
-	 */
-	public void produceCatalogue()
-	{
-		catalogue = ((CreateCatalogueProcessState) state).produceCatalogue(this);
-	}
-
-	/**
-	 * Sends {@link CatalogueType} {@code UBL document} to the CDR.
-	 * @return {@link Future} object that holds the CDR response
-	 */
-	public Future<?> distributeCatalogue()
-	{
-		return ((CreateCatalogueProcessState) state).distributeCatalogue(this, catalogue);
-	}
-
-	/**
-	 * Waits to receive the response in the form of {@link ApplicationResponseType} document from the CDR service.
-	 * @param future {@link Future} object that holds the CDR response
-	 */
-	public void receiveCatalogueAppResponse(Future<?> future)
-	{
-		((CreateCatalogueProcessState) state).receiveCatalogueAppResponse(this, future);
-	}
-
-	/**
-	 * Decides what to do upon receipt of the {@link ApplicationResponseType} document from the CDR service.
-	 */
-	public void decideOnAction()
-	{
-		((CreateCatalogueProcessState) state).decideOnAction(this);
-	}
-
-	/**
-	 * Ends the process. Sets {@code active} boolean field to false.
-	 */
-	public void endOfProcess()
-	{
-		active = false;
-		state.endOfProcess(this);
-	}
-
-	@Override
-	@Deprecated
-	public void createCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
-	{
-		try
-		{
-			while(active)
-			{
-				execute(correspondence);
-			}
-		}
-		catch (Exception e)
-		{
-			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
-		}
-		finally
-		{
-			if(correspondence.isActive() && !correspondence.isStopped())
-			{
-				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
-//				correspondence.setStopped(true);
-			}
-		}
-	}
-
-	@Deprecated
-	public void execute(Correspondence correspondence)
-	{
-		state.doActivity(correspondence);
 	}
 
 	@Override

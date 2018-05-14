@@ -50,7 +50,7 @@ public class BuyerPlaceOrderState extends BuyerOrderingProcessState
 		final OrderType order = myParty.produceOrder(correspondentID);
 		if(order == null)
 			throw new StateTransitionException("Order is malformed. UBL validation has failed.");
-			((BuyerOrderingProcess) process).setOrder(order);
+		((BuyerOrderingProcess) process).setOrder(order);
 	}
 
 	private void sendOrder(RutaProcess process)

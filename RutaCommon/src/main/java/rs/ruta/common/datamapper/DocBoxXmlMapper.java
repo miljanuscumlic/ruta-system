@@ -281,7 +281,7 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 	}
 
 	/**
-	 * Gets the {@link Class} object of the object that should be written in the database.
+	 * Gets the {@link Class} object of the object that should be written in or read from the DocBox.
 	 * @param result xml {@code String} representation of the object
 	 * @return {@code Class} object or {@code null} if input argument is {@code null} or zero length {@code String}
 	 */
@@ -292,25 +292,23 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			start = result.substring(0, 50);
 		else
 			return null;
-		if(start.matches("<(.)+:Catalogue (.)+"))
+		if(start.matches("<((.)+:)?Catalogue (.)+"))
 			return CatalogueType.class;
-		else if(start.matches("<(.)+:Party (.)+"))
+		else if(start.matches("<((.)+:)?Party (.)+"))
 			return PartyType.class;
-		else if(start.matches("<(.)+:CatalogueDeletion (.)+"))
+		else if(start.matches("<((.)+:)?CatalogueDeletion (.)+"))
 			return CatalogueDeletionType.class;
-		else if(start.matches("<(.)+:CatalogueDeletion (.)+"))
+		else if(start.matches("<((.)+:)?CatalogueDeletion (.)+"))
 			return CatalogueDeletionType.class;
-		else if(start.matches("<(.)+:DeregistrationNotice (.)+"))
+		else if(start.matches("<((.)+:)?DeregistrationNotice (.)+"))
 			return DeregistrationNotice.class;
-		else if(start.matches("<(.)+:OrderResponseSimple (.)+"))
+		else if(start.matches("<((.)+:)?OrderResponseSimple (.)+"))
 			return OrderResponseSimpleType.class;
-		else if(start.matches("<(.)+:Order (.)+"))
+		else if(start.matches("<((.)+:)?Order (.)+"))
 			return OrderType.class;
 		//TODO other types of the objects
 		else
 			return null;
 	}
-
-
 
 }

@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -285,9 +286,6 @@ public class TabCDRData extends TabComponent
 							append(" could not be removed from the following parties!"));
 				}
 			}).start();
-			//				MMM: commented below is a not completed alternative with the SwingWorker
-			//				new UnfollowPartyWorker((BusinessParty) selectedParty).execute();
-
 		});
 
 		addPartnerItem.addActionListener(event ->
@@ -517,16 +515,17 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					final Future<?> ret = clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
-					if(ret != null)
+					/*					if(ret != null)
 					{
 						ret.get();
 						EventQueue.invokeLater(() ->
 						{
 							selectNode(searchTree, selectedSearch);
-							searchesPartySorter.allRowsChanged();
+							searchesPartyTableModel.fireTableDataChanged();
+//							searchesPartySorter.allRowsChanged();
 							repaint();
 						});
-					}
+					}*/
 				}
 				catch(Exception e)
 				{
@@ -1214,7 +1213,7 @@ public class TabCDRData extends TabComponent
 	}
 
 	@Override
-	public void dispatchEvent(ActionEvent event)
+	protected void doDispatchEvent(ActionEvent event)
 	{
 		final Object source = event.getSource();
 		final String command = event.getActionCommand();
@@ -1224,124 +1223,49 @@ public class TabCDRData extends TabComponent
 			//MMM: there should be more commands; every command responsible for an update of a specific table
 			if(BusinessPartyEvent.CATALOGUE_UPDATED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
+				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof BusinessParty)
 				{
-					makeVisibleNode(partyTree, party);
-					final Object selectedUserObject = getSelectedUserObject(partyTree);
-					if(selectedUserObject instanceof BusinessParty)
-					{
-						if(selectedUserObject == party)
-							partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
-						partnerCatalogueTableModel.fireTableDataChanged();
-					}
-				});
+					if(selectedUserObject == party)
+						partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
+					partnerCatalogueTableModel.fireTableDataChanged();
+				}
 			}
 			else if(BusinessPartyEvent.PARTY_UPDATED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
-					makeVisibleNode(partyTree, party);
-					final Object selectedUserObject = getSelectedUserObject(partyTree);
-					if(!(selectedUserObject instanceof BusinessParty))
-						partiesTableModel.fireTableDataChanged();
-				});
+				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(!(selectedUserObject instanceof BusinessParty))
+					partiesTableModel.fireTableDataChanged();
 			}
 			else if(BusinessPartyEvent.PARTY_MOVED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
-					makeVisibleNode(partyTree, party);
-					/*					final Object selectedUserObject = getSelectedUserObject(partyTree);
+				makeVisibleNode(partyTree, party);
+				/*					final Object selectedUserObject = getSelectedUserObject(partyTree);
 					if(!(selectedUserObject instanceof BusinessParty))
 						partiesTableModel.fireTableDataChanged();*/
-				});
 			}
 			else if(RutaClientFrameEvent.SELECT_NEXT.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
-					selectNextNode(partyTree, party);
-				});
+				selectNextNode(partyTree, party);
 			}
 		}
 		else if(source instanceof Search)
 		{
-			if(SearchEvent.PARTY_SEARCH_ADDED.equals(command))
+			if(SearchEvent.PARTY_SEARCH_ADDED.equals(command) ||
+					SearchEvent.CATALOGUE_SEARCH_ADDED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
-					selectNode(searchTree, source);
-				});
+				selectNode(searchTree, source);
 			}
-			else if(SearchEvent.CATALOGUE_SEARCH_ADDED.equals(command))
+			else if(SearchEvent.PARTY_SEARCH_UPDATED.equals(command) ||
+					SearchEvent.CATALOGUE_SEARCH_UPDATED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
-					selectNode(searchTree, source);
-				});
+				makeVisibleNode(searchTree, source);
+				searchesPartyTableModel.fireTableDataChanged();
+				selectNode(searchTree, source);
 			}
 		}
-	}
-
-	public class UnfollowPartyWorker extends SwingWorker<Void, ConsoleData>
-	{
-		private BusinessParty party;
-		private boolean success;
-
-		public UnfollowPartyWorker(BusinessParty party)
-		{
-			this.party = party;
-			success = false;
-		}
-
-		@Override
-		protected Void doInBackground() throws Exception
-		{
-			try
-			{
-				Future<?> ret = clientFrame.getClient().cdrNonBlockingUnfollowParty(party, this);
-				if(ret != null)
-				{
-					ret.get();
-					success = true;
-				}
-			}
-			catch(WebServiceException e)
-			{
-				publish(new ConsoleData(new StringBuilder("Unfollow request has not been sent to the CDR service!").
-						append(" Server is not accessible. Please try again later."), Color.RED));
-			}
-			catch(Exception e)
-			{
-				publish(new ConsoleData(clientFrame.processException(e, new StringBuilder("Party ").append(party.getPartySimpleName()).
-						append(" could not be removed from the following parties!")), Color.RED));
-			}
-			return null;
-		}
-
-		@Override
-		protected void process(List<ConsoleData> chunks)
-		{
-			for(ConsoleData data : chunks)
-				clientFrame.appendToConsole(data.getMsg(), data.getColor());
-		}
-
-		@Override
-		protected void done()
-		{
-			if(success)
-			{
-				EventQueue.invokeLater(() -> selectNode(partyTree, party));
-				clientFrame.appendToConsole(new StringBuilder("Party ").append(party.getPartySimpleName()).
-						append(" has been moved to archived parties."), Color.GREEN);
-			}
-		}
-
-		public void publish(ConsoleData data)
-		{
-			super.publish(data);
-		}
-
 	}
 
 }

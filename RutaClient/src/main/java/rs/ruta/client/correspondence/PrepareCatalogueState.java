@@ -13,17 +13,8 @@ public class PrepareCatalogueState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void prepareCatalogue(final RutaProcess process)
-	{
-		//nothing to do
-		changeState(process, ProduceCatalogueState.getInstance());
-	}
-
-	@Override
 	public void doActivity(Correspondence correspondence)
 	{
 		changeState((RutaProcess) correspondence.getState(), ProduceCatalogueState.getInstance());
 	}
-
-
 }

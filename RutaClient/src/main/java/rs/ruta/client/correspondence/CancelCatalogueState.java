@@ -7,7 +7,6 @@ import rs.ruta.client.MyParty;
 @XmlRootElement(name = "CancelCatalogueState")
 public class CancelCatalogueState extends DeleteCatalogueProcessState
 {
-
 	private static CancelCatalogueState INSTANCE = new CancelCatalogueState();
 
 	public static CancelCatalogueState getInstance()
@@ -16,13 +15,11 @@ public class CancelCatalogueState extends DeleteCatalogueProcessState
 	}
 
 	@Override
-	public void cancelCatalogue(final RutaProcess process) throws StateTransitionException
+	public void doActivity(Correspondence correspondence)
 	{
+		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final MyParty myParty = process.getClient().getMyParty();
-		myParty.setDirtyCatalogue(true);
-		myParty.setInsertMyCatalogue(true);
-		myParty.removeCatalogueIssueDate();
+		myParty.cancelCatalogue();
 		changeState(process, EndOfProcessState.getInstance());
 	}
-
 }

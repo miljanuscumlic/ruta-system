@@ -209,50 +209,43 @@
 			setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
 			setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
 
-//			logger.info("*****Start loading catalogue correspondence");
+			//			logger.info("*****Start loading catalogue correspondence");
 
 			final List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
-//			logger.info("*****End loading catalogue correspondence");
+			//			logger.info("*****End loading catalogue correspondence");
 
-//				logger.info("*****Start starting catalogue correspondence thread");
+			//				logger.info("*****Start starting catalogue correspondence thread");
 
-				CatalogueCorrespondence corr = null;
-				if(corrs == null || corrs.isEmpty())
-				{
-					corr = CatalogueCorrespondence.newInstance(client);
-				}
-				else
-				{
-					corr = corrs.get(0);
-					corr.setClient(client);
-					((RutaProcess) corr.getState()).setClient(client);
-				}
-				corr.start();
-				setCatalogueCorrespondence(corr);
-//				logger.info("*****End starting catalogue correspondence thread");
+			CatalogueCorrespondence corr = null;
+			if(corrs == null || corrs.isEmpty())
+			{
+				corr = CatalogueCorrespondence.newInstance(client);
+			}
+			else
+			{
+				corr = corrs.get(0);
+				corr.setClient(client);
+				((RutaProcess) corr.getState()).setClient(client);
+			}
+			setCatalogueCorrespondence(corr);
+			//			logger.info("*****End starting catalogue correspondence thread");
 
-//			logger.info("*****Start loading buying correspondence");
+			//			logger.info("*****Start loading buying correspondence");
 			buyingCorrespondences = mapperRegistry.getMapper(BuyingCorrespondence.class).findAll();
-//			logger.info("*****End loading buying correspondence");
-//				logger.info("*****Start loop for buying correspondence thread");
-				if(buyingCorrespondences != null)
-					for(BuyingCorrespondence bCorr : buyingCorrespondences)
-					{
-						/*				if(bCorr.isStopped())
-					{
-						bCorr.setActive(true);
-						((RutaProcess) bCorr.getState()).setActive(true);
-					}*/
+			//			logger.info("*****End loading buying correspondence");
+			//			logger.info("*****Start loop for buying correspondence thread");
+			if(buyingCorrespondences != null)
+				for(BuyingCorrespondence bCorr : buyingCorrespondences)
+				{
 					if(bCorr.isActive())
 					{
-//						logger.info("*****Start starting buying correspondence thread");
+						//						logger.info("*****Start starting buying correspondence thread");
 						bCorr.setClient(client);
 						((RutaProcess) bCorr.getState()).setClient(client);
-						bCorr.start();
-//						logger.info("*****End starting buying correspondence thread");
+						//						logger.info("*****End starting buying correspondence thread");
 					}
 				}
-//			logger.info("*****End loop for buying correspondence thread");
+			//			logger.info("*****End loop for buying correspondence thread");
 		}
 
 		/**
@@ -300,16 +293,16 @@
 			}
 			if(buyingCorrespondences != null && !buyingCorrespondences.isEmpty())
 			{
-				for(BuyingCorrespondence bCorr : buyingCorrespondences)
+/*				for(BuyingCorrespondence bCorr : buyingCorrespondences)
 				{
-					/*				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
+									JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 					Marshaller marshaller = jaxbContext.createMarshaller();
 					marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-					marshaller.marshal(bCorr, System.out);*/
-					if(bCorr.isActive() || bCorr.isStopped())
+					marshaller.marshal(bCorr, System.out);
+
 						mapperRegistry.getMapper(BuyingCorrespondence.class).insert(null, bCorr);
-				}
-				//			mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
+				}*/
+				mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
 			}
 
 		}
@@ -360,7 +353,6 @@
 			{
 				mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
 			}
-
 		}
 
 		/**
@@ -1690,21 +1682,23 @@
 		 */
 		public void stopCorrespondencies() throws InterruptedException
 		{
-			//		getCatalogueCorrespondence().stop();
+			if(getCatalogueCorrespondence().isAlive())
+				getCatalogueCorrespondence().stop();
 			for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
-				if(bCorr.isActive())
+				if(bCorr.isAlive())
 					bCorr.stop();
 		}
 
 		/**
-		 * Wait for threads of all active {@link Correspondence}s to stop.
+		 * Waits for threads of all active {@link Correspondence}s to stop.
 		 * @throws InterruptedException
 		 */
 		public void waitCorrespondencesToStop() throws InterruptedException
 		{
-			//		getCatalogueCorrespondence().getStoppedSemaphore().acquire();
+			if(getCatalogueCorrespondence().isAlive())
+				getCatalogueCorrespondence().waitThreadStopped();
 			for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
-				if(bCorr.isActive())
+				if(bCorr.isAlive())
 					bCorr.waitThreadStopped();
 			//				bCorr.getStoppedSemaphore().acquire();
 		}
@@ -1773,53 +1767,7 @@
 			this.cdrUser = cdrUser;
 		}
 
-		/**
-		 * Generates {@link CatalogueType} document from {@link Item items} in the Product table. Method returns
-		 * {@code null} if Catalogue does not have any item or some item has no name or is empty string.
-		 * @param receiverParty receiver Party of the Catalogue
-		 * @return catalogue or {@code null}
-		 */
-		public CatalogueType createCatalogue(Party receiverParty)
-		{
-			CatalogueType catalogue = null;
-			int lineCnt = 0;
-			final List<Item> myProducts = getProducts();
-			if(checkProductNames(myProducts) && !myProducts.isEmpty())
-			{
-				//populating Catalogue document
-				catalogue = new CatalogueType();
-				/*			final IDType catID = new IDType();
-				final String strID = String.valueOf(nextCatalogueID());
-				catID.setValue(strID);
-				catalogue.setID(catID);*/
-				final String catID = String.valueOf(nextCatalogueID());
-				catalogue.setID(catID);
-				catalogue.setUUID(getCatalogueUUID());
-				final XMLGregorianCalendar catDate = setCatalogueIssueDate();
-				catalogue.setIssueDate(catDate);
-				catalogue.setIssueTime(catDate);
-				catalogue.setProviderParty((PartyType) getCoreParty());
-				catalogue.setReceiverParty((PartyType) receiverParty);
-
-				for(Item prod : myProducts)
-				{
-					final ItemType item = (ItemType) prod.clone();//MMM using only ItemType part of the Item ???
-					final CatalogueLineType catLine = new CatalogueLineType();
-					/*				final IDType catLineID = new IDType();
-					catLineID.setValue(catID.getValue() + "-" + lineCnt++);
-					catLine.setID(catLineID);*/
-					catLine.setID(catID/*.getValue()*/ + "-" + lineCnt++);
-					catLine.setItem(item);
-					final List<ItemLocationQuantityType> itemLocationList = catLine.getRequiredItemLocationQuantity();
-					final ItemLocationQuantityType itemLocation = new ItemLocationQuantityType();
-					itemLocation.setPrice(prod.getPrice());
-					itemLocationList.add(itemLocation);
-					catalogue.addCatalogueLine(catLine);
-				}
-			}
-			return catalogue;
-		}
-
+		//MMM produceXxx and validateXxx can be written with functional interfaces
 		/**
 		 * Generates {@link CatalogueType} document that conforms to the {@code UBL} standard.
 		 * @param receiverParty receiver Party of the {@code Catalogue}
@@ -1852,18 +1800,100 @@
 		}
 
 		/**
+		 * Generates {@link CatalogueType} document from {@link Item items} in the Product table. Method returns
+		 * {@code null} if Catalogue does not have any item or some item has no name or is an empty string.
+		 * @param receiverParty receiver Party of the Catalogue
+		 * @return catalogue or {@code null}
+		 */
+		private CatalogueType createCatalogue(Party receiverParty)
+		{
+			CatalogueType catalogue = null;
+			int lineCnt = 0;
+			final List<Item> myProducts = getProducts();
+			if(checkProductNames(myProducts) && !myProducts.isEmpty())
+			{
+				//populating Catalogue document
+				catalogue = new CatalogueType();
+				final String catID = String.valueOf(nextCatalogueID());
+				catalogue.setID(catID);
+				catalogue.setUUID(getCatalogueUUID());
+				final XMLGregorianCalendar catDate = setCatalogueIssueDate();
+				catalogue.setIssueDate(catDate);
+				catalogue.setIssueTime(catDate);
+				catalogue.setProviderParty((PartyType) getCoreParty());
+				catalogue.setReceiverParty((PartyType) receiverParty);
+
+				for(Item prod : myProducts)
+				{
+					final ItemType item = (ItemType) prod.clone();
+					final CatalogueLineType catLine = new CatalogueLineType();
+					catLine.setID(catID + "-" + lineCnt++);
+					catLine.setItem(item);
+					final List<ItemLocationQuantityType> itemLocationList = catLine.getRequiredItemLocationQuantity();
+					final ItemLocationQuantityType itemLocation = new ItemLocationQuantityType();
+					itemLocation.setPrice(prod.getPrice());
+					itemLocationList.add(itemLocation);
+					catalogue.addCatalogueLine(catLine);
+				}
+			}
+			return catalogue;
+		}
+
+		/**
+		 * Cancels Catalogue by reseting catalogue specific data fields acknowledging that
+		 * it is deleted from the CDR.
+		 */
+		public void cancelCatalogue()
+		{
+			setDirtyCatalogue(true);
+			setInsertMyCatalogue(true);
+			removeCatalogueIssueDate();
+		}
+
+		/**
+		 * Generates {@link CatalogueDeletionType} document that conforms to the {@code UBL} standard.
+		 * @param receiverParty receiver Party of the {@code Catalogue Deletion}
+		 * @return catalogue deletion or {@code null} if catalogue deletiondoes not conform to the {@code UBL}
+		 */
+		public CatalogueDeletionType produceCatalogueDeletion(Party receiverParty)
+		{
+			CatalogueDeletionType catalogueDeletion = createCatalogueDeletion(receiverParty);
+			boolean valid = validateCatalogueDeletion(catalogueDeletion);
+			return valid ? catalogueDeletion : null;
+		}
+
+		/**
+		 * Validates whether {@link CatalogueDeletionType} comforms to the {@code UBL} standard.
+		 * @param catalogueDeletion catalogue deletion to check
+		 * @return true if catalogue deletion has a {@code non-null} value and is valid
+		 */
+		private boolean validateCatalogueDeletion(CatalogueDeletionType catalogueDeletion)
+		{
+			boolean valid = false;
+			if(catalogueDeletion != null)
+			{
+				final IErrorList errors = UBL21Validator.catalogueDeletion().validate(catalogueDeletion);
+				if(errors.containsAtLeastOneFailure())
+					logger.error(errors.toString());
+				else
+					valid = true;
+			}
+			return valid;
+		}
+
+		/**
 		 * Generates {@link CatalogueDeletionType Catalogue Deletion Document}.
 		 * @return {@code CatalogueDeletionType Catalogue Deletion Document}
 		 */
-		public CatalogueDeletionType createCatalogueDeletion(Party CDRParty)
+		private CatalogueDeletionType createCatalogueDeletion(Party CDRParty)
 		{
-			CatalogueDeletionType catalogueDeletion = new CatalogueDeletionType();
-			String strID = String.valueOf(nextCatalogueDeletionID());
-			IDType catDelID = new IDType(strID);
+			final CatalogueDeletionType catalogueDeletion = new CatalogueDeletionType();
+			final String catDelID = String.valueOf(nextCatalogueDeletionID());
 			catalogueDeletion.setID(catDelID);
-			UUIDType catDelUUID = new UUIDType(getCatalogueDeletionUUID());
-			catalogueDeletion.setUUID(catDelUUID);
-			catalogueDeletion.setIssueDate(InstanceFactory.getDate());
+			catalogueDeletion.setUUID(getCatalogueDeletionUUID());
+			final XMLGregorianCalendar now = InstanceFactory.getDate();
+			catalogueDeletion.setIssueDate(now);
+			catalogueDeletion.setIssueTime(now);
 			catalogueDeletion.setDeletedCatalogueReference(getCatalogueReference());
 			catalogueDeletion.setProviderParty((PartyType) getCoreParty());
 			catalogueDeletion.setReceiverParty((PartyType) CDRParty);
@@ -1877,10 +1907,12 @@
 		 */
 		private CatalogueReferenceType getCatalogueReference()
 		{
-			CatalogueReferenceType catRef = new CatalogueReferenceType();
+			final CatalogueReferenceType catRef = new CatalogueReferenceType();
 			catRef.setID(String.valueOf(getCatalogueID()));
 			catRef.setUUID(getCatalogueUUID());
-			catRef.setIssueDate(getCatalogueIssueDate());
+			final XMLGregorianCalendar catDate = getCatalogueIssueDate();
+			catRef.setIssueDate(catDate);
+			catRef.setIssueTime(catDate);
 			return catRef;
 		}
 
@@ -1908,7 +1940,7 @@
 		 * @param seller {@link PartyType seller party} which is a receiver of the {@link OrderType order}
 		 * @return order created {@link OrderType order}
 		 */
-		public OrderType createOrder(Party seller)
+		private OrderType createOrder(Party seller)
 		{
 			final OrderType order = new OrderType();
 			final CustomerPartyType buyer = new CustomerPartyType();
@@ -2649,8 +2681,9 @@
 		 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
 		 * @param orderResponseSimple order to process
 		 * @throws DetailException if proper {@link Correspondence} could not be found
+		 * @throws InterruptedException if correspondence thread is interrupted while being blocked
 		 */
-		public void processDocBoxOrderResponseSimple(OrderResponseSimpleType orderResponseSimple) throws DetailException
+		public void processDocBoxOrderResponseSimple(OrderResponseSimpleType orderResponseSimple) throws DetailException, InterruptedException
 		{
 			final String correspondentID = orderResponseSimple.getSellerSupplierParty().getParty().
 					getPartyIdentificationAtIndex(0).getIDValue();
@@ -2660,57 +2693,57 @@
 				throw new DetailException("Matching correspondence could not be found.");
 			else
 			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.waitThreadBlocked();
+
 				corr.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
 						orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
 						orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
 						orderResponseSimple.getClass().getName(), this);
 				((BuyerOrderingProcess) corr.getState()).setOrderResponseSimple(orderResponseSimple);
 				corr.setRecentlyUpdated(true);
-				if(corr.isAlive())
-					corr.proceed();
-				else
-					corr.start();
+
+				corr.proceed();
+
+				int i = 2;
 			}
 		}
 
 		/**
 		 * Executes the process of creation and update of {@link CatalogueType} in the CDR.
+		 * @throws InterruptedException if correspondence thread is interrupted while being blocked
 		 */
-		public void executeCreateCatalogueProcess()
+		public void executeCreateCatalogueProcess() throws InterruptedException
 		{
+			catalogueCorrespondence.setCreateCatalogueProcess(true);
 			if(catalogueCorrespondence == null)
 			{
 				catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
-				catalogueCorrespondence.setCreateCatalogueProcess(true);
-				catalogueCorrespondence.setState(CreateCatalogueProcess.newInstance(client));
-				catalogueCorrespondence.start();
 				notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 			}
-			else
-			{
-				catalogueCorrespondence.setCreateCatalogueProcess(true);
-				catalogueCorrespondence.proceed();
-			}
+			if(!catalogueCorrespondence.isAlive())
+				catalogueCorrespondence.start();
+			catalogueCorrespondence.waitThreadBlocked();
+			catalogueCorrespondence.proceed();
 		}
 
 		/**
 		 * Executes the process of deletion of {@link CatalogueType} in the CDR.
+		 * @throws InterruptedException if correspondence thread is interrupted while being blocked
 		 */
-		public void executeDeleteCatalogueProcess()
+		public void executeDeleteCatalogueProcess() throws InterruptedException
 		{
+			catalogueCorrespondence.setCreateCatalogueProcess(false);
 			if(catalogueCorrespondence == null)
 			{
 				catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
-				catalogueCorrespondence.setCreateCatalogueProcess(false);
-				catalogueCorrespondence.setState(DeleteCatalogueProcess.newInstance(client));
-				catalogueCorrespondence.start();
 				notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 			}
-			else
-			{
-				catalogueCorrespondence.setCreateCatalogueProcess(false);
-				catalogueCorrespondence.proceed();
-			}
+			if(!catalogueCorrespondence.isAlive())
+				catalogueCorrespondence.start();
+			catalogueCorrespondence.waitThreadBlocked();
+			catalogueCorrespondence.proceed();
 		}
 
 		/**

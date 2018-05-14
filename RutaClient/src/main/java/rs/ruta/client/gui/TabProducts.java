@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -126,6 +127,12 @@ public class TabProducts extends TabComponent
 
 			return this;
 		}
+	}
+
+	@Override
+	protected void doDispatchEvent(ActionEvent event)
+	{
+		//nothing to do
 	}
 
 }

@@ -18,27 +18,18 @@ public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
 	}
 
 	@Override
-	public Future<?> notifyOfCatalogueDeletion(final RutaProcess process) throws StateTransitionException
-	{
-		final RutaClient client = process.getClient();
-		final CatalogueDeletionType catalogueDeletion = client.getMyParty().createCatalogueDeletion(client.getCDRParty());
-		final Future<?> ret = client.cdrSendMyCatalogueDeletionRequest(catalogueDeletion);
-		changeState(process, ReceiveCatalogueDeletionAppResponseState.getInstance());
-		return ret;
-	}
-
-/*	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		final RutaProcess process = (RutaProcess) correspondence.getState();
+		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
-		final CatalogueDeletionType catalogueDeletion = client.getMyParty().createCatalogueDeletion(client.getCDRParty());
+		final CatalogueDeletionType catalogueDeletion = client.getMyParty().produceCatalogueDeletion(client.getCDRParty());
 		final Future<?> ret = client.cdrSendMyCatalogueDeletionRequest(catalogueDeletion);
+		process.setFuture(ret);
+		correspondence.addDocumentReference(catalogueDeletion.getProviderParty(),
+				catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(), catalogueDeletion.getIssueDateValue(),
+				catalogueDeletion.getIssueTimeValue(), catalogueDeletion.getClass().getName(),
+				correspondence.getClient().getMyParty());
+		correspondence.setRecentlyUpdated(true);
 		changeState(process, ReceiveCatalogueDeletionAppResponseState.getInstance());
-		return ret;
-	}*/
-
-
-
-
+	}
 }

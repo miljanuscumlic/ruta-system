@@ -7,31 +7,13 @@ package rs.ruta.client.correspondence;
  */
 public class CatalogueProcess extends DocumentProcess
 {
-	/**
-	 * Creates, validates and distributes the {@link CatalogueType} {@code UBL document} in the {@code Ruta System}.
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
-	public void createCatalogue(final Correspondence correspondence) throws StateTransitionException
-	{
-		throw new StateTransitionException();
-	}
-
-	/**
-	 * Creates, validates and distributes the {@link CatalogueType} {@code UBL document} in the {@code Ruta System}.
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
-	public void createCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
-	{
-		throw new StateTransitionException();
-	}
 
 	/**
 	 * Deletes {@link CatalogueType} document from the {@code Ruta System}
 	 * @param correspondence correspondence to which process belongs
 	 * @throws StateTransitionException
 	 */
+	@Deprecated
 	public void deleteCatalogue(final Correspondence correspondence) throws StateTransitionException
 	{
 		throw new StateTransitionException();
@@ -42,6 +24,7 @@ public class CatalogueProcess extends DocumentProcess
 	 * @param correspondence correspondence to which process belongs
 	 * @throws StateTransitionException
 	 */
+	@Deprecated
 	public void deleteCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
 	{
 		throw new StateTransitionException();

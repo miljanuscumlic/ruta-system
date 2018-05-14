@@ -20,6 +20,9 @@ import rs.ruta.client.RutaClient;
 @XmlAccessorType(XmlAccessType.NONE)
 public class DeleteCatalogueProcess extends CatalogueProcess
 {
+
+	private Future<?> future;
+
 	/**
 	 * Constructs new instance of a {@link DeleteCatalogueProcess} and sets its state to
 	 * default value and uuid to a random value.
@@ -36,47 +39,18 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 		return process;
 	}
 
-	@Override
-	@Deprecated
-	public void deleteCatalogue(Correspondence correspondence) throws StateTransitionException
+	public Future<?> getFuture()
 	{
-		try
-		{
-//			boolean loop = true;
-			while(active)
-			{
-				Future<?> future = notifyOfCatalogueDeletion();
-				receiveCatalogueDeletionAppResponse(future);
-				if(state instanceof ReviewDeletionOfCatalogueState)
-				{
-					Semaphore decision = new Semaphore(0);
-					reviewDeletionOfCatalogue(decision);
-					decision.acquire();
-					if(state instanceof EndOfProcessState)
-					{
-						endOfProcess();
-//						loop = false;
-					}
-//					else if(state instanceof NotifyOfCatalogueDeletionState) active = true;
-				}
-				else if(state instanceof CancelCatalogueState)
-				{
-					cancelCatalogue();
-					endOfProcess();
-//					loop = false;
-				}
-			}
-			correspondence.changeState(CreateCatalogueProcess.newInstance(correspondence.getClient()));
-		}
-		catch(Exception e)
-		{
-			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
-			throw new StateTransitionException("Interrupted execution of Delete Catalogue Process!", e);
-		}
+		return future;
 	}
 
-	//MMM change in the way CreateCatalogueProcess,doActivity has been made
-	@Override
+	public void setFuture(Future<?> future)
+	{
+		this.future = future;
+	}
+
+	//MMM change in the way CreateCatalogueProcess, doActivity is made
+/*	@Override
 	public void doActivity(Correspondence correspondence) throws StateTransitionException
 	{
 		try
@@ -112,9 +86,9 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
 			throw new StateTransitionException("Interrupted execution of Delete Catalogue Process!", e);
 		}
-	}
+	}*/
 
-/*	@Override
+	@Override
 	public void doActivity(final Correspondence correspondence) throws StateTransitionException
 	{
 		try
@@ -135,51 +109,6 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
 			}
 		}
-	}*/
-
-
-
-	/**
-	 * Sends {@link CatalogueDeletionType} {@code UBL document} to the CDR.
-	 * @return {@link Future} object that holds the CDR response
-	 */
-	public Future<?> notifyOfCatalogueDeletion()
-	{
-		return ((DeleteCatalogueProcessState) state).notifyOfCatalogueDeletion(this);
 	}
 
-	/**
-	 * Waits to receive the response in the form of {@link ApplicationResponseType} document from the CDR service.
-	 * @param future {@link Future} object that holds the CDR response
-	 */
-	public void receiveCatalogueDeletionAppResponse(Future<?> future)
-	{
-		((DeleteCatalogueProcessState) state).receiveCatalogueDeletionAppResponse(this, future);
-	}
-
-	/**
-	 * Decides what to do upon receipt of the {@link ApplicationResponseType} document from the CDR service.
-	 * @param decision {@link Semaphore} that enables calling method to wait for callee to finish its execution in its {@code Thread}
-	 */
-	public void reviewDeletionOfCatalogue(Semaphore decision)
-	{
-		((DeleteCatalogueProcessState) state).reviewDeletionOfCatalogue(this, decision);
-	}
-
-	/**
-	 * Cancels the {@code Catalogue} noting that it is deleted on the serveice side.
-	 */
-	public void cancelCatalogue()
-	{
-		((DeleteCatalogueProcessState) state).cancelCatalogue(this);
-	}
-
-	/**
-	 * Ends the process.
-	 */
-	public void endOfProcess()
-	{
-		active = false;
-		state.endOfProcess(this);
-	}
 }

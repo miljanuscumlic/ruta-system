@@ -44,8 +44,6 @@ public class CatalogueCorrespondence extends Correspondence
 		corr.setState(ResolveNextCatalogueProcess.newInstance(client));
 		corr.setClient(client);
 		corr.setName(corr.uuid.getValue());
-//		@Deprecated MMM test and delete
-//		corr.setCorrespondentIdentification(client.getCDRParty().getPartyID());
 		corr.setCorrespondentParty(client.getCDRParty());
 		final XMLGregorianCalendar currentDateTime = InstanceFactory.getDate();
 		corr.setCreationTime(currentDateTime);
@@ -67,8 +65,8 @@ public class CatalogueCorrespondence extends Correspondence
 	}
 
 	/**
-	 * Sets boolean field telling whether Create Catalogue Process should be invoked.
-	 * @param createCatalogueProcess
+	 * Sets boolean field telling whether Create Catalogue Process or Delete Catalogue Process should be invoked.
+	 * @param createCatalogueProcess true for Create Catalogue Process, false for Deletes Catalogue Process
 	 */
 	public void setCreateCatalogueProcess(boolean createCatalogueProcess)
 	{
@@ -80,61 +78,9 @@ public class CatalogueCorrespondence extends Correspondence
 	{
 		final Thread myThread = Thread.currentThread();
 		while (thread == myThread && active && !stopped)
-		{
 			state.doActivity(this);
-
-/*			if(state instanceof ResolveNextCatalogueProcess)
-				executeResolveNextCatalogueProcess();
-			if(state instanceof CreateCatalogueProcess)
-				executeCreateCatalogueProcess();
-			else if(state instanceof DeleteCatalogueProcess)
-				executeDeleteCatalogueProcess();*/
-		}
-/*		if(!active && !((RutaProcess) state).isActive()) //true when correspondence is stopped
-		{
-			((RutaProcess) state).setActive(true);
-			setActive(true);
-			signalThreadStopped();
-		}*/
 		if(stopped)
 			signalThreadStopped();
-//			stoppedSemaphore.release();
-	}
-
-	private void executeResolveNextCatalogueProcess()
-	{
-		((CatalogueProcess) state).resolveNextCatalogueProcess(this);
-	}
-
-	/**
-	 * Invokes execution of the process of creation, validation and distribution of the {@link CatalogueType}
-	 * in the {@code Ruta System}.
-	 */
-	public void executeCreateCatalogueProcess()
-	{
-//		((CatalogueProcess) state).createCatalogue(this);
-		((CatalogueProcess) state).createCatalogueExecute(this);
-	}
-
-	/**
-	 * Invokes execution of the process of deletion of the {@link CatalogueType} {@code UBL document} from the
-	 * {@code Ruta System}.
-	 */
-	public void executeDeleteCatalogueProcess()
-	{
-		((CatalogueProcess) state).deleteCatalogue(this);
-	}
-
-	@Override
-	public void signalThreadStopped()
-	{
-		//do nothing because Semaphore is not used
-	}
-
-	@Override
-	public void waitThreadStopped() throws InterruptedException
-	{
-		//do nothing because Semaphore is not used
 	}
 
 	@Override

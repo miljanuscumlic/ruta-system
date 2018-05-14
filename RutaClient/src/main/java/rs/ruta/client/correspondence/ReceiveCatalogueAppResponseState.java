@@ -15,23 +15,6 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 	}
 
 	@Override
-	public void receiveCatalogueAppResponse(final RutaProcess process, Future<?> future) throws StateTransitionException
-	{
-		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future);
-		if(accepted != null)
-		{
-			RutaProcessState newState;
-			if(accepted)
-				newState = EndOfProcessState.getInstance();
-			else
-				newState = DecideOnActionState.getInstance();
-			changeState(process, newState);
-		}
-		else
-			throw new StateTransitionException("Invalid Application Response code!");
-	}
-
-	@Override
 	public void doActivity(Correspondence correspondence)
 	{
 		final RutaProcess process = (RutaProcess) correspondence.getState();
@@ -40,7 +23,7 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 		if(accepted != null)
 		{
 			RutaProcessState newState;
-			if(accepted)
+			if(accepted.equals(Boolean.TRUE))
 				newState = EndOfProcessState.getInstance();
 			else
 				newState = DecideOnActionState.getInstance();
@@ -49,5 +32,4 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 		else
 			throw new StateTransitionException("Invalid Application Response code!");
 	}
-
 }

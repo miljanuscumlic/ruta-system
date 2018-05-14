@@ -535,7 +535,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						}
 						catch(Exception e)
 						{
-							appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. ").
+							appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service. ").
 									append(e.getMessage()), Color.RED);
 							enableCatalogueMenuItems();
 						}
@@ -588,7 +588,16 @@ public class RutaClientFrame extends JFrame implements ActionListener
 							disableCatalogueMenuItems();
 							new Thread( () ->
 							{
-								client.cdrDeleteMyCatalogue();
+								try
+								{
+									client.cdrDeleteMyCatalogue();
+								}
+								catch(Exception e)
+								{
+									appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service. ").
+											append(e.getMessage()), Color.RED);
+									enableCatalogueMenuItems();
+								}
 							}).start();
 						}
 					});

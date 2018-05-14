@@ -5,6 +5,7 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -14,6 +15,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.DefaultRowSorter;
 import javax.swing.JComponent;
@@ -399,11 +401,35 @@ public abstract class TabComponent extends Container
 	}
 
 	/**
-	 * Dispatches {@link ActionEvent event} to particular subclass of {@link TabComponent}. Events that are
+	 * Delegates {@link ActionEvent event} to a particular subclass of {@link TabComponent}. Events that are
 	 * dispatched are ones that update the view, like selecting tree node, updating table view etc.
+	 * <p>This method blocks until the event is completely processed.</p>
 	 * @param event event to dispatch
 	 */
-	public void dispatchEvent(ActionEvent event) { }
+	public void dispatchEvent(ActionEvent event)
+	{
+		Semaphore waitEDT = new Semaphore(0);
+		EventQueue.invokeLater(() ->
+		{
+			doDispatchEvent(event);
+			waitEDT.release();
+		});
+		try
+		{
+			waitEDT.acquire();
+		}
+		catch(InterruptedException e)
+		{
+			logger.info("View update has failed. Could not synchronise with the EventQueue. Exception is: ", e);
+		}
+	}
+
+	/**
+	 * Dispathes {@link ActionEvent event} to a proper {@link ActionEvent event} and do the view update based
+	 * on the passed event.
+	 * @param event event to dispatch and process
+	 */
+	protected abstract void doDispatchEvent(ActionEvent event);
 
 	/**
 	 * Creates {@link TableRowSorter}, sets zeroth column with row numbers not to be sortable and sorts

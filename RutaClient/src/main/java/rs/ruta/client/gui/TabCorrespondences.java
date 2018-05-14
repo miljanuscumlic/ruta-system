@@ -62,6 +62,8 @@ public class TabCorrespondences extends TabComponent
 	private final TableRowSorter<DefaultTableModel> partnerCorrespondenceSorter;
 	private final TableRowSorter<DefaultTableModel> partiesSorter;
 
+	private MyParty myParty;
+
 	/**
 	 * Creates tabbed pane for display of correspondence related data.
 	 * @param clientFrame parent frame
@@ -70,7 +72,7 @@ public class TabCorrespondences extends TabComponent
 	{
 		super(clientFrame);
 		final RutaClient client = clientFrame.getClient();
-		final MyParty myParty = client.getMyParty();
+		/*final MyParty */myParty = client.getMyParty();
 		final BusinessParty cdrParty = new BusinessParty();
 		cdrParty.setCoreParty(client.getCDRParty());
 		final DefaultTreeModel correspondenceTreeModel =
@@ -535,7 +537,7 @@ public class TabCorrespondences extends TabComponent
 	}
 
 	@Override
-	public void dispatchEvent(ActionEvent event)
+	protected void doDispatchEvent(ActionEvent event)
 	{
 		Object source = event.getSource();
 		String command = event.getActionCommand();
@@ -544,20 +546,19 @@ public class TabCorrespondences extends TabComponent
 			Correspondence corr = (Correspondence) source;
 			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
 					makeVisibleNode(correspondenceTree, corr);
 					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
 					if(selectedUserObject instanceof BusinessParty)
 					{
-						if(((BusinessParty) selectedUserObject).getPartyID().equals(corr.getCorrespondentID()))
+						final String correspondentID = corr.getCorrespondentID();
+						if(((BusinessParty) selectedUserObject).getPartyID().equals(correspondentID))
 						{
+							List<Correspondence> correspondeces = new ArrayList<>();
 							if(corr.getCorrespondentPartyName().equals(CDR))
-							{
-								List<Correspondence> correspondeces = new ArrayList<>();
 								correspondeces.add(corr);
-								partnerCorrespondenceListTableModel.setCorrespondences(correspondeces);
-							}
+							else
+								correspondeces = myParty.findAllCorrespondences(correspondentID);
+							partnerCorrespondenceListTableModel.setCorrespondences(correspondeces);
 							partnerCorrespondenceListTableModel.fireTableDataChanged();
 						}
 					}
@@ -566,21 +567,18 @@ public class TabCorrespondences extends TabComponent
 						if(corr == selectedUserObject)
 							partnerCorrespondenceTableModel.fireTableDataChanged();
 					}
-					repaint();
-				});
+//					repaint();
 			}
 			else if(CorrespondenceEvent.CORRESPONDENCE_UPDATED.equals(command))
 			{
-				EventQueue.invokeLater(() ->
-				{
 					makeVisibleNode(correspondenceTree, corr);
 					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
 					if(selectedUserObject instanceof Correspondence)
 						if(corr == selectedUserObject)
 							partnerCorrespondenceTableModel.fireTableDataChanged();
-					repaint();
-				});
+//					repaint();
 			}
 		}
 	}
+
 }

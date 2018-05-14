@@ -13,12 +13,6 @@ public class NextCatalogueState extends ResolveNextCatalogueProcessState
 	}
 
 	@Override
-	public void resolveNextProcess(final RutaProcess process) throws StateTransitionException
-	{
-		//TODO
-	}
-
-	@Override
 	public void doActivity(Correspondence correspondence)
 	{
 		try

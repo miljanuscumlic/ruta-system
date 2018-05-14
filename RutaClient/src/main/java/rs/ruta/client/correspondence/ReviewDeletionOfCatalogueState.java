@@ -19,9 +19,11 @@ public class ReviewDeletionOfCatalogueState extends DeleteCatalogueProcessState
 	}
 
 	@Override
-	public void reviewDeletionOfCatalogue(final RutaProcess process, Semaphore decision) throws StateTransitionException
+	public void doActivity(Correspondence correspondence)
 	{
+		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final RutaClientFrame clientFrame = process.getClient().getClientFrame();
+		final Semaphore decision = new Semaphore(0);
 		EventQueue.invokeLater(() ->
 		{
 			int option = JOptionPane.showConfirmDialog(clientFrame,
@@ -33,6 +35,15 @@ public class ReviewDeletionOfCatalogueState extends DeleteCatalogueProcessState
 				changeState(process, EndOfProcessState.getInstance());
 			decision.release();
 		});
+
+		try
+		{
+			decision.acquire();
+		}
+		catch (InterruptedException e)
+		{
+			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
+		}
 	}
 
 }

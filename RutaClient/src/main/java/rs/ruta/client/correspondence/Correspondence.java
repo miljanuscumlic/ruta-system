@@ -39,13 +39,22 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 * Signals that correspondence thread is close to be finished. Signaling is by {@link Semaphore#release()}
 	 * method which is invoked at the end of the correspondence's {@link Runnable#run()} method.
 	 */
-	private Semaphore threadStopped =  new Semaphore(0);
+	private volatile Semaphore threadStopped = new Semaphore(0);
+	/**
+	 * Used for synchronization with the calling thread when it is necessary. Usually when correspondence
+	 * shoud be started in a state in which the correspondence is blocked and waiting for a notification.
+	 */
+	private volatile Semaphore threadBlocked = new Semaphore(0);
 	/**
 	 * True when correspondence is stopped by {@link #stop()} method call (invoked usually on closing
 	 * of the application).
 	 */
 	@XmlElement(name = "Stopped")
 	protected boolean stopped;
+	/**
+	 * True when correspondence is blocked by {@link #block()} method call.
+	 */
+	private boolean blocked;
 	@XmlElement(name = "CorrespondentParty")
 	protected PartyType correspondentParty;
 	/**
@@ -69,7 +78,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	private boolean recentlyUpdated;
 
 	/**
-	 * Starts correspondence thread or continues its execution.
+	 * Starts correspondence thread.
 	 */
 	public void start()
 	{
@@ -78,11 +87,12 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			thread = new Thread(this);
 			thread.start();
 			stopped = false;
+			blocked = false;
 		}
 	}
 
 	/**
-	 * Stops correspondence and initiates stoppage of its thread.
+	 * Stops correspondence by initiating stoppage of its thread.
 	 * @throws InterruptedException
 	 */
 	public void stop() throws InterruptedException
@@ -105,6 +115,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		{
 			synchronized(thread)
 			{
+				blocked = false;
 				thread.notify();
 			}
 		}
@@ -121,6 +132,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		{
 			synchronized(thread)
 			{
+				blocked = true;
+				signalThreadBlocked();
 				thread.wait();
 			}
 		}
@@ -138,6 +151,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		{
 			synchronized(thread)
 			{
+				blocked = true;
+				signalThreadBlocked();
 				thread.wait(timeout);
 			}
 		}
@@ -145,7 +160,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 
 	/**
 	 * Tests whether correspondence thread is alive.
-	 * @return true if thread is alive
+	 * @return true if thread is alive; false otherwise
 	 */
 	public boolean isAlive()
 	{
@@ -153,8 +168,17 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
+	 * Test whether correspondence thread is blocked and waiting for a notification.
+	 * @return true if thread is blocked; false otherwise
+	 */
+	public boolean isBlocked()
+	{
+		return blocked;
+	}
+
+	/**
 	 * Test whether the correspondence is stopped by invoked {@link #stop()} method. The thread of it might be still alive.
-	 * @return true if correspondence is stopped
+	 * @return true if correspondence is stopped; fals eotherwise
 	 */
 	public boolean isStopped()
 	{
@@ -416,7 +440,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Signals that the thread is about to be stopped.
+	 * Signals that the correspondence thread is about to be stopped.
 	 */
 	public void signalThreadStopped()
 	{
@@ -424,12 +448,29 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Waits for the signal that the thread is about to be stopped.
+	 * Waits for the signal that the correspondence thread is about to be stopped.
 	 * @throws InterruptedException
 	 */
 	public void waitThreadStopped() throws InterruptedException
 	{
 		threadStopped.acquire();
+	}
+
+	/**
+	 * Signals that the correspondence thread is about to be blocked.
+	 */
+	public void signalThreadBlocked()
+	{
+		threadBlocked.release();
+	}
+
+	/**
+	 * Waits for the signal that the thread is about to be blocked.
+	 * @throws InterruptedException
+	 */
+	public void waitThreadBlocked() throws InterruptedException
+	{
+		threadBlocked.acquire();
 	}
 
 	/**
