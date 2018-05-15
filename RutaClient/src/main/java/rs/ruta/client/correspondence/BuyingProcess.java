@@ -19,16 +19,6 @@ public class BuyingProcess extends DocumentProcess
 	}
 
 	/**
-	 * Processes the {@link OrderType} {@code UBL document} on the Buyer Party's side.
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
-	public void orderingActivity(final Correspondence correspondence) throws StateTransitionException
-	{
-		throw new StateTransitionException();
-	}
-
-	/**
 	 * Processes the {@link InvoiceType} document in the {@code Ruta System}.
 	 * @param correspondence correspondence to which process belongs
 	 * @throws StateTransitionException

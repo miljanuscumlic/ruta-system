@@ -1,6 +1,8 @@
 package rs.ruta.client.correspondence;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,9 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
 import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClientFrameEvent;
@@ -41,10 +41,14 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 */
 	private volatile Semaphore threadStopped = new Semaphore(0);
 	/**
-	 * Used for synchronization with the calling thread when it is necessary. Usually when correspondence
+	 * Used for synchronization with the calling thread in sutuations when correspondence
 	 * shoud be started in a state in which the correspondence is blocked and waiting for a notification.
 	 */
 	private volatile Semaphore threadBlocked = new Semaphore(0);
+	/**
+	 *	Used for sequential database access for a single correspondence.
+	 */
+	private ExecutorService sequencialAccess = Executors.newSingleThreadExecutor();
 	/**
 	 * True when correspondence is stopped by {@link #stop()} method call (invoked usually on closing
 	 * of the application).
@@ -54,7 +58,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	/**
 	 * True when correspondence is blocked by {@link #block()} method call.
 	 */
-	private boolean blocked;
+	protected boolean blocked;
 	@XmlElement(name = "CorrespondentParty")
 	protected PartyType correspondentParty;
 	/**
@@ -76,6 +80,10 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 */
 	@XmlElement(name = "RecentlyUpdated")
 	private boolean recentlyUpdated;
+	/**
+	 * True when the user has decided to cancel started correspondence
+	 */
+	protected boolean canceled;
 
 	/**
 	 * Starts correspondence thread.
@@ -88,12 +96,14 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			thread.start();
 			stopped = false;
 			blocked = false;
+			canceled = false;
 		}
 	}
 
 	/**
 	 * Stops correspondence by initiating stoppage of its thread.
-	 * @throws InterruptedException
+	 * @throws InterruptedException if thread has a non-{@code null} value. By throwing this exception
+	 * the thread is stopped.
 	 */
 	public void stop() throws InterruptedException
 	{
@@ -193,6 +203,16 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	public boolean isRecentlyUpdated()
 	{
 		return recentlyUpdated;
+	}
+
+	public boolean isCanceled()
+	{
+		return canceled;
+	}
+
+	public void setCanceled(boolean canceled)
+	{
+		this.canceled = canceled;
 	}
 
 	public void setRecentlyUpdated(boolean recentlyUpdated)
@@ -478,7 +498,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	 */
 	public void store()
 	{
-		new Thread( () ->
+		sequencialAccess.submit(() ->
 		{
 			try
 			{
@@ -488,7 +508,24 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			{
 				logger.error("Correspondence could not be stored to the database. Exception is: ", e);
 			}
-		}).start();
+		});
+	}
+
+	/**
+	 * Deletes {@link Correspondence} from the database in a new Thread.
+	 */
+	public void delete()
+	{
+		sequencialAccess.submit(() -> {
+			try
+			{
+				doDelete();
+			}
+			catch (DetailException e)
+			{
+				logger.error("Correspondence could not be deleted from the database. Exception is: ", e);
+			}
+		});
 	}
 
 	/**
@@ -502,9 +539,15 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
-	 * Subclass specific method for storing object of {@link Correspondence}'s subclasses.
+	 * Subclass hook method for storing object of {@link Correspondence}'s subclasses in the database.
 	 * @throws DetailException if object could not be stored to the database
 	 */
 	protected abstract void doStore() throws DetailException;
+
+	/**
+	 * Subclass hook method for deleting object of {@link Correspondence}'s subclasses from the database.
+	 * @throws DetailException if object could not be stored to the database
+	 */
+	protected abstract void doDelete() throws DetailException;
 
 }

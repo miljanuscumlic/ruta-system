@@ -38,7 +38,7 @@ public class BuyerOrderingProcess extends BuyingProcess
 	public static BuyerOrderingProcess newInstance(RutaClient client)
 	{
 		BuyerOrderingProcess process = new BuyerOrderingProcess();
-		process.setState(BuyerPlaceOrderState.getInstance());
+		process.setState(BuyerPrepareOrderState.getInstance());
 		process.setId(UUID.randomUUID().toString());
 		process.setClient(client);
 		process.setActive(true);
@@ -125,41 +125,6 @@ public class BuyerOrderingProcess extends BuyingProcess
 		}
 	}
 
-	@Override
-	@Deprecated
-	public void orderingActivity(Correspondence correspondence) throws StateTransitionException
-	{
-		try
-		{
-			while(active && !correspondence.isStopped())
-			{
-				doActivity(correspondence);
-
-/*				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
-				Marshaller marshaller = jaxbContext.createMarshaller();
-				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				marshaller.marshal(correspondence, System.out);*/
-
-				MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
-				int i = 1;
-			}
-		}
-		catch (Exception e)
-		{
-			throw new StateTransitionException("Interrupted execution of Buyer Ordering Process!", e);
-		}
-		finally
-		{
-			if(correspondence.isActive() && !correspondence.isStopped())
-			{
-				if(active)
-					correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
-				else //MMM check whether this is the right test for transition to BuyingClosingProcess
-					correspondence.changeState(BuyingClosingProcess.newInstance(correspondence.getClient()));
-			}
-		}
-	}
-
 	/**
 	 * Prepares and sends {@link OrderType} document.
 	 */
@@ -241,31 +206,12 @@ public class BuyerOrderingProcess extends BuyingProcess
 		{
 			while(active && !correspondence.isStopped())
 			{
-				//MMM refactor database store in a new method of Correspondence
-		/*		new Thread( () ->
-				{
-					try
-					{
-						MapperRegistry.getInstance().
-						getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
-					}
-					catch (DetailException e)
-					{
-						//MMM log error;
-					}
-				}
-				).start();*/
-
 				correspondence.store();
-
 				state.doActivity(correspondence);
-
 /*				JAXBContext jaxbContext = JAXBContext.newInstance(BuyingCorrespondence.class);
 				Marshaller marshaller = jaxbContext.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 				marshaller.marshal(correspondence, System.out);*/
-
-
 			}
 		}
 		catch (Exception e)

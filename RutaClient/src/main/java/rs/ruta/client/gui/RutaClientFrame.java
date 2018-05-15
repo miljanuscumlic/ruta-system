@@ -67,7 +67,9 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.client.BusinessParty;
+import rs.ruta.client.Catalogue;
 import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
@@ -106,6 +108,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private NotifyDialog notifyDialog;
 	private BugReportDialog bugReportDialog;
 	private BugExploreDialog bugExploreDialog;
+	private OrderDialog orderDialog;
 	private JFileChooser chooser;
 
 	private JMenuItem myPartyItem = new JMenuItem("My Party");
@@ -900,7 +903,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * @param registration whether the dialog is shown during local database registration
 	 * @return {@code Party} with potentially changed data
 	 */
-	//MMM: boolean argument editable could be added; = false if party should only be displayed not changed
+	//MMM boolean argument editable could be added; = false if party should only be displayed not changed
 	public Party showPartyDialog(Party party, String title, boolean registration)
 	{
 		partyDialog = new PartyDialog(RutaClientFrame.this, registration);
@@ -920,8 +923,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			});
 		}
 		//setting clone not original object as a dialog's party field because the changes to the party will be rejected
-		//if they are not accepted by pressing the dialog's OK button. If original object is set, changes remain
-		//no matter what button is pressed
+		//if they are not accepted by pressing the dialog's OK button. If original object is set instead, changes remain
+		//no matter what button was pressed
 		partyDialog.setParty(party.clone());
 		partyDialog.setVisible(true);
 		if(partyDialog.isChanged())
@@ -932,20 +935,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			myParty.setCoreParty(party);
 			myParty.setDirtyMyParty(true);
 			partyDialog.setChanged(false);
-
-			/*			MMM: not necessary to write to local database
-			 * 			new Thread(()->
-			{
-				try
-				{
-					client.insertMyParty();
-				}
-				catch (Exception e)
-				{
-					JOptionPane.showMessageDialog(RutaClientFrame.this, "Could not save data to the local data store!",
-							"Saving data to the local data store", JOptionPane.ERROR_MESSAGE);
-				}
-			}).start();*/
 		}
 		return party;
 	}
@@ -1000,7 +989,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	/**
 	 * Shows {@link SearchDialog} for entering the search criterion of the request and calls a method
 	 * that makes the acctual request to the CDR.
-	 * @param title {@code SearchDialog} title
+	 * @param title {@code SearchDialog}'s title
 	 */
 	private void showSearchDialog(String title)
 	{
@@ -1012,6 +1001,51 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			searchDialog.setSearchPressed(false);
 			client.cdrSearch(searchDialog.getSearch(), false);
 		}
+	}
+
+	/**
+	 * Shows {@link OrderDialog} for making new {@link OrderType order}.
+	 * @param title {@code OrderDialog}'s title
+	 * @param correspondentID correspondent's ID
+	 * @return {@code OrderType} or {@code null} if user cancels order creation
+	 */
+	public OrderType showOrderDialog(String title, OrderType order)
+	{
+		orderDialog = new OrderDialog(RutaClientFrame.this, order, true, false);
+		orderDialog.setTitle(title);
+		orderDialog.setVisible(true);
+		if(orderDialog.isSendPressed())
+		{
+			order = orderDialog.getOrder();
+			orderDialog.setSendPressed(false);
+		}
+		else
+			order = null;
+		return order;
+	}
+
+	/**
+	 * Shows {@link OrderDialog} for making new {@link OrderType order}.
+	 * @param title {@code OrderDialog}'s title
+	 * @param correspondentID correspondent's ID
+	 * @return {@code OrderType} or {@code null} if user cancels order creation
+	 */
+	public OrderType showOrderDialogOLD(String title, String correspondentID)
+	{
+		final MyParty myParty = client.getMyParty();
+		final Catalogue correspondentCatalogue = myParty.getBusinessPartner(correspondentID).getCatalogue();
+		OrderType order = myParty.convertToOrder(correspondentCatalogue);
+		orderDialog = new OrderDialog(RutaClientFrame.this, order, true, false);
+		orderDialog.setTitle(title);
+		orderDialog.setVisible(true);
+		if(orderDialog.isSendPressed())
+		{
+			order = orderDialog.getOrder();
+			orderDialog.setSendPressed(false);
+		}
+		else
+			order = null;
+		return order;
 	}
 
 	public RutaClient getClient()

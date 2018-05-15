@@ -25,6 +25,8 @@ public class EndOfProcessState implements RutaProcessState
 	public void doActivity(Correspondence correspondence)
 	{
 		((RutaProcess) correspondence.getState()).setActive(false);
+		if(correspondence.isCanceled())
+			correspondence.setActive(false);
 	}
 
 }

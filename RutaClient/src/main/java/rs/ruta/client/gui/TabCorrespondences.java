@@ -28,6 +28,7 @@ import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.BusinessParty;
@@ -38,6 +39,7 @@ import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.common.datamapper.DetailException;
 
 /**
  * Class for displaying of {@link Correspondence}s of My Party.
@@ -76,8 +78,9 @@ public class TabCorrespondences extends TabComponent
 		final BusinessParty cdrParty = new BusinessParty();
 		cdrParty.setCoreParty(client.getCDRParty());
 		final DefaultTreeModel correspondenceTreeModel =
-				new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
+		new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
 		correspondenceTree = new JTree(correspondenceTreeModel);
+		correspondenceTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		final CorrespondenceTreeCellRenderer correspondenceTreeCellRenderer = new CorrespondenceTreeCellRenderer();
 		correspondenceTree.setCellRenderer(correspondenceTreeCellRenderer);
 		final JPanel treePanel = new JPanel(new BorderLayout());
@@ -132,7 +135,6 @@ public class TabCorrespondences extends TabComponent
 					final String partyID = ((BusinessParty) selectedObject).getPartyID();
 					correspondences = myParty.findAllCorrespondences(partyID);
 				}
-//				if(correspondences != null)
 				partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
 				partnerCorrespondenceListTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCorrespondenceListTable);
@@ -158,7 +160,7 @@ public class TabCorrespondences extends TabComponent
 				else if(BUSINESS_PARTNERS.equals(secondLevelObject))
 					partyList = myParty.getBusinessPartners();
 
-/*				MMM TODO
+/*				//MMM TODO
  				else if(ARCHIVED.equals((String) selectedObject))
 					partyList = myParty.getArchivedParties();*/
 
@@ -186,7 +188,14 @@ public class TabCorrespondences extends TabComponent
 				final String correspondentID = selectedParty.getPartyID();
 				final PartyType correspondentParty = selectedParty.getCoreParty();
 				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, true);
-				myParty.addBuyingCorrespondence(corr);
+				try
+				{
+					myParty.addBuyingCorrespondence(corr);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Correspondence could not be inserted in the database", e);
+				}
 				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(correspondentID));
 				corr.start();
 			}).start();
@@ -553,12 +562,12 @@ public class TabCorrespondences extends TabComponent
 						final String correspondentID = corr.getCorrespondentID();
 						if(((BusinessParty) selectedUserObject).getPartyID().equals(correspondentID))
 						{
-							List<Correspondence> correspondeces = new ArrayList<>();
+							List<Correspondence> correspondences = new ArrayList<>();
 							if(corr.getCorrespondentPartyName().equals(CDR))
-								correspondeces.add(corr);
+								correspondences.add(corr);
 							else
-								correspondeces = myParty.findAllCorrespondences(correspondentID);
-							partnerCorrespondenceListTableModel.setCorrespondences(correspondeces);
+								correspondences = myParty.findAllCorrespondences(correspondentID);
+							partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
 							partnerCorrespondenceListTableModel.fireTableDataChanged();
 						}
 					}
@@ -577,6 +586,23 @@ public class TabCorrespondences extends TabComponent
 						if(corr == selectedUserObject)
 							partnerCorrespondenceTableModel.fireTableDataChanged();
 //					repaint();
+			}
+			else if(CorrespondenceEvent.CORRESPONDENCE_REMOVED.equals(command))
+			{
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof BusinessParty)
+				{
+					final String correspondentID = corr.getCorrespondentID();
+					if(((BusinessParty) selectedUserObject).getPartyID().equals(correspondentID))
+					{
+						if(!corr.getCorrespondentPartyName().equals(CDR))
+						{
+							List<Correspondence> correspondences = myParty.findAllCorrespondences(correspondentID);
+							partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
+							partnerCorrespondenceListTableModel.fireTableDataChanged();
+						}
+					}
+				}
 			}
 		}
 	}

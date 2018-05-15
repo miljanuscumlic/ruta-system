@@ -171,13 +171,4 @@ public class Catalogue extends CatalogueType
 		addCatalogueLine(catalogueLine);
 	}
 
-	/**
-	 * Returns the number of catalogue's items.
-	 * @return number of catalogue's items
-	 */
-	public int getProductCount() // method is superfluous
-	{
-		return getCatalogueLineCount();
-	}
-
 }

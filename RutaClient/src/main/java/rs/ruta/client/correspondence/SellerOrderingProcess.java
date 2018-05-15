@@ -57,31 +57,6 @@ public class SellerOrderingProcess extends BuyingProcess
 	}
 
 	@Override
-	public void orderingActivity(Correspondence correspondence) throws StateTransitionException
-	{
-		try
-		{
-			while(active && !correspondence.isStopped())
-			{
-				//MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, (BuyingCorrespondence) correspondence);
-				correspondence.store();
-				state.doActivity(correspondence);
-			}
-		}
-		catch (Exception e)
-		{
-			throw new StateTransitionException("Interrupted execution of Seller Ordering Process!", e);
-		}
-		finally
-		{
-			if(correspondence.isActive() && !correspondence.isStopped())
-				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
-			else
-				correspondence.changeState(BuyingClosingProcess.newInstance(correspondence.getClient()));
-		}
-	}
-
-	@Override
 	public void doActivity(Correspondence correspondence)
 	{
 		try

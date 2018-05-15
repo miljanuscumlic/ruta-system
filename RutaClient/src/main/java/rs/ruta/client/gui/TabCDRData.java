@@ -38,6 +38,7 @@ import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import javax.xml.ws.WebServiceException;
 
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
@@ -106,10 +107,12 @@ public class TabCDRData extends TabComponent
 		//constructing left pane
 		DefaultTreeModel partyTreeModel = new PartyTreeModel(new DefaultMutableTreeNode(FOLLOWINGS), myParty);
 		partyTree = new JTree(partyTreeModel);
+		partyTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		PartyTreeCellRenderer partyTreeCellRenderer = new PartyTreeCellRenderer();
 		partyTree.setCellRenderer(partyTreeCellRenderer);
 		DefaultTreeModel searchTreeModel = new SearchTreeModel(new DefaultMutableTreeNode(SEARCHES), myParty);
 		searchTree = new JTree(searchTreeModel);
+		searchTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		JPanel treePanel = new JPanel(new BorderLayout());
 		treePanel.add(partyTree, BorderLayout.NORTH);
 		treePanel.add(searchTree, BorderLayout.CENTER);

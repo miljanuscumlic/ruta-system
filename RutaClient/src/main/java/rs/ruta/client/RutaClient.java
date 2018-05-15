@@ -420,7 +420,8 @@ public class RutaClient implements RutaNode
 		return bugReports;
 	}
 
-	/**Populates the list of {@link BugReport}s in a way that if some {@code BugReport} already exists in the list
+	/**
+	 * Populates the list of {@link BugReport}s in a way that if some {@code BugReport} already exists in the list
 	 * it is overridden only if its modification date is older than that of his newly retrived counterpart.
 	 * @param bugReports list of {@code BugReport}s
 	 */
@@ -442,7 +443,8 @@ public class RutaClient implements RutaNode
 		mapperRegistry.getMapper(ItemType.class).insertAll(null, myParty.getProducts());
 	}*/
 
-	/**Sends request for registration of My party with the Central Data Repository.
+	/**
+	 * Sends request for registration of My party with the Central Data Repository.
 	 * @param party Party object that should be registered
 	 * @param username username of the party
 	 * @param password password of the party

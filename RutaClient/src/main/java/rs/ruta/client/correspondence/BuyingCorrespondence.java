@@ -64,6 +64,8 @@ public class BuyingCorrespondence extends Correspondence
 			else if(state instanceof PaymentNotificationProcess)
 				executePaymentNotificationProcess();*/
 		}
+		if(canceled)
+			delete();
 		if(stopped)
 			signalThreadStopped();
 	}
@@ -98,9 +100,17 @@ public class BuyingCorrespondence extends Correspondence
 	}
 
 	@Override
-	protected void doStore() throws DetailException
+	protected synchronized void doStore() throws DetailException
 	{
 		MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, this);
 	}
+
+	@Override
+	protected synchronized void doDelete() throws DetailException
+	{
+		getClient().getMyParty().removeBuyingCorrespondence(this);
+
+	}
+
 
 }

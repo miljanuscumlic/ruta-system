@@ -15,7 +15,7 @@ public class BillingProcess extends DocumentProcess
 	public static BillingProcess newInstance(RutaClient client)
 	{
 		BillingProcess process = new BillingProcess();
-		process.setState(BuyerPlaceOrderState.getInstance()); //MMM: default state should be changed
+		process.setState(BuyerPrepareOrderState.getInstance()); //MMM: default state should be changed
 		process.setId(UUID.randomUUID().toString());
 		process.setClient(client);
 		process.setActive(true);

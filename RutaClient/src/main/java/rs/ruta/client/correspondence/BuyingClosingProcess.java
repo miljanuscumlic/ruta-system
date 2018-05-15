@@ -23,7 +23,7 @@ public class BuyingClosingProcess extends DocumentProcess
 	public static BuyingClosingProcess newInstance(RutaClient client)
 	{
 		BuyingClosingProcess process = new BuyingClosingProcess();
-		process.setState(BuyerPlaceOrderState.getInstance()); //MMM: default state should be changed
+		process.setState(BuyerPrepareOrderState.getInstance()); //MMM: default state should be changed
 		process.setId(UUID.randomUUID().toString());
 		process.setClient(client);
 		return process;

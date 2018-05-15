@@ -89,4 +89,11 @@ public class CatalogueCorrespondence extends Correspondence
 		MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).insert(null, this);
 	}
 
+	@Override
+	protected void doDelete() throws DetailException
+	{
+		// should not delete correspondence
+
+	}
+
 }

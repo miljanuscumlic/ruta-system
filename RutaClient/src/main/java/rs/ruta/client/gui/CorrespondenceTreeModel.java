@@ -170,10 +170,15 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 		else if(source.getClass() == BuyingCorrespondence.class)
 		{
 			final Correspondence corr = (Correspondence) source;
+			final BusinessParty bParty = myParty.getBusinessPartner(corr.getCorrespondentID());
 			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
 			{
-				final BusinessParty bParty = myParty.getBusinessPartner(corr.getCorrespondentID());
 				addNode(corr, bParty);
+			}
+			else if(CorrespondenceEvent.CORRESPONDENCE_REMOVED.equals(command))
+			{
+				deleteNode(corr);
+				correspondences.get(bParty).remove(corr);
 			}
 		}
 		else if(source.getClass() == CatalogueCorrespondence.class)

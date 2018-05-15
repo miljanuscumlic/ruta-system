@@ -162,6 +162,7 @@ public abstract class TabComponent extends Container
 	{
 		JTable table = new JTable(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setFillsViewportHeight(true);
 		TableColumnModel colModel = table.getColumnModel();
 		colModel.getColumn(0).setPreferredWidth(20);
 		colModel.getColumn(1).setPreferredWidth(150);
@@ -175,7 +176,6 @@ public abstract class TabComponent extends Container
 		colModel.getColumn(9).setPreferredWidth(100);
 		colModel.getColumn(10).setPreferredWidth(100);
 		colModel.getColumn(11).setPreferredWidth(100);
-		table.setFillsViewportHeight(true);
 		return table;
 	}
 
