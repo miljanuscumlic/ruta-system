@@ -1,5 +1,7 @@
 package rs.ruta.client.correspondence;
 
+import java.awt.Color;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "BuyerOrderRejectedState")
@@ -13,15 +15,13 @@ public class BuyerOrderRejectedState extends BuyerOrderingProcessState
 	}
 
 	@Override
-	public void orderRejected(final RutaProcess process)
-	{
-		//MMM to implement
-		changeState(process, EndOfProcessState.getInstance());
-	}
-
-	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		changeState((RutaProcess) correspondence.getState(), EndOfProcessState.getInstance());
+		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
+		correspondence.getClient().getClientFrame().appendToConsole(
+				new StringBuilder("Order " + process.getOrder(correspondence).getIDValue() +
+						" has been rejected by " + correspondence.getCorrespondentPartyName() + " party."), Color.BLACK);
+		process.setOrderRejected(true);
+		changeState(process, ClosingState.getInstance());
 	}
 }

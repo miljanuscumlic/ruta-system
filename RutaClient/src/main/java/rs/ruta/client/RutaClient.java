@@ -1,9 +1,6 @@
 package rs.ruta.client;
 
 import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,26 +12,18 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -43,7 +32,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
-
 import org.exist.util.MimeTable;
 import org.exist.util.MimeType;
 import org.exist.xmldb.DatabaseInstanceManager;
@@ -62,6 +50,7 @@ import com.helger.commons.state.ESuccess;
 import com.helger.ubl21.UBL21Validator;
 import com.helger.ubl21.UBL21ValidatorBuilder;
 import com.helger.ubl21.UBL21Writer;
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
@@ -75,14 +64,19 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.ClientHandlerResolver;
 import rs.ruta.RutaNode;
-import rs.ruta.client.correspondence.CancelCatalogueState;
+import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.DecideOnActionState;
-import rs.ruta.client.correspondence.EndOfProcessState;
-import rs.ruta.client.correspondence.ReviewDeletionOfCatalogueState;
+import rs.ruta.client.correspondence.DocumentReference;
+import rs.ruta.client.correspondence.ClosingState;
+import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.RutaProcessState;
+import rs.ruta.client.correspondence.StateActivityException;
 import rs.ruta.client.datamapper.ClientMapperRegistry;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.ReportAttachment;
@@ -100,13 +94,14 @@ import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;
+import rs.ruta.common.datamapper.RutaException;
 import rs.ruta.services.CDRService;
 import rs.ruta.services.DeleteCatalogueWithAppResponseResponse;
 import rs.ruta.services.FindAllDocBoxDocumentIDsResponse;
 import rs.ruta.services.FindCatalogueResponse;
 import rs.ruta.services.FindDocBoxDocumentResponse;
 import rs.ruta.services.FollowPartyResponse;
-import rs.ruta.services.NewRegisterUserResponse;
+import rs.ruta.services.RegisterUserResponse;
 import rs.ruta.services.SearchCatalogueResponse;
 import rs.ruta.services.SearchPartyResponse;
 import rs.ruta.services.Server;
@@ -213,13 +208,15 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Shows dialog for inputing {@code Party} data if data are not already initialized in the {@link #preInitialize} method.
+	 * Shows dialog for inputing {@code Party} data if data is not already initialized in the {@link #preInitialize} method.
 	 * This phase of data model initialization is after the view is initialized.
 	 * @throws DetailException if data could be read from the databse
 	 */
 	public void initialize() throws DetailException
 	{
-		Party coreParty = myParty.getCoreParty();
+		if(myParty.getCatalogueCorrespondence() == null)
+			myParty.addCatalogueCorrespondence(CatalogueCorrespondence.newInstance(this));
+		final Party coreParty = myParty.getCoreParty();
 		if(!myParty.hasCoreParty() || coreParty.verifyParty() != null)
 			myParty.setCoreParty(frame.showPartyDialog(coreParty, "My Party", true)); //displaying My Party Data dialog
 		frame.updateTitle(myParty.getCoreParty().getPartySimpleName());
@@ -368,8 +365,8 @@ public class RutaClient implements RutaNode
 		catch (IOException | NullPointerException e)
 		{
 			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
-					"Error", JOptionPane.ERROR_MESSAGE);
-			//logger.error("Exception is ", e);
+					"Warning", JOptionPane.WARNING_MESSAGE);
+			logger.warn("Properties could not be read from the file!\nReverting to default settings.");
 		}
 	}
 
@@ -527,11 +524,11 @@ public class RutaClient implements RutaNode
 				}
 				else*/
 				{
-					ret = port.newRegisterUserAsync(username, password, coreParty, futureUser ->
+					ret = port.registerUserAsync(username, password, coreParty, futureUser ->
 					{
 						try
 						{
-							NewRegisterUserResponse response = futureUser.get();
+							RegisterUserResponse response = futureUser.get();
 							String key = response.getReturn();
 							myParty.setCDRUsername(username);
 							myParty.setCDRPassword(password);
@@ -826,25 +823,32 @@ public class RutaClient implements RutaNode
 
 	/**
 	 * Sends update request of My Catalogue to the CDR service.
-	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
-	 * or {@code null} if no CDR request has been made during the method invocation.
+	 * @param catalogue Catalogue to send
+	 * @param documentReference {@link DocumentReference} to the catalogue
+	 * @param correspondence {@link Correspondence} which this request is part of
+	 * @return {@link Future} representing the CDR response that enables calling method to wait for its completion,
+	 * or {@code null} if no CDR request has been made during the method invocation
 	 */
-	public Future<?> cdrSendMyCatalogueUpdateRequest(CatalogueType catalogue)
+	public Future<?> cdrSendMyCatalogueUpdateRequest(CatalogueType catalogue,
+			DocumentReference documentReference, Correspondence correspondence)
 	{
 		Future<?> ret = null;
 		if(catalogue != null)
 		{
 			try
 			{
+				frame.appendToConsole(new StringBuilder("Sending My Catalogue update to the CDR service..."), Color.BLACK);
 				myParty.setCatalogue(catalogue);
 				Server port = getCDRPort();
 				String username = myParty.getCDRUsername();
 				ret = port.updateCatalogueWithAppResponseAsync(username, catalogue, null);
 				frame.appendToConsole(new StringBuilder("My Catalogue has been sent to the CDR service. Waiting for a response..."),
 						Color.BLACK);
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
 			}
 			catch(WebServiceException e)
 			{
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
 				logger.error("Exception is ", e);
 				frame.appendToConsole(new StringBuilder("My Catalogue has not been updated by the CDR service!").
 						append(" Server is not accessible. Please try again later."), Color.RED);
@@ -853,6 +857,7 @@ public class RutaClient implements RutaNode
 		}
 		else
 		{
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
 			frame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. ").
 					append("All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
 			frame.enableCatalogueMenuItems();
@@ -864,10 +869,13 @@ public class RutaClient implements RutaNode
 	 * Waits for the {@link ApplicationResponseType} document after {@code CatalogueType} update request had been
 	 * sent to the CDR service.
 	 * @param future {@link Future} on which is waited for a CDR response
+	 * @param documentReference {@link DocumentReference} to the catalogue
+	 * @param correspondence {@link Correspondence} which this response is part of
 	 * @return true when CDR accepts sent Catalogue, false otherwise and {@code null} if exception
 	 * is thrown during calling the service
 	 */
-	public Boolean cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future)
+	public Boolean cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future, DocumentReference documentReference,
+			Correspondence correspondence)
 	{
 		Boolean positiveResponse = null;
 		try
@@ -875,7 +883,7 @@ public class RutaClient implements RutaNode
 			final UpdateCatalogueWithAppResponseResponse response = (UpdateCatalogueWithAppResponseResponse) future.get();
 			final ApplicationResponseType appResponse = response.getReturn();
 			final String responseCode = appResponse.getDocumentResponseAtIndex(0).getResponse().getResponseCodeValue();
-
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
 			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
 			{
 				myParty.setDirtyCatalogue(false);
@@ -891,8 +899,14 @@ public class RutaClient implements RutaNode
 				positiveResponse = Boolean.FALSE;
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
+			if(e instanceof InterruptedException)
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+			else if(e.getCause() instanceof RutaException || e.getCause() instanceof ServerSOAPFaultException)
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+			else
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
 			frame.processExceptionAndAppendToConsole(e,
 					new StringBuilder("My Catalogue has not been updated in the CDR service! "));
 		}
@@ -905,24 +919,30 @@ public class RutaClient implements RutaNode
 
 	/**
 	 * Sends update request of My Catalogue to the CDR service.
-	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
-	 * or {@code null} if no CDR request has been made during the method invocation.
+	 * @param documentReference {@link DocumentReference} to the catalogue
+	 * @param correspondence {@link Correspondence} which this request is part of
+	 * @return {@link Future} representing the CDR response that enables calling method to wait for its completion,
+	 * or {@code null} if no CDR request has been made during the method invocation
 	 */
-	public Future<?> cdrSendMyCatalogueDeletionRequest(CatalogueDeletionType catalogueDeletion)
+	public Future<?> cdrSendMyCatalogueDeletionRequest(CatalogueDeletionType catalogueDeletion,
+			DocumentReference documentReference, Correspondence correspondence)
 	{
 		Future<?> ret = null;
 		if(catalogueDeletion != null)
 		{
 			try
 			{
+				frame.appendToConsole(new StringBuilder("Sending Request for My Catalogue deletion to the CDR service..."), Color.BLACK);
 				Server port = getCDRPort();
 				String username = myParty.getCDRUsername();
 				ret = port.deleteCatalogueWithAppResponseAsync(username, catalogueDeletion, null);
 				frame.appendToConsole(new StringBuilder("Request for My Catalogue deletion has been sent to the CDR service.").
 						append(" Waiting for a response..."), Color.BLACK);
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
 			}
 			catch(WebServiceException e)
 			{
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
 				frame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR service!").
 						append(" Server is not accessible. Please try again later."), Color.RED);
 				frame.enableCatalogueMenuItems();
@@ -930,6 +950,7 @@ public class RutaClient implements RutaNode
 		}
 		else
 		{
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
 			frame.appendToConsole(new StringBuilder("Request for My Catalogue deletion has not been sent to the CDR service because it is malformed."),
 					Color.RED);
 			frame.enableCatalogueMenuItems();
@@ -941,10 +962,13 @@ public class RutaClient implements RutaNode
 	 * Waits for the {@link ApplicationResponseType} document after {@link CatalogueDeletionType} request had been
 	 * sent to the CDR service.
 	 * @param future {@link Future} on which is waited for a CDR response
+	 * @param documentReference {@link DocumentReference} to the catalogue
+	 * @param correspondence {@link Correspondence} which this response is part of
 	 * @return true when CDR accepts sent Catalogue Deletion, false otherwise and {@code null} if exception
 	 * is thrown during calling the service
 	 */
-	public Boolean cdrReceiveMyCatalogueDeletionAppResponse(Future<?> future)
+	public Boolean cdrReceiveMyCatalogueDeletionAppResponse(Future<?> future,
+			DocumentReference documentReference, Correspondence correspondence)
 	{
 		Boolean positiveResponse = null;
 		try
@@ -952,7 +976,7 @@ public class RutaClient implements RutaNode
 			final DeleteCatalogueWithAppResponseResponse response = (DeleteCatalogueWithAppResponseResponse) future.get();
 			final ApplicationResponseType appResponse = response.getReturn();
 			final String responseCode = appResponse.getDocumentResponseAtIndex(0).getResponse().getResponseCodeValue();
-
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
 			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
 			{
 				frame.appendToConsole(new StringBuilder("My Catalogue has been successfully deleted from the CDR service."), Color.GREEN);
@@ -965,8 +989,14 @@ public class RutaClient implements RutaNode
 				positiveResponse = Boolean.FALSE;
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
+			if(e instanceof InterruptedException)
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+			else if(e.getCause() instanceof RutaException || e.getCause() instanceof ServerSOAPFaultException)
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+			else
+				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
 			frame.processExceptionAndAppendToConsole(e,
 					new StringBuilder("My Catalogue has not been deleted from the CDR service! "));
 		}
@@ -978,44 +1008,80 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Sends {@link OrderType} to the CDR service.
+	 * Sends {@code UBL document} to the CDR service.
+	 * @param document document to send
+	 * @param documentReference {@link DocumentReference document reference}
+	 * @param correspondence correspondence which document is part of
 	 */
-	public void cdrSendOrder(OrderType order)
+	public void cdrSendDocument(@Nonnull Object document, DocumentReference documentReference, Correspondence correspondence)
 	{
+		final String documentName = InstanceFactory.getDocumentName(documentReference.getDocumentTypeValue());
+		final String documentID = documentReference.getIDValue();
+		frame.appendToConsole(new StringBuilder("Sending " + documentName + " " + documentID +
+				" to the CDR service..."), Color.BLACK);
+		final Semaphore serviceCallFinished = new Semaphore(0);
 		try
 		{
-			if(order != null)
+			Server port = getCDRPort();
+			port.distributeDocumentAsync(document, future ->
 			{
-				Server port = getCDRPort();
-				String username = myParty.getCDRUsername();
-				port.distributeOrderAsync(username, order, future ->
+				try
 				{
-					try
-					{
-						future.get();
-						frame.appendToConsole(new StringBuilder("Order with the ID: " + order.getIDValue() +
-								" has been successfully deposited to the CDR."), Color.GREEN);
-					}
-					catch(Exception e)
-					{
-						frame.processExceptionAndAppendToConsole(e,
-								new StringBuilder("Order has not been deposited to the CDR! "));
-					}
-				});
-				frame.appendToConsole(new StringBuilder("Order with the ID: " + order.getIDValue() +
-						" has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
-			}
-			else
+					future.get();
+					frame.appendToConsole(new StringBuilder(documentName + " " + documentID +
+							" has been successfully deposited to the CDR."), Color.GREEN);
+					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
+				}
+				catch (Exception e)
+				{
+					if(e instanceof InterruptedException)
+						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+					else if(e.getCause() instanceof RutaException || e.getCause() instanceof ServerSOAPFaultException)
+						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+					else
+						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+					frame.processExceptionAndAppendToConsole(e,
+							new StringBuilder(documentName + " has not been deposited to the CDR! "));
+				}
+				finally
+				{
+					serviceCallFinished.release();
+				}
+			});
+			frame.appendToConsole(new StringBuilder(documentName + " " + documentID +
+					" has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
+			try
 			{
-				frame.appendToConsole(new StringBuilder("Order has not been sent to the CDR service because it is malformed. "),
-						Color.RED);
+				serviceCallFinished.acquire();
+				if(documentReference.getStatus().equals(DocumentReference.Status.CLIENT_FAILED))
+					throw new StateActivityException(/*documentName + " " + documentID + " has not been deposited to the CDR!"*/);
+			}
+			catch (InterruptedException e)
+			{
+				throw new StateActivityException("Interrupted execution of sending the document!", e);
 			}
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Exception is ", e);
-			frame.appendToConsole(new StringBuilder("Order has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
+			throw new StateActivityException(documentName + " " + documentID +
+					" has not been sent to the CDR service! Server is not accessible. Please try again later.", e);
+/*			logger.error("Exception is ", e);
+			frame.appendToConsole(new StringBuilder(documentName + " has not been sent to the CDR service!").
+					append(" Server is not accessible. Please try again later."), Color.RED); */
+		}
+		catch(StateActivityException e)
+		{
+			throw e;
+		}
+		catch(Exception e)
+		{
+			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+			throw e;
+/*			logger.error("Exception is ", e);
+			frame.appendToConsole(new StringBuilder(documentName + " has not been sent to the CDR service!").
+					append(" Server is not accessible. Please try again later."), Color.RED); */
 		}
 	}
 
@@ -1025,7 +1091,7 @@ public class RutaClient implements RutaNode
 	 * @param future {@link Future} on which is waited for a CDR response
 	 * @return new state which correspondence should transition to
 	 */
-	//MMM: to change and implement receipt of OrderResponse OR NOT -- Order Response would be get by GetNewDocuments
+	@Deprecated
 	public RutaProcessState cdrReceiveOrderResponse(Future<?> future)
 	{
 		RutaProcessState newState = null;
@@ -1041,7 +1107,7 @@ public class RutaClient implements RutaNode
 				frame.appendToConsole(new StringBuilder("My Catalogue has been successfully updated in the CDR service."),
 						Color.GREEN);
 //				newState = CreateCatalogueEndOfProcessState.getInstance();
-				newState = EndOfProcessState.getInstance();
+				newState = ClosingState.getInstance();
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 			{
@@ -1060,51 +1126,6 @@ public class RutaClient implements RutaNode
 			frame.enableCatalogueMenuItems();
 		}
 		return newState;
-	}
-
-	/**
-	 * Sends {@link OrderResponseSimpleType} to the CDR service.
-	 */
-	public void cdrSendOrderResponseSimple(OrderResponseSimpleType orderResponseSimple)
-	{
-		try
-		{
-			if(orderResponseSimple != null)
-			{
-				Server port = getCDRPort();
-				String username = myParty.getCDRUsername();
-				port.distributeOrderResponseSimpleAsync(username, orderResponseSimple, future ->
-				{
-					try
-					{
-						future.get();
-						frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: " +
-								orderResponseSimple.getIDValue() + " has been successfully deposited to the CDR."),
-								Color.GREEN);
-					}
-					catch(Exception e)
-					{
-						frame.processExceptionAndAppendToConsole(e,
-								new StringBuilder("Order Response Simple has not been deposited to the CDR! "));
-					}
-				});
-				frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: " +
-								orderResponseSimple.getIDValue() + " has been sent to the CDR service. Waiting for a response..."),
-						Color.BLACK);
-			}
-			else
-			{
-				frame.appendToConsole(
-						new StringBuilder("Order Response Simple has not been sent to the CDR service because it is malformed. "),
-						Color.RED);
-			}
-		}
-		catch(WebServiceException e)
-		{
-			logger.error("Exception is ", e);
-			frame.appendToConsole(new StringBuilder("Order has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
-		}
 	}
 
 	/**
@@ -1380,20 +1401,24 @@ public class RutaClient implements RutaNode
 										processDocBoxDocument(document, docID);
 									}
 									else
-										frame.appendToConsole(new StringBuilder("Document with ID: ").append(docID).
+										frame.appendToConsole(new StringBuilder("Document ").append(docID).
 												append(" could not be downloaded!"), Color.RED);
 								}
 								catch (InterruptedException | ExecutionException e)
 								{
 									oneAtATime.release();
-									frame.processExceptionAndAppendToConsole(e, new StringBuilder("Document with ID: ").
+									frame.processExceptionAndAppendToConsole(e, new StringBuilder("Document ").
 											append(docID).append(" could not be downloaded!"));
+									logger.error(new StringBuilder("Document ").
+											append(docID).append(" could not be downloaded!").toString(), e);
 								}
 								catch (Exception e)
 								{
 									oneAtATime.release();
-									frame.processExceptionAndAppendToConsole(e, new StringBuilder("Document with ID: ").
+									frame.processExceptionAndAppendToConsole(e, new StringBuilder("Document ").
 											append(docID).append(" could not be placed where it belogs in the data model!"));
+									logger.error(new StringBuilder("Document ").
+											append(docID).append(" could not be downloaded!").toString(), e);
 								}
 								finally
 								{
@@ -1421,8 +1446,11 @@ public class RutaClient implements RutaNode
 						if(failed != null)
 							frame.appendToConsole(new StringBuilder("Successful download of ").append(plural).append(". ").append(failed),
 									Color.BLACK);
-							else
-								frame.appendToConsole(new StringBuilder("Successful download of ").append(plural).append("."), Color.BLACK);
+						else
+						{
+							//MMM checking wether some correspondence is in a new wait state for Get New Documents feature to be called
+							frame.appendToConsole(new StringBuilder("Successful download of ").append(plural).append("."), Color.BLACK);
+						}
 					}
 					else
 						frame.appendToConsole(new StringBuilder("There are no new documents in my DocBox."), Color.GREEN);
@@ -1435,6 +1463,7 @@ public class RutaClient implements RutaNode
 				finally
 				{
 					sequential.release();
+					frame.enableGetDocumentsMenuItem();
 				}
 			});
 			frame.appendToConsole(new StringBuilder("Download request of new documents has been sent to the CDR service.").
@@ -1444,6 +1473,10 @@ public class RutaClient implements RutaNode
 		{
 			frame.appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service!")
 					.append(" Server is not accessible. Please try again later."), Color.RED);
+		}
+		finally
+		{
+			frame.enableGetDocumentsMenuItem();
 		}
 		return sequential;
 	}
@@ -1461,7 +1494,7 @@ public class RutaClient implements RutaNode
 		final Class<?> documentClazz = document.getClass();
 		if(documentClazz == CatalogueType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Catalogue document with the ID: ").append(docID).
+			frame.appendToConsole(new StringBuilder("Catalogue document ").append(docID).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxCatalogue((CatalogueType) document);
 			String partyName;
@@ -1479,7 +1512,7 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == PartyType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Party document with the ID: ").append(docID).
+			frame.appendToConsole(new StringBuilder("Party document ").append(docID).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxParty((PartyType) document);
 			String partyName;
@@ -1496,7 +1529,7 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == CatalogueDeletionType.class)
 		{
-			frame.appendToConsole(new StringBuilder("CatalogueDeletion document with the ID: ").append(docID).
+			frame.appendToConsole(new StringBuilder("CatalogueDeletion document ").append(docID).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxCatalogueDeletion((CatalogueDeletionType) document);
 			String partyName;
@@ -1514,7 +1547,7 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == DeregistrationNotice.class)
 		{
-			frame.appendToConsole(new StringBuilder("DeregistrationNotice document with the ID: ").append(docID).
+			frame.appendToConsole(new StringBuilder("DeregistrationNotice document ").append(docID).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxDeregistrationNotice((DeregistrationNotice) document);
 			String partyName;
@@ -1531,10 +1564,9 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == OrderType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Order with the ID: ").append(((OrderType) document).getIDValue()).//append(docID).
+			frame.appendToConsole(new StringBuilder("Order ").append(((OrderType) document).getIDValue()).
 					append(" has been successfully retrieved."), Color.GREEN);
-			String corrName = myParty.processDocBoxOrder((OrderType) document);
-			frame.appendToConsole(new StringBuilder("New correspondence: ").append(corrName).append(" has been opened."), Color.BLACK);
+			myParty.processDocBoxOrder((OrderType) document);
 			String partyName;
 			try
 			{
@@ -1547,13 +1579,35 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s order has been appended to its correspondence."),
+					append("'s Order " + ((OrderType) document).getIDValue() + " has been appended to its correspondence."),
+					Color.BLACK);
+		}
+		else if(documentClazz == OrderResponseType.class)
+		{
+			frame.appendToConsole(new StringBuilder("Order Response ").
+					append(((OrderResponseType) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxOrderResponse((OrderResponseType) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((OrderResponseType) document).getSellerSupplierParty().getParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Order Response " + ((OrderResponseType) document).getIDValue() +
+							" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderResponseSimpleType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Order Response Simple with the ID: ").
-					append(((OrderResponseSimpleType) document).getIDValue()).//append(docID).
+			frame.appendToConsole(new StringBuilder("Order Response Simple ").
+					append(((OrderResponseSimpleType) document).getIDValue()).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxOrderResponseSimple((OrderResponseSimpleType) document);
 			String partyName;
@@ -1568,43 +1622,80 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response Simple has been appended to its correspondence."),
+					append("'s Order Response Simple " + ((OrderResponseSimpleType) document).getIDValue() +
+							" has been appended to its correspondence."),
 					Color.BLACK);
 		}
-		else
-			frame.appendToConsole(new StringBuilder("Document with the ID: ").append(docID).
-					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
-					Color.BLACK);
-	}
-
-	/**
-	 * Testing of storing two parties to the CDR database.
-	 *
-	 */
-	public void testParty()
-	{
-		/*		Server port = getCDRPort();
-		frame.appendToConsole(new StringBuilder("TEST: Request for the storing of the two parties has been sent to the CDR service."), Color.MAGENTA);
-		port.testPartyAsync(myParty.getUsername(), "amanas", myParty.getCoreParty(), future ->
+		else if(documentClazz == OrderChangeType.class)
 		{
-			String msg = "TEST has failed! ";
+			frame.appendToConsole(new StringBuilder("Order Change ").
+					append(((OrderChangeType) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxOrderChange((OrderChangeType) document);
+			String partyName;
 			try
 			{
-				future.get();
-				msg = "TEST has succeded.";
-				frame.appendToConsole(msg, Color.MAGENTA);
+				partyName = InstanceFactory.getPropertyOrNull(
+						((OrderChangeType) document).getSellerSupplierParty().getParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
 			}
 			catch(Exception e)
 			{
-				msg += "Server responds: ";
-				if(e.getCause() instanceof RutaException)
-					frame.appendToConsole(msg + e.getCause().getMessage() + " " +
-							((RutaException)e.getCause()).getFaultInfo().getDetail(), Color.MAGENTA);
-				else
-					frame.appendToConsole(msg + e.getCause().getMessage(), Color.MAGENTA);
-				logger.error("Exception is ", e);
+				partyName = "";
 			}
-		});*/
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Order Response Simple " + ((OrderChangeType) document).getIDValue() +
+							" has been appended to its correspondence."),
+					Color.BLACK);
+		}
+		else if(documentClazz == OrderCancellationType.class)
+		{
+			frame.appendToConsole(new StringBuilder("Order Cancellation ").
+					append(((OrderCancellationType) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxOrderCancellation((OrderCancellationType) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((OrderCancellationType) document).getSellerSupplierParty().getParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Order Response Simple " + ((OrderCancellationType) document).getIDValue() +
+							" has been appended to its correspondence."),
+					Color.BLACK);
+		}
+		else if(documentClazz == ApplicationResponseType.class)
+		{
+			frame.appendToConsole(new StringBuilder("Application Response ").
+					append(((ApplicationResponseType) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxApplicationResponse((ApplicationResponseType) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((ApplicationResponseType) document).getSenderParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Application Response " + ((ApplicationResponseType) document).getIDValue() +
+							" has been appended to its correspondence."),
+					Color.BLACK);
+		}
+		else
+			frame.appendToConsole(new StringBuilder("Document ").append(docID).
+					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
+					Color.BLACK);
 	}
 
 	public void testPhax()
@@ -1734,6 +1825,10 @@ public class RutaClient implements RutaNode
 		}
 	}
 
+	/**
+	 * Gets {@link MyParty} object.
+	 * @return
+	 */
 	public MyParty getMyParty()
 	{
 		return myParty;
@@ -2450,7 +2545,7 @@ public class RutaClient implements RutaNode
 			final String missingPartyField = myParty.getCoreParty().verifyParty();
 			if(missingPartyField != null)
 			{
-				frame.appendToConsole(new StringBuilder("Request for the registration of My Party has been canceled because").
+				frame.appendToConsole(new StringBuilder("Request for the registration of My Party has been discarded because").
 					append(" My Party is missing mandatory field: ").append(missingPartyField).
 					append(". Please populate My Party data with all mandatory fields and try again."), Color.RED);
 				frame.enablePartyMenuItems();
@@ -2545,4 +2640,5 @@ public class RutaClient implements RutaNode
 		}
 		return ret;
 	}
+
 }

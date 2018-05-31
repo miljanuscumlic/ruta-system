@@ -26,18 +26,33 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
 		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
 		final RutaClientFrame clientFrame = client.getClientFrame();
 		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing My Catalogue..."), Color.BLACK);
-		final MyParty myParty = client.getMyParty();
-		final CatalogueType catalogue = myParty.produceCatalogue(client.getCDRParty());
+		final CatalogueType catalogue = client.getMyParty().produceCatalogue(client.getCDRParty());
 		if(catalogue == null)
-			throw new StateTransitionException("My Catalogue is malformed. UBL validation has failed.");
+			throw new StateActivityException("My Catalogue is malformed. UBL validation has failed.");
 		else
-			((CreateCatalogueProcess) process).setCatalogue(catalogue);
+			saveCatalogue(correspondence, catalogue);
 		changeState(process, DistributeCatalogueState.getInstance());
+	}
+
+	/**
+	 * Sets Catalogue of the process, adds it's {@link DocumentReference} to the correspondence.
+	 * @param correspondence which catalogue is part of
+	 * @param catalogue catalogue to save
+	 */
+	private void saveCatalogue(Correspondence correspondence, CatalogueType catalogue)
+	{
+		final CatalogueProcess process = (CatalogueProcess) correspondence.getState();
+		process.setCatalogue(catalogue);
+		correspondence.addDocumentReference(catalogue.getProviderParty(),
+				catalogue.getUUIDValue(), catalogue.getIDValue(),
+				catalogue.getIssueDateValue(), catalogue.getIssueTimeValue(),
+				catalogue.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		correspondence.setRecentlyUpdated(true);
 	}
 }

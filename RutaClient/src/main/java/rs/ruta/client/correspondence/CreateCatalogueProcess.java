@@ -1,13 +1,11 @@
 package rs.ruta.client.correspondence;
 
 import java.util.UUID;
-import java.util.concurrent.Future;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import rs.ruta.client.RutaClient;
 
@@ -20,9 +18,6 @@ import rs.ruta.client.RutaClient;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CreateCatalogueProcess extends CatalogueProcess
 {
-	private CatalogueType catalogue;
-	private Future<?> future;
-
 	/**
 	 * Constructs new instance of a {@link CreateCatalogueProcess} and sets its state to
 	 * default value and uuid to a random value.
@@ -39,28 +34,8 @@ public class CreateCatalogueProcess extends CatalogueProcess
 		return process;
 	}
 
-	public CatalogueType getCatalogue()
-	{
-		return catalogue;
-	}
-
-	public void setCatalogue(CatalogueType catalogue)
-	{
-		this.catalogue = catalogue;
-	}
-
-	public Future<?> getFuture()
-	{
-		return future;
-	}
-
-	public void setFuture(Future<?> future)
-	{
-		this.future = future;
-	}
-
 	@Override
-	public void doActivity(final Correspondence correspondence) throws StateTransitionException
+	public void doActivity(final Correspondence correspondence) throws StateActivityException
 	{
 		try
 		{
@@ -71,7 +46,15 @@ public class CreateCatalogueProcess extends CatalogueProcess
 		}
 		catch (Exception e)
 		{
-			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
+			try
+			{
+				correspondence.stop();
+			}
+			catch (InterruptedException e1)
+			{
+				throw new StateActivityException("Unable to stop the correspondence!", e1);
+			}
+			throw new StateActivityException("Interrupted execution of Create Catalogue Process!", e);
 		}
 		finally
 		{

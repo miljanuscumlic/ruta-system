@@ -39,4 +39,11 @@ public class OrderResponseSimpleXmlMapper extends XmlMapper<OrderResponseSimpleT
 		return new ObjectFactory().createOrderResponseSimple(object);
 	}
 
+	@Override
+	protected String doPrepareAndGetID(OrderResponseSimpleType orderResponse, String username, DSTransaction transaction)
+			throws DetailException
+	{
+		return orderResponse.getUUIDValue();
+	}
+
 }

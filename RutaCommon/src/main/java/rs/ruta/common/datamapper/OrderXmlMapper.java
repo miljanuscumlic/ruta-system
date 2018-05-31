@@ -39,4 +39,10 @@ public class OrderXmlMapper extends XmlMapper<OrderType>
 		return new ObjectFactory().createOrder(object);
 	}
 
+	@Override
+	protected String doPrepareAndGetID(OrderType order, String username, DSTransaction transaction) throws DetailException
+	{
+		return order.getUUIDValue();
+	}
+
 }

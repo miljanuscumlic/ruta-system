@@ -1,6 +1,7 @@
 package rs.ruta.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -31,14 +32,25 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.RutaClientFrameEvent;
+import rs.ruta.client.correspondence.BuyerOrderingProcess;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.client.correspondence.DocumentReference;
+import rs.ruta.client.correspondence.RutaProcess;
+import rs.ruta.client.correspondence.RutaProcessState;
+import rs.ruta.client.correspondence.SellerOrderingProcess;
+import rs.ruta.client.correspondence.SellerProcessOrderState;
 import rs.ruta.common.datamapper.DetailException;
 
 /**
@@ -89,7 +101,7 @@ public class TabCorrespondences extends TabComponent
 		final JLabel blankLabel = new JLabel();
 
 		leftPane = new JScrollPane(treePanel);
-		leftPane.setPreferredSize(new Dimension(320, 500));
+		leftPane.setPreferredSize(new Dimension(325, 500));
 
 		rightPane = new JPanel(new BorderLayout());
 		rightScrollPane = new JScrollPane();
@@ -186,8 +198,8 @@ public class TabCorrespondences extends TabComponent
 			new Thread(() ->
 			{
 				final String correspondentID = selectedParty.getPartyID();
-				final PartyType correspondentParty = selectedParty.getCoreParty();
-				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, true);
+//				final PartyType correspondentParty = selectedParty.getCoreParty();
+				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, selectedParty, true);
 				try
 				{
 					myParty.addBuyingCorrespondence(corr);
@@ -342,13 +354,247 @@ public class TabCorrespondences extends TabComponent
 		colModel.getColumn(3).setPreferredWidth(200);
 		colModel.getColumn(4).setPreferredWidth(150);
 		colModel.getColumn(5).setPreferredWidth(150);
+
+		JPopupMenu correspondencePopupMenu = new JPopupMenu();
+		JMenuItem processDocumentItem = new JMenuItem();
+		JMenuItem resendItem = new JMenuItem();
+		JMenuItem viewOrderResponseItem = new JMenuItem("View Order Response");
+		JMenuItem viewOrderItem = new JMenuItem("View Order");
+		JMenuItem viewOrderResponseSimpleItem = new JMenuItem("View Order Response Simple");
+		JMenuItem viewOrderChangeItem = new JMenuItem("View Order Change");
+		JMenuItem viewOrderCancellationItem = new JMenuItem("View Order Cancellation");
+
+		processDocumentItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				try
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					if(!corr.isAlive())
+						corr.start();
+					corr.waitThreadBlocked();
+					corr.proceed();
+				}
+				catch(Exception e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+				}
+			}).start();
+		});
+
+		viewOrderItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showPreviewOrderDialog("Show Order", (OrderType) document);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order does not exist!"), Color.BLACK);
+
+			}).start();
+		});
+
+		viewOrderResponseItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderResponseDialog("Show Order Response", (OrderResponseType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Response does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewOrderResponseSimpleItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderResponseSimpleDialog("Show Order Response Simple",
+							(OrderResponseSimpleType) document, false, false, true);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Response Simple does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewOrderChangeItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderChangeDialog("Show Order Change", (OrderChangeType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Change does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewOrderCancellationItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderCancellationDialog("Show Order Cancellation", (OrderCancellationType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Cancellation does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		resendItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				try
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					if(!corr.isAlive())
+						corr.start();
+					corr.waitThreadBlocked();
+					corr.proceed();
+				}
+				catch(Exception e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+				}
+			}).start();
+		});
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				final int viewRowIndex = table.rowAtPoint(event.getPoint());
+				if(viewRowIndex != -1)
+				{
+					final int modelRowIndex = table.convertRowIndexToModel(viewRowIndex);
+					if(SwingUtilities.isRightMouseButton(event))
+					{
+						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+						final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+						//					Object document = corr.getDocumentAtIndex(realRowIndex);
+						//					if(document.getClass() == OrderType.class)
+						//MMM test whether the last document is OrderType or OrderChangeType
+						//MMM test for rigth process and state before displaying this menu item
+						final DocumentReference documentReference = corr.getDocumentReferenceAtIndex(modelRowIndex);
+						correspondencePopupMenu.removeAll();
+						final RutaProcess process = (RutaProcess) corr.getState();
+						if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							correspondencePopupMenu.add(viewOrderItem);
+							if(documentReference == corr.getLastDocumentReference() &&
+									process instanceof SellerOrderingProcess &&
+									process.getState() instanceof SellerProcessOrderState &&
+									corr.getLastDocument() != null) // after the Order has been inserted in the database
+							{
+								processDocumentItem.setText("Process Order");
+								correspondencePopupMenu.add(processDocumentItem);
+							}
+						}
+						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							correspondencePopupMenu.add(viewOrderResponseItem);
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == SellerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								resendItem.setText("Resend Order Response");
+								correspondencePopupMenu.add(resendItem);
+							}
+							else if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									corr.getLastDocument() != null)
+							{
+								processDocumentItem.setText("Process Order Response");
+								correspondencePopupMenu.add(processDocumentItem);
+							}
+						}
+						else if(OrderResponseSimpleType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == SellerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								resendItem.setText("Resend Order Response Simple");
+								correspondencePopupMenu.add(resendItem);
+							}
+							else if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									corr.getLastDocument() != null &&
+									((BuyerOrderingProcess) process).getOrderResponseSimple(corr).isAcceptedIndicatorValue(false)) //MMM does this work???
+							{
+								processDocumentItem.setText("Process Order Response Simple");
+								correspondencePopupMenu.add(processDocumentItem);
+							}
+						}
+						else if(OrderChangeType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							correspondencePopupMenu.add(viewOrderChangeItem);
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								resendItem.setText("Resend Order Change");
+								correspondencePopupMenu.add(resendItem);
+							}
+							else if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == SellerOrderingProcess.class &&
+									corr.getLastDocument() != null)
+							{
+								processDocumentItem.setText("Process Order Change");
+								correspondencePopupMenu.add(processDocumentItem);
+							}
+						}
+						else if(OrderCancellationType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							correspondencePopupMenu.add(viewOrderCancellationItem);
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								resendItem.setText("Resend Order Change");
+								correspondencePopupMenu.add(resendItem);
+							}
+						}
+						correspondencePopupMenu.show(table, event.getX(), event.getY());
+					}
+				}
+			}
+		});
+
 		return table;
 	}
 
 	/**
-	 * Creates table showing list of Business Partners.
+	 * Creates orderLinesTable showing list of Business Partners.
 	 * @param tableModel model containing party data to display
-	 * @return constructed table object
+	 * @return constructed orderLinesTable object
 	 */
 	private JTable createPartyListTable(DefaultTableModel tableModel)
 	{
@@ -366,7 +612,7 @@ public class TabCorrespondences extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
@@ -397,7 +643,7 @@ public class TabCorrespondences extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
@@ -428,8 +674,8 @@ public class TabCorrespondences extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) orderLinesTable.getModel()).getParty(realRowIndex);
 			new Thread(()->
 			{
 				try
@@ -453,8 +699,8 @@ public class TabCorrespondences extends TabComponent
 
 		addPartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) orderLinesTable.getModel()).getParty(realRowIndex);
 			new Thread(() ->
 			{
 				selectedParty.setPartner(true);
@@ -477,9 +723,9 @@ public class TabCorrespondences extends TabComponent
 
 		removePartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
 
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) orderLinesTable.getModel()).getParty(realRowIndex);
 			{
 				selectedParty.setPartner(false);
 				try
@@ -576,7 +822,6 @@ public class TabCorrespondences extends TabComponent
 						if(corr == selectedUserObject)
 							partnerCorrespondenceTableModel.fireTableDataChanged();
 					}
-//					repaint();
 			}
 			else if(CorrespondenceEvent.CORRESPONDENCE_UPDATED.equals(command))
 			{
@@ -584,8 +829,12 @@ public class TabCorrespondences extends TabComponent
 					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
 					if(selectedUserObject instanceof Correspondence)
 						if(corr == selectedUserObject)
+						{
+							final int selectedRow = partnerCorrespondenceTable.getSelectedRow();
 							partnerCorrespondenceTableModel.fireTableDataChanged();
-//					repaint();
+							if(selectedRow != -1)
+								partnerCorrespondenceTable.setRowSelectionInterval(selectedRow, selectedRow);
+						}
 			}
 			else if(CorrespondenceEvent.CORRESPONDENCE_REMOVED.equals(command))
 			{
@@ -606,5 +855,4 @@ public class TabCorrespondences extends TabComponent
 			}
 		}
 	}
-
 }

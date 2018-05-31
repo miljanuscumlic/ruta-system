@@ -1,16 +1,23 @@
 package rs.ruta.client.datamapper;
 
 import rs.ruta.common.datamapper.MapperRegistry;
+import rs.ruta.common.datamapper.OrderCancellationXmlMapper;
+import rs.ruta.common.datamapper.OrderChangeXmlMapper;
 import rs.ruta.common.datamapper.OrderResponseSimpleXmlMapper;
+import rs.ruta.common.datamapper.OrderResponseXmlMapper;
 import rs.ruta.common.datamapper.OrderXmlMapper;
 import rs.ruta.common.datamapper.PartyIDXmlMapper;
 import rs.ruta.common.datamapper.PartyXmlMapper;
 import rs.ruta.common.datamapper.UserXmlMapper;
 import rs.ruta.common.RutaUser;
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.CatalogueSearch;
@@ -23,6 +30,7 @@ import rs.ruta.client.correspondence.CreateCatalogueProcess;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.Associates;
 import rs.ruta.common.PartyID;
+import rs.ruta.common.datamapper.ApplicationResponseXmlMapper;
 import rs.ruta.common.datamapper.CatalogueDeletionXmlMapper;
 import rs.ruta.common.datamapper.CatalogueXmlMapper;
 import rs.ruta.common.datamapper.DataManipulationException;
@@ -93,8 +101,16 @@ public class ClientMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new BuyingCorrespondenceXmlMapper(getConnector());
 			else if(clazz == OrderType.class)
 				dataMapper = (DataMapper<S, String>) new OrderXmlMapper(getConnector());
+			else if(clazz == OrderResponseType.class)
+				dataMapper = (DataMapper<S, String>) new OrderResponseXmlMapper(getConnector());
 			else if(clazz == OrderResponseSimpleType.class)
 				dataMapper = (DataMapper<S, String>) new OrderResponseSimpleXmlMapper(getConnector());
+			else if(clazz == OrderChangeType.class)
+				dataMapper = (DataMapper<S, String>) new OrderChangeXmlMapper(getConnector());
+			else if(clazz == OrderCancellationType.class)
+				dataMapper = (DataMapper<S, String>) new OrderCancellationXmlMapper(getConnector());
+			else if(clazz == ApplicationResponseType.class)
+				dataMapper = (DataMapper<S, String>) new ApplicationResponseXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

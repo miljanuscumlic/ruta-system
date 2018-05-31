@@ -20,6 +20,6 @@ public class CancelCatalogueState extends DeleteCatalogueProcessState
 		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final MyParty myParty = process.getClient().getMyParty();
 		myParty.cancelCatalogue();
-		changeState(process, EndOfProcessState.getInstance());
+		changeState(process, ClosingState.getInstance());
 	}
 }

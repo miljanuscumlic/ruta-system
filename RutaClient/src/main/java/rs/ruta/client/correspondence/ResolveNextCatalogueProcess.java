@@ -28,7 +28,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
 		try
 		{
@@ -45,7 +45,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		}
 		catch (Exception e)
 		{
-			throw new StateTransitionException("Interrupted execution of Buyer Ordering Process!", e);
+			throw new StateActivityException("Interrupted execution of Buyer Ordering Process!", e);
 		}
 		finally
 		{

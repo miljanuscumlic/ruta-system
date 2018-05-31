@@ -18,15 +18,11 @@ public class DistributeCatalogueState extends CreateCatalogueProcessState
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		final RutaProcess process = (RutaProcess) correspondence.getState();
-		final CatalogueType catalogue = ((CreateCatalogueProcess) process).getCatalogue();
-		final Future<?> ret = process.getClient().cdrSendMyCatalogueUpdateRequest(catalogue);
-		((CreateCatalogueProcess) process).setFuture(ret);
-		correspondence.addDocumentReference(catalogue.getProviderParty(),
-				catalogue.getUUIDValue(), catalogue.getIDValue(), catalogue.getIssueDateValue(),
-				catalogue.getIssueTimeValue(), catalogue.getClass().getName(),
-				correspondence.getClient().getMyParty());
-		correspondence.setRecentlyUpdated(true);
+		final CreateCatalogueProcess process = (CreateCatalogueProcess) correspondence.getState();
+		final CatalogueType catalogue = process.getCatalogue();
+		final DocumentReference documentReference = correspondence.getLastDocumentReference();
+		final Future<?> ret = process.getClient().cdrSendMyCatalogueUpdateRequest(catalogue, documentReference, correspondence);
+		process.setFuture(ret);
 		changeState(process, ReceiveCatalogueAppResponseState.getInstance());
 	}
 }

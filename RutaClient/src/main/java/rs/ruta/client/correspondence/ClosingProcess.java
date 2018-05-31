@@ -1,5 +1,6 @@
 package rs.ruta.client.correspondence;
 
+import java.awt.Color;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,21 +10,21 @@ import javax.xml.bind.annotation.XmlType;
 
 import rs.ruta.client.RutaClient;
 
-@XmlRootElement(name = "BuyingClosingProcess")
-@XmlType(name = "BuyingClosingProcess")
+@XmlRootElement(name = "ClosingProcess")
+@XmlType(name = "ClosingProcess")
 @XmlAccessorType(XmlAccessType.NONE)
-public class BuyingClosingProcess extends DocumentProcess
+public class ClosingProcess extends DocumentProcess
 {
 	/**
-	 * Constructs new instance of a {@link BuyingClosingProcess} and sets its state to
+	 * Constructs new instance of a {@link ClosingProcess} and sets its state to
 	 * default value and uuid to a random value.
 	 * @param {@link RutaClient} object
-	 * @return {@code BuyingClosingProcess}
+	 * @return {@code ClosingProcess}
 	 */
-	public static BuyingClosingProcess newInstance(RutaClient client)
+	public static ClosingProcess newInstance(RutaClient client)
 	{
-		BuyingClosingProcess process = new BuyingClosingProcess();
-		process.setState(BuyerPrepareOrderState.getInstance()); //MMM: default state should be changed
+		ClosingProcess process = new ClosingProcess();
+		process.setState(ClosingState.getInstance());
 		process.setId(UUID.randomUUID().toString());
 		process.setClient(client);
 		return process;
@@ -32,7 +33,11 @@ public class BuyingClosingProcess extends DocumentProcess
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
+		while(active)
+			state.doActivity(correspondence);
 		correspondence.setActive(false);
+		client.getClientFrame().appendToConsole(new StringBuilder("Correspondence ").
+				append(correspondence.getName()).append(" has been closed."), Color.BLACK);
 	}
 
 

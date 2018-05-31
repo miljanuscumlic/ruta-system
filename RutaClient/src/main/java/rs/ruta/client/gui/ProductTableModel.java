@@ -26,9 +26,9 @@ public class ProductTableModel extends DefaultTableModel
 	private boolean editable;
 
 	/**
-	 * Creates new model for the product table.
+	 * Creates new model for the product orderLinesTable.
 	 * @param myParty myParty which products are modeled and shown
-	 * @param editable if true, table cells are editable
+	 * @param editable if true, orderLinesTable cells are editable
 	 */
 	public ProductTableModel(MyParty myParty, boolean editable)
 	{
@@ -38,9 +38,9 @@ public class ProductTableModel extends DefaultTableModel
 	}
 
 	/**
-	 * Creates new model for the product table. Party should be set with the subsequent call to
+	 * Creates new model for the product orderLinesTable. Party should be set with the subsequent call to
 	 * {@link #setParty(MyParty)}.
-	 * @param editable if true, table cells are editable
+	 * @param editable if true, orderLinesTable cells are editable
 	 * @see ProductTableModel#setMyParty
 	 */
 	public ProductTableModel(boolean editable)

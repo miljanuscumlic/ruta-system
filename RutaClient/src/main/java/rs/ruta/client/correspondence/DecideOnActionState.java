@@ -19,11 +19,11 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
 		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final RutaClientFrame clientFrame = process.getClient().getClientFrame();
-		Semaphore decision = new Semaphore(0);
+		final Semaphore decision = new Semaphore(0);
 		EventQueue.invokeLater(() ->
 		{
 			int option = JOptionPane.showConfirmDialog(clientFrame,
@@ -32,7 +32,7 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 			if(option == JOptionPane.YES_OPTION)
 				changeState(process, PrepareCatalogueState.getInstance());
 			else
-				changeState(process, EndOfProcessState.getInstance());
+				changeState(process, ClosingState.getInstance());
 			decision.release();
 		});
 
@@ -42,7 +42,7 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 		}
 		catch (InterruptedException e)
 		{
-			throw new StateTransitionException("Interrupted execution of Create Catalogue Process!", e);
+			throw new StateActivityException("Interrupted execution of Create Catalogue Process!", e);
 		}
 	}
 }

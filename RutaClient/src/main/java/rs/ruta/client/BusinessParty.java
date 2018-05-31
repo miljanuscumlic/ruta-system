@@ -101,17 +101,6 @@ public class BusinessParty
 		return following;
 	}
 
-/*	//MMM:commented to see whether JAXB is going to complain about it
-	public void setFollowing(Boolean following) // Boolean not boolean because of JAXB
-	{
-		this.following = following;
-	}
-
-	public void setPartner(Boolean partner)
-	{
-		this.partner = partner;
-	}*/
-
 	public void setFollowing(boolean following)
 	{
 		this.following = following;

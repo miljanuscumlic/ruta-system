@@ -1,11 +1,13 @@
 package rs.ruta.client.correspondence;
 
+import java.awt.Color;
 import java.util.concurrent.Future;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import rs.ruta.client.RutaClient;
+import rs.ruta.client.gui.RutaClientFrame;
 
 @XmlRootElement(name = "NotifyOfCatalogueDeletionState")
 public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
@@ -22,14 +24,26 @@ public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
 	{
 		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
+		final RutaClientFrame clientFrame = client.getClientFrame();
+		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing Catalogue Deletion..."), Color.BLACK);
 		final CatalogueDeletionType catalogueDeletion = client.getMyParty().produceCatalogueDeletion(client.getCDRParty());
-		final Future<?> ret = client.cdrSendMyCatalogueDeletionRequest(catalogueDeletion);
+		if(catalogueDeletion == null)
+			throw new StateActivityException("My Catalogue is malformed. UBL validation has failed.");
+		else
+			saveCatalogueDeletion(correspondence, catalogueDeletion);
+		final DocumentReference documentReference = correspondence.getLastDocumentReference();
+		final Future<?> ret = client.cdrSendMyCatalogueDeletionRequest(catalogueDeletion, documentReference, correspondence);
 		process.setFuture(ret);
-		correspondence.addDocumentReference(catalogueDeletion.getProviderParty(),
-				catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(), catalogueDeletion.getIssueDateValue(),
-				catalogueDeletion.getIssueTimeValue(), catalogueDeletion.getClass().getName(),
-				correspondence.getClient().getMyParty());
-		correspondence.setRecentlyUpdated(true);
+
 		changeState(process, ReceiveCatalogueDeletionAppResponseState.getInstance());
+	}
+
+	private void saveCatalogueDeletion(Correspondence correspondence, CatalogueDeletionType catalogueDeletion)
+	{
+		correspondence.addDocumentReference(catalogueDeletion.getProviderParty(),
+				catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(),
+				catalogueDeletion.getIssueDateValue(), catalogueDeletion.getIssueTimeValue(),
+				catalogueDeletion.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		correspondence.setRecentlyUpdated(true);
 	}
 }

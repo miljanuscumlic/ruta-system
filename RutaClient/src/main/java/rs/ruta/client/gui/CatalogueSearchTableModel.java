@@ -110,7 +110,7 @@ public class CatalogueSearchTableModel extends SearchTableModel<CatalogueType>
 
 	/**
 	 * Gets {@link PartyType provider party} for of the {@link ItemType item} with passed index.
-	 * @param rowIndex index of the item from the table
+	 * @param rowIndex index of the item from the orderLinesTable
 	 * @return {@link PartyType provider party} of the item
 	 */
 	public PartyType getParty(int rowIndex)

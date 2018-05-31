@@ -9,16 +9,43 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.error.list.IErrorList;
+import com.helger.ubl21.UBL21Validator;
+
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxSchemeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 
 /**
  * Class factory that instantiate different objects and have some convinient check methods.
@@ -33,6 +60,14 @@ public final class InstanceFactory
 
 	public static String APP_RESPONSE_POSITIVE = "POSITIVE";
 	public static String APP_RESPONSE_NEGATIVE = "NEGATIVE";
+
+	public static final String ACCEPT_ORDER = "Accept Order";
+	public static final String ADD_DETAIL = "Add Detail";
+	public static final String DECIDE_LATER = "Decide Later";
+	public static final String REJECT_ORDER = "Reject Order";
+	public static final String CANCEL_ORDER = "Cancel Order";
+	public static final String CHANGE_ORDER = "Change Order";
+	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 
 	static
 	{
@@ -204,6 +239,246 @@ public final class InstanceFactory
 	public static TaxCategoryType getTaxCategory(String taxType)
 	{
 		return taxCategories.get(taxType);
+	}
+
+	/**
+	 * Formats input string representing document type in a way that it strips all from it except
+	 * its simple name (i.e. after the last "." character), removes from it "Type" substring if exists and
+	 * splits Camel Titled leftover name into words that are concatenated with a space characher.
+	 * <p>For example:</br>
+	 * For an input: "oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType"</br>
+	 * the output is:</br>
+	 * "Order Response Simple"
+	 * </p>
+	 * @param type document type
+	 * @return {@code String} containing words concatenated with one space caracter
+	 */
+	public static String getDocumentName(String type)
+	{
+		return Stream.of(
+				type.
+				replaceAll("(.*\\.)*(.+?)(Type)", "$2").
+				split("(?<![A-Z])(?=[A-Z])")).
+				collect(Collectors.joining(" "));
+	}
+
+	/**
+	 * Validates whether XML document comforms to {@code UBL} standard.
+	 * @param document document to validate
+	 * @return true if document has a {@code non-null} value and is valid
+	 */
+	public static <T,U> boolean validateUBLDocument(@Nullable T document,
+			Function<T, IErrorList> validator)
+	{
+		boolean valid = false;
+		if(document != null)
+		{
+			final IErrorList errors = validator.apply(document);
+			if(errors.containsAtLeastOneFailure())
+			{
+				logger.error(errors.toString());
+				//MMM Printing for a test
+//				if(document instanceof OrderType)
+//				try
+//				{
+//					JAXBContext jc = JAXBContext.newInstance(OrderType.class);
+//					Marshaller m = jc.createMarshaller();
+//					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//					m.marshal(new JAXBElement<OrderType>(new QName("", "OrderType"),
+//							OrderType.class, null, (OrderType) document), System.out);
+//				}
+//				catch (JAXBException e)
+//				{
+//					e.printStackTrace();
+//				}
+			}
+			else
+				valid = true;
+		}
+		return valid;
+	}
+
+	/**
+	 * Gets the ID of the Sender Party as definied in the document. If no sender is set or sender ID is missing
+	 * return value is {@code null}.
+	 * @param document document to inspect
+	 * @return ID of the Sender Party
+	 */
+	public static String getDocumentSenderID(Object document)
+	{
+		String senderID = null;
+		try
+		{
+			final Class<? extends Object> documentClazz = document.getClass();
+			if(documentClazz == OrderType.class)
+				senderID = ((OrderType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderResponseType.class)
+				senderID = ((OrderResponseType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderResponseSimpleType.class)
+				senderID = ((OrderResponseSimpleType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderChangeType.class)
+				senderID = ((OrderChangeType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderCancellationType.class)
+				senderID = ((OrderCancellationType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == ApplicationResponseType.class)
+				senderID = ((ApplicationResponseType) document).getSenderParty().getPartyIdentificationAtIndex(0).getIDValue();
+			//MMM other document types
+
+
+		}
+		catch(Exception e) { }
+
+		return senderID;
+	}
+
+	/**
+	 * Gets the ID of the Sender Party as definied in the document. If no sender is set or sender ID is missing
+	 * return value is {@code null}.
+	 * @param document document to inspect
+	 * @return ID of the Sender Party
+	 */
+	public static String getDocumentReceiverID(Object document)
+	{
+		String receiverID = null;
+		try
+		{
+			final Class<? extends Object> documentClazz = document.getClass();
+			if(documentClazz == OrderType.class)
+				receiverID = ((OrderType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderResponseType.class)
+				receiverID = ((OrderResponseType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderResponseSimpleType.class)
+				receiverID = ((OrderResponseSimpleType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderChangeType.class)
+				receiverID = ((OrderChangeType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == OrderCancellationType.class)
+				receiverID = ((OrderCancellationType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == ApplicationResponseType.class)
+				receiverID = ((ApplicationResponseType) document).getReceiverParty().getPartyIdentificationAtIndex(0).getIDValue();
+			//MMM other document types
+
+		}
+		catch(Exception e) { }
+
+		return receiverID;
+	}
+
+	/**
+	 * Gets the document's ID or {@code null} if ID is missing.
+	 * @param document document to inspect
+	 * @return document's ID
+	 */
+	public static <T> String getDocumentID(T document)
+	{
+		String documentID = null;
+		final Class<? extends Object> documentClazz = document.getClass();
+		if(documentClazz == OrderType.class)
+			documentID = ((OrderType) document).getIDValue();
+		else if(documentClazz == OrderResponseType.class)
+			documentID = ((OrderResponseType) document).getIDValue();
+		else if(documentClazz == OrderResponseSimpleType.class)
+			documentID = ((OrderResponseSimpleType) document).getIDValue();
+		else if(documentClazz == OrderChangeType.class)
+			documentID = ((OrderChangeType) document).getIDValue();
+		else if(documentClazz == OrderCancellationType.class)
+			documentID = ((OrderCancellationType) document).getIDValue();
+		else if(documentClazz == ApplicationResponseType.class)
+			documentID = ((ApplicationResponseType) document).getIDValue();
+		//MMM other document types
+
+		return documentID;
+	}
+
+	/**
+	 * Gets the document's UUID or {@code null} if UUID is missing.
+	 * @param document document to inspect
+	 * @return document's UUID
+	 */
+	public static <T> String getDocumentUUID(T document)
+	{
+		String documentID = null;
+		final Class<? extends Object> documentClazz = document.getClass();
+		if(documentClazz == OrderType.class)
+			documentID = ((OrderType) document).getUUIDValue();
+		else if(documentClazz == OrderResponseType.class)
+			documentID = ((OrderResponseType) document).getUUIDValue();
+		else if(documentClazz == OrderResponseSimpleType.class)
+			documentID = ((OrderResponseSimpleType) document).getUUIDValue();
+		else if(documentClazz == OrderChangeType.class)
+			documentID = ((OrderChangeType) document).getUUIDValue();
+		else if(documentClazz == OrderCancellationType.class)
+			documentID = ((OrderCancellationType) document).getUUIDValue();
+		else if(documentClazz == ApplicationResponseType.class)
+			documentID = ((ApplicationResponseType) document).getUUIDValue();
+		//MMM other document types
+
+		return documentID;
+	}
+
+	/**
+	 * Creates {@link ApplicationResponseType} document as a response to some other UBL document.
+	 * @param senderParty sender Party of the {@code Application Response} document
+	 * @param receiverParty receiver Party of the {@code Application Response} document
+	 * @param refUUID UUID of referenced document
+	 * @param refID ID of the referenced document
+	 * @param responseCode response code of the {@code Application Response} document
+	 * @return {@code ApplicationResponseType}
+	 */
+	public static ApplicationResponseType createApplicationResponse(
+			PartyType senderParty, PartyType receiverParty, String refUUID, String refID, String responseCode)
+	{
+		final ApplicationResponseType appResponse = new ApplicationResponseType();
+		final String id = UUID.randomUUID().toString();
+		appResponse.setID(id);
+		appResponse.setUUID(id);
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		appResponse.setIssueDate(now);
+		appResponse.setIssueTime(now);
+		appResponse.setSenderParty(senderParty);
+		appResponse.setReceiverParty(receiverParty);
+		final DocumentResponseType docResponse = new DocumentResponseType();
+		final ResponseType response = new ResponseType();
+		response.setResponseCode(responseCode);
+		docResponse.setResponse(response);
+		final DocumentReferenceType docReference = new DocumentReferenceType();
+		docReference.setUUID(refUUID);
+		docReference.setID(refID);
+		docResponse.getDocumentReference().add(docReference);
+		appResponse.getDocumentResponse().add(docResponse);
+		return appResponse;
+	}
+
+	/**
+	 * Generates {@link ApplicationResponseType} document that conforms to the {@code UBL} standard.
+	 * @param document document to which Application Response is to be created
+	 * @return Application Response or {@code null} if Application Response does not conform to the {@code UBL}
+	 */
+	public static ApplicationResponseType produceApplicationResponse(Object document)
+	{
+		boolean valid = false;
+		ApplicationResponseType appResponse = null;
+		if(document.getClass() == OrderResponseSimpleType.class)
+		{
+			OrderResponseSimpleType orderResponseSimple = (OrderResponseSimpleType) document;
+			appResponse = createApplicationResponse(orderResponseSimple.getBuyerCustomerParty().getParty(),
+					orderResponseSimple.getSellerSupplierParty().getParty(), orderResponseSimple.getUUIDValue(),
+					orderResponseSimple.getIDValue(), APP_RESPONSE_POSITIVE);
+		}
+		if(document.getClass() == OrderResponseType.class)
+		{
+			OrderResponseType orderResponse = (OrderResponseType) document;
+			appResponse = createApplicationResponse(orderResponse.getBuyerCustomerParty().getParty(),
+					orderResponse.getSellerSupplierParty().getParty(), orderResponse.getUUIDValue(),
+					orderResponse.getIDValue(), APP_RESPONSE_POSITIVE);
+		}
+		else if(document.getClass() == InvoiceType.class)
+		{
+			//MMM TODO
+		}
+
+		valid = validateUBLDocument(appResponse,
+				doc -> UBL21Validator.applicationResponse().validate(doc));
+		return valid ? appResponse : null;
 	}
 
 }

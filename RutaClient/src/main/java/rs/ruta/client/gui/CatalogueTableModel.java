@@ -5,7 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import rs.ruta.client.Catalogue;
 
 /**
- * Data model for a table displaying {@link Catalogue} of a party.
+ * Data model for a orderLinesTable displaying {@link Catalogue} of a party.
  */
 public class CatalogueTableModel extends DefaultTableModel
 {

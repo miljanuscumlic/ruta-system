@@ -9,10 +9,14 @@ import javax.xml.bind.JAXBElement;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.Associates;
 import rs.ruta.common.DeregistrationNotice;
@@ -172,10 +176,22 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 				else if(documentClazz == OrderType.class)
 					((OrderXmlMapper) mapperRegistry.getMapper(OrderType.class)).
 					insert(collection, (OrderType) document, docID, null);
+				else if(documentClazz == OrderResponseType.class)
+					((OrderResponseXmlMapper) mapperRegistry.getMapper(OrderResponseType.class)).
+					insert(collection, (OrderResponseType) document, docID, null);
 				else if(documentClazz == OrderResponseSimpleType.class)
 					((OrderResponseSimpleXmlMapper) mapperRegistry.getMapper(OrderResponseSimpleType.class)).
 					insert(collection, (OrderResponseSimpleType) document, docID, null);
-				//TODO other document types
+				else if(documentClazz == OrderChangeType.class)
+					((OrderChangeXmlMapper) mapperRegistry.getMapper(OrderChangeType.class)).
+					insert(collection, (OrderChangeType) document, docID, null);
+				else if(documentClazz == OrderCancellationType.class)
+					((OrderCancellationXmlMapper) mapperRegistry.getMapper(OrderCancellationType.class)).
+					insert(collection, (OrderCancellationType) document, docID, null);
+				else if(documentClazz == ApplicationResponseType.class)
+					((ApplicationResponseXmlMapper) mapperRegistry.getMapper(ApplicationResponseType.class)).
+					insert(collection, (ApplicationResponseType) document, docID, null);
+				//MMM other document types
 
 			}
 			catch(XMLDBException e)

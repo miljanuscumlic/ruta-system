@@ -10,10 +10,14 @@ import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
@@ -92,11 +96,22 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == OrderType.class)
 					((OrderXmlMapper) mapperRegistry.getMapper(OrderType.class)).
 					insert(collection, (OrderType) document, docID, null);
+				else if(documentClazz == OrderResponseType.class)
+					((OrderResponseXmlMapper) mapperRegistry.getMapper(OrderResponseType.class)).
+					insert(collection, (OrderResponseType) document, docID, null);
 				else if(documentClazz == OrderResponseSimpleType.class)
 					((OrderResponseSimpleXmlMapper) mapperRegistry.getMapper(OrderResponseSimpleType.class)).
 					insert(collection, (OrderResponseSimpleType) document, docID, null);
-
-				//TODO other document types
+				else if(documentClazz == OrderChangeType.class)
+					((OrderChangeXmlMapper) mapperRegistry.getMapper(OrderChangeType.class)).
+					insert(collection, (OrderChangeType) document, docID, null);
+				else if(documentClazz == OrderCancellationType.class)
+					((OrderCancellationXmlMapper) mapperRegistry.getMapper(OrderCancellationType.class)).
+					insert(collection, (OrderCancellationType) document, docID, null);
+				else if(documentClazz == ApplicationResponseType.class)
+					((ApplicationResponseXmlMapper) mapperRegistry.getMapper(ApplicationResponseType.class)).
+					insert(collection, (ApplicationResponseType) document, docID, null);
+				//MMM other document types
 
 				((DistributionTransaction) transaction).removeOperation();
 			}
@@ -124,7 +139,7 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 		((XmlMapper<DocumentDistribution>) mapperRegistry.getMapper(DocumentDistribution.class)).closeTransaction(transaction);
 	}
 
-	//MMM: check this method
+	//MMM check this method
 	@Override
 	protected void delete(String id, DSTransaction transaction) throws DetailException
 	{
@@ -269,10 +284,18 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((DeregistrationNoticeXmlMapper) mapperRegistry.getMapper(DeregistrationNotice.class)).unmarshalFromXML(result);
 			else if(objectClazz == OrderType.class)
 				object = ((OrderXmlMapper) mapperRegistry.getMapper(OrderType.class)).unmarshalFromXML(result);
+			else if(objectClazz == OrderResponseType.class)
+				object = ((OrderResponseXmlMapper) mapperRegistry.getMapper(OrderResponseType.class)).unmarshalFromXML(result);
 			else if(objectClazz == OrderResponseSimpleType.class)
 				object = ((OrderResponseSimpleXmlMapper) mapperRegistry.getMapper(OrderResponseSimpleType.class)).unmarshalFromXML(result);
+			else if(objectClazz == OrderChangeType.class)
+				object = ((OrderChangeXmlMapper) mapperRegistry.getMapper(OrderChangeType.class)).unmarshalFromXML(result);
+			else if(objectClazz == OrderCancellationType.class)
+				object = ((OrderCancellationXmlMapper) mapperRegistry.getMapper(OrderCancellationType.class)).unmarshalFromXML(result);
+			else if(objectClazz == ApplicationResponseType.class)
+				object = ((ApplicationResponseXmlMapper) mapperRegistry.getMapper(ApplicationResponseType.class)).unmarshalFromXML(result);
+			//MMM other document types
 
-			//TODO other types of the objects
 			document.setDocument(object);
 			return document;
 		}
@@ -304,9 +327,17 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return DeregistrationNotice.class;
 		else if(start.matches("<((.)+:)?OrderResponseSimple (.)+"))
 			return OrderResponseSimpleType.class;
+		else if(start.matches("<((.)+:)?OrderResponse (.)+"))
+			return OrderResponseType.class;
+		else if(start.matches("<((.)+:)?OrderChange (.)+"))
+			return OrderChangeType.class;
+		else if(start.matches("<((.)+:)?OrderCancellation (.)+"))
+			return OrderCancellationType.class;
 		else if(start.matches("<((.)+:)?Order (.)+"))
 			return OrderType.class;
-		//TODO other types of the objects
+		else if(start.matches("<((.)+:)?ApplicationResponse (.)+"))
+			return ApplicationResponseType.class;
+		//MMM other document types
 		else
 			return null;
 	}

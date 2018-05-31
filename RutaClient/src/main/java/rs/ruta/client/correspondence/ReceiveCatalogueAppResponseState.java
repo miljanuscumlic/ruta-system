@@ -15,21 +15,22 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
-		final RutaProcess process = (RutaProcess) correspondence.getState();
-		final Future<?> future = ((CreateCatalogueProcess) process).getFuture();
-		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future);
+		final CreateCatalogueProcess process = (CreateCatalogueProcess) correspondence.getState();
+		final Future<?> future = process.getFuture();
+		final DocumentReference documentReference = correspondence.getLastDocumentReference();
+		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future, documentReference, correspondence);
 		if(accepted != null)
 		{
 			RutaProcessState newState;
 			if(accepted.equals(Boolean.TRUE))
-				newState = EndOfProcessState.getInstance();
+				newState = ClosingState.getInstance();
 			else
 				newState = DecideOnActionState.getInstance();
 			changeState(process, newState);
 		}
 		else
-			throw new StateTransitionException("Invalid Application Response code!");
+			throw new StateActivityException("Invalid Application Response code!");
 	}
 }

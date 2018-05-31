@@ -43,7 +43,7 @@ public class ExistConnector implements DatastoreConnector
 	private static String docSufix = ".xml";
 	private static String deletedPath = "/deleted";
 	private static String queryPath = "/system/xquery";
-	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.common.datamapper");
+	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 	private static boolean connected = false;
 
 	public ExistConnector() { }
@@ -616,7 +616,8 @@ public class ExistConnector implements DatastoreConnector
 		ExistConnector.dbJarPath = dbJarPath;
 	}
 
-	/**Gets the path to the query file in the database.
+	/**
+	 * Gets the path to the query file in the database.
 	 * @return {@code String} representing the path
 	 */
 	public static String getQueryPath()
@@ -629,7 +630,8 @@ public class ExistConnector implements DatastoreConnector
 		ExistConnector.queryPath = queryPath;
 	}
 
-	/**Gets the name of the collection that stores deleted documents. The name is prepended with "/".
+	/**
+	 * Gets the name of the collection that stores deleted documents. The name is prepended with "/".
 	 * @return the name of the collection that stores deleted documents prepended with "/".
 	 */
 	public static String getDeletedPath()

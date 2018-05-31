@@ -18,10 +18,6 @@ import javax.xml.namespace.QName;
  * {@code ObjectFactory} has two methods {@code createXxx} for every class which objects it is mapping.
  * One method is for instantiating the object, and the other is for instantiating the {@link JAXBElement}
  * that is an representation of the XML element to which it is mapped.
- * <p>All methods pertaining state machine's {@link RutaProcessState states} have to be defined in this
- * class of this package, regardless if those states are defined in some other package. This is because
- * of the fact that state classes implements {@code RutaProcessState} which is an interface and not a class.
- * It seems that JAXB is imposing this rule because of it.</p>
  */
 @XmlRegistry
 public class ObjectFactory
@@ -60,8 +56,6 @@ public class ObjectFactory
 
 	private static final QName _BuyingCorrespondence_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyingCorrespondence");
-	private static final QName _OrderingProcess_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "OrderingProcess");
 
 	private static final QName _BuyerOrderingProcess_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyerOrderingProcess");
@@ -71,18 +65,24 @@ public class ObjectFactory
 			new QName("http://www.ruta.rs/ns/client", "BuyerCancelOrderState");
 	private static final QName _BuyerChangeOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyerChangeOrderState");
-	private static final QName _BuyerOrderAcceptedState_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "BuyerOrderAcceptedState");
 	private static final QName _BuyerOrderRejectedState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyerOrderRejectedState");
 	private static final QName _BuyerPrepareOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyerPrepareOrderState");
-	private static final QName _BuyerProcessResponseState_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "BuyerProcessResponseState");
+	private static final QName _BuyerProcessOrderResponseState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "BuyerProcessOrderResponseState");
+	private static final QName _BuyerProcessOrderResponseSimpleState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "BuyerProcessOrderResponseSimpleState");
 	private static final QName _BuyerReceiveOrderResponseState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyerReceiveOrderResponseState");
+	private static final QName _BuyerSendApplicationResponseState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "BuyerSendApplicationResponseState");
 	private static final QName _BuyerSendOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BuyerSendOrderState");
+	private static final QName _BuyerSendOrderChangeState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "BuyerSendOrderChangeState");
+	private static final QName _BuyerSendOrderCancellationState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "BuyerSendOrderCancellationState");
 
 	private static final QName _SellerOrderingProcess_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "SellerOrderingProcess");
@@ -94,24 +94,33 @@ public class ObjectFactory
 			new QName("http://www.ruta.rs/ns/client", "SellerCancelOrderState");
 	private static final QName _SellerChangeOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "SellerChangeOrderState");
+	private static final QName _SellerOrderAcceptedState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SellerOrderAcceptedState");
 	private static final QName _SellerProcessOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "SellerProcessOrderState");
-	private static final QName _SellerReceiveOrderChangeCancellationState_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "SellerReceiveOrderChangeCancellationState");
 	private static final QName _SellerReceiveOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "SellerReceiveOrderState");
+	private static final QName _SellerReceiveOrderChangeCancellationState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SellerReceiveOrderChangeCancellationState");
 	private static final QName _SellerRejectOrderState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "SellerRejectOrderState");
+	private static final QName _SellerSendOrderResponseState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SellerSendOrderResponseState");
+	private static final QName _SellerSendOrderResponseSimpleState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SellerSendOrderResponseSimpleState");
 
 	private static final QName _BillingProcess_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "BillingProcess");
+
 	private static final QName _PaymentNotificationProcess_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "PaymentNotificationProcess");
-	private static final QName _BuyingClosingProcess_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "BuyingClosingProcess");
 
-	private static final QName _EndOfProcessState_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "EndOfProcessState");
+	private static final QName _ClosingProcess_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "ClosingProcess");
+
+	private static final QName _ClosingState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "ClosingState");
+
 
 	/**
 	 * Creates an instance of {@link CatalogueCorrespondence}.
@@ -468,27 +477,6 @@ public class ObjectFactory
 	}
 
 	/**
-	 * Creates an instance of {@link BuyerAcceptOrderState}.
-	 * @return created {@code BuyerAcceptOrderState} object and never {@code null}
-	 */
-	@Nonnull
-	public BuyerAcceptOrderState createBuyerAcceptOrderState()
-	{
-		return new BuyerAcceptOrderState();
-	}
-
-	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerAcceptOrderState }{@code >}.
-	 * @return created JAXBElement and never {@code null}
-	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerAcceptOrderState")
-	@Nonnull
-	public JAXBElement<BuyerAcceptOrderState> createBuyerAcceptOrderState(@Nullable final BuyerAcceptOrderState value)
-	{
-		return new JAXBElement<BuyerAcceptOrderState>(_BuyerAcceptOrderState_QNAME, BuyerAcceptOrderState.class, null, value);
-	}
-
-	/**
 	 * Creates an instance of {@link BuyerCancelOrderState}.
 	 * @return created {@code BuyerCancelOrderState} object and never {@code null}
 	 */
@@ -531,24 +519,24 @@ public class ObjectFactory
 	}
 
 	/**
-	 * Creates an instance of {@link BuyerOrderAcceptedState}.
-	 * @return created {@code BuyerOrderAcceptedState} object and never {@code null}
+	 * Creates an instance of {@link BuyerAcceptOrderState}.
+	 * @return created {@code BuyerAcceptOrderState} object and never {@code null}
 	 */
 	@Nonnull
-	public BuyerOrderAcceptedState createBuyerOrderAcceptedState()
+	public BuyerAcceptOrderState createBuyerOrderAcceptedState()
 	{
-		return new BuyerOrderAcceptedState();
+		return new BuyerAcceptOrderState();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerOrderAcceptedState }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerAcceptOrderState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerOrderAcceptedState")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerAcceptOrderState")
 	@Nonnull
-	public JAXBElement<BuyerOrderAcceptedState> createBuyerOrderAcceptedState(@Nullable final BuyerOrderAcceptedState value)
+	public JAXBElement<BuyerAcceptOrderState> createBuyerOrderAcceptedState(@Nullable final BuyerAcceptOrderState value)
 	{
-		return new JAXBElement<BuyerOrderAcceptedState>(_BuyerOrderAcceptedState_QNAME, BuyerOrderAcceptedState.class, null, value);
+		return new JAXBElement<BuyerAcceptOrderState>(_BuyerAcceptOrderState_QNAME, BuyerAcceptOrderState.class, null, value);
 	}
 
 	/**
@@ -594,24 +582,47 @@ public class ObjectFactory
 	}
 
 	/**
-	 * Creates an instance of {@link BuyerProcessResponseState}.
-	 * @return created {@code BuyerProcessResponseState} object and never {@code null}
+	 * Creates an instance of {@link BuyerProcessOrderResponseState}.
+	 * @return created {@code BuyerProcessOrderResponseState} object and never {@code null}
 	 */
 	@Nonnull
-	public BuyerProcessResponseState createBuyerProcessResponseState()
+	public BuyerProcessOrderResponseState createBuyerProcessOrderResponseState()
 	{
-		return new BuyerProcessResponseState();
+		return new BuyerProcessOrderResponseState();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerProcessResponseState }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerProcessOrderResponseState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerProcessResponseState")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerProcessOrderResponseState")
 	@Nonnull
-	public JAXBElement<BuyerProcessResponseState> createBuyerProcessResponseState(@Nullable final BuyerProcessResponseState value)
+	public JAXBElement<BuyerProcessOrderResponseState> createBuyerProcessResponseState(@Nullable final BuyerProcessOrderResponseState value)
 	{
-		return new JAXBElement<BuyerProcessResponseState>(_BuyerProcessResponseState_QNAME, BuyerProcessResponseState.class, null, value);
+		return new JAXBElement<BuyerProcessOrderResponseState>(_BuyerProcessOrderResponseState_QNAME, BuyerProcessOrderResponseState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link BuyerProcessOrderResponseSimpleState}.
+	 * @return created {@code BuyerProcessOrderResponseSimpleState} object and never {@code null}
+	 */
+	@Nonnull
+	public BuyerProcessOrderResponseSimpleState createBuyerProcessResponseSimpleState()
+	{
+		return new BuyerProcessOrderResponseSimpleState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerProcessOrderResponseSimpleState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerProcessOrderResponseSimpleState")
+	@Nonnull
+	public JAXBElement<BuyerProcessOrderResponseSimpleState> createBuyerProcessResponseState(
+			@Nullable final BuyerProcessOrderResponseSimpleState value)
+	{
+		return new JAXBElement<BuyerProcessOrderResponseSimpleState>(_BuyerProcessOrderResponseSimpleState_QNAME,
+				BuyerProcessOrderResponseSimpleState.class, null, value);
 	}
 
 	/**
@@ -630,13 +641,38 @@ public class ObjectFactory
 	 */
 	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerReceiveOrderResponseState")
 	@Nonnull
-	public JAXBElement<BuyerReceiveOrderResponseState> createBuyerReceiveOrderResponseState(@Nullable final BuyerReceiveOrderResponseState value)
+	public JAXBElement<BuyerReceiveOrderResponseState> createBuyerReceiveOrderResponseState(
+			@Nullable final BuyerReceiveOrderResponseState value)
 	{
-		return new JAXBElement<BuyerReceiveOrderResponseState>(_BuyerReceiveOrderResponseState_QNAME, BuyerReceiveOrderResponseState.class, null, value);
+		return new JAXBElement<BuyerReceiveOrderResponseState>(_BuyerReceiveOrderResponseState_QNAME,
+				BuyerReceiveOrderResponseState.class, null, value);
 	}
 
 	/**
-	 * Creates an instance of {@link BuyerReceiveOrderResponseState}.
+	 * Creates an instance of {@link BuyerSendApplicationResponseState}.
+	 * @return created {@code BuyerSendApplicationResponseState} object and never {@code null}
+	 */
+	@Nonnull
+	public BuyerSendApplicationResponseState createBuyerSendApplicationResponseState()
+	{
+		return new BuyerSendApplicationResponseState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerSendApplicationResponseState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerSendApplicationResponseState")
+	@Nonnull
+	public JAXBElement<BuyerSendApplicationResponseState> createBuyerSendApplicationResponseState(
+			@Nullable final BuyerSendApplicationResponseState value)
+	{
+		return new JAXBElement<BuyerSendApplicationResponseState>(_BuyerSendApplicationResponseState_QNAME,
+				BuyerSendApplicationResponseState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link BuyerSendOrderState}.
 	 * @return created {@code BuyerSendOrderState} object and never {@code null}
 	 */
 	@Nonnull
@@ -656,6 +692,47 @@ public class ObjectFactory
 		return new JAXBElement<BuyerSendOrderState>(_BuyerSendOrderState_QNAME, BuyerSendOrderState.class, null, value);
 	}
 
+	/**
+	 * Creates an instance of {@link BuyerSendOrderChangeState}.
+	 * @return created {@code BuyerSendOrderChangeState} object and never {@code null}
+	 */
+	@Nonnull
+	public BuyerSendOrderChangeState createBuyerSendOrderChangeState()
+	{
+		return new BuyerSendOrderChangeState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerSendOrderChangeState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerSendOrderChangeState")
+	@Nonnull
+	public JAXBElement<BuyerSendOrderChangeState> createBuyerSendOrderChangeState(@Nullable final BuyerSendOrderChangeState value)
+	{
+		return new JAXBElement<BuyerSendOrderChangeState>(_BuyerSendOrderChangeState_QNAME, BuyerSendOrderChangeState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link BuyerSendOrderCancellationState}.
+	 * @return created {@code BuyerSendOrderCancellationState} object and never {@code null}
+	 */
+	@Nonnull
+	public BuyerSendOrderCancellationState createBuyerSendOrderCancellationState()
+	{
+		return new BuyerSendOrderCancellationState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyerSendOrderCancellationState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyerSendOrderCancellationState")
+	@Nonnull
+	public JAXBElement<BuyerSendOrderCancellationState> createBuyerSendOrderCancellationState(@Nullable final BuyerSendOrderCancellationState value)
+	{
+		return new JAXBElement<BuyerSendOrderCancellationState>(_BuyerSendOrderCancellationState_QNAME, BuyerSendOrderCancellationState.class, null, value);
+	}
 
 	//SelllerOrderingProcess
 
@@ -765,6 +842,27 @@ public class ObjectFactory
 	}
 
 	/**
+	 * Creates an instance of {@link SellerOrderAcceptedState}.
+	 * @return created {@code SellerOrderAcceptedState} object and never {@code null}
+	 */
+	@Nonnull
+	public SellerOrderAcceptedState createSellerOrderAcceptedState()
+	{
+		return new SellerOrderAcceptedState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerOrderAcceptedState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SellerOrderAcceptedState")
+	@Nonnull
+	public JAXBElement<SellerOrderAcceptedState> createSellerOrderAcceptedState(@Nullable final SellerOrderAcceptedState value)
+	{
+		return new JAXBElement<SellerOrderAcceptedState>(_SellerOrderAcceptedState_QNAME, SellerOrderAcceptedState.class, null, value);
+	}
+
+	/**
 	 * Creates an instance of {@link SellerProcessOrderState}.
 	 * @return created {@code SellerProcessOrderState} object and never {@code null}
 	 */
@@ -850,6 +948,50 @@ public class ObjectFactory
 		return new JAXBElement<SellerRejectOrderState>(_SellerRejectOrderState_QNAME, SellerRejectOrderState.class, null, value);
 	}
 
+	/**
+	 * Creates an instance of {@link SellerSendOrderResponseState}.
+	 * @return created {@code SellerSendOrderResponseState} object and never {@code null}
+	 */
+	@Nonnull
+	public SellerSendOrderResponseState createSellerSendOrderResponseState()
+	{
+		return new SellerSendOrderResponseState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerSendOrderResponseState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SellerSendOrderResponseState")
+	@Nonnull
+	public JAXBElement<SellerSendOrderResponseState> createSellerSendOrderResponseState(@Nullable final SellerSendOrderResponseState value)
+	{
+		return new JAXBElement<SellerSendOrderResponseState>(_SellerSendOrderResponseState_QNAME, SellerSendOrderResponseState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link SellerSendOrderResponseSimpleState}.
+	 * @return created {@code SellerSendOrderResponseSimpleState} object and never {@code null}
+	 */
+	@Nonnull
+	public SellerSendOrderResponseSimpleState createSellerSendOrderResponseSimpleState()
+	{
+		return new SellerSendOrderResponseSimpleState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SellerSendOrderResponseSimpleState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SellerSendOrderResponseSimpleState")
+	@Nonnull
+	public JAXBElement<SellerSendOrderResponseSimpleState> createSellerSendOrderResponseSimpleState(
+			@Nullable final SellerSendOrderResponseSimpleState value)
+	{
+		return new JAXBElement<SellerSendOrderResponseSimpleState>(
+				_SellerSendOrderResponseSimpleState_QNAME, SellerSendOrderResponseSimpleState.class, null, value);
+	}
+
 	//Billing Process
 
 	/**
@@ -899,72 +1041,70 @@ public class ObjectFactory
 	//Buying Closing Process
 
 	/**
-	 * Creates an instance of {@link BuyingClosingProcess}.
-	 * @return created {@code BuyingClosingProcess} object and never {@code null}
+	 * Creates an instance of {@link ClosingProcess}.
+	 * @return created {@code ClosingProcess} object and never {@code null}
 	 */
 	@Nonnull
-	public BuyingClosingProcess createBuyingClosingProcess()
+	public ClosingProcess createBuyingClosingProcess()
 	{
-		return new BuyingClosingProcess();
+		return new ClosingProcess();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BuyingClosingProcess }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link ClosingProcess }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BuyingClosingProcess")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "ClosingProcess")
 	@Nonnull
-	public JAXBElement<BuyingClosingProcess> createBuyingClosingProcess(@Nullable final BuyingClosingProcess value)
+	public JAXBElement<ClosingProcess> createBuyingClosingProcess(@Nullable final ClosingProcess value)
 	{
-		return new JAXBElement<BuyingClosingProcess>(_BuyingClosingProcess_QNAME, BuyingClosingProcess.class, null, value);
+		return new JAXBElement<ClosingProcess>(_ClosingProcess_QNAME, ClosingProcess.class, null, value);
 	}
 
-	//EndOfProcess State
+	//Closing State
 
 	/**
-	 * Creates an instance of {@link EndOfProcessState}.
-	 * @return created {@code EndOfProcessState} object and never {@code null}
+	 * Creates an instance of {@link ClosingState}.
+	 * @return created {@code ClosingState} object and never {@code null}
 	 */
 	@Nonnull
-	public EndOfProcessState createEndOfProcessState()
+	public ClosingState createClosingStateState()
 	{
-		return new EndOfProcessState();
+		return new ClosingState();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link EndOfProcessState }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link ClosingState }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "EndOfProcessState")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "ClosingState")
 	@Nonnull
-	public JAXBElement<EndOfProcessState> createEndOfProcessState(@Nullable final EndOfProcessState value)
+	public JAXBElement<ClosingState> createClosingState(@Nullable final ClosingState value)
 	{
-		return new JAXBElement<EndOfProcessState>(_EndOfProcessState_QNAME, EndOfProcessState.class, null, value);
+		return new JAXBElement<ClosingState>(_ClosingState_QNAME, ClosingState.class, null, value);
 	}
 
 
-
-
-	/**
+/*	*//**
 	 * Creates an instance of {@link OrderingProcess}.
 	 * @return created {@code OrderingProcess} object and never {@code null}
-	 */
+	 *//*
 	@Nonnull
 	public OrderingProcess createOrderingProcess()
 	{
 		return new OrderingProcess();
 	}
 
-	/**
+	*//**
 	 * Creates an instance of {@link JAXBElement }{@code <}{@link OrderingProcess }{@code >}.
 	 * @return created JAXBElement and never {@code null}
-	 */
+	 *//*
 	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "OrderingProcess")
 	@Nonnull
 	public JAXBElement<OrderingProcess> createOrderingProcess(@Nullable final OrderingProcess value)
 	{
 		return new JAXBElement<OrderingProcess>(_OrderingProcess_QNAME, OrderingProcess.class, null, value);
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	private <T> T createInstance(Class<T> anInterface)

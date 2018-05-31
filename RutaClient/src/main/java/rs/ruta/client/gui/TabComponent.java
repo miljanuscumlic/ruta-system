@@ -69,9 +69,9 @@ public abstract class TabComponent extends Container
 	}
 
 	/**
-	 * Creates table containing catalogue data of a party.
+	 * Creates orderLinesTable containing catalogue data of a party.
 	 * @param tableModel model containing catalogue data
-	 * @return constructed table object
+	 * @return constructed orderLinesTable object
 	 */
 	@SuppressWarnings("unchecked")
 	protected JTable createCatalogueTable(DefaultTableModel tableModel)
@@ -154,9 +154,9 @@ public abstract class TabComponent extends Container
 	}
 
 	/**
-	 * Creates and formats the view of empty table that will contain data from the list of parties.
+	 * Creates and formats the view of empty orderLinesTable that will contain data from the list of parties.
 	 * @param tableModel model representing the list of parties to be displayed
-	 * @return created table
+	 * @return created orderLinesTable
 	 */
 	protected JTable newEmptyPartyListTable(DefaultTableModel tableModel)
 	{
@@ -402,7 +402,7 @@ public abstract class TabComponent extends Container
 
 	/**
 	 * Delegates {@link ActionEvent event} to a particular subclass of {@link TabComponent}. Events that are
-	 * dispatched are ones that update the view, like selecting tree node, updating table view etc.
+	 * dispatched are ones that update the view, like selecting tree node, updating orderLinesTable view etc.
 	 * <p>This method blocks until the event is completely processed.</p>
 	 * @param event event to dispatch
 	 */
@@ -433,7 +433,7 @@ public abstract class TabComponent extends Container
 
 	/**
 	 * Creates {@link TableRowSorter}, sets zeroth column with row numbers not to be sortable and sorts
-	 * the table by the first column.
+	 * the orderLinesTable by the first column.
 	 * @param tableModel
 	 * @return sorter created {@code TableSorter}
 	 */
@@ -444,10 +444,10 @@ public abstract class TabComponent extends Container
 
 	/**
 	 * Creates {@link TableRowSorter}, sets zeroth column with row numbers not to be sortable and sorts
-	 * the table by the column with paseed {@code sortIndex}.
-	 * @param tableModel data model of the table
-	 * @param sortIndex index of the column by which the table should be sorted by default
-	 * @param descending true when sorting order should be descending
+	 * the orderLinesTable by the column with paseed {@code sortIndex}.
+	 * @param tableModel data model of the orderLinesTable
+	 * @param sortIndex index of the column by which the orderLinesTable should be sorted by default
+	 * @param descending true when sorting orderLines should be descending
 	 * @return sorter created {@code TableSorter}
 	 */
 	protected TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel, int sortIndex, boolean descending)
@@ -464,8 +464,8 @@ public abstract class TabComponent extends Container
 			{
 				//doesn't work in searchTree???!!!
 				int columnIndex = 0;
-				for (int i = 0; i < table.getRowCount(); i++)
-					table.setValueAt(i + 1, i, columnIndex);
+				for (int i = 0; i < orderLinesTable.getRowCount(); i++)
+					orderLinesTable.setValueAt(i + 1, i, columnIndex);
 			}
 		});*/
 		return sorter;

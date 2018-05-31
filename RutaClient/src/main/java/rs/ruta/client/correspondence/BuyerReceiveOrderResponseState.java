@@ -1,7 +1,10 @@
 package rs.ruta.client.correspondence;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 
 @XmlRootElement(name = "BuyerReceiveOrderResponseState")
 public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
@@ -14,48 +17,33 @@ public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
 	}
 
 	@Override
-	public void receiveOrderResponse(final RutaProcess process)
-	{
-		//MMM to implement
-		changeState(process, BuyerProcessResponseState.getInstance());
-	}
-
-	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
 		try
 		{
 			correspondence.block();
+
+			final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
+			final DocumentReference documentReference = correspondence.getLastDocumentReference();
+			if(documentReference.getDocumentTypeValue().equals(OrderResponseType.class.getName()))
+			{
+				final OrderResponseType orderResponse = process.getOrderResponse(correspondence);
+				correspondence.validateDocument(orderResponse);
+				changeState(process, BuyerProcessOrderResponseState.getInstance());
+			}
+			else if(documentReference.getDocumentTypeValue().equals(OrderResponseSimpleType.class.getName()))
+			{
+				final OrderResponseSimpleType orderResponseSimple = process.getOrderResponseSimple(correspondence);
+				correspondence.validateDocument(orderResponseSimple);
+				changeState(process, BuyerProcessOrderResponseSimpleState.getInstance());
+			}
+			else
+				throw new StateActivityException("Received document of unexpected type.");
 		}
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped()) //non-intentional interruption
-				throw new StateTransitionException("Correspondence has been interrupted!");
+				throw new StateActivityException("Correspondence has been interrupted!");
 		}
-
-		//after the correspondence is notified Order Response should be processed
-		if(!correspondence.isStopped())
-			changeState((RutaProcess) correspondence.getState(), BuyerProcessResponseState.getInstance());
-
 	}
-
-/*	@Override
-	public void doActivity(Correspondence correspondence, RutaProcess process)
-	{
-		try
-		{
-			synchronized(correspondence)
-			{
-				correspondence.wait();
-			}
-		}
-		catch (InterruptedException e)
-		{
-			throw new StateTransitionException("Correspondence has been interrupted!");
-		}
-		//after the correspondence is notified the Order Response should be processed
-		changeState(process, BuyerProcessResponseState.getInstance());
-
-	}*/
-
 }

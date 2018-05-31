@@ -149,7 +149,7 @@ public class RegisterWithPartyDialog extends JDialog
 		this.registerPressed = registerPressed;
 	}
 
-	/**Sets the party field of the SignUpDialog and companion table model that contains Party data dispayed in this dialog.
+	/**Sets the party field of the SignUpDialog and companion orderLinesTable model that contains Party data dispayed in this dialog.
 	 * @param party Party instance that should be set
 	 */
 	public void setParty(Party party)

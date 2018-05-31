@@ -1,43 +1,37 @@
 package rs.ruta.client.correspondence;
 
+import java.util.concurrent.Future;
+
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+
 /**
  * Class encapsulating all types of document processes in regard with the {@link CatalogueType} document.
- * All methods declared by this class have default behaviour of throwing {@link StateTransitionException}
+ * All methods declared by this class have default behaviour of throwing {@link StateActivityException}
  * and its subclasses redefine those methods that should have non-default behaviour.
  */
 public class CatalogueProcess extends DocumentProcess
 {
+	protected CatalogueType catalogue;
+	protected Future<?> future;
 
-	/**
-	 * Deletes {@link CatalogueType} document from the {@code Ruta System}
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
-	@Deprecated
-	public void deleteCatalogue(final Correspondence correspondence) throws StateTransitionException
+	public CatalogueType getCatalogue()
 	{
-		throw new StateTransitionException();
+		return catalogue;
 	}
 
-	/**
-	 * Deletes {@link CatalogueType} document from the {@code Ruta System}
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
-	@Deprecated
-	public void deleteCatalogueExecute(final Correspondence correspondence) throws StateTransitionException
+	public void setCatalogue(CatalogueType catalogue)
 	{
-		throw new StateTransitionException();
+		this.catalogue = catalogue;
 	}
 
-	/**
-	 * Resolves which processes should be the next one: for deletion of the catalogue, or new creation of the catalogue.
-	 * @param correspondence correspondence to which process belongs
-	 * @throws StateTransitionException
-	 */
-	public void resolveNextCatalogueProcess(final Correspondence correspondence) throws StateTransitionException
+	public Future<?> getFuture()
 	{
-		throw new StateTransitionException();
+		return future;
+	}
+
+	public void setFuture(Future<?> future)
+	{
+		this.future = future;
 	}
 
 }

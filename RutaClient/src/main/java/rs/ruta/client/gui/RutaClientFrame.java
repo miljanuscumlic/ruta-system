@@ -68,6 +68,10 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.Catalogue;
 import rs.ruta.client.CorrespondenceEvent;
@@ -182,7 +186,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 			/**
 			 * Dispatches false {@link MouseEvent mouse event} to trigger {@code focusTracker}
-			 * event listener which will save the data of a last edited cell of the table
+			 * event listener which will save the data of a last edited cell of the orderLinesTable
 			 * in current view if it is still in editing state.
 			 */
 			private void dispatchFalseMouseEvent()
@@ -421,6 +425,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		{
 			if(client.getMyParty().isRegisteredWithCDR())
 			{
+				disableGetDocumentsMenuItem();
 				new Thread(()->
 				{
 					client.cdrGetNewDocuments();
@@ -540,6 +545,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						{
 							appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service. ").
 									append(e.getMessage()), Color.RED);
+							logger.error("My Catalogue has not been sent to the CDR service. Exception is: ", e);
 							enableCatalogueMenuItems();
 						}
 					}).start();
@@ -775,7 +781,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Enables menu items regarding Search after client gets the response from the CDR service.
+	 * Enables menu items regarding Search. Method is called after client gets the response from the CDR service.
 	 * Method's body is executed in the {@link EventQueue}.
 	 */
 	public void enableSearchMenuItems()
@@ -788,7 +794,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Disables menu items regarding Search after client sends the request to the CDR service.
+	 * Disables menu items regarding Search. Method is called after client sends the request to the CDR service.
 	 * Method's body is executed in the {@link EventQueue}.
 	 */
 	public void disableSearchMenuItems()
@@ -801,7 +807,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Enables menu items regarding My Party after client gets the response from the CDR service.
+	 * Enables menu items regarding My Party. Method is called after client gets the response from the CDR service.
 	 * Method's body is executed in the {@link EventQueue}.
 	 */
 	public void enablePartyMenuItems()
@@ -815,7 +821,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Disables menu items regarding My Party after client sends the request to the CDR service.
+	 * Disables menu items regarding My Party. Method is called after client sends the request to the CDR service.
 	 * Method's body is executed in the {@link EventQueue}.
 	 */
 	public void disablePartyMenuItems()
@@ -829,14 +835,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Enables menu items regarding My Catalogue after client gets the response from the CDR service.
+	 * Enables menu items regarding My Catalogue.. Method is called after client gets the response from the CDR service.
 	 * Method's body is executed in the {@link EventQueue}.
 	 */
 	public void enableCatalogueMenuItems()
 	{
 		EventQueue.invokeLater(() ->
 		{
-			cdrPullCatalogueItem.setEnabled(true);
 			cdrUpdateCatalogueItem.setEnabled(true);
 			cdrDeleteCatalogueItem.setEnabled(true);
 			cdrDeregisterPartyItem.setEnabled(true);
@@ -844,17 +849,40 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Disables menu items regarding My Catalogue after client sends the request to the CDR service.
+	 * Disables menu items regarding My Catalogue. Method is called after client sends the request to the CDR service.
 	 * Method's body is executed in the {@link EventQueue}.
 	 */
 	public void disableCatalogueMenuItems()
 	{
 		EventQueue.invokeLater(() ->
 		{
-			cdrPullCatalogueItem.setEnabled(false);
 			cdrUpdateCatalogueItem.setEnabled(false);
 			cdrDeleteCatalogueItem.setEnabled(false);
 			cdrDeregisterPartyItem.setEnabled(false);
+		});
+	}
+
+	/**
+	 * Enables Get New Documents menu item.
+	 * Method's body is executed in the {@link EventQueue}.
+	 */
+	public void enableGetDocumentsMenuItem()
+	{
+		EventQueue.invokeLater(() ->
+		{
+			cdrGetDocumentsItem.setEnabled(true);
+		});
+	}
+
+	/**
+	 * Disables Get New Documents menu item.
+	 * Method's body is executed in the {@link EventQueue}.
+	 */
+	public void disableGetDocumentsMenuItem()
+	{
+		EventQueue.invokeLater(() ->
+		{
+			cdrGetDocumentsItem.setEnabled(false);
 		});
 	}
 
@@ -1007,11 +1035,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * Shows {@link OrderDialog} for making new {@link OrderType order}.
 	 * @param title {@code OrderDialog}'s title
 	 * @param correspondentID correspondent's ID
-	 * @return {@code OrderType} or {@code null} if user cancels order creation
+	 * @return {@code OrderType} or {@code null} if user aborts Order creation
 	 */
 	public OrderType showOrderDialog(String title, OrderType order)
 	{
-		orderDialog = new OrderDialog(RutaClientFrame.this, order, true, false);
+		orderDialog = new OrderDialog(RutaClientFrame.this, order, true);
 		orderDialog.setTitle(title);
 		orderDialog.setVisible(true);
 		if(orderDialog.isSendPressed())
@@ -1020,66 +1048,182 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			orderDialog.setSendPressed(false);
 		}
 		else
+		{
+			appendToConsole(new StringBuilder("Discarding the Order..."), Color.BLACK);
 			order = null;
+		}
 		return order;
 	}
 
 	/**
-	 * Shows {@link OrderDialog} for making new {@link OrderType order}.
+	 * Shows {@link PreviewOrderDialog} for displaying an {@link OrderType order}.
 	 * @param title {@code OrderDialog}'s title
-	 * @param correspondentID correspondent's ID
-	 * @return {@code OrderType} or {@code null} if user cancels order creation
+	 * @param order Order to display
 	 */
-	public OrderType showOrderDialogOLD(String title, String correspondentID)
+	public void showPreviewOrderDialog(String title, OrderType order)
 	{
-		final MyParty myParty = client.getMyParty();
-		final Catalogue correspondentCatalogue = myParty.getBusinessPartner(correspondentID).getCatalogue();
-		OrderType order = myParty.convertToOrder(correspondentCatalogue);
-		orderDialog = new OrderDialog(RutaClientFrame.this, order, true, false);
+		PreviewOrderDialog orderDialog = new PreviewOrderDialog(RutaClientFrame.this, order);
 		orderDialog.setTitle(title);
 		orderDialog.setVisible(true);
-		if(orderDialog.isSendPressed())
+	}
+
+	/**
+	 * Shows {@link ProcessOrderDialog} for making a decision about a response to an {@link OrderType Order}.
+	 * @param title dialog's title
+	 * @param order order to make decision upon about the response
+	 * @result {@code String} representing the decision
+	 */
+	public String showProcessOrderDialog(String title, OrderType order)
+	{
+		final ProcessOrderDialog processOrderDialog = new ProcessOrderDialog(RutaClientFrame.this, order);
+		processOrderDialog.setTitle(title);
+		processOrderDialog.setVisible(true);
+		return processOrderDialog.getDecision();
+	}
+
+	/**
+	 * Shows {@link OrderResponseDialog} for making new {@link OrderResponseType} document.
+	 * @param title dialog's title
+	 * @param orderResponse Order Response to show and/or amend
+	 * @param editable true if Order Response is to be created/changed, false if it is just a preview of one
+	 * @param corr {@link Correspondence} if {@link OrderResponseType} is already a part of it; {@code null}
+	 * otherwise i.e. should be created and appended to it
+	 * @return Order Response or {@code null} if user has decided to abort the creation of it
+	 */
+	public OrderResponseType showOrderResponseDialog(String title, OrderResponseType orderResponse,
+			boolean editable, Correspondence corr)
+	{
+		final OrderResponseDialog orderResponseDialog =
+				new OrderResponseDialog(RutaClientFrame.this, orderResponse, editable, corr);
+		orderResponseDialog.setTitle(title);
+		orderResponseDialog.setVisible(true);
+		if(orderResponseDialog.isSendPressed())
 		{
-			order = orderDialog.getOrder();
-			orderDialog.setSendPressed(false);
+			orderResponse = orderResponseDialog.getOrderResponse();
+			orderResponseDialog.setSendPressed(false);
 		}
 		else
-			order = null;
-		return order;
+			orderResponse = null;
+		return orderResponse;
+	}
+
+	/**
+	 * Shows {@link ProcessOrderResponseDialog} for making a deciosion about a response to an
+	 * {@link OrderResponseType Order Response}.
+	 * @param orderResponse Order Response to make decision upon about the response
+	 * @result {@code String} representing the decision
+	 */
+	public String showProcessOrderResponseDialog(OrderResponseType orderResponse)
+	{
+		final ProcessOrderResponseDialog processDialog = new ProcessOrderResponseDialog(RutaClientFrame.this, orderResponse);
+		processDialog.setTitle("Process Order Response");
+		processDialog.setVisible(true);
+		return processDialog.getDecision();
+	}
+
+	/**
+	 * Shows {@link ProcessOrderResponseSimpleDialog} for making a deciosion about a response to an
+	 * {@link OrderResponseSimpleType Order Response Simple}.
+	 * @param applicationResponse Order Response Simple to make decision upon about the response
+	 * @result {@code String} representing the decision
+	 */
+	public String showProcessOrderResponseSimpleDialog(OrderResponseSimpleType orderResponseSimple)
+	{
+		final ProcessOrderResponseSimpleDialog processDialog =
+				new ProcessOrderResponseSimpleDialog(RutaClientFrame.this, orderResponseSimple,
+						orderResponseSimple.isAcceptedIndicatorValue(false));
+		processDialog.setTitle("Process Order Response Simple");
+		processDialog.setVisible(true);
+		return processDialog.getDecision();
+	}
+
+	/**
+	 * Shows {@link OrderResponseSimpleDialog} for making new {@link OrderResponseSimpleType} document.
+	 * @param title dialog's title
+	 * @param applicationResponse Order Response Simple to show and/or amend
+	 * @param accepted true if Order is to be accepted; false otherwise
+	 * @param editable true if dialog data could be amended
+	 * @param obsoleteCatalogue true if Order has been sent with the reference to some previous version
+	 * of the Catalogue
+	 * @return Order Response Simple or {@code null} if user has decided to discard the creation of it
+	 */
+	public OrderResponseSimpleType showOrderResponseSimpleDialog(String title,
+			OrderResponseSimpleType orderResponseSimple, boolean accepted, boolean editable, boolean obsoleteCatalogue)
+	{
+		final OrderResponseSimpleDialog orderResponseDialog =
+				new OrderResponseSimpleDialog(RutaClientFrame.this, orderResponseSimple, accepted, editable, obsoleteCatalogue);
+		if(title != null)
+			orderResponseDialog.setTitle(title);
+		else if(accepted)
+			orderResponseDialog.setTitle("Accept Order");
+		else
+			orderResponseDialog.setTitle("Reject Order");
+		orderResponseDialog.setVisible(true);
+		if(orderResponseDialog.isSendPressed())
+		{
+			orderResponseDialog.setSendPressed(false);
+			orderResponseSimple = orderResponseDialog.getOrderResponseSimple();
+		}
+		else
+			orderResponseSimple = null;
+		return orderResponseSimple;
+	}
+
+	/**
+	 * Shows {@link OrderChangeDialog} for making new {@link OrderChangeType} document.
+	 * @param title dialog's title
+	 * @param orderChange Order Change to show and/or amend
+	 * @param editable true if Order Change is to be created/changed, false if it is just a preview of one
+	 * @param corr {@link Correspondence} if {@link OrderChangeType} is already a part of it; {@code null}
+	 * otherwise i.e. should be created and appended to it
+	 * @return Order Change or {@code null} if user has decided to abort the creation of it
+	 */
+	public OrderChangeType showOrderChangeDialog(String title, OrderChangeType orderChange,
+			boolean editable, Correspondence corr)
+	{
+		final OrderChangeDialog orderChangeDialog =
+				new OrderChangeDialog(RutaClientFrame.this, orderChange, editable, corr);
+		orderChangeDialog.setTitle(title);
+		orderChangeDialog.setVisible(true);
+		if(orderChangeDialog.isSendPressed())
+		{
+			orderChange = orderChangeDialog.getOrderChange();
+			orderChangeDialog.setSendPressed(false);
+		}
+		else
+			orderChange = null;
+		return orderChange;
+	}
+
+	/**
+	 * Shows {@link OrderCancellationDialog} for making new {@link OrderCancellationType} document.
+	 * @param title dialog's title
+	 * @param orderCancellation Order Cancellation to show and/or amend
+	 * @param editable true if Order Cancellation is to be created/changed, false if it is just a preview of one
+	 * @param corr {@link Correspondence} if {@link OrderCancellationType} is already a part of it; {@code null}
+	 * otherwise i.e. should be created and appended to it
+	 * @return Order Cancellation or {@code null} if user has decided to abort the creation of it
+	 */
+	public OrderCancellationType showOrderCancellationDialog(String title, OrderCancellationType orderCancellation,
+			boolean editable, Correspondence corr)
+	{
+		final OrderCancellationDialog orderCancellationDialog =
+				new OrderCancellationDialog(RutaClientFrame.this, orderCancellation, editable, corr);
+		orderCancellationDialog.setTitle(title);
+		orderCancellationDialog.setVisible(true);
+		if(orderCancellationDialog.isSendPressed())
+		{
+			orderCancellation = orderCancellationDialog.getOrderCancellation();
+			orderCancellationDialog.setSendPressed(false);
+		}
+		else
+			orderCancellation = null;
+		return orderCancellation;
 	}
 
 	public RutaClient getClient()
 	{
 		return client;
-	}
-
-	/**
-	 * Appends current date and time and passed coloured string to the console. All this is done inside the
-	 * {@link EventQueue}.
-	 * @param textBuilder {@link StringBuilder string} to be shown on the console
-	 * @param color colour of the string
-	 */
-	public void appendToConsole(StringBuilder textBuilder, Color color)
-	{
-		EventQueue.invokeLater(()->
-		{
-			StyleContext sc = StyleContext.getDefaultStyleContext();
-			AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.BLACK);
-
-			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.MEDIUM);
-			StyledDocument doc = consolePane.getStyledDocument();
-			try
-			{
-				doc.insertString(doc.getLength(), formatter.format(LocalDateTime.now()) + ": ", aset);
-				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
-				doc.insertString(doc.getLength(), textBuilder.append("\n").toString(), aset);
-			}
-			catch (BadLocationException e)
-			{
-				getLogger().error("Exception is ", e);
-			}
-			consolePane.setCaretPosition(consolePane.getDocument().getLength());
-		});
 	}
 
 	/**
@@ -1148,25 +1292,61 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
+	 * Appends current date and time and passed coloured string to the console. All this is done inside the
+	 * {@link EventQueue}.
+	 * @param textBuilder {@link StringBuilder string} to be shown on the console
+	 * @param color colour of the string
+	 */
+	public void appendToConsole(StringBuilder textBuilder, Color color)
+	{
+		EventQueue.invokeLater(()->
+		{
+			StyleContext sc = StyleContext.getDefaultStyleContext();
+			AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.BLACK);
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.MEDIUM);
+			StyledDocument doc = consolePane.getStyledDocument();
+			try
+			{
+				doc.insertString(doc.getLength(), formatter.format(LocalDateTime.now()) + ": ", aset);
+				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
+				doc.insertString(doc.getLength(), textBuilder.append("\n").toString(), aset);
+			}
+			catch (BadLocationException e)
+			{
+				getLogger().error("Exception is ", e);
+			}
+			consolePane.setCaretPosition(consolePane.getDocument().getLength());
+		});
+	}
+
+	/**
 	 * Processes exception thrown by called webmethod or some local one.
 	 * @param e exception to be processed
-	 * @param msg {@link StringBuilder message} to be processed for display on the console
+	 * @param msgBuilder {@link StringBuilder message} to be processed for display on the console
+	 * @param recursion true when the recursive method call is permissable
 	 * @return message to be displayed on the console
 	 */
-	public StringBuilder processException(Exception e, StringBuilder msgBuilder)
+	private StringBuilder processException(Exception e, StringBuilder msgBuilder, boolean recursion)
 	{
-		getLogger().error("Exception is ", e);
 		msgBuilder = msgBuilder.append(" ");
-		Throwable cause = e.getCause();
-		if(cause == null)
-			msgBuilder.append(e.getMessage());
-		else
-		{
-			msgBuilder.append("Server responds: ");
-			if(cause instanceof RutaException)
-				msgBuilder.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+		final Throwable cause = e.getCause();
+		final String errorMessage = e.getMessage();
+		if(errorMessage != null)
+			if(e instanceof RutaException)
+				msgBuilder.append("Server responds: ").append(errorMessage).append(" ").
+				append(((RutaException) e).getFaultInfo().getDetail());
 			else
-				msgBuilder.append(trimSOAPFaultMessage(cause.getMessage()));
+				msgBuilder.append(" Caused by: ").append(trimSOAPFaultMessage(errorMessage));
+		if(cause != null)
+		{
+			if(cause instanceof RutaException)
+				msgBuilder.append("Server responds: ").append(cause.getMessage()).append(" ").
+				append(((RutaException) cause).getFaultInfo().getDetail());
+			else if(cause.getMessage() != null)
+				msgBuilder.append(" Caused by: ").append(trimSOAPFaultMessage(cause.getMessage()));
+		if(cause.getCause() != null)
+			processException(e, msgBuilder, false);
 		}
 		return msgBuilder;
 	}
@@ -1179,20 +1359,22 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	public void processExceptionAndAppendToConsole(Exception e, StringBuilder msgBuilder)
 	{
-		getLogger().error("Exception is ", e);
-		msgBuilder = msgBuilder.append(" ");
-		Throwable cause = e.getCause();
-		if(cause == null)
-			msgBuilder.append(e.getMessage());
-		else
+/*		msgBuilder = msgBuilder.append(" ");
+		final Throwable cause = e.getCause();
+		final String errorMessage = e.getMessage();
+		if(errorMessage != null)
+			msgBuilder.append(errorMessage);
+		if(cause != null)
 		{
-			msgBuilder.append("Server responds: ");
 			if(cause instanceof RutaException)
-				msgBuilder.append(cause.getMessage()).append(" ").append(((RutaException) cause).getFaultInfo().getDetail());
+				msgBuilder.append("Server responds: ").append(cause.getMessage()).append(" ").
+				append(((RutaException) cause).getFaultInfo().getDetail());
 			else
-				msgBuilder.append(trimSOAPFaultMessage(cause.getMessage()));
-		}
+				msgBuilder.append(" Cause is: ").append(trimSOAPFaultMessage(cause.getMessage()));
+		}*/
+		processException(e, msgBuilder, true);
 		appendToConsole(msgBuilder, Color.RED);
+		getLogger().error(msgBuilder.toString() + "\nException is ", e);
 	}
 
 	/**
@@ -1202,7 +1384,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	private String trimSOAPFaultMessage(String message)
 	{
-		return message.replaceFirst("Client received SOAP Fault from server: (.+) "
-				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$1");
+		return message.replaceFirst("(.*?)Client received SOAP Fault from server: (.+) "
+				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$2");
 	}
+
 }

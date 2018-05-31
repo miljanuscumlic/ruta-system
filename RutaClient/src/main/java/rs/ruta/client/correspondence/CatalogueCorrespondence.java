@@ -76,11 +76,24 @@ public class CatalogueCorrespondence extends Correspondence
 	@Override
 	public void run()
 	{
-		final Thread myThread = Thread.currentThread();
-		while (thread == myThread && active && !stopped)
-			state.doActivity(this);
-		if(stopped)
-			signalThreadStopped();
+		try
+		{
+			final Thread myThread = Thread.currentThread();
+			while (thread == myThread && active && !stopped)
+				state.doActivity(this);
+		}
+		catch(Exception e)
+		{
+			/*			EventQueue.invokeLater(() ->
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error messsage", JOptionPane.ERROR_MESSAGE));*/
+			getClient().getClientFrame().
+			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence is deactivated!"));
+		}
+		finally
+		{
+/*			if(stopped)
+				signalThreadStopped();*/
+		}
 	}
 
 	@Override
@@ -93,7 +106,6 @@ public class CatalogueCorrespondence extends Correspondence
 	protected void doDelete() throws DetailException
 	{
 		// should not delete correspondence
-
 	}
 
 }

@@ -32,11 +32,13 @@ public class ObjectFactory {
 
     private final static QName _FindAllBugReportsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllBugReportsResponse");
     private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
+    private final static QName _TypeInclusion_QNAME = new QName("http://ruta.rs/services", "TypeInclusion");
     private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
+    private final static QName _TypeInclusionResponse_QNAME = new QName("http://ruta.rs/services", "TypeInclusionResponse");
     private final static QName _UpdateCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponseResponse");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
-    private final static QName _DistributeOrderResponseSimple_QNAME = new QName("http://ruta.rs/services", "DistributeOrderResponseSimple");
     private final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
+    private final static QName _DistributeDocument_QNAME = new QName("http://ruta.rs/services", "DistributeDocument");
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
     private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
     private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
@@ -52,16 +54,15 @@ public class ObjectFactory {
     private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
     private final static QName _UnfollowParty_QNAME = new QName("http://ruta.rs/services", "UnfollowParty");
     private final static QName _InsertImageResponse_QNAME = new QName("http://ruta.rs/services", "InsertImageResponse");
+    private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
     private final static QName _Associates_QNAME = new QName("http://www.ruta.rs/ns/common", "Associates");
+    private final static QName _DistributeDocumentResponse_QNAME = new QName("http://ruta.rs/services", "DistributeDocumentResponse");
     private final static QName _FollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "FollowPartyResponse");
     private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
-    private final static QName _DistributeOrderResponse_QNAME = new QName("http://ruta.rs/services", "DistributeOrderResponse");
     private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
-    private final static QName _NewRegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "NewRegisterUserResponse");
     private final static QName _SearchBugReport_QNAME = new QName("http://ruta.rs/services", "SearchBugReport");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
-    private final static QName _NewRegisterUser_QNAME = new QName("http://ruta.rs/services", "NewRegisterUser");
     private final static QName _RutaVersion_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaVersion");
     private final static QName _InsertFileResponse_QNAME = new QName("http://ruta.rs/services", "InsertFileResponse");
     private final static QName _SearchBugReportResponse_QNAME = new QName("http://ruta.rs/services", "SearchBugReportResponse");
@@ -98,12 +99,11 @@ public class ObjectFactory {
     private final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
     private final static QName _DeleteCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponse");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
-    private final static QName _DistributeOrderResponseSimpleResponse_QNAME = new QName("http://ruta.rs/services", "DistributeOrderResponseSimpleResponse");
     private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
-    private final static QName _DistributeOrder_QNAME = new QName("http://ruta.rs/services", "DistributeOrder");
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _ReportAttachment_QNAME = new QName("http://www.ruta.rs/ns/common", "ReportAttachment");
     private final static QName _RutaUser_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaUser");
+    private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
     private final static QName _DeleteDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocument");
     private final static QName _FollowParty_QNAME = new QName("http://ruta.rs/services", "FollowParty");
     private final static QName _SearchCriterion_QNAME = new QName("http://www.ruta.rs/ns/common", "SearchCriterion");
@@ -348,14 +348,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DistributeOrder }
-     * 
-     */
-    public DistributeOrder createDistributeOrder() {
-        return new DistributeOrder();
-    }
-
-    /**
      * Create an instance of {@link DeleteDocBoxDocument }
      * 
      */
@@ -369,6 +361,14 @@ public class ObjectFactory {
      */
     public FollowParty createFollowParty() {
         return new FollowParty();
+    }
+
+    /**
+     * Create an instance of {@link RegisterUser }
+     * 
+     */
+    public RegisterUser createRegisterUser() {
+        return new RegisterUser();
     }
 
     /**
@@ -409,14 +409,6 @@ public class ObjectFactory {
      */
     public InsertCatalogue createInsertCatalogue() {
         return new InsertCatalogue();
-    }
-
-    /**
-     * Create an instance of {@link DistributeOrderResponseSimpleResponse }
-     * 
-     */
-    public DistributeOrderResponseSimpleResponse createDistributeOrderResponseSimpleResponse() {
-        return new DistributeOrderResponseSimpleResponse();
     }
 
     /**
@@ -476,6 +468,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DistributeDocument }
+     * 
+     */
+    public DistributeDocument createDistributeDocument() {
+        return new DistributeDocument();
+    }
+
+    /**
      * Create an instance of {@link FindBugReportResponse }
      * 
      */
@@ -492,19 +492,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DistributeOrderResponseSimple }
-     * 
-     */
-    public DistributeOrderResponseSimple createDistributeOrderResponseSimple() {
-        return new DistributeOrderResponseSimple();
-    }
-
-    /**
      * Create an instance of {@link UpdateRutaClient }
      * 
      */
     public UpdateRutaClient createUpdateRutaClient() {
         return new UpdateRutaClient();
+    }
+
+    /**
+     * Create an instance of {@link TypeInclusionResponse }
+     * 
+     */
+    public TypeInclusionResponse createTypeInclusionResponse() {
+        return new TypeInclusionResponse();
     }
 
     /**
@@ -516,11 +516,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NewRegisterUserResponse }
+     * Create an instance of {@link TypeInclusion }
      * 
      */
-    public NewRegisterUserResponse createNewRegisterUserResponse() {
-        return new NewRegisterUserResponse();
+    public TypeInclusion createTypeInclusion() {
+        return new TypeInclusion();
     }
 
     /**
@@ -532,19 +532,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DistributeOrderResponse }
-     * 
-     */
-    public DistributeOrderResponse createDistributeOrderResponse() {
-        return new DistributeOrderResponse();
-    }
-
-    /**
      * Create an instance of {@link InsertAttachment }
      * 
      */
     public InsertAttachment createInsertAttachment() {
         return new InsertAttachment();
+    }
+
+    /**
+     * Create an instance of {@link DistributeDocumentResponse }
+     * 
+     */
+    public DistributeDocumentResponse createDistributeDocumentResponse() {
+        return new DistributeDocumentResponse();
     }
 
     /**
@@ -596,14 +596,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NewRegisterUser }
-     * 
-     */
-    public NewRegisterUser createNewRegisterUser() {
-        return new NewRegisterUser();
-    }
-
-    /**
      * Create an instance of {@link SearchBugReport }
      * 
      */
@@ -652,6 +644,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RegisterUserResponse }
+     * 
+     */
+    public RegisterUserResponse createRegisterUserResponse() {
+        return new RegisterUserResponse();
+    }
+
+    /**
      * Create an instance of {@link FindAllBugReports }
      * 
      */
@@ -694,12 +694,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TypeInclusion }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TypeInclusion")
+    public JAXBElement<TypeInclusion> createTypeInclusion(TypeInclusion value) {
+        return new JAXBElement<TypeInclusion>(_TypeInclusion_QNAME, TypeInclusion.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClient }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClient")
     public JAXBElement<UpdateRutaClient> createUpdateRutaClient(UpdateRutaClient value) {
         return new JAXBElement<UpdateRutaClient>(_UpdateRutaClient_QNAME, UpdateRutaClient.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TypeInclusionResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TypeInclusionResponse")
+    public JAXBElement<TypeInclusionResponse> createTypeInclusionResponse(TypeInclusionResponse value) {
+        return new JAXBElement<TypeInclusionResponse>(_TypeInclusionResponse_QNAME, TypeInclusionResponse.class, null, value);
     }
 
     /**
@@ -721,21 +739,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeOrderResponseSimple }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeOrderResponseSimple")
-    public JAXBElement<DistributeOrderResponseSimple> createDistributeOrderResponseSimple(DistributeOrderResponseSimple value) {
-        return new JAXBElement<DistributeOrderResponseSimple>(_DistributeOrderResponseSimple_QNAME, DistributeOrderResponseSimple.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link BugReport }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "BugReport")
     public JAXBElement<BugReport> createBugReport(BugReport value) {
         return new JAXBElement<BugReport>(_BugReport_QNAME, BugReport.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeDocument }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeDocument")
+    public JAXBElement<DistributeDocument> createDistributeDocument(DistributeDocument value) {
+        return new JAXBElement<DistributeDocument>(_DistributeDocument_QNAME, DistributeDocument.class, null, value);
     }
 
     /**
@@ -874,12 +892,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUserResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUserResponse")
+    public JAXBElement<RegisterUserResponse> createRegisterUserResponse(RegisterUserResponse value) {
+        return new JAXBElement<RegisterUserResponse>(_RegisterUserResponse_QNAME, RegisterUserResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Associates }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "Associates")
     public JAXBElement<Associates> createAssociates(Associates value) {
         return new JAXBElement<Associates>(_Associates_QNAME, Associates.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeDocumentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeDocumentResponse")
+    public JAXBElement<DistributeDocumentResponse> createDistributeDocumentResponse(DistributeDocumentResponse value) {
+        return new JAXBElement<DistributeDocumentResponse>(_DistributeDocumentResponse_QNAME, DistributeDocumentResponse.class, null, value);
     }
 
     /**
@@ -901,15 +937,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeOrderResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeOrderResponse")
-    public JAXBElement<DistributeOrderResponse> createDistributeOrderResponse(DistributeOrderResponse value) {
-        return new JAXBElement<DistributeOrderResponse>(_DistributeOrderResponse_QNAME, DistributeOrderResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachment }{@code >}}
      * 
      */
@@ -928,15 +955,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NewRegisterUserResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "NewRegisterUserResponse")
-    public JAXBElement<NewRegisterUserResponse> createNewRegisterUserResponse(NewRegisterUserResponse value) {
-        return new JAXBElement<NewRegisterUserResponse>(_NewRegisterUserResponse_QNAME, NewRegisterUserResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SearchBugReport }{@code >}}
      * 
      */
@@ -952,15 +970,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertParty")
     public JAXBElement<InsertParty> createInsertParty(InsertParty value) {
         return new JAXBElement<InsertParty>(_InsertParty_QNAME, InsertParty.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NewRegisterUser }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "NewRegisterUser")
-    public JAXBElement<NewRegisterUser> createNewRegisterUser(NewRegisterUser value) {
-        return new JAXBElement<NewRegisterUser>(_NewRegisterUser_QNAME, NewRegisterUser.class, null, value);
     }
 
     /**
@@ -1288,30 +1297,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeOrderResponseSimpleResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeOrderResponseSimpleResponse")
-    public JAXBElement<DistributeOrderResponseSimpleResponse> createDistributeOrderResponseSimpleResponse(DistributeOrderResponseSimpleResponse value) {
-        return new JAXBElement<DistributeOrderResponseSimpleResponse>(_DistributeOrderResponseSimpleResponse_QNAME, DistributeOrderResponseSimpleResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogue }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogue")
     public JAXBElement<DeleteCatalogue> createDeleteCatalogue(DeleteCatalogue value) {
         return new JAXBElement<DeleteCatalogue>(_DeleteCatalogue_QNAME, DeleteCatalogue.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeOrder }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeOrder")
-    public JAXBElement<DistributeOrder> createDistributeOrder(DistributeOrder value) {
-        return new JAXBElement<DistributeOrder>(_DistributeOrder_QNAME, DistributeOrder.class, null, value);
     }
 
     /**
@@ -1339,6 +1330,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "RutaUser")
     public JAXBElement<RutaUser> createRutaUser(RutaUser value) {
         return new JAXBElement<RutaUser>(_RutaUser_QNAME, RutaUser.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUser }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUser")
+    public JAXBElement<RegisterUser> createRegisterUser(RegisterUser value) {
+        return new JAXBElement<RegisterUser>(_RegisterUser_QNAME, RegisterUser.class, null, value);
     }
 
     /**

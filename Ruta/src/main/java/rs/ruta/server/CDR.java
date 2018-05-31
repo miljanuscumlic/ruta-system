@@ -16,6 +16,7 @@ import javax.annotation.*;
 import javax.jws.*;
 import javax.servlet.ServletContext;
 import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.*;
@@ -33,6 +34,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Doc
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ResponseType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
@@ -72,6 +74,7 @@ import rs.ruta.server.datamapper.ServiceMapperRegistry;
 //wildfly wsdl generation
 @WebService(endpointInterface = "rs.ruta.server.Server", targetNamespace = "http://ruta.rs/services")
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING)
+//@XmlSeeAlso({OrderResponseType.class, OrderType.class}) //not necessary when typeInclusion method is used
 public class CDR implements Server
 {
 	@Resource
@@ -207,7 +210,8 @@ public class CDR implements Server
 			final PartyType receiverParty = catalogue.getProviderParty();
 			final String docUUID = catalogue.getUUIDValue();
 			final String docID = catalogue.getIDValue();
-			appResponse = createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+			appResponse = InstanceFactory.
+					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
 
 			docBoxPool.submit(() ->
 			{
@@ -289,7 +293,8 @@ public class CDR implements Server
 			final PartyType receiverParty = catalogueDeletion.getProviderParty();
 			final String docUUID = catalogueDeletion.getUUIDValue();
 			final String docID = catalogueDeletion.getIDValue();
-			appResponse = createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+			appResponse = InstanceFactory.
+					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
 
 			docBoxPool.submit(() ->
 			{
@@ -313,58 +318,9 @@ public class CDR implements Server
 
 	}
 
-	/**
-	 * Creates {@link ApplicationResponseType} document.
-	 * @param senderParty sender Party of the {@code Application Response} document
-	 * @param receiverParty receiver Party of the {@code Application Response} document
-	 * @param uuid UUID of referenced document
-	 * @param id ID of the referenced document
-	 * @param responseCode response code of the {@code Application Response} document
-	 * @return {@code ApplicationResponseType}
-	 */
-	private ApplicationResponseType createApplicationResponse(
-			PartyType senderParty, PartyType receiverParty, String uuid, String id, String responseCode)
-	{
-		final ApplicationResponseType appResponse = new ApplicationResponseType();
-		appResponse.setID(UUID.randomUUID().toString());
-		final XMLGregorianCalendar now = InstanceFactory.getDate();
-		appResponse.setIssueDate(now);
-		appResponse.setIssueTime(now);
-		appResponse.setSenderParty(senderParty);
-		appResponse.setReceiverParty(receiverParty);
-		final DocumentResponseType docResponse = new DocumentResponseType();
-		final ResponseType response = new ResponseType();
-		response.setResponseCode(responseCode);
-		docResponse.setResponse(response);
-		final DocumentReferenceType catReference = new DocumentReferenceType();
-		catReference.setUUID(uuid);
-		catReference.setID(id);
-		docResponse.getDocumentReference().add(catReference);
-		appResponse.getDocumentResponse().add(docResponse);
-		return appResponse;
-	}
-
-/*	@Override
-	@Deprecated
-	@WebMethod
-	public String registerUser(String username, String password) throws RutaException
-	{
-		String secretKey = null;
-		try
-		{
-			init();
-			secretKey = (String) mapperRegistry.getMapper(RutaUser.class).registerUser(username, password);
-		}
-		catch(Exception e)
-		{
-			processException(e, "Party could not be registered with the CDR service!");
-		}
-		return secretKey;
-	}*/
-
 	@Override
 	@WebMethod
-	public String registerParty(String username, String password, PartyType party) throws RutaException
+	public String registerUser(String username, String password, PartyType party) throws RutaException
 	{
 		String secretKey = null;
 		try
@@ -913,65 +869,52 @@ public class CDR implements Server
 	}
 
 	@Override
-	public void distributeOrder(String username, OrderType order) throws RutaException
+	public void distributeDocument(Object document) throws RutaException
 	{
 		try
 		{
 			init();
-			final String sellerID = order.getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
-			final String buyerID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
-			//MMM check whether the Party with the sellerID is registered with the CDR service; if not throw an exception
+			final Associates recepient = getAssociates(document);
+			final String senderID = recepient.getPartyID();
+			final String receiverID = recepient.getAssociateAtIndex(0);
+			if(!mapperRegistry.getMapper(RutaUser.class).checkUser(receiverID))
+				throw new DatabaseException("User with ID" + receiverID + " is not registered with the CDR service!");
 			docBoxPool.submit(() ->
 			{
 				try
 				{
-					final Associates receiver = new Associates();
-					receiver.setPartyID(buyerID);
-					receiver.add(sellerID);
-					final DocumentDistribution orderDistribution = new DocumentDistribution(order, receiver);
-					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, orderDistribution);
+					final DocumentDistribution documentDistribution = new DocumentDistribution(document, recepient);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
 				}
 				catch(DetailException e)
 				{
-					logger.error("Unable to distribute Order for the user: " + username + ".\n Exception is ", e);
+					logger.error("Unable to distribute " + InstanceFactory.getDocumentName(document.getClass().getSimpleName()) +
+							InstanceFactory.getDocumentID(document) + " of the sender: " + senderID + ".\n Exception is ", e);
 				}
 			});
 		}
 		catch(Exception e)
 		{
-			processException(e, "Order could not be distributed to the Seller Party!");
+			processException(e, "Document could not be distributed to the Receiver Party!");
 		}
 	}
 
-	@Override
-	public void distributeOrderResponseSimple(String username, OrderResponseSimpleType orderResponseSimple) throws RutaException
+	/**
+	 * Creates {@link Associates} object.
+	 * @param document {@code UBL document} from which sender's and receiver's party IDs are retrieved
+	 * @return {@link Associates} object
+	 */
+	private Associates getAssociates(Object document)
 	{
-		try
-		{
-			init();
-			final String sellerID = orderResponseSimple.getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
-			final String buyerID = orderResponseSimple.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
-			//MMM check whether the Party with the buyerID is registered with the CDR service; if not throw an exception
-			docBoxPool.submit(() ->
-			{
-				try
-				{
-					final Associates receiver = new Associates();
-					receiver.setPartyID(sellerID);
-					receiver.add(buyerID);
-					final DocumentDistribution orderDistribution = new DocumentDistribution(orderResponseSimple, receiver);
-					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, orderDistribution);
-				}
-				catch(DetailException e)
-				{
-					logger.error("Unable to distribute Order Response Simple for the user: " + username + ".\n Exception is ", e);
-				}
-			});
-		}
-		catch(Exception e)
-		{
-			processException(e, "Order Response Simple could not be distributed to the Seller Party!");
-		}
-	}
+		final Associates recepient = new Associates();
+		String senderID = null, receiverID = null;
+		senderID = InstanceFactory.getDocumentSenderID(document);
+		receiverID = InstanceFactory.getDocumentReceiverID(document);
 
+		recepient.setPartyID(senderID);
+		recepient.add(receiverID);
+
+		return recepient;
+
+	}
 }

@@ -38,11 +38,6 @@
             <AppenderRef ref="ruta.server"/>
         </Logger>
         
-        <Logger name="rs.ruta.common.datamapper" additivity="false" level="info">
-            <AppenderRef ref="STDOUT"/>
-            <AppenderRef ref="ruta.server"/>
-        </Logger>
-        
         <!-- END Ruta client loggers -->
         
         <Root level="info">

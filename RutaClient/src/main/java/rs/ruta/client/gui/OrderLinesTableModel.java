@@ -1,15 +1,17 @@
 package rs.ruta.client.gui;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.LineItemType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.QuantityType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 
-public class OrderTableModel extends DefaultTableModel
+public class OrderLinesTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 19327649202925544L;
 
@@ -18,13 +20,13 @@ public class OrderTableModel extends DefaultTableModel
 				"No.", "Name", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Quantity"
 		};
 
-	private OrderType order;
+	private List<OrderLineType> orderLines;
 	private boolean editable;
 
-	public OrderTableModel(OrderType order, boolean editable)
+	public OrderLinesTableModel(List<OrderLineType> orderLines, boolean editable)
 	{
 		super();
-		this.order = order;
+		this.orderLines = orderLines;
 		this.editable = editable;
 	}
 
@@ -34,20 +36,10 @@ public class OrderTableModel extends DefaultTableModel
 		return editable ? (column == getColumnCount() - 1 ? true : false ) : false;
 	}
 
-	public void setOrder(OrderType order)
-	{
-		this.order = order;
-	}
-
-	public OrderType getOrder()
-	{
-		return order;
-	}
-
 	@Override
 	public int getRowCount()
 	{
-		return order != null ? order.getOrderLineCount() : 0;
+		return orderLines != null ? orderLines.size() : 0;
 	}
 
 	@Override
@@ -67,7 +59,7 @@ public class OrderTableModel extends DefaultTableModel
 	{
 		try
 		{
-			final LineItemType lineItem = order.getOrderLineAtIndex(rowIndex).getLineItem();
+			final LineItemType lineItem = orderLines.get(rowIndex).getLineItem();
 
 			switch(columnIndex)
 			{
@@ -100,7 +92,7 @@ public class OrderTableModel extends DefaultTableModel
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 	{
-		final LineItemType lineItem = order.getOrderLineAtIndex(rowIndex).getLineItem();
+		final LineItemType lineItem = orderLines.get(rowIndex).getLineItem();
 
 		switch(columnIndex)
 		{

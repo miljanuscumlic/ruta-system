@@ -1,17 +1,14 @@
 package rs.ruta.client.correspondence;
 
-import java.util.UUID;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderReferenceType;
-import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
-import rs.ruta.common.InstanceFactory;
+import rs.ruta.client.MyParty;
+import rs.ruta.client.gui.RutaClientFrame;
 
-@XmlRootElement(name = "BuyerAcceptOrderState")
+@XmlRootElement(name = "SellerAcceptOrderState")
 public class SellerAcceptOrderState extends SellerOrderingProcessState
 {
 	private static SellerOrderingProcessState INSTANCE = new SellerAcceptOrderState();
@@ -20,49 +17,52 @@ public class SellerAcceptOrderState extends SellerOrderingProcessState
 	{
 		return INSTANCE;
 	}
+
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		final RutaProcess process = (RutaProcess) correspondence.getState();
-		final OrderType order = ((SellerOrderingProcess) process).getOrder();
-		final OrderResponseSimpleType orderResponseSimple = new OrderResponseSimpleType();
-		final String orsID = UUID.randomUUID().toString();
-		final String orsUUID = UUID.randomUUID().toString();
-		orderResponseSimple.setID(orsID);
-		orderResponseSimple.setUUID(orsUUID);
-		final XMLGregorianCalendar now = InstanceFactory.getDate();
-		orderResponseSimple.setIssueDate(now);
-		orderResponseSimple.setIssueTime(now);
-		orderResponseSimple.setAcceptedIndicator(true);
-		final OrderReferenceType orderReference = new OrderReferenceType();
-		orderReference.setID(orsID);
-		final DocumentReferenceType docReference = new DocumentReferenceType();
-		docReference.setID(order.getID());
-		docReference.setUUID(order.getUUIDValue());
-		docReference.setIssueDate(order.getIssueDate());
-		docReference.setIssueTime(order.getIssueTime());
-		docReference.setDocumentType(order.getClass().getName());
-		orderReference.setDocumentReference(docReference);
-		orderResponseSimple.setOrderReference(orderReference);
-		orderResponseSimple.setSellerSupplierParty(order.getSellerSupplierParty());
-		orderResponseSimple.setBuyerCustomerParty(order.getBuyerCustomerParty());
-
-		process.getClient().cdrSendOrderResponseSimple(orderResponseSimple);
-
-		correspondence.addDocumentReference(correspondence.getClient().getMyParty().getCoreParty(),
-				orsUUID, orsID, now, now, orderResponseSimple.getClass().getName(),
-				correspondence.getClient().getMyParty());
-
-		try
+		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
+		final OrderResponseSimpleType orderResponseSimple = prepareOrderResponseSimple(correspondence);
+		if(orderResponseSimple != null)
 		{
-			correspondence.block(5000); //MMM timeout should be defined globally
+			saveOrderResponseSimple(correspondence, orderResponseSimple);
+			changeState(process, SellerSendOrderResponseSimpleState.getInstance());
 		}
-		catch (InterruptedException e)
+		else
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			process.setOrderAccepted(false);
+			changeState(process, SellerProcessOrderState.getInstance());
 		}
+	}
 
-		changeState(process, SellerReceiveOrderChangeCancellationState.getInstance());
+	/**
+	 * Prepares {@link OrderResponseSimpleType Order Response Simple} populated with some data from the
+	 *  {@link OrderType Order}.
+	 * @param correspondence correspondence that process of this state belongs to
+	 * @return Order Response Simple or {@code null} if its creation has failed, or has been aborted by the user
+	 * or the document doesn't conform to the UBL standard
+	 */
+	private OrderResponseSimpleType prepareOrderResponseSimple(Correspondence correspondence)
+	{
+		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
+		final MyParty myParty = process.getClient().getMyParty();
+		return myParty.produceOrderResponseSimple(process.getOrder(correspondence), true, false);
+	}
+
+	/**
+	 * Sets Order Response Simple field of the process, adds it's {@link DocumentReference} to the
+	 * correspondence and stores it in the database.
+	 * @param correspondence which order is part of
+	 * @param applicationResponse Order Response Simple to save
+	 */
+	private void saveOrderResponseSimple(Correspondence correspondence, OrderResponseSimpleType orderResponseSimple)
+	{
+		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
+		process.setOrderResponseSimple(orderResponseSimple);
+		correspondence.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
+				orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
+				orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
+				orderResponseSimple.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		correspondence.storeDocument(orderResponseSimple);
 	}
 }

@@ -142,7 +142,7 @@ public class BugReportTableModel extends DefaultTableModel
 		}
 	}
 
-	//MMM: method not used because the table is not editable - might be used later
+	//MMM: method not used because the orderLinesTable is not editable - might be used later
 /*	@Override
 	public void setValueAt(Object obj, int rowIndex, int columnIndex)
 	{
@@ -207,7 +207,7 @@ public class BugReportTableModel extends DefaultTableModel
 		}
 	}
 
-	//MMM: method not used because the table is not editable: default implementation returns true - might be used later
+	//MMM: method not used because the orderLinesTable is not editable: default implementation returns true - might be used later
 /*	@Override
 	public boolean isCellEditable(int row, int column)
 	{
@@ -229,7 +229,7 @@ public class BugReportTableModel extends DefaultTableModel
 
 	/**
 	 * Checks whether passed row index contains the {@link ReportComment} and gets it if it does.
-	 * @param rowIndex index of the table row
+	 * @param rowIndex index of the orderLinesTable row
 	 * @return comment or null if row does not contain it
 	 */
 	public ReportComment getComment(int rowIndex)

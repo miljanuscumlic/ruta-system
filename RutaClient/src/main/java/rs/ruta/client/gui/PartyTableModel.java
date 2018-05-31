@@ -5,7 +5,7 @@ import javax.swing.table.*;
 import rs.ruta.client.Party;
 
 /**
- * Data model for a table displaying {@link PartyType} properties of a party.
+ * Data model for a orderLinesTable displaying {@link PartyType} properties of a party.
  */
 public class PartyTableModel extends DefaultTableModel
 {

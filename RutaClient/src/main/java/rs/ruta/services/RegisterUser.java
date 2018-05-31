@@ -4,21 +4,22 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 
 
 /**
- * <p>Java class for DistributeOrderResponseSimple complex type.
+ * <p>Java class for RegisterUser complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="DistributeOrderResponseSimple">
+ * &lt;complexType name="RegisterUser">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="arg0" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="arg1" type="{urn:oasis:names:specification:ubl:schema:xsd:OrderResponseSimple-2}OrderResponseSimpleType" minOccurs="0"/>
+ *         &lt;element name="arg1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="arg2" type="{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}PartyType" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -28,14 +29,16 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DistributeOrderResponseSimple", propOrder = {
+@XmlType(name = "RegisterUser", propOrder = {
     "arg0",
-    "arg1"
+    "arg1",
+    "arg2"
 })
-public class DistributeOrderResponseSimple {
+public class RegisterUser {
 
     protected String arg0;
-    protected OrderResponseSimpleType arg1;
+    protected String arg1;
+    protected PartyType arg2;
 
     /**
      * Gets the value of the arg0 property.
@@ -66,10 +69,10 @@ public class DistributeOrderResponseSimple {
      * 
      * @return
      *     possible object is
-     *     {@link OrderResponseSimpleType }
+     *     {@link String }
      *     
      */
-    public OrderResponseSimpleType getArg1() {
+    public String getArg1() {
         return arg1;
     }
 
@@ -78,11 +81,35 @@ public class DistributeOrderResponseSimple {
      * 
      * @param value
      *     allowed object is
-     *     {@link OrderResponseSimpleType }
+     *     {@link String }
      *     
      */
-    public void setArg1(OrderResponseSimpleType value) {
+    public void setArg1(String value) {
         this.arg1 = value;
+    }
+
+    /**
+     * Gets the value of the arg2 property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PartyType }
+     *     
+     */
+    public PartyType getArg2() {
+        return arg2;
+    }
+
+    /**
+     * Sets the value of the arg2 property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PartyType }
+     *     
+     */
+    public void setArg2(PartyType value) {
+        this.arg2 = value;
     }
 
 }

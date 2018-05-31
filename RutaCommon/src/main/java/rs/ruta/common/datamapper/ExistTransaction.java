@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public abstract class ExistTransaction implements DSTransaction
 {
 //	@XmlTransient
-	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.common.datamapper");
+	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 	@XmlElement(name = "TransactionID", required = true)
 	private String transactionID;
 	@XmlElement(name = "Timestamp")

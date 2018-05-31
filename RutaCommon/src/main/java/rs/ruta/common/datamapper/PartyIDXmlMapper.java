@@ -154,7 +154,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
-			logger.info("Started query of the " + uri);
+			logger.info("Started query for the user by its ID.");
 			queryService.setProperty("indent", "no");
 
 			String query = null; // search query
@@ -173,22 +173,25 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 				CompiledExpression compiled = queryService.compile(query);
 				final ResourceSet results = queryService.execute(compiled);
 				long resultCount = results.getSize();
-				if(resultCount > 1)
-					throw new DatabaseException("Critical error! There are more than one party IDs that corespond to the same object ID.");
-				final ResourceIterator iterator = results.getIterator();
-				Resource resource = null;
-				try
+				if(resultCount == 1)
 				{
-					resource = iterator.nextResource();
-					searchResult = (String) resource.getContent();
+					final ResourceIterator iterator = results.getIterator();
+					Resource resource = null;
+					try
+					{
+						resource = iterator.nextResource();
+						searchResult = (String) resource.getContent();
+					}
+					finally
+					{
+						if(resource != null)
+							((EXistResource)resource).freeResources();
+					}
 				}
-				finally
-				{
-					if(resource != null)
-						((EXistResource)resource).freeResources();
-				}
-				logger.info("Finished query of the " + uri);
-				return searchResult;
+				else if(resultCount > 1)
+					throw new DatabaseException("Critical error! There are more than one party that corespond to the same object ID.");
+				logger.info("Finished query for the user by its ID.");
+				return searchResult; // null for no results
 			}
 			else
 				throw new DatabaseException("Could not process the query. Query file does not exist.");

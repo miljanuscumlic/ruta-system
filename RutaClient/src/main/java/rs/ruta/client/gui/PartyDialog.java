@@ -13,7 +13,7 @@ public class PartyDialog extends JDialog
 	private static final long serialVersionUID = 8652433075065940074L;
 	private Party party;
 	/**
-	 * True when table content has changed.
+	 * True when orderLinesTable content has changed.
 	 */
 	private boolean changed;
 	private DefaultTableModel partyTableModel;
@@ -35,7 +35,7 @@ public class PartyDialog extends JDialog
 
 		JPanel partyPanel = new JPanel();
 		JTable table = new PartyTable(partyTableModel);
-//		table.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
+//		orderLinesTable.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
 
 		table.setFillsViewportHeight(true);
 		table.getTableHeader().setReorderingAllowed(false); //disables column reordering
@@ -65,7 +65,7 @@ public class PartyDialog extends JDialog
 		addMouseListener(tableLostFocus);
 
 //		TableCellRenderer renderer = new PartyTableCellRenderer();
-//		table.setDefaultRenderer(Object.class, renderer);
+//		orderLinesTable.setDefaultRenderer(Object.class, renderer);
 
 		JPanel buttonPanel = new JPanel();
 

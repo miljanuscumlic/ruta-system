@@ -2,7 +2,7 @@ package rs.ruta.client.correspondence;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "BuyerChangeOrderState")
+@XmlRootElement(name = "SellerChangeOrderState")
 public class SellerChangeOrderState extends SellerOrderingProcessState
 {
 	private static SellerOrderingProcessState INSTANCE = new SellerChangeOrderState();
@@ -15,7 +15,7 @@ public class SellerChangeOrderState extends SellerOrderingProcessState
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		//MMM to implement
-		//changeState(process, BuyerOrderAcceptedState.getInstance());
+		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
+		changeState(process, SellerProcessOrderState.getInstance());
 	}
 }

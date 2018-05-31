@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,20 +24,25 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.ubl21.UBL21Validator;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CatalogueReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CommodityClassificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemLocationQuantityType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.LineItemType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PriceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BarcodeSymbologyIDType;
@@ -48,10 +54,15 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.Keyword
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PackSizeNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PriceAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.RejectionNoteType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.UUIDType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.correspondence.BuyerOrderingProcess;
+import rs.ruta.client.correspondence.BuyerReceiveOrderResponseState;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
@@ -59,9 +70,13 @@ import rs.ruta.client.correspondence.CreateCatalogueProcess;
 import rs.ruta.client.correspondence.CreateCatalogueProcessState;
 import rs.ruta.client.correspondence.DeleteCatalogueProcess;
 import rs.ruta.client.correspondence.NotifyOfCatalogueDeletionState;
+import rs.ruta.client.correspondence.OrderingProcess;
 import rs.ruta.client.correspondence.PrepareCatalogueState;
 import rs.ruta.client.correspondence.RutaProcess;
+import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
+import rs.ruta.client.correspondence.SellerReceiveOrderChangeCancellationState;
+import rs.ruta.client.correspondence.SellerReceiveOrderState;
 import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.InstanceFactory;
@@ -226,15 +241,18 @@ public class MyParty extends BusinessParty
 		CatalogueCorrespondence corr = null;
 		if(corrs == null || corrs.isEmpty())
 		{
-			corr = CatalogueCorrespondence.newInstance(client);
+			addCatalogueCorrespondence(CatalogueCorrespondence.newInstance(client));
 		}
 		else
 		{
 			corr = corrs.get(0);
 			corr.setClient(client);
-			((RutaProcess) corr.getState()).setClient(client);
+			final RutaProcess process = (RutaProcess) corr.getState();
+//			if(process != null) // should not be null
+				process.setClient(client);
+			setCatalogueCorrespondence(corr);
 		}
-		setCatalogueCorrespondence(corr);
+
 		//			logger.info("*****End starting catalogue correspondence thread");
 
 		//			logger.info("*****Start loading buying correspondence");
@@ -803,12 +821,22 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Returns next ID for the newly created {@link OrderType order} document.
+	 * Returns next ID for the newly created {@link OrderType order} document. As a side effect
+	 * it increases orderID counter.
 	 * @return next catalogue deletion ID
 	 */
 	public long nextOrderID()
 	{
 		return ++orderID;
+	}
+
+	/**
+	 * Decreases orderID counter by 1.
+	 */
+	public void decreaseOrderID()
+	{
+		if(orderID > 0)
+			orderID--;
 	}
 
 	/**
@@ -1651,7 +1679,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets {@link CatalogueCorrespondence}. If it has a {@code null} value new one is instantiated.
-	 * @return {@code CatalogueCorrespondence}
+	 * @return {@code CatalogueCorrespondence} or {@code null} if it is not set yet
 	 */
 	public CatalogueCorrespondence getCatalogueCorrespondence()
 	{
@@ -1661,6 +1689,19 @@ public class MyParty extends BusinessParty
 	public void setCatalogueCorrespondence(CatalogueCorrespondence catalogueCorrespondence)
 	{
 		this.catalogueCorrespondence = catalogueCorrespondence;
+	}
+
+	/**
+	 * Adds {@link CatalogueCorrespondence} to the data model.
+	 * <p>Notifies listeners registered for this type of the {@link CorrespondenceEvent event}.</p>
+	 * @param correspondence correspondence to add
+	 * @throws DetailException if correspondence could not be inserted to the data store
+	 */
+	public void addCatalogueCorrespondence(CatalogueCorrespondence correspondence) throws DetailException
+	{
+		setCatalogueCorrespondence(correspondence);
+		MapperRegistry.getInstance().getMapper(CatalogueCorrespondence.class).insert(null, correspondence);
+		notifyListeners(new CorrespondenceEvent(correspondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 	}
 
 	public List<BuyingCorrespondence> getBuyingCorrespondences()
@@ -1728,9 +1769,8 @@ public class MyParty extends BusinessParty
 		if(getCatalogueCorrespondence().isAlive())
 			getCatalogueCorrespondence().waitThreadStopped();
 		for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
-			if(bCorr.isAlive())
+			if(bCorr.isAlive() || bCorr.isStopped())//if(bCorr.isAlive())
 				bCorr.waitThreadStopped();
-		//				bCorr.getStoppedSemaphore().acquire();
 	}
 
 	/**
@@ -1797,7 +1837,6 @@ public class MyParty extends BusinessParty
 		this.cdrUser = cdrUser;
 	}
 
-	//MMM could produceXxx and validateXxx be written with functional interfaces???
 	/**
 	 * Generates {@link CatalogueType} document that conforms to the {@code UBL} standard.
 	 * @param receiverParty receiver Party of the {@code Catalogue}
@@ -1806,31 +1845,12 @@ public class MyParty extends BusinessParty
 	public CatalogueType produceCatalogue(Party receiverParty)
 	{
 		CatalogueType catalogue = createCatalogue(receiverParty);
-		boolean valid = validateCatalogue(catalogue);
+		boolean valid = InstanceFactory.validateUBLDocument(catalogue, doc -> UBL21Validator.catalogue().validate(doc));
 		return valid ? catalogue : null;
 	}
 
 	/**
-	 * Validates whether {@link CatalogueType} comforms to the {@code UBL} standard.
-	 * @param catalogue catalogue to check
-	 * @return true if catalogue has a {@code non-null} value and is valid
-	 */
-	private boolean validateCatalogue(CatalogueType catalogue)
-	{
-		boolean valid = false;
-		if(catalogue != null)
-		{
-			final IErrorList errors = UBL21Validator.catalogue().validate(catalogue);
-			if(errors.containsAtLeastOneFailure())
-				logger.error(errors.toString());
-			else
-				valid = true;
-		}
-		return valid;
-	}
-
-	/**
-	 * Generates {@link CatalogueType} document from {@link Item items} in the Product table. Method returns
+	 * Generates {@link CatalogueType} document from {@link Item items} in the Product Table. Method returns
 	 * {@code null} if Catalogue does not have any item or some item has no name or is an empty string.
 	 * @param receiverParty receiver Party of the Catalogue
 	 * @return catalogue or {@code null}
@@ -1883,32 +1903,14 @@ public class MyParty extends BusinessParty
 	/**
 	 * Generates {@link CatalogueDeletionType} document that conforms to the {@code UBL} standard.
 	 * @param receiverParty receiver Party of the {@code Catalogue Deletion}
-	 * @return catalogue deletion or {@code null} if catalogue deletiondoes not conform to the {@code UBL}
+	 * @return {@code Catalogue Deletion} or {@code null} if document does not conform to the {@code UBL}
 	 */
 	public CatalogueDeletionType produceCatalogueDeletion(Party receiverParty)
 	{
 		CatalogueDeletionType catalogueDeletion = createCatalogueDeletion(receiverParty);
-		boolean valid = validateCatalogueDeletion(catalogueDeletion);
+		boolean valid = InstanceFactory.validateUBLDocument(catalogueDeletion,
+				doc -> UBL21Validator.catalogueDeletion().validate(doc));
 		return valid ? catalogueDeletion : null;
-	}
-
-	/**
-	 * Validates whether {@link CatalogueDeletionType} comforms to the {@code UBL} standard.
-	 * @param catalogueDeletion catalogue deletion to check
-	 * @return true if catalogue deletion has a {@code non-null} value and is valid
-	 */
-	private boolean validateCatalogueDeletion(CatalogueDeletionType catalogueDeletion)
-	{
-		boolean valid = false;
-		if(catalogueDeletion != null)
-		{
-			final IErrorList errors = UBL21Validator.catalogueDeletion().validate(catalogueDeletion);
-			if(errors.containsAtLeastOneFailure())
-				logger.error(errors.toString());
-			else
-				valid = true;
-		}
-		return valid;
 	}
 
 	/**
@@ -1948,9 +1950,9 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Generates {@link OrderType} document that conforms to the {@code UBL} standard.
-	 * @param sellerID correspondent's ID
-	 * @return order or {@code null} if order does not conform to the {@code UBL} or correspondent
-	 * is not a business partner
+	 * @param sellerID ID of the correspondent that is a Seller Party in this process
+	 * @return Order or {@code null} if user has aborted Order creation, Order does not conform to the
+	 * {@code UBL} standard or correspondent is not a business partner of My Party
 	 */
 	public OrderType produceOrder(String sellerID)
 	{
@@ -1960,111 +1962,485 @@ public class MyParty extends BusinessParty
 		if(seller != null)
 		{
 			order = createOrder(sellerID);
-			valid = validateOrder(order);
+			if(order != null)
+				valid = InstanceFactory.validateUBLDocument(order, doc -> UBL21Validator.order().validate(doc));
+			else
+				decreaseOrderID();
 		}
 		return valid ? order : null;
 	}
 
 	/**
-	 * Generates {@link OrderType} document that conforms to the {@code UBL} standard.
-	 * @param sellerID correspondent's ID
-	 * @return order or {@code null} if order does not conform to the {@code UBL} or correspondent
-	 * is not a business partner
-	 */
-	public OrderType produceOrderOLD(String sellerID)
-	{
-		boolean valid = false;
-		final BusinessParty seller = getBusinessPartner(sellerID);
-		OrderType order = null;
-		if(seller != null)
-		{
-			order = createOrderOLD(seller.getCoreParty());
-			valid = validateOrder(order);
-		}
-		return valid ? order : null;
-	}
-
-	/**
-	 * Generates {@link OrderType} document.
+	 * Creates {@link OrderType} document by displaying {@link OrderDialog} for entering Order related data.
 	 * @param seller {@link PartyType seller party} which is a receiver of the {@link OrderType order}
-	 * @return order created {@link OrderType order}
+	 * @return order created {@link OrderType order} or {@code null} if user aborts Order creation
 	 */
 	private OrderType createOrder(String correspondentID)
 	{
 		final Catalogue correspondentCatalogue = getBusinessPartner(correspondentID).getCatalogue();
-		OrderType order = convertToOrder(correspondentCatalogue);
-		client.getClientFrame().showOrderDialog("New Order", order);
-		return order;
+		final OrderType order = convertToOrder(correspondentCatalogue, getCoreParty());
+		return client.getClientFrame().showOrderDialog("New Order", order);
 	}
 
 	/**
-	 * Generates {@link OrderType} document.
-	 * @param seller {@link PartyType seller party} which is a receiver of the {@link OrderType order}
-	 * @return order created {@link OrderType order}
+	 * Creates new {@link OrderType} incorporating data of passed {@link CatalogueType}
+	 * @param catalogue catalogue to process
+	 * @param customerParty customer party initiating the Order
+	 * @return newly created {@code OrderType}
 	 */
-	private OrderType createOrderOLD(Party seller)
+	public OrderType convertToOrder(Catalogue catalogue, PartyType customerParty)
 	{
 		final OrderType order = new OrderType();
 		final CustomerPartyType buyer = new CustomerPartyType();
-		buyer.setParty(getCoreParty());
+		buyer.setParty(customerParty);
 		order.setBuyerCustomerParty(buyer);
-		//MMM put proper values for these recommended properties below
-		final SupplierPartyType sellerParty = new SupplierPartyType();
-		sellerParty.setParty(seller);
-		order.setSellerSupplierParty(sellerParty);
-		order.setID(UUID.randomUUID().toString());//MMM from MyParty's counter
+		final SupplierPartyType seller = new SupplierPartyType();
+		seller.setParty(catalogue.getProviderParty().clone());
+		order.setSellerSupplierParty(seller);
+		final String orderID = String.valueOf(nextOrderID());
+		order.setID(orderID);
 		order.setUUID(UUID.randomUUID().toString());
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		order.setIssueDate(now);
 		order.setIssueTime(now);
-		//		System.out.println(order.getIssueDate().toString());
-		//		System.out.println(order.getIssueTime().toString());
-		final OrderLineType orderLine = new OrderLineType();
-		final LineItemType lineItem = new LineItemType();
-		lineItem.setID(UUID.randomUUID().toString()); //MMM put ordered number here
-		lineItem.setItem(getCatalogue().getCatalogueLineAtIndex(0).getItem());
-		orderLine.setLineItem(lineItem);
-		order.getOrderLine().add(orderLine);
-		//MMM put some reference id? maybe of the correspondence into AdditionalDocumentReference
+		final CatalogueReferenceType catalogueReference = new CatalogueReferenceType();
+		catalogueReference.setID(catalogue.getID());
+		catalogueReference.setUUID(catalogue.getUUID());
+		order.setCatalogueReference(catalogueReference);
+		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
+		List<OrderLineType> orderLines = order.getOrderLine();
+		for(CatalogueLineType catalogueline: catalogueLines)
+		{
+			final OrderLineType orderLine =  new OrderLineType();
+			final LineItemType orderLineItem = new LineItemType();
+			orderLineItem.setItem(catalogueline.getItem().clone());
+			orderLine.setLineItem(orderLineItem);
+			orderLines.add(orderLine);
+		}
 		return order;
 	}
 
 	/**
-	 * Validates whether {@link OrderType} comforms to the {@code UBL} standard.
-	 * @param order order to check
-	 * @return true if order has a {@code non-null} value and is valid
+	 * Creates new {@link OrderType} combining data of passed {@link CatalogueType} and {@link
+	 * OrderType} making the union of all items from both documents using quantities from the Order.
+	 * @param catalogue catalogue to process
+	 * @param order Order which orderLines are incorporated
+	 * @return newly created {@code OrderType}
 	 */
-	private boolean validateOrder(OrderType order)
+	public OrderType convertToOrder(Catalogue catalogue, OrderType order)
 	{
-		boolean valid = false;
-		if(order != null)
+		final OrderType newOrder = new OrderType();
+		final CustomerPartyType buyer = order.getBuyerCustomerParty();
+		newOrder.setBuyerCustomerParty(buyer);
+		final SupplierPartyType seller = new SupplierPartyType();
+		seller.setParty(catalogue.getProviderParty().clone());
+		newOrder.setSellerSupplierParty(seller);
+		newOrder.setID(order.getID());
+		newOrder.setUUID(order.getUUID());
+		newOrder.setIssueDate(order.getIssueDate());
+		newOrder.setIssueTime(order.getIssueTime());
+		newOrder.setCatalogueReference(order.getCatalogueReference());
+		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
+		List<OrderLineType> newOrderLines = newOrder.getOrderLine();
+		for(CatalogueLineType catalogueline: catalogueLines)
 		{
-			final IErrorList errors = UBL21Validator.order().validate(order);
-			if(errors.containsAtLeastOneFailure())
-			{
-				logger.error(errors.toString());
-				try
-				{
-					JAXBContext jc = JAXBContext.newInstance(OrderType.class);
-					Marshaller m = jc.createMarshaller();
-					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-					m.marshal(new JAXBElement<OrderType>( new QName("", "OrderType"), OrderType.class, null, order), System.out);
-				}
-				catch (JAXBException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			else
-				valid = true;
+			final OrderLineType orderLine =  new OrderLineType();
+			final LineItemType orderLineItem = new LineItemType();
+			orderLineItem.setItem(catalogueline.getItem().clone());
+			orderLine.setLineItem(orderLineItem);
+			newOrderLines.add(orderLine);
 		}
-		return valid;
+
+		final List<OrderLineType> orderLines = order.getOrderLine();
+		for(OrderLineType orderLine: orderLines)
+		{
+			for(OrderLineType newOrderLine: newOrderLines)
+			{
+				if(orderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue().
+						equals(newOrderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue()))
+				{
+					newOrderLine.getLineItem().setQuantity(orderLine.getLineItem().getQuantity());
+					break;
+				}
+			}
+		}
+		return newOrder;
 	}
 
 	/**
-	 * Gets String representing UUID of the lastly created Catalogue Document.
+	 * Generates {@link OrderResponseType} document that conforms to the {@code UBL} standard.
+	 * @param order Order to which Order Response is to be created in this method
+	 * @return Order Response or {@code null} if Order Response does not conform to the {@code UBL}, correspondent
+	 * is not a business partner or if user has decided to abort Order Response creation
+	 */
+	public OrderResponseType produceOrderResponse(OrderType order)
+	{
+		boolean valid = false;
+		OrderResponseType orderResponse = null;
+		Catalogue catalogue = null;
+		if(myFollowingParty != null)
+			catalogue = myFollowingParty.getCatalogue();
+		if(catalogue != null)
+		{
+			orderResponse = createOrderResponse(catalogue, order);
+			valid = InstanceFactory.validateUBLDocument(orderResponse, doc -> UBL21Validator.orderResponse().validate(doc));
+		}
+		return valid ? orderResponse : null;
+	}
+
+	/**
+	 * Creates {@link OrderResponseType} document by displaying {@link OrderDialog} for entering Order Response
+	 * related data.
+	 * @param catalogue {@link CatalogueType} that is used for creating {@link OrderResponseType Order Response}
+	 * @param order Order to which response is to be made
+	 * @return created {@link OrderResponseType Order Response} or {@code null} if user has decided to abort the
+	 * creation of it
+	 */
+	private OrderResponseType createOrderResponse(Catalogue catalogue, OrderType order)
+	{
+/*		final OrderType newOrder = convertToOrder(catalogue, order);
+		final OrderResponseType orderResponse = convertToOrderResponse(newOrder);*/
+		final OrderResponseType orderResponse = convertToOrderResponse(catalogue, order);
+		return client.getClientFrame().showOrderResponseDialog("Create Order Response", orderResponse, true, null);
+	}
+
+	/**
+	 * Creates starting version of the {@link OrderResponseType}. Not all mandatory fields are filled.
+	 * @return created {@link OrderResponseType}
+	 */
+	private OrderResponseType convertToOrderResponse(OrderType order)
+	{
+		final OrderResponseType orderResponse = new OrderResponseType();
+		final String id = UUID.randomUUID().toString();
+		orderResponse.setID(id);
+		orderResponse.setUUID(id);
+		orderResponse.setSalesOrderID(order.getIDValue());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		orderResponse.setIssueDate(now);
+		orderResponse.setIssueTime(now);
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(id);
+		final DocumentReferenceType docReference = new DocumentReferenceType();
+		docReference.setID(order.getID());
+		docReference.setUUID(order.getUUIDValue());
+		docReference.setIssueDate(order.getIssueDate());
+		docReference.setIssueTime(order.getIssueTime());
+		docReference.setDocumentType(order.getClass().getName());
+		orderReference.setDocumentReference(docReference);
+		orderResponse.addOrderReference(orderReference);
+		orderResponse.setSellerSupplierParty(order.getSellerSupplierParty());
+		orderResponse.setBuyerCustomerParty(order.getBuyerCustomerParty());
+		orderResponse.setOrderLine(order.getOrderLine());
+		return orderResponse;
+	}
+
+	/**
+	 * Creates new {@link OrderResponseType} combining data of passed {@link CatalogueType} and {@link
+	 * OrderType} making the union of all items from both documents using quantities from the Order.
+	 * @param catalogue catalogue to process
+	 * @param order Order which orderLines are incorporated
+	 * @return newly created {@code OrderType}
+	 */
+	private OrderResponseType convertToOrderResponse(CatalogueType catalogue, OrderType order)
+	{
+		final OrderResponseType orderResponse = new OrderResponseType();
+		final String id = UUID.randomUUID().toString();
+		orderResponse.setID(id);
+		orderResponse.setUUID(id);
+		orderResponse.setSalesOrderID(order.getIDValue());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		orderResponse.setIssueDate(now);
+		orderResponse.setIssueTime(now);
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(UUID.randomUUID().toString());
+		final DocumentReferenceType docReference = new DocumentReferenceType();
+		docReference.setID(order.getID());
+		docReference.setUUID(order.getUUID());
+		docReference.setIssueDate(order.getIssueDate());
+		docReference.setIssueTime(order.getIssueTime());
+		docReference.setDocumentType(order.getClass().getName());
+		orderReference.setDocumentReference(docReference);
+		orderResponse.addOrderReference(orderReference);
+		orderResponse.setSellerSupplierParty(order.getSellerSupplierParty());
+		orderResponse.setBuyerCustomerParty(order.getBuyerCustomerParty());
+
+		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
+		List<OrderLineType> newOrderLines = new ArrayList<>();
+		for(CatalogueLineType catalogueline: catalogueLines)
+		{
+			final OrderLineType orderLine =  new OrderLineType();
+			final LineItemType orderLineItem = new LineItemType();
+			orderLineItem.setItem(catalogueline.getItem().clone());
+			orderLine.setLineItem(orderLineItem);
+			newOrderLines.add(orderLine);
+		}
+
+		final List<OrderLineType> orderLines = order.getOrderLine();
+		for(OrderLineType orderLine: orderLines)
+		{
+			for(OrderLineType newOrderLine: newOrderLines)
+			{
+				if(orderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue().
+						equals(newOrderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue()))
+				{
+					newOrderLine.getLineItem().setQuantity(orderLine.getLineItem().getQuantity());
+					break;
+				}
+			}
+		}
+		orderResponse.setOrderLine(newOrderLines);
+		return orderResponse;
+	}
+
+	/**
+	 * Generates {@link OrderResponseSimpleType} document that conforms to the {@code UBL} standard.
+	 * @param accepted true if Order is to be accepted; false otherwise
+	 * @param obsoleteCatalogue true if Order has been sent with the reference to some previous version
+	 * of the Catalogue
+	 * @return Order Response Simple or {@code null} if Order Response Simple does not conform to the
+	 * {@code UBL}, correspondent is not a business partner or if user has decided to abort Order
+	 * Response Simple creation
+	 */
+	public OrderResponseSimpleType produceOrderResponseSimple(OrderType order, boolean accepted, boolean obsoleteCatalogue)
+	{
+		boolean valid = false;
+		OrderResponseSimpleType orderResponseSimple = null;
+		orderResponseSimple = createOrderResponseSimple(order, accepted, obsoleteCatalogue);
+		valid = InstanceFactory.validateUBLDocument(orderResponseSimple,
+				doc -> UBL21Validator.orderResponseSimple().validate(doc));
+		return valid ? orderResponseSimple : null;
+	}
+
+	/**
+	 * Creates {@link OrderResponseSimpleType} document by displaying {@link OrderResponseSimpleDialog} for
+	 * entering Order Response Simple related data.
+	 * @param order Order upon which response is to be made
+	 * @param accepted true if Order is to be accepted; false otherwise
+	 * @param obsoleteCatalogue true if Order has been sent with the reference to some previous version
+	 * of the Catalogue
+	 * @return created {@link OrderResponseSimpleType Order Response Simple} or {@code null} if user has decided
+	 * to abort the creation of it
+	 */
+	private OrderResponseSimpleType createOrderResponseSimple(OrderType order, boolean accepted, boolean obsoleteCatalogue)
+	{
+		final OrderResponseSimpleType orderResponseSimple = convertToOrderResponseSimple(order, accepted, obsoleteCatalogue);
+		return client.getClientFrame().showOrderResponseSimpleDialog(null, orderResponseSimple, accepted, true, obsoleteCatalogue);
+	}
+
+	/**
+	 * Creates starting version of the {@link OrderResponseSimpleType}. Not all fields are filled.
+	 * @param order Order which response is to be made upon
+	 * @param accepted true if Order is to be accepted; false otherwise
+	 * @param obsoleteCatalogue true if Order has been sent with the reference to some previous version
+	 * of the Catalogue
+	 * @return {@link OrderResponseSimpleType}
+	 */
+	private OrderResponseSimpleType convertToOrderResponseSimple(OrderType order, boolean accepted, boolean obsoleteCatalogue)
+	{
+		OrderResponseSimpleType orderResponseSimple = new OrderResponseSimpleType();
+		final String id = UUID.randomUUID().toString();
+		orderResponseSimple.setID(id);
+		orderResponseSimple.setUUID(id);
+		XMLGregorianCalendar now = InstanceFactory.getDate();
+		orderResponseSimple.setIssueDate(now);
+		orderResponseSimple.setIssueTime(now);
+		orderResponseSimple.setAcceptedIndicator(accepted);
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(UUID.randomUUID().toString());
+		final DocumentReferenceType docReference = new DocumentReferenceType();
+		docReference.setID(order.getID());
+		docReference.setUUID(order.getUUIDValue());
+		docReference.setIssueDate(order.getIssueDate());
+		docReference.setIssueTime(order.getIssueTime());
+		docReference.setDocumentType(order.getClass().getName());
+		orderReference.setDocumentReference(docReference);
+		orderResponseSimple.setOrderReference(orderReference);
+		orderResponseSimple.setSellerSupplierParty(order.getSellerSupplierParty());
+		orderResponseSimple.setBuyerCustomerParty(order.getBuyerCustomerParty());
+
+		if(obsoleteCatalogue)
+		{
+			final RejectionNoteType rejectionNote =
+					new RejectionNoteType("Order is referencing an obsolete Catalogue. Please pull updates of our Catalogue from the CDR.");
+			orderResponseSimple.getRejectionNote().add(rejectionNote);
+		}
+		return orderResponseSimple;
+	}
+
+	/**
+	 * Generates {@link OrderChangeType} document that conforms to the {@code UBL} standard.
+	 * @param orderResponse Order Response to wich Order Change is to be created
+	 * @param orderChangeSequenceNumber
+	 * @return Order Change or {@code null} if Order Change does not conform to the {@code UBL}, correspondent
+	 * is not a business partner or if user has decided to abort Order Change creation
+	 */
+	public OrderChangeType produceOrderChange(OrderResponseType orderResponse, int orderChangeSequenceNumber)
+	{
+		boolean valid = false;
+		OrderChangeType orderChange = null;
+		String correspondentID = null;
+		try
+		{
+			correspondentID = orderResponse.getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+		}
+		catch(Exception e) { }
+		Catalogue catalogue = null;
+		if(correspondentID != null)
+			catalogue = getBusinessPartner(correspondentID).getCatalogue();
+		if(catalogue != null)
+		{
+			orderChange = createOrderChange(catalogue, orderResponse, orderChangeSequenceNumber);
+			if(orderChange != null)
+				valid = InstanceFactory.validateUBLDocument(orderChange, doc -> UBL21Validator.orderChange().validate(doc));
+			else
+				decreaseOrderID();
+		}
+		return valid ? orderChange : null;
+	}
+
+	/**
+	 * Creates {@link OrderChangeType} document by displaying {@link OrderChangeDialog} for entering Order Change
+	 * related data.
+	 * @param catalogue {@link CatalogueType} that is used for creating {@link OrderChangeType Order Change}
+	 * @param orderResponse Order Response to which Order Change is to be made
+	 * @param orderChangeSequenceNumber
+	 * @return created {@link OrderChangeType Order Change} or {@code null} if user has decided to abort the
+	 * creation of it
+	 */
+	private OrderChangeType createOrderChange(Catalogue catalogue, OrderResponseType orderResponse, int orderChangeSequenceNumber)
+	{
+		final OrderChangeType orderChange = convertToOrderChange(catalogue, orderResponse, orderChangeSequenceNumber);
+		return client.getClientFrame().showOrderChangeDialog("Create Order Change", orderChange, true, null);
+	}
+
+	/**
+	 * Creates new {@link OrderChangeType} combining data of passed {@link CatalogueType} and {@link
+	 * OrderResponseType} making the union of all items from both documents using quantities from the Order
+	 * Response.
+	 * @param catalogue catalogue to process
+	 * @param orderResponse Order Response which orderLines are incorporated
+	 * @param orderChangeSequenceNumber
+	 * @return newly created {@code OrderChangeType}
+	 */
+	private OrderChangeType convertToOrderChange(CatalogueType catalogue, OrderResponseType orderResponse,
+			int orderChangeSequenceNumber)
+	{
+		final OrderChangeType orderChange = new OrderChangeType();
+		final String id = String.valueOf(nextOrderID());
+		orderChange.setID(id);
+		orderChange.setUUID(UUID.randomUUID().toString());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		orderChange.setIssueDate(now);
+		orderChange.setIssueTime(now);
+		orderChange.setSequenceNumberID(String.valueOf(orderChangeSequenceNumber));
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(UUID.randomUUID().toString());
+		final DocumentReferenceType docReference = orderResponse.getOrderReferenceAtIndex(0).getDocumentReference();
+		orderReference.setDocumentReference(docReference);
+		orderChange.setOrderReference(orderReference);
+		orderChange.setSellerSupplierParty(orderResponse.getSellerSupplierParty());
+		orderChange.setBuyerCustomerParty(orderResponse.getBuyerCustomerParty());
+
+		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
+		List<OrderLineType> newOrderLines = new ArrayList<>();
+		for(CatalogueLineType catalogueline: catalogueLines)
+		{
+			final OrderLineType orderLine =  new OrderLineType();
+			final LineItemType orderLineItem = new LineItemType();
+			orderLineItem.setItem(catalogueline.getItem().clone());
+			orderLine.setLineItem(orderLineItem);
+			newOrderLines.add(orderLine);
+		}
+
+		final List<OrderLineType> orderLines = orderResponse.getOrderLine();
+		for(OrderLineType orderLine: orderLines)
+		{
+			for(OrderLineType newOrderLine: newOrderLines)
+			{
+				if(orderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue().
+						equals(newOrderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue()))
+				{
+					newOrderLine.getLineItem().setQuantity(orderLine.getLineItem().getQuantity());
+					break;
+				}
+			}
+		}
+		orderChange.setOrderLine(newOrderLines);
+		return orderChange;
+	}
+
+
+	/**
+	 * Generates {@link OrderCancellationType} document that conforms to the {@code UBL} standard.
+	 * @param orderResponse Order Response to wich Order Cancellation is to be created
+	 * @return Order Cancellation or {@code null} if Order Cancellation does not conform to the {@code UBL}, correspondent
+	 * is not a business partner or if user has decided to abort Order Cancellation creation
+	 */
+	public OrderCancellationType produceOrderCancellation(OrderResponseType orderResponse)
+	{
+		boolean valid = false;
+		OrderCancellationType orderCancellation = null;
+		orderCancellation = createOrderCancellation(orderResponse);
+		valid = InstanceFactory.validateUBLDocument(orderCancellation, doc -> UBL21Validator.orderCancellation().validate(doc));
+		return valid ? orderCancellation : null;
+	}
+
+	/**
+	 * Creates {@link OrderCancellationType} document by displaying {@link OrderCancellationDialog} for entering Order Cancellation
+	 * related data.
+	 * @param orderResponse Order Response to which Order Cancellation is to be made
+	 * @return created {@link OrderCancellationType Order Cancellation} or {@code null} if user has decided to abort the
+	 * creation of it
+	 */
+	private OrderCancellationType createOrderCancellation(OrderResponseType orderResponse)
+	{
+		final OrderCancellationType orderCancellation = convertToOrderCancellation(orderResponse);
+		return client.getClientFrame().showOrderCancellationDialog("Create Order Cancellation", orderCancellation, true, null);
+	}
+
+	/**
+	 * Creates new {@link OrderCancellationType} using data of passed {@link OrderResponseType}.
+	 * @param orderResponse Order Response which data are incorporated
+	 * @return newly created {@code OrderCancellationType}
+	 */
+	private OrderCancellationType convertToOrderCancellation(OrderResponseType orderResponse)
+	{
+		final OrderCancellationType orderCancellation = new OrderCancellationType();
+		final String id = String.valueOf(nextOrderID());
+		orderCancellation.setID(id);
+		orderCancellation.setUUID(UUID.randomUUID().toString());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		orderCancellation.setIssueDate(now);
+		orderCancellation.setIssueTime(now);
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(UUID.randomUUID().toString());
+		final DocumentReferenceType docReference = orderResponse.getOrderReferenceAtIndex(0).getDocumentReference();
+		orderReference.setDocumentReference(docReference);
+		orderCancellation.addOrderReference(orderReference);
+		orderCancellation.setSellerSupplierParty(orderResponse.getSellerSupplierParty());
+		orderCancellation.setBuyerCustomerParty(orderResponse.getBuyerCustomerParty());
+
+		return orderCancellation;
+	}
+
+	/**
+	 * Creates {@link ApplicationResponseType} document.
+	 * @param applicationResponse Order Response Simple to which Application Response is to be made
+	 * @return created {@link ApplicationResponseType Application Response}
+	 */
+	@Deprecated
+	private ApplicationResponseType createApplicationResponse(OrderResponseSimpleType orderResponseSimple)
+	{
+		PartyType senderParty = orderResponseSimple.getBuyerCustomerParty().getParty();
+		PartyType receiverParty = orderResponseSimple.getSellerSupplierParty().getParty();
+		String uuid = orderResponseSimple.getUUIDValue();
+		String id = orderResponseSimple.getIDValue();
+		String responseCode = InstanceFactory.APP_RESPONSE_POSITIVE;
+		return InstanceFactory.createApplicationResponse(senderParty, receiverParty, uuid, id, responseCode);
+	}
+
+	/**
+	 * Gets String representing UUID of the most recently created Catalogue Document.
 	 * @return UUID of lastly created Catalogue as String
 	 */
 	private String getCatalogueUUID()
@@ -2073,7 +2449,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Gets String representing UUID of the lastly created {@link CatalogueDeletionType} document.
+	 * Gets String representing UUID of the most recently created {@link CatalogueDeletionType} document.
 	 * @return UUID of lastly created {@code CatalogueDeletion} as String
 	 */
 	private String getCatalogueDeletionUUID()
@@ -2084,7 +2460,7 @@ public class MyParty extends BusinessParty
 	/**
 	 * Checks whether all {@link Item items} in the list have a name that differs from an empty string.
 	 * @param myProducts list of items
-	 * @return true if all item have a name, false otherwise
+	 * @return true if all items have a proper name, false otherwise
 	 */
 	private boolean checkProductNames(List<Item> myProducts)
 	{
@@ -2571,7 +2947,6 @@ public class MyParty extends BusinessParty
 	{
 		if(BusinessParty.sameParties(this, party))
 		{
-			final String oldName = myFollowingParty.getPartySimpleName();
 			myFollowingParty.setCoreParty(party);
 			myFollowingParty.setRecentlyUpdated(true);
 			notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.PARTY_UPDATED));
@@ -2583,7 +2958,6 @@ public class MyParty extends BusinessParty
 			{
 				if(BusinessParty.sameParties(bParty, party))
 				{
-					final String oldName = bParty.getPartySimpleName();
 					bParty.setCoreParty(party);
 					bParty.setRecentlyUpdated(true);
 					notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_UPDATED));
@@ -2601,7 +2975,7 @@ public class MyParty extends BusinessParty
 	 */
 	public void processDocBoxCatalogueDeletion(CatalogueDeletionType catDeletion)
 	{
-		PartyType provider = catDeletion.getProviderParty();
+		final PartyType provider = catDeletion.getProviderParty();
 		if(BusinessParty.sameParties(this, provider))
 		{
 			myFollowingParty.setCatalogue(null);
@@ -2631,7 +3005,7 @@ public class MyParty extends BusinessParty
 	 * @param notice deregistration notice to process
 	 * @throws DetailException if party could not be updated in the data store
 	 */
-	public void processDocBoxDeregistrationNotice(DeregistrationNotice notice) throws DetailException
+	public synchronized void processDocBoxDeregistrationNotice(DeregistrationNotice notice) throws DetailException
 	{
 		PartyType party = notice.getParty();
 		final List<BusinessParty> followingParties = getFollowingParties();
@@ -2647,57 +3021,225 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Processes {@link OrderType order} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
-	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
-	 * @param order order to process
-	 * @return TODO
+	 * Processes {@link OrderType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * @param order Order to process
+	 * @throws DetailException if correspondent could not be found, order already received, or new
+	 * correspondence could not be inserted into the data store
 	 */
-	public String processDocBoxOrder(OrderType order) throws DetailException
+	public void processDocBoxOrder(OrderType order) throws DetailException
 	{
-		final String correspondentID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
-		final PartyType correspondentParty = order.getBuyerCustomerParty().getParty();
-		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, correspondentID, false);
-		((SellerOrderingProcess) newCorr.getState()).setOrder(order);
+		String correspondentID = null;
+		try
+		{
+			correspondentID = order.getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+		}
+		catch(Exception e)
+		{
+			throw new DetailException("Failed to extract correspondent Party's ID!", e);
+		}
+		final BusinessParty correspondentParty = getBusinessPartner(correspondentID);
+		if(correspondentParty == null)
+			throw new DetailException("Failed to find the correspondent Party!");
+		if(findCorrespondence(correspondentID, order.getUUIDValue()) != null)
+			throw new DetailException("Order " + order.getIDValue() + " has been already received and processed.");
+		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, false);
 		addBuyingCorrespondence(newCorr);
+		newCorr.storeDocument(order);
+		((OrderingProcess) newCorr.getState()).setOrder(order);
 		newCorr.addDocumentReference(order.getBuyerCustomerParty().getParty(), order.getUUIDValue(),
 				order.getIDValue(), order.getIssueDateValue(), order.getIssueTimeValue(),
-				order.getClass().getName(), this);
+				order.getClass().getName(), null);
 		newCorr.start();
 		newCorr.setRecentlyUpdated(true);
-		return newCorr.getName();
 	}
 
 	/**
-	 * Processes {@link OrderType order} document by appending it to proper {@link BuyingCorrespondence correspondence}.
-	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
-	 * @param orderResponseSimple order to process
-	 * @throws DetailException if proper {@link Correspondence} could not be found
+	 * Processes {@link OrderResponseType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * @param orderResponse Order Response to process
+	 * @throws DetailException if document could not be matched with proper {@link Correspondence}
+	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
+	 */
+	public void processDocBoxOrderResponse(OrderResponseType orderResponse) throws DetailException, InterruptedException
+	{
+		final String correspondentID = orderResponse.getSellerSupplierParty().getParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final String orderUUID = orderResponse.getOrderReferenceAtIndex(0).getDocumentReference().getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence is closed or could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		{
+			final RutaProcess process =  (RutaProcess) corr.getState();
+			if(process instanceof BuyerOrderingProcess &&
+					process.getState() instanceof BuyerReceiveOrderResponseState)
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(orderResponse);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(orderResponse.getSellerSupplierParty().getParty(),
+						orderResponse.getUUIDValue(), orderResponse.getIDValue(),
+						orderResponse.getIssueDateValue(), orderResponse.getIssueTimeValue(),
+						orderResponse.getClass().getName(), null);
+				((BuyerOrderingProcess) process).setOrderResponse(orderResponse);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else
+				throw new DetailException("Order Response " + orderResponse.getIDValue() +
+						" does not belong to the current state of the correspondence.");
+		}
+	}
+
+	/**
+	 * Processes {@link OrderResponseSimpleType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * @param orderCancellation Order Response Simple to process
+	 * @throws DetailException if document could not be matched with proper {@link Correspondence}
 	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
 	 */
 	public void processDocBoxOrderResponseSimple(OrderResponseSimpleType orderResponseSimple) throws DetailException, InterruptedException
 	{
 		final String correspondentID = orderResponseSimple.getSellerSupplierParty().getParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
-		final IDType orderID = orderResponseSimple.getOrderReference().getDocumentReference().getID();
-		final Correspondence corr = findCorrespondence(correspondentID, orderID);
+		final String orderUUID = orderResponseSimple.getOrderReference().getDocumentReference().getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
-			throw new DetailException("Matching correspondence could not be found.");
-		else
+			throw new DetailException("Matching correspondence is closed or could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
-			if(!corr.isAlive())
-				corr.start();
-			corr.waitThreadBlocked();
+			final RutaProcess process =  (RutaProcess) corr.getState();
+			if(process instanceof BuyerOrderingProcess &&
+					process.getState() instanceof BuyerReceiveOrderResponseState)
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(orderResponseSimple);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
+						orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
+						orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
+						orderResponseSimple.getClass().getName(), null);
+				((BuyerOrderingProcess) process).setOrderResponseSimple(orderResponseSimple);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else
+				throw new DetailException("Order Response Simple " + orderResponseSimple.getIDValue()
+				+ " does not belong to the current state of the correspondence.");
+		}
+	}
 
-			corr.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
-					orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
-					orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
-					orderResponseSimple.getClass().getName(), this);
-			((BuyerOrderingProcess) corr.getState()).setOrderResponseSimple(orderResponseSimple);
-			corr.setRecentlyUpdated(true);
+	/**
+	 * Processes {@link OrderChangeType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * @param orderChange Order Change to process
+	 * @throws DetailException if document could not be matched with proper {@link Correspondence}
+	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
+	 */
+	public void processDocBoxOrderChange(OrderChangeType orderChange) throws DetailException, InterruptedException
+	{
+		final String correspondentID = orderChange.getBuyerCustomerParty().getParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final String orderUUID = orderChange.getOrderReference().getDocumentReference().getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence is closed or could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		{
+			final RutaProcess process =  (RutaProcess) corr.getState();
+			if(process instanceof SellerOrderingProcess &&
+					process.getState() instanceof SellerReceiveOrderChangeCancellationState)
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(orderChange);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(orderChange.getBuyerCustomerParty().getParty(),
+						orderChange.getUUIDValue(), orderChange.getIDValue(),
+						orderChange.getIssueDateValue(), orderChange.getIssueTimeValue(),
+						orderChange.getClass().getName(), null);
+				((SellerOrderingProcess) process).setOrderChange(orderChange);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else
+				throw new DetailException("Order Change " + orderChange.getIDValue()
+				+ " does not belong to the current state of the correspondence.");
+		}
+	}
 
-			corr.proceed();
+	/**
+	 * Processes {@link OrderCancellationType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * @param orderCancellation Order Cancellation to process
+	 * @throws DetailException if document could not be matched with proper {@link Correspondence}
+	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
+	 */
+	public void processDocBoxOrderCancellation(OrderCancellationType orderCancellation) throws DetailException, InterruptedException
+	{
+		final String correspondentID = orderCancellation.getBuyerCustomerParty().getParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final String orderUUID = orderCancellation.getOrderReferenceAtIndex(0).getDocumentReference().getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence is closed or could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		{
+			final RutaProcess process =  (RutaProcess) corr.getState();
+			if(process instanceof SellerOrderingProcess &&
+					process.getState() instanceof SellerReceiveOrderChangeCancellationState)
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(orderCancellation);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(orderCancellation.getBuyerCustomerParty().getParty(),
+						orderCancellation.getUUIDValue(), orderCancellation.getIDValue(),
+						orderCancellation.getIssueDateValue(), orderCancellation.getIssueTimeValue(),
+						orderCancellation.getClass().getName(), null);
+				((SellerOrderingProcess) process).setOrderCancellation(orderCancellation);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else
+				throw new DetailException("Order Cancellation" + orderCancellation.getIDValue() +
+						" does not belong to the current state of the correspondence.");
+		}
+	}
 
-			int i = 2;
+	/**
+	 * Processes {@link ApplicationResponseType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
+	 * @param applicationResponse Application Response to process
+	 * @throws DetailException if document could not be matched with a proper {@link Correspondence}
+	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
+	 */
+	public void processDocBoxApplicationResponse(ApplicationResponseType applicationResponse) throws DetailException, InterruptedException
+	{
+		final String correspondentID = applicationResponse.getSenderParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final String docUUID = applicationResponse.getDocumentResponseAtIndex(0).getDocumentReferenceAtIndex(0).getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, docUUID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence is closed or could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		{
+			final RutaProcess process =  (RutaProcess) corr.getState();
+			if(process instanceof SellerOrderingProcess &&
+					process.getState() instanceof SellerReceiveOrderChangeCancellationState) //MMM expand with else branch for Billing Process
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(applicationResponse);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(applicationResponse.getSenderParty(),
+						applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
+						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
+						applicationResponse.getClass().getName(), null);
+				((SellerOrderingProcess) process).setApplicationResponse(applicationResponse);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else
+				throw new DetailException("Application Response" + applicationResponse.getIDValue() +
+						" does not belong to the current state of the correspondence.");
 		}
 	}
 
@@ -2707,12 +3249,12 @@ public class MyParty extends BusinessParty
 	 */
 	public void executeCreateCatalogueProcess() throws InterruptedException
 	{
-		catalogueCorrespondence.setCreateCatalogueProcess(true);
 		if(catalogueCorrespondence == null)
 		{
 			catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
 			notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 		}
+		catalogueCorrespondence.setCreateCatalogueProcess(true);
 		if(!catalogueCorrespondence.isAlive())
 			catalogueCorrespondence.start();
 		catalogueCorrespondence.waitThreadBlocked();
@@ -2725,12 +3267,12 @@ public class MyParty extends BusinessParty
 	 */
 	public void executeDeleteCatalogueProcess() throws InterruptedException
 	{
-		catalogueCorrespondence.setCreateCatalogueProcess(false);
 		if(catalogueCorrespondence == null)
 		{
 			catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
 			notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 		}
+		catalogueCorrespondence.setCreateCatalogueProcess(false);
 		if(!catalogueCorrespondence.isAlive())
 			catalogueCorrespondence.start();
 		catalogueCorrespondence.waitThreadBlocked();
@@ -2753,10 +3295,10 @@ public class MyParty extends BusinessParty
 	/**
 	 * Finds {@link Correspondence} with particular party that contains particular document.
 	 * @param correspondentID ID of the correspondent party
-	 * @param docID {@link IDType id} of the document
+	 * @param docUUID UUID of the document as String
 	 * @return {@code Correspondence} or {@code null} if no correspondence is found
 	 */
-	public Correspondence findCorrespondence(final String correspondentID, final IDType docID)
+	public Correspondence findCorrespondence(final String correspondentID, final String docUUID)
 	{
 		final List<Correspondence> corrs = findAllCorrespondences(correspondentID);
 		final List<Correspondence> foundCorrs;
@@ -2765,45 +3307,12 @@ public class MyParty extends BusinessParty
 		{
 			foundCorrs = corrs.stream().filter(elem -> elem.isActive()).
 					filter(elem -> ! elem.getDocumentReferences().stream().
-							filter(ref -> docID.getValue().equals(ref.getIDValue())).collect(Collectors.toList()).isEmpty()).
+							filter(ref -> docUUID.equals(ref.getUUIDValue())).collect(Collectors.toList()).isEmpty()).
 					collect(Collectors.toList());
 			if(foundCorrs.size() == 1)
 				corr = foundCorrs.get(0);
 		}
 		return corr;
-	}
-
-	/**
-	 * Creates new {@link OrderType} incorporating data of passed {@link CatalogueType}
-	 * @param catalogue catalogue to process
-	 * @return newly created {@code OrderType}
-	 */
-	public OrderType convertToOrder(Catalogue catalogue)
-	{
-		OrderType order = new OrderType();
-		final CustomerPartyType buyer = new CustomerPartyType();
-		buyer.setParty(getCoreParty());
-		order.setBuyerCustomerParty(buyer);
-		final SupplierPartyType seller = new SupplierPartyType();
-		seller.setParty(catalogue.getProviderParty());
-		order.setSellerSupplierParty(seller);
-		final String orderID = String.valueOf(nextOrderID());
-		order.setID(orderID);
-		order.setUUID(UUID.randomUUID().toString());
-		final XMLGregorianCalendar now = InstanceFactory.getDate();
-		order.setIssueDate(now); //MMM this issue time should be set when the button for sending the order is pressed in the dialogue
-		order.setIssueTime(now);
-		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
-		List<OrderLineType> orderLines = order.getOrderLine();
-		for(CatalogueLineType catalogueline: catalogueLines)
-		{
-			OrderLineType orderLine =  new OrderLineType();
-			LineItemType orderLineItem = new LineItemType();
-			orderLineItem.setItem(catalogueline.getItem());
-			orderLine.setLineItem(orderLineItem);
-			orderLines.add(orderLine);
-		}
-		return order;
 	}
 
 }

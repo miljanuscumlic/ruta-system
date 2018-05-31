@@ -71,7 +71,7 @@ import rs.ruta.common.datamapper.DataMapper;
  */
 public abstract class XmlMapper<T> implements DataMapper<T, String>
 {
-	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.common.datamapper");
+	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 	private final DSTransactionFactory transactionFactory;
 	/** True when database transaction has failed.*/
 	private volatile static boolean transactionFailure = true;
@@ -96,7 +96,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		connector.checkCollection(getQueryPath());
 	}
 
-	/**Gets the {@link ExistConnector} instance responsible for connection to the database.
+	/**
+	 * Gets the {@link ExistConnector} instance responsible for connection to the database.
 	 * @return
 	 */
 	public ExistConnector getConnector()
@@ -104,12 +105,17 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return connector;
 	}
 
+	/**
+	 * Gets the path to the query file in the database.
+	 * @return {@code String} representing the path
+	 */
 	protected String getQueryPath()
 	{
 		return ExistConnector.getQueryPath();
 	}
 
-	/**Gets absolute path of the main collection of the Ruta application. Path is a String
+	/**
+	 * Gets absolute path of the main collection of the Ruta application. Path is a String
 	 * representing the URL of the collection.
 	 * @return {@code String} representing absolute path
 	 */
@@ -118,7 +124,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return ExistConnector.getAbsoluteRutaCollectionPath();
 	}
 
-	/**Gets relative path of the main collection of the Ruta application. Path is relative to
+	/**
+	 * Gets relative path of the main collection of the Ruta application. Path is relative to
 	 * the {@code /db} which is main collection of the eXist database.
 	 * @return {@code String} representing relative path
 	 */
@@ -245,11 +252,12 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return object;
 	}
 
-	/**Retrieves object with passed id directly from the database not going through cached in-memory objects.
+	/**
+	 * Retrieves object with passed id directly from the database not going through cached in-memory objects.
 	 * <p>Method does not use transactions.
 	 * @param id object's id
 	 * @return retrived object or {@code null} if object doesn't exist
-	 * @throws DetailException if collection or document could not be retrieved
+	 * @throws DetailException if collection or document could not be retrieved due to database connectivity issues
 	 */
 	protected T retrieve(String id) throws DetailException
 	{
@@ -1943,7 +1951,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return ((UserXmlMapper) mapperRegistry.getMapper(RutaUser.class)).getID(username);
 	}
 
-	/**Retrieves object's ID from the database. ID is the result of the querying the database
+	/**
+	 * Retrieves object's ID from the database. ID is the result of the querying the database
 	 * based on the ID user has been given.
 	 * @param userID user's ID must not be {@code null}
 	 * @return id of the object in the database or {@code null} if object is not stored in the database
@@ -1954,10 +1963,11 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return ((PartyIDXmlMapper) mapperRegistry.getMapper(PartyID.class)).getIDByUserID(userID);
 	}
 
-	/**Retrieves user's ID from the database. ID is the result of the querying the database
+	/**
+	 * Retrieves user's ID from the database. ID is the result of the querying the database
 	 * based on the object's ID.
 	 * @param id object's ID
-	 * @return id of the user in the database or {@code null} if user is not registered //MMM: check this ?????
+	 * @return id of the user in the database or {@code null} if user is not registered
 	 * @throws DetailException if there is a database connectivity issue during retrieval of the ID
 	 */
 	public String getUserIDByID(String id) throws DetailException
@@ -1971,7 +1981,17 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return mapperRegistry.getMapper(RutaUser.class).getUserID(username);
 	}
 
-	/**Updates the object in the data store.
+	@Override
+	public boolean checkUser(String partyID) throws DetailException
+	{
+		if (((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).findByUserId(partyID) != null)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Updates the object in the data store.
 	 * @param username user's username
 	 * @param object object to be updated
 	 * @param transaction data store transaction which update is part of

@@ -1,13 +1,19 @@
 package rs.ruta.client.gui;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.swing.table.DefaultTableModel;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.client.correspondence.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 
 /**
- * Data model for a table displaying one {@link Correspondence} of a party.
+ * Data model for a orderLinesTable displaying one {@link Correspondence} of a party.
  */
 public class CorrespondenceTableModel extends DefaultTableModel
 {
@@ -15,7 +21,7 @@ public class CorrespondenceTableModel extends DefaultTableModel
 
 	private static String[] columnNames =
 		{
-				"No.", "From", "Document Type", "ID", "Issue Time", "Receipt Time"
+				"No.", "From", "Document Type", "ID", "Issue Time", "Added Time", "Status"
 		};
 
 	private Correspondence corr;
@@ -29,6 +35,12 @@ public class CorrespondenceTableModel extends DefaultTableModel
 	public boolean isCellEditable(int row, int column)
 	{
 		return false;
+	}
+
+
+	public Correspondence getCorrespondence()
+	{
+		return corr;
 	}
 
 	public void setCorrespondence(Correspondence corr)
@@ -57,47 +69,40 @@ public class CorrespondenceTableModel extends DefaultTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		switch(columnIndex)
+		final DocumentReference documentReference = corr.getDocumentReferenceAtIndex(rowIndex);
+		if(documentReference != null)
 		{
-		case 0:
-			return rowIndex + 1;
-		case 1:
-			try
+			switch(columnIndex)
 			{
-				return corr.getDocumentReferenceAtIndex(rowIndex).getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-			}
-			catch(Exception e)
-			{
+			case 0:
+				return rowIndex + 1;
+			case 1:
+				try
+				{
+					return documentReference.getIssuerParty().getPartyNameAtIndex(0).getNameValue();
+				}
+				catch(Exception e)
+				{
+					return null;
+				}
+			case 2:
+				return InstanceFactory.getDocumentName(documentReference.getDocumentTypeValue());
+			case 3:
+				return documentReference.getIDValue();
+			case 4:
+				final XMLGregorianCalendar issueDate = documentReference.getIssueDateValue();
+				final XMLGregorianCalendar issueTime = documentReference.getIssueTimeValue();
+				return InstanceFactory.getLocalDateTimeAsString(InstanceFactory.mergeDateTime(issueDate, issueTime));
+			case 5:
+				final XMLGregorianCalendar receivedTime = documentReference.getReceivedTime();
+				return InstanceFactory.getLocalDateTimeAsString(receivedTime);
+			case 6:
+				return documentReference.getStatus();
+			default:
 				return null;
 			}
-		case 2:
-			return getDocumentType(rowIndex);
-		case 3:
-			return corr.getDocumentReferenceAtIndex(rowIndex).getIDValue();
-		case 4:
-			final XMLGregorianCalendar issueDate = corr.getDocumentReferenceAtIndex(rowIndex).getIssueDateValue();
-			final XMLGregorianCalendar issueTime = corr.getDocumentReferenceAtIndex(rowIndex).getIssueTimeValue();
-			return InstanceFactory.getLocalDateTimeAsString(InstanceFactory.mergeDateTime(issueDate, issueTime));
-		case 5:
-			final XMLGregorianCalendar receivedTime = corr.getDocumentReferenceAtIndex(rowIndex).getReceivedTime();
-			return InstanceFactory.getLocalDateTimeAsString(receivedTime);
-		default:
-			return null;
 		}
-	}
-
-	/**
-	 * Strips the string so that just name of the document type is returned.
-	 * @param index index of document reference inside the correspondence
-	 * @return document type name
-	 */
-	private String getDocumentType(int index)
-	{
-		String docType = corr.getDocumentReferenceAtIndex(index).getDocumentTypeValue();
-		if(docType.contains("."))
-			docType = docType.substring(docType.lastIndexOf(".") + 1);
-		if(docType.endsWith("Type"))
-			docType = docType.substring(0, docType.lastIndexOf("Type"));
-		return docType;
+		else
+			return null;
 	}
 }

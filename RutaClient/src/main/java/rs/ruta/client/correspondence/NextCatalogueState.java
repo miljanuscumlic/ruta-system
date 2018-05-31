@@ -13,20 +13,17 @@ public class NextCatalogueState extends ResolveNextCatalogueProcessState
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
 		try
 		{
 			correspondence.block();
+			((RutaProcess) correspondence.getState()).setActive(false);
 		}
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped()) //non-intentional interruption
-				throw new StateTransitionException("Correspondence has been interrupted!");
-		}
-		finally
-		{
-			((RutaProcess) correspondence.getState()).setActive(false);
+				throw new StateActivityException("Correspondence has been interrupted!");
 		}
 	}
 }

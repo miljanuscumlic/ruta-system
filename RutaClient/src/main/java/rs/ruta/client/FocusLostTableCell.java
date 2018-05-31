@@ -7,7 +7,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
 
 /**
- *{@link JTextField Text field} contained in the cell of the {@link JTable table} that enables the
+ *{@link JTextField Text field} contained in the cell of the {@link JTable orderLinesTable} that enables the
  *data entered in the cell to be saved in the model after the focus has been lost i.e. has been transfered
  *to some other GUI component.
  */

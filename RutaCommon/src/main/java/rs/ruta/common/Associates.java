@@ -71,6 +71,17 @@ public class Associates
 	}
 
 	/**
+	 * Gets the {@code Party ID} of the associate from the list at the index.
+	 * @param index index of a Party
+	 * @return Party ID
+	 * @throws IndexOutOfBoundsException if index is invalid
+	 */
+	public String getAssociateAtIndex(int index)
+	{
+		return associateIDs.get(index);
+	}
+
+	/**
 	 * Appends associate's IDs from the {@code Associates} object to the list of associate's IDs of this .
 	 * @param associates
 	 */

@@ -15,11 +15,12 @@ public class ReceiveCatalogueDeletionAppResponseState extends DeleteCataloguePro
 	}
 
 	@Override
-	public void doActivity(Correspondence correspondence)
+	public void doActivity(Correspondence correspondence) throws StateActivityException
 	{
 		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final Future<?> future = process.getFuture();
-		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueDeletionAppResponse(future);
+		final DocumentReference documentReference = correspondence.getLastDocumentReference();
+		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueDeletionAppResponse(future, documentReference, correspondence);
 		if(accepted != null)
 		{
 			RutaProcessState newState = null;
@@ -30,7 +31,7 @@ public class ReceiveCatalogueDeletionAppResponseState extends DeleteCataloguePro
 			process.changeState(newState);
 		}
 		else
-			throw new StateTransitionException("Invalid Application Response code!");
+			throw new StateActivityException("Invalid Application Response code!");
 	}
 
 }

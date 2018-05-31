@@ -1,10 +1,11 @@
 package rs.ruta.client.correspondence;
 
+import java.awt.Color;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.client.RutaClient;
-import rs.ruta.client.gui.RutaClientFrame;
 
 @XmlRootElement(name = "BuyerPrepareOrderState")
 public class BuyerPrepareOrderState extends BuyerOrderingProcessState
@@ -19,57 +20,47 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		final RutaProcess process = (RutaProcess) correspondence.getState();
-		if(prepareOrder(process, correspondence.getCorrespondentID()))
+		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
+		final OrderType order = prepareOrder(process, correspondence.getCorrespondentID());
+		if(order != null)
 		{
+			saveOrder(correspondence, order);
 			changeState(process, BuyerSendOrderState.getInstance());
 		}
 		else
 		{
-			correspondence.setCanceled(true);
-			changeState(process, EndOfProcessState.getInstance());
+			correspondence.setDiscarded(true);
+			changeState(process, ClosingState.getInstance());
 		}
-
 	}
 
 	/**
-	 * Prepares blank {@link OrderType order} populating it with the data from correspondent's
-	 * {@link CatalogueType catalogue}.
+	 * Creates {@link OrderType orderLines} populating it with the data.
 	 * @param process process that this state belongs to
 	 * @param correspondentID correspondent's ID
-	 * @return true if order is prepared; false if order creation has been canceled by the user
+	 * @return prepared Order or {@code null} if order creation has been failed or has been discarded
+	 * by the user, or Order does not conform to the {@code UBL} standard
 	 */
-	private boolean prepareOrder(RutaProcess process, String correspondentID)
+	private OrderType prepareOrder(RutaProcess process, String correspondentID)
 	{
-		boolean success = false;
 		final RutaClient client = process.getClient();
-		final OrderType order = client.getMyParty().produceOrder(correspondentID);
-		if(order != null)
-		{
-			((BuyerOrderingProcess) process).setOrder(order);
-			success = true;
-		}
-		return success;
+		client.getClientFrame().appendToConsole(new StringBuilder("Collecting data and preparing the Order..."), Color.BLACK);
+		return client.getMyParty().produceOrder(correspondentID);
 	}
 
 	/**
-	 * Prepares blank {@link OrderType order} populating it with the data from correspondent's
-	 * {@link CatalogueType catalogue}.
-	 * @param process process that this state belongs to
-	 * @param correspondentID correspondent's ID
-	 * @return true if order is prepared; false if order creation has been canceled by the user
+	 * Sets Order in the process, adds it's {@link DocumentReference} to the correspondence and stores it
+	 * in the database.
+	 * @param correspondence which order is part of
+	 * @param order order to save
 	 */
-	private boolean prepareOrderOLD(RutaProcess process, String correspondentID)
+	private void saveOrder(Correspondence correspondence, OrderType order)
 	{
-		boolean success = false;
-		final RutaClient client = process.getClient();
-		final RutaClientFrame clientFrame = client.getClientFrame();
-		final OrderType order = clientFrame.showOrderDialogOLD("New Order", correspondentID);
-		if(order != null)
-		{
-			((BuyerOrderingProcess) process).setOrder(order);
-			success = true;
-		}
-		return success;
+		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
+		((BuyerOrderingProcess) process).setOrder(order);
+		correspondence.addDocumentReference(order.getBuyerCustomerParty().getParty(),
+				order.getUUIDValue(), order.getIDValue(), order.getIssueDateValue(),
+				order.getIssueTimeValue(), order.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		correspondence.storeDocument(order);
 	}
 }

@@ -14,13 +14,19 @@ public class BuyerSendOrderState extends BuyerOrderingProcessState
 	@Override
 	public void doActivity(Correspondence correspondence)
 	{
-		final RutaProcess process = (RutaProcess) correspondence.getState();
-			final OrderType order = ((BuyerOrderingProcess) process).getOrder();
-			process.getClient().cdrSendOrder(order);
-			correspondence.addDocumentReference(correspondence.getClient().getMyParty().getCoreParty(),
-					order.getUUIDValue(), order.getIDValue(), order.getIssueDateValue(),
-					order.getIssueTimeValue(), order.getClass().getName(),
-					correspondence.getClient().getMyParty());
+		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
+		final OrderType order = process.getOrder(correspondence);
+		if(order != null)
+		{
+			DocumentReference documentReference = correspondence.getDocumentReference(order.getUUIDValue());
+			process.getClient().cdrSendDocument(order, documentReference, correspondence);
 			changeState(process, BuyerReceiveOrderResponseState.getInstance());
+		}
+		else
+		{
+//			correspondence.updateDocumentStatus(correspondence.getLastDocumentReference(OrderType.class),
+//					DocumentReference.Status.CLIENT_FAILED);
+			throw new StateActivityException("Order has not been sent to the CDR service! Order could not be found!");
+		}
 	}
 }

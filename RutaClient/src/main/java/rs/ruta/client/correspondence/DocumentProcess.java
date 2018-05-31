@@ -6,7 +6,7 @@ package rs.ruta.client.correspondence;
  * process for{@link CreateCatalogueProcess creation and distribution of the catalogue}, for
  * {@link BillingProcess making and sending invoce} etc.
  */
-public class DocumentProcess extends RutaProcess implements RutaProcessState
+public abstract class DocumentProcess extends RutaProcess implements RutaProcessState
 {
 
 }

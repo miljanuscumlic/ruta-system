@@ -18,14 +18,16 @@ import rs.ruta.common.CatalogueSearchCriterion;
  */
 public interface DataMapper<T, ID>
 {
-	/**Retrieves object with passed id from the data store.
+	/**
+	 * Retrieves object with passed id from the data store.
 	 * @param id id of the object to be retrieved
 	 * @return found object or <code>null</code> if object doesn't exist
-	 * @throws DetailException if object could not be retrived
+	 * @throws DetailException if object could not be retrived due to data store connectivity issues
 	 */
 	public T find(ID id) throws DetailException;
 
-	/**Retrieves object from the data store. Object is identified by the user's ID.
+	/**
+	 * Retrieves object from the data store. Object is identified by the user's ID.
 	 * @param id user's ID
 	 * @return found object or {@code null} if object doesn't exist
 	 * @throws DetailException if there is more than one object with the same ID
@@ -33,7 +35,8 @@ public interface DataMapper<T, ID>
 	public T findByUserId(ID id) throws DetailException;
 
 	//MMM: check whether this method is necessary
-	/**Retrieves object from the data store. Object is identified by the user's username
+	/**
+	 * Retrieves object from the data store. Object is identified by the user's username
 	 * @param username user's username
 	 * @return found object or {@code null} if object doesn't exist
 	 * @throws DetailException if user is not registered, ID could not be retrieved
@@ -218,7 +221,7 @@ public interface DataMapper<T, ID>
 
 	/**
 	 * Checks the datastore setup.
-	 * @throws DetailException if datastore could be successfully checked
+	 * @throws DetailException if data store could be successfully checked
 	 */
 	default public void checkDatastoreSetup() throws DetailException { }
 
@@ -226,5 +229,13 @@ public interface DataMapper<T, ID>
 	 * Clears cache i.e. in memory objects.
 	 */
 	default public void clearCache() { }
+
+	/**
+	 * Checks whether the user is registered with the data store.
+	 * @param partyID ID of the user's party object
+	 * @return true if user is registered, false otherwise
+	 * @throws DetailException
+	 */
+	public boolean checkUser(String partyID) throws DetailException;
 
 }

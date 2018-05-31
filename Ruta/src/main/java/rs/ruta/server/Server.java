@@ -7,12 +7,16 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.jws.*;
 import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
@@ -29,13 +33,14 @@ import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.RutaException;
 
 @WebService(targetNamespace = "http://ruta.rs/services")
+//@XmlSeeAlso({OrderResponseType.class, OrderType.class})
 public interface Server
 {
 	/**
 	 * Inserts catalogue object in the database.
 	 * @param username username of the party which catalogue is stored
 	 * @param catalogue catalogue object to be stored in the database
-	 * @throws RutaException if the catalogue object cannot be inserted in the database
+	 * @throws RutaException if the catalogue object could not be inserted in the database
 	 */
 	@WebMethod(operationName = "InsertCatalogue")
 	public void insertCatalogue(String username, CatalogueType catalogue) throws RutaException;
@@ -44,7 +49,7 @@ public interface Server
 	 * Updates catalogue object in the database.
 	 * @param username username of the party which catalogue is updated
 	 * @param catalogue catalogue object to be updated in the database
-	 * @throws RutaException if the catalogue object cannot be updated in the database
+	 * @throws RutaException if the catalogue object could not be updated in the database
 	 */
 	@WebMethod(operationName = "UpdateCatalogue")
 	public void updateCatalogue(String username, CatalogueType catalogue) throws RutaException;
@@ -53,7 +58,7 @@ public interface Server
 	 * Updates catalogue object in the database.
 	 * @param username username of the party which catalogue is updated
 	 * @param catalogue catalogue object to be updated in the database
-	 * @throws RutaException if the catalogue object cannot be updated in the database
+	 * @throws RutaException if the catalogue object could not be updated in the database
 	 * @return {@link ApplicationResponseType} object describing the response on the catalogue update request
 	 */
 	@WebMethod(operationName = "UpdateCatalogueWithAppResponse")
@@ -73,8 +78,8 @@ public interface Server
 	 * CatalogueDeletion object.
 	 * @param username username of the user with catalogue should be deleted
 	 * @param catDeletion CatalogueDeletion object referencing Catalogue
-	 * @throws RutaException if the Catalogue object cannot be deleted, or CatalogueDeletion
-	 * object cannot be inserted in the database
+	 * @throws RutaException if the Catalogue object could not be deleted, or CatalogueDeletion
+	 * object could not be inserted in the database
 	 */
 	@WebMethod(operationName = "DeleteCatalogue")
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException;
@@ -85,29 +90,20 @@ public interface Server
 	 * @param username username of the user which catalogue should be deleted
 	 * @param catDeletion CatalogueDeletion object referencing Catalogue
 	 * @return {@link ApplicationResponseType} object describing the response on the catalogue deletion request
-	 * @throws RutaException if the Catalogue object cannot be deleted, or CatalogueDeletion
-	 * object cannot be inserted in the database
+	 * @throws RutaException if the Catalogue object could not be deleted, or CatalogueDeletion
+	 * object could not be inserted in the database
 	 */
 	@WebMethod(operationName = "DeleteCatalogueWithAppResponse")
 	public ApplicationResponseType deleteCatalogueWithAppResponse(String username, CatalogueDeletionType catalogueDeletion) throws RutaException;
 
 	/**
-	 * Inserts {@link OrderType order} in appropriate {@link DocBox docBox}
-	 * @param username username of the user which order should be distributed
-	 * @param order order to distribute
-	 * @throws RutaException if order could not be distributed
+	 * Inserts document in appropriate {@link DocBox docBoxes} that way distributing them to all
+	 * appropriate recepients.
+	 * @param document document to distribute
+	 * @throws RutaException if document could not be distributed
 	 */
-	@WebMethod(operationName = "DistributeOrder")
-	public void distributeOrder(String username, OrderType order) throws RutaException;
-
-	/**
-	 * Inserts {@link OrderResponseSimpleType Order Response Simple} in appropriate {@link DocBox docBox}
-	 * @param username username of the user which {@link OrderResponseSimpleType Order Response Simple} should be distributed
-	 * @param orderResponseSimple {@link OrderResponseSimpleType Order Response Simple} to distribute
-	 * @throws RutaException if {@link OrderResponseSimpleType Order Response Simple} could not be distributed
-	 */
-	@WebMethod(operationName = "DistributeOrderResponseSimple")
-	public void distributeOrderResponseSimple(String username, OrderResponseSimpleType orderResponseSimple) throws RutaException;
+	@WebMethod(operationName = "DistributeDocument")
+	public void distributeDocument(Object document) throws RutaException;
 
 	/**
 	 * Searches the database for all catalogue items that conforms to the search criterion.
@@ -119,17 +115,6 @@ public interface Server
 	@WebMethod(operationName = "SearchCatalogue")
 	public List<CatalogueType> searchCatalogue(CatalogueSearchCriterion criterion) throws RutaException;
 
-/*	*//**
-	 * Registers user with the CDR service.
-	 * @param username user's username
-	 * @param password user's password
-	 * @return user's secret key
-	 * @throws RutaException throw if it was unable to register the user
-	 *//*
-	@Deprecated
-	@WebMethod(operationName = "RegisterUser")
-	public String registerUser(String username, String password) throws RutaException;*/
-
 	/**
 	 * Registers user with the CDR service.
 	 * @param username user's username
@@ -138,14 +123,14 @@ public interface Server
 	 * @return user's secret key
 	 * @throws RutaException throw if it was unable to register the user
 	 */
-	@WebMethod(operationName = "NewRegisterUser")
-	public String registerParty(String username, String password, PartyType party) throws RutaException;
+	@WebMethod(operationName = "RegisterUser")
+	public String registerUser(String username, String password, PartyType party) throws RutaException;
 
 	/**
 	 * Deregister the user from the CDR service.
 	 * @param username user's username to be deleted
 	 * @param {{@link DeregistrationNotice} document discribing deregistration request
-	 * @throws RutaException if the user cannot be deleted
+	 * @throws RutaException if the user could not be deleted
 	 */
 	@WebMethod(operationName = "DeregisterUser")
 	public void deregisterUser(String username, DeregistrationNotice notice) throws RutaException;
@@ -155,7 +140,7 @@ public interface Server
 	 * @param username party's username
 	 * @param party party object representing the user to be inserted into the database
 	 * @return party's unique id
-	 * @throws RutaException if the party object cannot be inserted in the database
+	 * @throws RutaException if the party object could not be inserted in the database
 	 */
 	@WebMethod(operationName = "InsertParty")
 	public String insertParty(String username, PartyType party) throws RutaException;
@@ -165,7 +150,7 @@ public interface Server
 	 * @param username party's username
 	 * @param party party object representing the user to be updated into the database
 	 * @return party's unique id
-	 * @throws RutaException if the party object cannot be updated in the database
+	 * @throws RutaException if the party object could not be updated in the database
 	 */
 	@WebMethod(operationName = "UpdateParty")
 	public void updateParty(String username, PartyType party) throws RutaException;
@@ -286,6 +271,10 @@ public interface Server
 	@WebMethod(operationName = "FindBugReport")
 	public BugReport findBugReport(String id) throws RutaException;
 
+	/**
+	 * Temporary methods for clearing of server side in-memory cache.
+	 * @throws RutaException
+	 */
 	@WebMethod(operationName = "ClearCache")
 	public void clearCache() throws RutaException;
 
@@ -310,5 +299,17 @@ public interface Server
 	@Deprecated
 	@WebMethod(operationName = "InsertAttachment")
 	public void insertAttachment(ReportAttachment attachment, String filename) throws RutaException;
+
+	/**
+	 * Serves as an dirty injection of types in the wsdl file. All types of arguments are included in wsdl file,
+	 * so that other webmethods that are passing arguments which declared type is the {@code Object} class
+	 * can have runtime types like {@link OrderType} in the JAXB context for marshalling and unmarshalling.
+	 * List of arguments contains variables of all types that are passed as {@code Objects}.
+	 * @param o
+	 * @param or
+	 */
+	@WebMethod(operationName = "TypeInclusion")
+	default public void typeInclusion(OrderType o, OrderResponseType or, OrderResponseSimpleType ors,
+			OrderChangeType oc, OrderCancellationType oca) {}
 
 }

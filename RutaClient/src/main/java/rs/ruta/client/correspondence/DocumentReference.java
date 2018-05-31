@@ -14,8 +14,22 @@ import rs.ruta.common.InstanceFactory;
 public class DocumentReference extends DocumentReferenceType
 {
 	private static final long serialVersionUID = 995064612236910411L;
+	public static enum Status
+	{
+		CDR_RECEIVED, CDR_DOWN, CDR_FAILED,
+		CLIENT_FAILED, CLIENT_SENT,
+		CORR_RECEIVED, CORR_FAILED, CORR_REJECTED,
+		UBL_INVALID, UBL_VALID
+	};
 	@XmlElement(name = "ReceivedTime")
 	XMLGregorianCalendar receivedTime;
+	/**
+	 * True when the document conforms to the UBL standard.
+	 */
+	@XmlElement(name = "Valid")
+	boolean valid;
+	@XmlElement(name = "Status")
+	Status status;
 
 	public DocumentReference() { super(); }
 
@@ -48,6 +62,26 @@ public class DocumentReference extends DocumentReferenceType
 	public void setReceivedTime(XMLGregorianCalendar receivedTime)
 	{
 		this.receivedTime = receivedTime;
+	}
+
+	public boolean isValid()
+	{
+		return valid;
+	}
+
+	public void setValid(boolean valid)
+	{
+		this.valid = valid;
+	}
+
+	public Status getStatus()
+	{
+		return status;
+	}
+
+	public void setStatus(Status transportStatus)
+	{
+		this.status = transportStatus;
 	}
 
 }
