@@ -18,9 +18,30 @@ public class BuyerSendOrderState extends BuyerOrderingProcessState
 		final OrderType order = process.getOrder(correspondence);
 		if(order != null)
 		{
-			DocumentReference documentReference = correspondence.getDocumentReference(order.getUUIDValue());
-			process.getClient().cdrSendDocument(order, documentReference, correspondence);
-			changeState(process, BuyerReceiveOrderResponseState.getInstance());
+			final DocumentReference documentReference = correspondence.getDocumentReference(order.getUUIDValue());
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+			{
+				try
+				{
+					correspondence.block();
+				}
+				catch(InterruptedException e)
+				{
+					if(!correspondence.isStopped()) //non-intentional interruption
+						throw new StateActivityException("Correspondence has been interrupted!");
+				}
+			}
+			try
+			{
+				process.getClient().cdrSendDocument(order, documentReference, correspondence);
+				changeState(process, BuyerReceiveOrderResponseState.getInstance());
+			}
+			catch(Exception e)
+			{
+				process.getClient().getClientFrame().
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order has failed!"));
+				changeState(process, BuyerSendOrderState.getInstance());
+			}
 		}
 		else
 		{

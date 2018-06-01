@@ -29,7 +29,7 @@ public class OrderCancellationDialog extends JDialog
 	private static OrderCancellationType orderCancellation; // have to be static because of the reference from the inner static class
 	private boolean sendPressed;
 	protected JPanel buttonPanel;
-
+	private JTable cancellationTable;
 	/**
 	 * Creates dialog for creating {@link OrderCancellationType}.
 	 * @param owner parent frame
@@ -47,7 +47,7 @@ public class OrderCancellationDialog extends JDialog
 		final JPanel cancellationPanel = new JPanel(new BorderLayout());
 
 		final CancellationTableModel cancellationTableModel = new CancellationTableModel(editable);
-		final JTable cancellationTable = createCancellationTable(cancellationTableModel);
+		cancellationTable = createCancellationTable(cancellationTableModel);
 		cancellationPanel.add(new JScrollPane(cancellationTable));
 		final Dimension buttonPanelSize = new Dimension(
 				((int) cancellationTable.getPreferredSize().getWidth()),
@@ -62,8 +62,7 @@ public class OrderCancellationDialog extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
-				if(cancellationTable.isEditing())
-					cancellationTable.getCellEditor().stopCellEditing();
+				stopEditing();
 			}
 		};
 		addMouseListener(tableFocus);
@@ -78,6 +77,7 @@ public class OrderCancellationDialog extends JDialog
 
 		sendButton.addActionListener(event ->
 		{
+			stopEditing();
 			String cancellationNote = null;
 			boolean missing = false;
 			try
@@ -170,6 +170,12 @@ public class OrderCancellationDialog extends JDialog
 		columnModel.getColumn(1).setPreferredWidth(400);
 
 		return table;
+	}
+
+	private void stopEditing()
+	{
+		if(cancellationTable.isEditing())
+			cancellationTable.getCellEditor().stopCellEditing();
 	}
 
 	private static class CancellationTableModel extends DefaultTableModel

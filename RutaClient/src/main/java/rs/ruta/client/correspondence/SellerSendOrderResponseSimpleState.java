@@ -20,51 +20,55 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 	{
 		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
 		final OrderResponseSimpleType orderResponseSimple = process.getOrderResponseSimple(correspondence);
-		final DocumentReference documentReference = correspondence.getDocumentReference(orderResponseSimple.getUUIDValue());
-
-		if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+		if(orderResponseSimple != null)
 		{
-			try
+			final DocumentReference documentReference = correspondence.getDocumentReference(orderResponseSimple.getUUIDValue());
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
 			{
-				correspondence.block();
-			}
-			catch(InterruptedException e)
-			{
-				if(!correspondence.isStopped()) //non-intentional interruption
-					throw new StateActivityException("Correspondence has been interrupted!");
-				//flags are not persisted so set them if the correspondence was stored to the database in its blocked state
-				if(!process.isOrderAccepted() && !process.isOrderRejected())
+				try
 				{
-					final AcceptedIndicatorType acceptedIndicator = orderResponseSimple.getAcceptedIndicator();
-					if(acceptedIndicator != null)
+					correspondence.block();
+				}
+				catch(InterruptedException e)
+				{
+					if(!correspondence.isStopped()) //non-intentional interruption
+						throw new StateActivityException("Correspondence has been interrupted!");
+					//flags are not persisted so set them if the correspondence was stored to the database in its blocked state
+					if(!process.isOrderAccepted() && !process.isOrderRejected())
 					{
-						if(acceptedIndicator.isValue())
-							process.setOrderAccepted(true);
+						final AcceptedIndicatorType acceptedIndicator = orderResponseSimple.getAcceptedIndicator();
+						if(acceptedIndicator != null)
+						{
+							if(acceptedIndicator.isValue())
+								process.setOrderAccepted(true);
+							else
+								process.setOrderRejected(true);
+						}
 						else
-							process.setOrderRejected(true);
+							throw new StateActivityException("Order Response Simple has no Accepted Indicator defined!");
 					}
-					else
-						throw new StateActivityException("Order Response Simple has no Accepted Indicator defined!");
 				}
 			}
+			try
+			{
+				process.getClient().cdrSendDocument(orderResponseSimple, documentReference, correspondence);
+				if(process.isOrderAccepted() && !process.isOrderRejected())
+					changeState(process, SellerReceiveOrderChangeCancellationState.getInstance());
+				else if(process.isOrderRejected() && !process.isOrderAccepted())
+					changeState(process, ClosingState.getInstance());
+				else
+					throw new StateActivityException("Unexpected state of the Order Response Simple processing.");
+				process.setOrderAccepted(false);
+				process.setOrderRejected(false);
+			}
+			catch(Exception e)
+			{
+				process.getClient().getClientFrame().
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response Simple has failed!"));
+				changeState(process, SellerSendOrderResponseSimpleState.getInstance());
+			}
 		}
-		try
-		{
-			process.getClient().cdrSendDocument(orderResponseSimple, documentReference, correspondence);
-			if(process.isOrderAccepted() && !process.isOrderRejected())
-				changeState(process, SellerReceiveOrderChangeCancellationState.getInstance());
-			else if(process.isOrderRejected() && !process.isOrderAccepted())
-				changeState(process, ClosingState.getInstance());
-			else
-				throw new StateActivityException("Unexpected state of the Order Response Simple processing.");
-			process.setOrderAccepted(false);
-			process.setOrderRejected(false);
-		}
-		catch(Exception e)
-		{
-			process.getClient().getClientFrame().
-			processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response Simple has failed!"));
-			changeState(process, SellerSendOrderResponseSimpleState.getInstance());
-		}
+		else
+			throw new StateActivityException("Order Response Simple has not been sent to the CDR service! Order Response Simple could not be found!");
 	}
 }

@@ -22,19 +22,19 @@ public abstract class AbstractOrderResponseSimpleDialog extends JDialog
 	/**
 	 * Creates {@link OrderResponseSimpleDialog} for making new {@link OrderResponseSimpleType} document.
 	 * @param owner parent frame
-	 * @param orderCancellation Order Response Simple to show or amend
-	 * @param accepted true if Order is to be accepted; false otherwise
 	 * @param editable true if Order Response Simple document is to be created; false if is to be viewed only
+	 * @param orderCancellation Order Response Simple to show or amend
 	 */
 	public AbstractOrderResponseSimpleDialog(RutaClientFrame owner, OrderResponseSimpleType orderResponseSimple,
-			boolean accepted, boolean editable)
+			boolean editable)
 	{
 		super(owner, true);
 		this.orderResponseSimple = orderResponseSimple;
 		setSize(700, 180);
 		setLocationRelativeTo(owner);
 		final JPanel responsePanel = new JPanel(new BorderLayout());
-		final OrderResponseSimpleModel responseModel = new OrderResponseSimpleModel(orderResponseSimple, editable, accepted);
+		final OrderResponseSimpleModel responseModel = new OrderResponseSimpleModel(orderResponseSimple, editable,
+				orderResponseSimple.isAcceptedIndicatorValue(false));
 		responseTable = createResponseTable(responseModel);
 
 		responsePanel.add(new JScrollPane(responseTable));
@@ -45,12 +45,10 @@ public abstract class AbstractOrderResponseSimpleDialog extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
-				if(responseTable.isEditing())
-					responseTable.getCellEditor().stopCellEditing();
+				stopEditing();
 			}
 		};
 		addMouseListener(tableFocus);
-
 		buttonPanel = new JPanel();
 		add(buttonPanel, BorderLayout.SOUTH);
 
@@ -71,6 +69,12 @@ public abstract class AbstractOrderResponseSimpleDialog extends JDialog
 		columnModel.getColumn(0).setPreferredWidth(180);
 		columnModel.getColumn(1).setPreferredWidth(520);
 		return table;
+	}
+
+	protected void stopEditing()
+	{
+		if(responseTable.isEditing())
+			responseTable.getCellEditor().stopCellEditing();
 	}
 
 }

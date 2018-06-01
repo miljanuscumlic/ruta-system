@@ -11,18 +11,20 @@ public class OrderResponseDialog extends AbstractOrderResponseDialog
 	private boolean sendPressed;
 
 	/**
-	 * Creates dialog for creating {@link OrderResponseType}.
+	 * Creates dialog for managing {@link OrderResponseType}. {@code corr} argument should be set to {@code null}
+	 * when new {@code Order Response} is to be created or old one viewed and to some non-{@code null} value only when
+	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
 	 * @param owner parent frame
 	 * @param orderResponse {@link OrderResponseType} to display
 	 * @param editable whether the {@link OrderResponseType} should be editable
-	 * @param corr {@link Correspondence} if {@link OrderResponseType} is already a part of it; {@code null}
-	 * otherwise i.e. should be created and appended to it
+	 * @param corr {@link Correspondence} of the {@link OrderResponseType}
 	 */
 	public OrderResponseDialog(RutaClientFrame owner, OrderResponseType orderResponse, boolean editable, Correspondence corr)
 	{
 		super(owner, orderResponse, editable);
 
 		JButton sendButton = new JButton("Send");
+		JButton resendButton = new JButton("Resend");
 		JButton discardButton = new JButton("Discard");
 		JButton closeButton = new JButton("Close");
 
@@ -35,23 +37,25 @@ public class OrderResponseDialog extends AbstractOrderResponseDialog
 				trimOrderLines(orderResponse.getOrderLine());
 				numberOrderLines(orderResponse.getOrderLine());
 			}
-			else if(corr != null)
+			setVisible(false);
+		});
+
+		resendButton.addActionListener(event ->
+		{
+			new Thread(() ->
 			{
-				new Thread(() ->
+				try
 				{
-					try
-					{
-						if(!corr.isAlive())
-							corr.start();
-						corr.waitThreadBlocked();
-						corr.proceed();
-					}
-					catch(Exception e)
-					{
-						owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
-					}
-				}).start();
-			}
+					if(!corr.isAlive())
+						corr.start();
+					corr.waitThreadBlocked();
+					corr.proceed();
+				}
+				catch(Exception e)
+				{
+					owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+				}
+			}).start();
 			setVisible(false);
 		});
 
@@ -75,8 +79,10 @@ public class OrderResponseDialog extends AbstractOrderResponseDialog
 		}
 		else
 		{
+			if(corr != null)
+				buttonPanel.add(resendButton);
 			buttonPanel.add(closeButton);
-			getRootPane().setDefaultButton(closeButton);
+			getRootPane().setDefaultButton(resendButton);
 		}
 
 	}

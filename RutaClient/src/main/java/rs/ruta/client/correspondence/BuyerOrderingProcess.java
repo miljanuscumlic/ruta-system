@@ -60,6 +60,10 @@ public class BuyerOrderingProcess extends OrderingProcess
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 				marshaller.marshal(correspondence, System.out);*/
 			}
+			if(correspondence.isDiscarded() || orderRejected || orderCancelled)
+				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
+			else if(!correspondence.isStopped())
+				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
 		}
 		catch (Exception e)
 		{
@@ -75,10 +79,10 @@ public class BuyerOrderingProcess extends OrderingProcess
 		}
 		finally
 		{
-			if(correspondence.isDiscarded() || orderRejected || orderCancelled)
-				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
-			else if(!correspondence.isStopped())
-				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
+//			if(correspondence.isDiscarded() || orderRejected || orderCancelled)
+//				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
+//			else if(!correspondence.isStopped())
+//				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
 		}
 	}
 

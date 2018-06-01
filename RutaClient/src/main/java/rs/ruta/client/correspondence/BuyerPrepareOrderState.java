@@ -30,6 +30,7 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 		else
 		{
 			correspondence.setDiscarded(true);
+			process.getClient().getClientFrame().appendToConsole(new StringBuilder("Discarding the Order..."), Color.BLACK);
 			changeState(process, ClosingState.getInstance());
 		}
 	}

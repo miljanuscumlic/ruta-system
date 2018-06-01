@@ -63,6 +63,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
@@ -1032,14 +1033,18 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Shows {@link OrderDialog} for making new {@link OrderType order}.
+	 * Shows {@link OrderDialog} for making new {@link OrderType order}. {@code corr} argument should be set to {@code null}
+	 * when new {@code Order} is to be created or old one viewed and to some non-{@code null} value only when
+	 * some old {@code Order} failed to be delievered and new sending atempt of it could be tried.
 	 * @param title {@code OrderDialog}'s title
-	 * @param correspondentID correspondent's ID
+	 * @param order {@code Order} to display
+	 * @param editable whether the Order is editable i.e. its quantity column
+	 * @param corr {@link Correspondence} of the {@link OrderType}
 	 * @return {@code OrderType} or {@code null} if user aborts Order creation
 	 */
-	public OrderType showOrderDialog(String title, OrderType order)
+	public OrderType showOrderDialog(String title, OrderType order, boolean editable, Correspondence corr)
 	{
-		orderDialog = new OrderDialog(RutaClientFrame.this, order, true);
+		orderDialog = new OrderDialog(RutaClientFrame.this, order, editable, corr);
 		orderDialog.setTitle(title);
 		orderDialog.setVisible(true);
 		if(orderDialog.isSendPressed())
@@ -1048,10 +1053,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			orderDialog.setSendPressed(false);
 		}
 		else
-		{
-			appendToConsole(new StringBuilder("Discarding the Order..."), Color.BLACK);
 			order = null;
-		}
 		return order;
 	}
 
@@ -1060,6 +1062,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * @param title {@code OrderDialog}'s title
 	 * @param order Order to display
 	 */
+	@Deprecated
 	public void showPreviewOrderDialog(String title, OrderType order)
 	{
 		PreviewOrderDialog orderDialog = new PreviewOrderDialog(RutaClientFrame.this, order);
@@ -1082,7 +1085,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Shows {@link OrderResponseDialog} for making new {@link OrderResponseType} document.
+	 * Shows {@link OrderResponseDialog} for making new {@link OrderResponseType} document.  {@code corr}
+	 * argument should be set to {@code null}
+	 * when new {@code Order Response} is to be created or old one viewed and to some non-{@code null} value only when
+	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
 	 * @param title dialog's title
 	 * @param orderResponse Order Response to show and/or amend
 	 * @param editable true if Order Response is to be created/changed, false if it is just a preview of one
@@ -1139,22 +1145,25 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 	/**
 	 * Shows {@link OrderResponseSimpleDialog} for making new {@link OrderResponseSimpleType} document.
+	 * {@code corr} argument should be set to {@code null}
+	 * when new {@code Order Response} is to be created or old one viewed and to some non-{@code null} value only when
+	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
 	 * @param title dialog's title
-	 * @param applicationResponse Order Response Simple to show and/or amend
-	 * @param accepted true if Order is to be accepted; false otherwise
+	 * @param orderResponseSimple Order Response Simple to show and/or amend
 	 * @param editable true if dialog data could be amended
 	 * @param obsoleteCatalogue true if Order has been sent with the reference to some previous version
 	 * of the Catalogue
+	 * @param corr {@link Correspondence} of the {@link OrderResponseSimpleType}
 	 * @return Order Response Simple or {@code null} if user has decided to discard the creation of it
 	 */
 	public OrderResponseSimpleType showOrderResponseSimpleDialog(String title,
-			OrderResponseSimpleType orderResponseSimple, boolean accepted, boolean editable, boolean obsoleteCatalogue)
+			OrderResponseSimpleType orderResponseSimple, boolean editable, boolean obsoleteCatalogue, Correspondence corr)
 	{
 		final OrderResponseSimpleDialog orderResponseDialog =
-				new OrderResponseSimpleDialog(RutaClientFrame.this, orderResponseSimple, accepted, editable, obsoleteCatalogue);
+				new OrderResponseSimpleDialog(RutaClientFrame.this, orderResponseSimple, editable, obsoleteCatalogue, corr);
 		if(title != null)
 			orderResponseDialog.setTitle(title);
-		else if(accepted)
+		else if(orderResponseSimple.isAcceptedIndicatorValue(false))
 			orderResponseDialog.setTitle("Accept Order");
 		else
 			orderResponseDialog.setTitle("Reject Order");
@@ -1219,6 +1228,32 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		else
 			orderCancellation = null;
 		return orderCancellation;
+	}
+
+	/**
+	 * Shows {@link ApplicationResponseDialog} for making new {@link ApplicationResponseType} document.
+	 * @param title dialog's title
+	 * @param applicationResponse Application Response to show and/or amend
+	 * @param editable true if Application Response is to be created/changed, false if it is just a preview of one
+	 * @param corr {@link Correspondence} if {@link ApplicationResponseType} is already a part of it; {@code null}
+	 * otherwise i.e. should be created and appended to it
+	 * @return Application Resposne or {@code null} if user has decided to abort the creation of it
+	 */
+	public ApplicationResponseType showApplicationResponseDialog(String title, ApplicationResponseType applicationResponse,
+			boolean editable, Correspondence corr)
+	{
+		final ApplicationResponseDialog appResponseDialog =
+				new ApplicationResponseDialog(RutaClientFrame.this, applicationResponse, editable, corr);
+		appResponseDialog.setTitle(title);
+		appResponseDialog.setVisible(true);
+		if(appResponseDialog.isSendPressed())
+		{
+			applicationResponse = appResponseDialog.getApplicationResponse();
+			appResponseDialog.setSendPressed(false);
+		}
+		else
+			applicationResponse = null;
+		return applicationResponse;
 	}
 
 	public RutaClient getClient()
@@ -1346,7 +1381,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			else if(cause.getMessage() != null)
 				msgBuilder.append(" Caused by: ").append(trimSOAPFaultMessage(cause.getMessage()));
 		if(cause.getCause() != null)
-			processException(e, msgBuilder, false);
+			processException((Exception) cause.getCause(), msgBuilder, false);
 		}
 		return msgBuilder;
 	}

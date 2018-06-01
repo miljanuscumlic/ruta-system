@@ -1,9 +1,12 @@
 package rs.ruta.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import rs.ruta.client.correspondence.Correspondence;
 
 public class OrderDialog extends AbstractOrderDialog
 {
@@ -12,18 +15,23 @@ public class OrderDialog extends AbstractOrderDialog
 	private OrderType order;
 
 	/**
-	 * Creates new Order Dialogue displaying its orderLines line items
+	 * Creates new Order Dialogue displaying its orderLines line items. {@code corr} argument should be set to {@code null}
+	 * when new {@code Order} is to be created or old one viewed and to some non-{@code null} value only when
+	 * some old {@code Order} failed to be delievered and new sending atempt of it could be tried.
 	 * @param owner parent frame of this dialogue
-	 * @param orderLines {@link OrderType orderLines} to display
+	 * @param order {@link OrderType order} to display
 	 * @param editable whether the Order is editable i.e. its quantity column
+	 * @param corr {@link Correspondence} of the {@link OrderType}
 	 */
-	public OrderDialog(RutaClientFrame owner, OrderType order, boolean editable)
+	public OrderDialog(RutaClientFrame owner, OrderType order, boolean editable, Correspondence corr)
 	{
 		super(owner, order.getOrderLine(), editable);
 		this.order = order;
 		final JButton sendButton = new JButton("Send");
+		final JButton resendButton = new JButton("Resend");
 		final JButton previewButton = new JButton("Preview");
-		final JButton cancelButton = new JButton("Discard");
+		final JButton discardButton = new JButton("Discard");
+		final JButton closeButton = new JButton("Close");
 
 		sendButton.addActionListener(event ->
 		{
@@ -44,8 +52,27 @@ public class OrderDialog extends AbstractOrderDialog
 				setVisible(false);
 			}
 		});
-		getRootPane().setDefaultButton(sendButton);
-		buttonPanel.add(sendButton);
+//		getRootPane().setDefaultButton(sendButton);
+//		buttonPanel.add(sendButton);
+
+		resendButton.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				try
+				{
+					if(!corr.isAlive())
+						corr.start();
+					corr.waitThreadBlocked();
+					corr.proceed();
+				}
+				catch(Exception e)
+				{
+					owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+				}
+			}).start();
+			setVisible(false);
+		});
 
 		previewButton.addActionListener(event ->
 		{
@@ -66,15 +93,42 @@ public class OrderDialog extends AbstractOrderDialog
 				previewDialog.setVisible(true);
 			}
 		});
-		buttonPanel.add(previewButton);
+//		buttonPanel.add(previewButton);
 
-		cancelButton.addActionListener(event ->
+		discardButton.addActionListener(event ->
 		{
 			sendPressed = false;
 			setVisible(false);
 		});
-		cancelButton.setVerifyInputWhenFocusTarget(false);
-		buttonPanel.add(cancelButton);
+		discardButton.setVerifyInputWhenFocusTarget(false);
+//		buttonPanel.add(discardButton);
+
+
+		getRootPane().setDefaultButton(closeButton);
+		closeButton.addActionListener(event ->
+		{
+			setVisible(false);
+		});
+//		buttonPanel.add(closeButton);
+
+		if(editable)
+		{
+			buttonPanel.add(sendButton);
+			buttonPanel.add(previewButton);
+			buttonPanel.add(discardButton);
+			getRootPane().setDefaultButton(sendButton);
+		}
+		else
+		{
+			if(corr != null)
+			{
+				buttonPanel.add(resendButton);
+				getRootPane().setDefaultButton(resendButton);
+			}
+			buttonPanel.add(closeButton);
+			getRootPane().setDefaultButton(closeButton);
+		}
+
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 

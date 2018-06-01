@@ -161,6 +161,10 @@ public class SellerOrderingProcess extends OrderingProcess
 				correspondence.store();
 				state.doActivity(correspondence);
 			}
+			if(!correspondence.isValid() || orderRejected || orderCancelled)
+				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
+			if(!correspondence.isStopped())
+				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
 		}
 		catch (Exception e)
 		{
@@ -176,10 +180,10 @@ public class SellerOrderingProcess extends OrderingProcess
 		}
 		finally
 		{
-			if(!correspondence.isValid() || orderRejected || orderCancelled)
-				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
-			if(!correspondence.isStopped())
-				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
+//			if(!correspondence.isValid() || orderRejected || orderCancelled)
+//				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
+//			if(!correspondence.isStopped())
+//				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
 		}
 	}
 

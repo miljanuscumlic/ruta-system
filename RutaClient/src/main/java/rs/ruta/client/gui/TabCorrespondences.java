@@ -31,6 +31,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
@@ -356,13 +357,20 @@ public class TabCorrespondences extends TabComponent
 		colModel.getColumn(5).setPreferredWidth(150);
 
 		JPopupMenu correspondencePopupMenu = new JPopupMenu();
-		JMenuItem processDocumentItem = new JMenuItem();
-		JMenuItem resendItem = new JMenuItem();
-		JMenuItem viewOrderResponseItem = new JMenuItem("View Order Response");
-		JMenuItem viewOrderItem = new JMenuItem("View Order");
-		JMenuItem viewOrderResponseSimpleItem = new JMenuItem("View Order Response Simple");
-		JMenuItem viewOrderChangeItem = new JMenuItem("View Order Change");
-		JMenuItem viewOrderCancellationItem = new JMenuItem("View Order Cancellation");
+		JMenuItem processDocumentItem = new JMenuItem("Process");
+		JMenuItem resendItem = new JMenuItem("Resend");
+		JMenuItem viewApplicationResponseItem = new JMenuItem("View");
+		JMenuItem viewResendApplicationResponseItem = new JMenuItem("View and Resend");
+		JMenuItem viewOrderItem = new JMenuItem("View");
+		JMenuItem viewResendOrderItem = new JMenuItem("View and Resend");
+		JMenuItem viewOrderChangeItem = new JMenuItem("View");
+		JMenuItem viewResendOrderChangeItem = new JMenuItem("View and Resend");
+		JMenuItem viewOrderCancellationItem = new JMenuItem("View");
+		JMenuItem viewResendOrderCancellationItem = new JMenuItem("View and Resend");
+		JMenuItem viewOrderResponseItem = new JMenuItem("View");
+		JMenuItem viewResendOrderResponseItem = new JMenuItem("View and Resend");
+		JMenuItem viewOrderResponseSimpleItem = new JMenuItem("View");
+		JMenuItem viewResendOrderResponseSimpleItem = new JMenuItem("View and Resend");
 
 		processDocumentItem.addActionListener(event ->
 		{
@@ -383,6 +391,104 @@ public class TabCorrespondences extends TabComponent
 			}).start();
 		});
 
+		viewApplicationResponseItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showApplicationResponseDialog("View Application Response",
+							(ApplicationResponseType) document, false, null);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Application Response does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewResendApplicationResponseItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showApplicationResponseDialog("View Application Response",
+							(ApplicationResponseType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Application Response does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewOrderCancellationItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderCancellationDialog("View Order Cancellation", (OrderCancellationType) document, false, null);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Cancellation does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewResendOrderCancellationItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderCancellationDialog("View Order Cancellation", (OrderCancellationType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Cancellation does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewOrderChangeItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderChangeDialog("View Order Change", (OrderChangeType) document, false, null);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Change does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewResendOrderChangeItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderChangeDialog("View Order Change", (OrderChangeType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Change does not exist!"), Color.BLACK);
+			}).start();
+		});
+
 		viewOrderItem.addActionListener(event ->
 		{
 			new Thread(() ->
@@ -393,7 +499,25 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showPreviewOrderDialog("Show Order", (OrderType) document);
+//					clientFrame.showPreviewOrderDialog("View Order", (OrderType) document);
+					clientFrame.showOrderDialog("View Order", (OrderType) document, false, null);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order does not exist!"), Color.BLACK);
+
+			}).start();
+		});
+
+		viewResendOrderItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderDialog("View and Resend Order", (OrderType) document, false, corr);
 				else
 					clientFrame.appendToConsole(new StringBuilder("Order does not exist!"), Color.BLACK);
 
@@ -410,7 +534,23 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderResponseDialog("Show Order Response", (OrderResponseType) document, false, corr);
+					clientFrame.showOrderResponseDialog("View Order Response", (OrderResponseType) document, false, null);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Order Response does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewResendOrderResponseItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showOrderResponseDialog("View and Resend Order Response", (OrderResponseType) document, false, corr);
 				else
 					clientFrame.appendToConsole(new StringBuilder("Order Response does not exist!"), Color.BLACK);
 			}).start();
@@ -426,14 +566,14 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderResponseSimpleDialog("Show Order Response Simple",
-							(OrderResponseSimpleType) document, false, false, true);
+					clientFrame.showOrderResponseSimpleDialog("View Order Response Simple",
+							(OrderResponseSimpleType) document, false, true, null);
 				else
 					clientFrame.appendToConsole(new StringBuilder("Order Response Simple does not exist!"), Color.BLACK);
 			}).start();
 		});
 
-		viewOrderChangeItem.addActionListener(event ->
+		viewResendOrderResponseSimpleItem.addActionListener(event ->
 		{
 			new Thread(() ->
 			{
@@ -443,25 +583,10 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderChangeDialog("Show Order Change", (OrderChangeType) document, false, corr);
+					clientFrame.showOrderResponseSimpleDialog("View and Resend Order Response Simple",
+							(OrderResponseSimpleType) document, false, true, corr);
 				else
-					clientFrame.appendToConsole(new StringBuilder("Order Change does not exist!"), Color.BLACK);
-			}).start();
-		});
-
-		viewOrderCancellationItem.addActionListener(event ->
-		{
-			new Thread(() ->
-			{
-				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
-				final int vieRowIndex = table.getSelectedRow();
-				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
-				final Object document = corr.getDocumentAtIndex(modelRowIndex);
-
-				if(document != null)
-					clientFrame.showOrderCancellationDialog("Show Order Cancellation", (OrderCancellationType) document, false, corr);
-				else
-					clientFrame.appendToConsole(new StringBuilder("Order Cancellation does not exist!"), Color.BLACK);
+					clientFrame.appendToConsole(new StringBuilder("Order Response Simple does not exist!"), Color.BLACK);
 			}).start();
 		});
 
@@ -497,51 +622,56 @@ public class TabCorrespondences extends TabComponent
 					{
 						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 						final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
-						//					Object document = corr.getDocumentAtIndex(realRowIndex);
-						//					if(document.getClass() == OrderType.class)
-						//MMM test whether the last document is OrderType or OrderChangeType
-						//MMM test for rigth process and state before displaying this menu item
+						//MMM maybe it should be tested for the rigth state of the process also before displaying menu item
 						final DocumentReference documentReference = corr.getDocumentReferenceAtIndex(modelRowIndex);
 						correspondencePopupMenu.removeAll();
 						final RutaProcess process = (RutaProcess) corr.getState();
 						if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							correspondencePopupMenu.add(viewOrderItem);
 							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								correspondencePopupMenu.add(viewResendOrderItem);
+								correspondencePopupMenu.add(resendItem);
+							}
+							else if(documentReference == corr.getLastDocumentReference() &&
 									process instanceof SellerOrderingProcess &&
 									process.getState() instanceof SellerProcessOrderState &&
 									corr.getLastDocument() != null) // after the Order has been inserted in the database
 							{
-								processDocumentItem.setText("Process Order");
+								correspondencePopupMenu.add(viewOrderItem);
 								correspondencePopupMenu.add(processDocumentItem);
 							}
+							else
+								correspondencePopupMenu.add(viewOrderItem);
 						}
 						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							correspondencePopupMenu.add(viewOrderResponseItem);
 							if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == SellerOrderingProcess.class &&
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
-								resendItem.setText("Resend Order Response");
+								correspondencePopupMenu.add(viewResendOrderResponseItem);
 								correspondencePopupMenu.add(resendItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == BuyerOrderingProcess.class &&
 									corr.getLastDocument() != null)
 							{
-								processDocumentItem.setText("Process Order Response");
+								correspondencePopupMenu.add(viewOrderResponseItem);
 								correspondencePopupMenu.add(processDocumentItem);
 							}
+							else
+								correspondencePopupMenu.add(viewOrderResponseItem);
 						}
 						else if(OrderResponseSimpleType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 							if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == SellerOrderingProcess.class &&
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
-								resendItem.setText("Resend Order Response Simple");
+								correspondencePopupMenu.add(viewResendOrderResponseSimpleItem);
 								correspondencePopupMenu.add(resendItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
@@ -549,38 +679,54 @@ public class TabCorrespondences extends TabComponent
 									corr.getLastDocument() != null &&
 									((BuyerOrderingProcess) process).getOrderResponseSimple(corr).isAcceptedIndicatorValue(false)) //MMM does this work???
 							{
-								processDocumentItem.setText("Process Order Response Simple");
+								correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 								correspondencePopupMenu.add(processDocumentItem);
 							}
+							else
+								correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 						}
 						else if(OrderChangeType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							correspondencePopupMenu.add(viewOrderChangeItem);
 							if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == BuyerOrderingProcess.class &&
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
-								resendItem.setText("Resend Order Change");
+								correspondencePopupMenu.add(viewResendOrderChangeItem);
 								correspondencePopupMenu.add(resendItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == SellerOrderingProcess.class &&
 									corr.getLastDocument() != null)
 							{
-								processDocumentItem.setText("Process Order Change");
+								correspondencePopupMenu.add(viewOrderChangeItem);
 								correspondencePopupMenu.add(processDocumentItem);
 							}
+							else
+								correspondencePopupMenu.add(viewOrderChangeItem);
 						}
 						else if(OrderCancellationType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							correspondencePopupMenu.add(viewOrderCancellationItem);
 							if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == BuyerOrderingProcess.class &&
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
-								resendItem.setText("Resend Order Change");
+								correspondencePopupMenu.add(viewResendOrderCancellationItem);
 								correspondencePopupMenu.add(resendItem);
 							}
+							else
+								correspondencePopupMenu.add(viewOrderCancellationItem);
+						}
+						else if(ApplicationResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								correspondencePopupMenu.add(viewResendApplicationResponseItem);
+								correspondencePopupMenu.add(resendItem);
+							}
+							else
+								correspondencePopupMenu.add(viewApplicationResponseItem);
 						}
 						correspondencePopupMenu.show(table, event.getX(), event.getY());
 					}

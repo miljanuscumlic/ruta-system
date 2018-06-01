@@ -20,7 +20,7 @@ public class ProcessOrderResponseSimpleDialog extends AbstractOrderResponseSimpl
 	public ProcessOrderResponseSimpleDialog(RutaClientFrame owner, OrderResponseSimpleType orderResponseSimple,
 			boolean accepted)
 	{
-		super(owner, orderResponseSimple, accepted, false);
+		super(owner, orderResponseSimple, false);
 
 		JButton acceptButton = new JButton(InstanceFactory.ACCEPT_ORDER);
 		JButton cancelButton = new JButton(InstanceFactory.CANCEL_ORDER);
@@ -51,5 +51,4 @@ public class ProcessOrderResponseSimpleDialog extends AbstractOrderResponseSimpl
 	{
 		return decision;
 	}
-
 }

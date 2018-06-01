@@ -1979,7 +1979,7 @@ public class MyParty extends BusinessParty
 	{
 		final Catalogue correspondentCatalogue = getBusinessPartner(correspondentID).getCatalogue();
 		final OrderType order = convertToOrder(correspondentCatalogue, getCoreParty());
-		return client.getClientFrame().showOrderDialog("New Order", order);
+		return client.getClientFrame().showOrderDialog("New Order", order, true, null);
 	}
 
 	/**
@@ -2224,7 +2224,7 @@ public class MyParty extends BusinessParty
 	private OrderResponseSimpleType createOrderResponseSimple(OrderType order, boolean accepted, boolean obsoleteCatalogue)
 	{
 		final OrderResponseSimpleType orderResponseSimple = convertToOrderResponseSimple(order, accepted, obsoleteCatalogue);
-		return client.getClientFrame().showOrderResponseSimpleDialog(null, orderResponseSimple, accepted, true, obsoleteCatalogue);
+		return client.getClientFrame().showOrderResponseSimpleDialog(null, orderResponseSimple, true, obsoleteCatalogue, null);
 	}
 
 	/**

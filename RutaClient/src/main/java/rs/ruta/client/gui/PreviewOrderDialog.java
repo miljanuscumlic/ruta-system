@@ -20,7 +20,7 @@ import javax.swing.table.TableColumnModel;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.LineItemType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
-
+@Deprecated
 public class PreviewOrderDialog extends AbstractOrderDialog
 {
 	private static final long serialVersionUID = -4088005817534470754L;

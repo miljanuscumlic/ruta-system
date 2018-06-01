@@ -22,30 +22,35 @@ public class SellerSendOrderResponseState extends SellerOrderingProcessState
 	{
 		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
 		final OrderResponseType orderResponse = process.getOrderResponse(correspondence);
-		final DocumentReference documentReference = correspondence.getDocumentReference(orderResponse.getUUIDValue());
-		if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+		if(orderResponse != null)
 		{
+			final DocumentReference documentReference = correspondence.getDocumentReference(orderResponse.getUUIDValue());
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+			{
+				try
+				{
+					correspondence.block();
+				}
+				catch(InterruptedException e)
+				{
+					if(!correspondence.isStopped()) //non-intentional interruption
+						throw new StateActivityException("Correspondence has been interrupted!");
+				}
+			}
 			try
 			{
-				correspondence.block();
+				process.getClient().cdrSendDocument(orderResponse, documentReference, correspondence);
+				process.setOrderModified(false);
+				changeState(process, SellerReceiveOrderChangeCancellationState.getInstance());
 			}
-			catch(InterruptedException e)
+			catch(Exception e)
 			{
-				if(!correspondence.isStopped()) //non-intentional interruption
-					throw new StateActivityException("Correspondence has been interrupted!");
+				process.getClient().getClientFrame().
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response has failed!"));
+				changeState(process, SellerSendOrderResponseState.getInstance());
 			}
 		}
-		try
-		{
-			process.getClient().cdrSendDocument(orderResponse, documentReference, correspondence);
-			process.setOrderModified(false);
-			changeState(process, SellerReceiveOrderChangeCancellationState.getInstance());
-		}
-		catch(Exception e)
-		{
-			process.getClient().getClientFrame().
-			processExceptionAndAppendToConsole(e, new StringBuilder("Sending order Response has failed!"));
-			changeState(process, SellerSendOrderResponseState.getInstance());
-		}
+		else
+			throw new StateActivityException("Order Response has not been sent to the CDR service! Order Response could not be found!");
 	}
 }

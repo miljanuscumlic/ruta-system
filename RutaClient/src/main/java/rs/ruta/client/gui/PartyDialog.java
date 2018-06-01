@@ -17,6 +17,7 @@ public class PartyDialog extends JDialog
 	 */
 	private boolean changed;
 	private DefaultTableModel partyTableModel;
+	private JTable partyTable;
 
 	/**
 	 * Constructs the dialog for displaying and/or changing the data of a {@link Party}.
@@ -34,17 +35,17 @@ public class PartyDialog extends JDialog
 		setLocationRelativeTo(owner);
 
 		JPanel partyPanel = new JPanel();
-		JTable table = new PartyTable(partyTableModel);
-//		orderLinesTable.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
+		partyTable = new PartyTable(partyTableModel);
+//		partyTable.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
 
-		table.setFillsViewportHeight(true);
-		table.getTableHeader().setReorderingAllowed(false); //disables column reordering
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		partyPanel.add(new JScrollPane(table));
+		partyTable.setFillsViewportHeight(true);
+		partyTable.getTableHeader().setReorderingAllowed(false); //disables column reordering
+		partyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		partyPanel.add(new JScrollPane(partyTable));
 		add(partyPanel, BorderLayout.CENTER);
 
 		//specifing preferred column sizes
-		TableColumnModel tableColumnModel = table.getColumnModel();
+		TableColumnModel tableColumnModel = partyTable.getColumnModel();
 		TableColumn tableColumn = tableColumnModel.getColumn(0);
 		tableColumn.setResizable(false);
 		tableColumn.setMinWidth(160);
@@ -57,11 +58,10 @@ public class PartyDialog extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				if(table.isEditing())
-					table.getCellEditor().stopCellEditing();
+				stopEditing();
 			}
 		};
-		table.getTableHeader().addMouseListener(tableLostFocus);
+		partyTable.getTableHeader().addMouseListener(tableLostFocus);
 		addMouseListener(tableLostFocus);
 
 //		TableCellRenderer renderer = new PartyTableCellRenderer();
@@ -73,12 +73,11 @@ public class PartyDialog extends JDialog
 		buttonPanel.add(okButton);
 		okButton.addActionListener(event ->
 		{
-			if(table.isEditing())
-				table.getCellEditor().stopCellEditing();
+			stopEditing();
 			String missingField = party.verifyParty();
 			if(missingField == null)
 			{
-				changed = ((PartyTable) table).hasChanged();
+				changed = ((PartyTable) partyTable).hasChanged();
 				setVisible(false);
 			}
 			else
@@ -131,5 +130,11 @@ public class PartyDialog extends JDialog
 	public void setChanged(boolean changed)
 	{
 		this.changed = changed;
+	}
+
+	private void stopEditing()
+	{
+		if(partyTable.isEditing())
+			partyTable.getCellEditor().stopCellEditing();
 	}
 }
