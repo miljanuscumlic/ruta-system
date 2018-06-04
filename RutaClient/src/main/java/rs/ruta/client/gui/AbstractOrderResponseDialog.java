@@ -36,7 +36,7 @@ public abstract class AbstractOrderResponseDialog extends AbstractOrderDialog
 				((int) headerTable.getPreferredSize().getWidth()),
 				((int) headerTable.getPreferredSize().getHeight()) + 5);
 		headerPanel.setPreferredSize(buttonPanelSize);
-		headerTable.addMouseListener(stopTableEditingListener);
+		headerTable.addMouseListener(stopEditingListener);
 	}
 
 	@Override

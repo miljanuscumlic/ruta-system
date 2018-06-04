@@ -70,7 +70,7 @@ public class BuyerProcessOrderResponseSimpleState extends BuyerOrderingProcessSt
 	{
 		final RutaClientFrame clientFrame = process.getClient().getClientFrame();
 		final String decision = clientFrame.showProcessOrderResponseSimpleDialog(orderResponseSimple);
-		if(InstanceFactory.ACCEPT_ORDER.equals(decision))
+		if(InstanceFactory.ACCEPT.equals(decision))
 			process.setOrderAccepted(true);
 		else if(InstanceFactory.CANCEL_ORDER.equals(decision))
 			process.setOrderCancelled(true);

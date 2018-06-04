@@ -75,7 +75,7 @@ public class BugExploreDialog extends JDialog
 	private JTable bugListTable;
 	private JTable bugReportTable;
 	/**
-	 * Index of selected {@link BugReport} in the orderLinesTable displaying the list of all bug reports.
+	 * Index of selected {@link BugReport} in the table displaying the list of all bug reports.
 	 */
 	private int selectedIndex = -1; //none is selected by default
 
@@ -132,7 +132,7 @@ public class BugExploreDialog extends JDialog
 		tableColumnModel.getColumn(3).setPreferredWidth(25);
 		tableColumnModel.getColumn(5).setPreferredWidth(85);
 
-		//defining selection listener for orderLinesTable row selection
+		//defining selection listener for table row selection
 		ListSelectionModel selectionModel = bugListTable.getSelectionModel();
 		selectionModel.addListSelectionListener(new ListSelectionListener()
 		{
@@ -219,7 +219,7 @@ public class BugExploreDialog extends JDialog
 	/**
 	 * Checks whether the BugReport should be retrieved from the CDR, and sends a request if it should be.
 	 * If the BugReort is complete i.e. previously retrieved from the CDR, it wiil not send new request to the CDR.
-	 * @param index {@code BugReport}'s index in the orderLinesTable
+	 * @param index {@code BugReport}'s index in the table
 	 */
 	private void checkAndGetBugReport(int index)
 	{
@@ -596,7 +596,7 @@ public class BugExploreDialog extends JDialog
 
 	/**
 	 * Extends {@link JTextArea} defining component that is a renderer of cells in {@link JTable} used in {@code BugExploreDialog}.
-	 * This class enables that height of the orderLinesTable row that contains object of it, is facilitated with the option of
+	 * This class enables that height of the table row that contains object of it, is facilitated with the option of
 	 * row height change.
 	 */
 	private class CellTextArea extends JTextArea
@@ -639,7 +639,7 @@ public class BugExploreDialog extends JDialog
 	{
 		/*
 		 * The only way to know the row height for sure is to render each cell
-		 * to determine the rendered height. After the orderLinesTable is populated with
+		 * to determine the rendered height. After the table is populated with
 		 * data:
 		 */
 		for (int row = first; row < last; row++)

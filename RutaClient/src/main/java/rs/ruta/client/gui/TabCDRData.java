@@ -130,7 +130,7 @@ public class TabCDRData extends TabComponent
 
 		JLabel blankLabel = new JLabel();
 
-		//partner (party) data orderLinesTable models
+		//partner (party) data table models
 		final TabComponent.RowNumberRenderer rowNumberRenderer = new TabComponent.RowNumberRenderer();
 		partnerCatalogueTableModel = new CatalogueTableModel();
 		partnerCatalogueTable = createCatalogueTable(partnerCatalogueTableModel);
@@ -603,9 +603,9 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates orderLinesTable containing list of parties e.g. Business Partners, Other Parties etc.
+	 * Creates table containing list of parties e.g. Business Partners, Other Parties etc.
 	 * @param tableModel model containing party data
-	 * @return constructed orderLinesTable object
+	 * @return constructed table object
 	 */
 	private JTable createPartyListTable(DefaultTableModel tableModel)
 	{
@@ -623,7 +623,7 @@ public class TabCDRData extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			//			final int rowIndex = orderLinesTable.getSelectedRow()*/;
+			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
@@ -655,7 +655,7 @@ public class TabCDRData extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			//			final int rowIndex = orderLinesTable.getSelectedRow()*/;
+			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
@@ -687,7 +687,7 @@ public class TabCDRData extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			//			final int rowIndex = orderLinesTable.getSelectedRow()*/;
+			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
 			new Thread(()->
@@ -713,7 +713,7 @@ public class TabCDRData extends TabComponent
 
 		addPartnerItem.addActionListener(event ->
 		{
-			//			final int rowIndex = orderLinesTable.getSelectedRow()*/;
+			//			final int rowIndex = table.getSelectedRow()*/;
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
 			new Thread(() ->
@@ -875,9 +875,9 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates orderLinesTable showing list of all searches of the CDR service.
+	 * Creates table showing list of all searches of the CDR service.
 	 * @param tableModel model containing data
-	 * @return constructed orderLinesTable object
+	 * @return constructed table object
 	 */
 	private JTable createSearchListTable(DefaultTableModel tableModel)
 	{
@@ -903,7 +903,7 @@ public class TabCDRData extends TabComponent
 		searchTablePopupMenu.add(renameSearchItem);
 		searchTablePopupMenu.add(deleteSearchItem);
 
-		//in all listeners orderLinesTable model must be get with orderLinesTable.getModel() in orderLines to have a current instance of it
+		//in all listeners table model must be get with table.getModel() in orderLines to have a current instance of it
 		againSearchItem.addActionListener(event ->
 		{
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
@@ -920,7 +920,7 @@ public class TabCDRData extends TabComponent
 						{
 							selectNode(searchTree, selectedSearch);
 						});
-						//						((DefaultTableModel) orderLinesTable.getModel()).fireTableDataChanged();
+						//						((DefaultTableModel) table.getModel()).fireTableDataChanged();
 					}
 				}
 				catch(Exception e)
@@ -1020,9 +1020,9 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates orderLinesTable containing list of parties that are the result of quering the CDR.
+	 * Creates table containing list of parties that are the result of quering the CDR.
 	 * @param tableModel model containing party data
-	 * @return constructed orderLinesTable object
+	 * @return constructed table object
 	 */
 	private JTable createSearchPartyTable(DefaultTableModel tableModel)
 	{
@@ -1035,7 +1035,7 @@ public class TabCDRData extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			//			int rowIndex = orderLinesTable.getSelectedRow();
+			//			int rowIndex = table.getSelectedRow();
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
 			final String followingName =
@@ -1064,7 +1064,7 @@ public class TabCDRData extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			//			int rowIndex = orderLinesTable.getSelectedRow();
+			//			int rowIndex = table.getSelectedRow();
 			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
 			final String followingName =
@@ -1115,9 +1115,9 @@ public class TabCDRData extends TabComponent
 	}
 
 	/**
-	 * Creates orderLinesTable containing list of catalogue items that are the result of quering the CDR.
+	 * Creates table containing list of catalogue items that are the result of quering the CDR.
 	 * @param tableModel model containing catalogue data
-	 * @return constructed orderLinesTable object
+	 * @return constructed table object
 	 */
 	private JTable createSearchCatalogueTable(DefaultTableModel tableModel)
 	{
@@ -1223,7 +1223,7 @@ public class TabCDRData extends TabComponent
 		if(source.getClass() == BusinessParty.class)
 		{
 			BusinessParty party = (BusinessParty) source;
-			//MMM: there should be more commands; every command responsible for an update of a specific orderLinesTable
+			//MMM: there should be more commands; every command responsible for an update of a specific table
 			if(BusinessPartyEvent.CATALOGUE_UPDATED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);

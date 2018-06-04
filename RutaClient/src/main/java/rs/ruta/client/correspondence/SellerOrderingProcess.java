@@ -164,7 +164,7 @@ public class SellerOrderingProcess extends OrderingProcess
 			if(!correspondence.isValid() || orderRejected || orderCancelled)
 				correspondence.changeState(ClosingProcess.newInstance(correspondence.getClient()));
 			if(!correspondence.isStopped())
-				correspondence.changeState(BillingProcess.newInstance(correspondence.getClient()));
+				correspondence.changeState(SupplierBillingProcess.newInstance(correspondence.getClient()));
 		}
 		catch (Exception e)
 		{

@@ -19,9 +19,9 @@ abstract public class OrderingProcess extends BuyingProcess
 	protected ApplicationResponseType applicationResponse;
 	protected Future<?> future;
 	/**
-	 * True when the orderLines has been canceled by correspondent party.
+	 * True when the order has been canceled by correspondent party.
 	 */
-	protected boolean correspondenceCanceled;
+	protected boolean correspondenceCanceled; //MMM check this is not used at all
 
 	public OrderingProcess()
 	{
@@ -38,7 +38,7 @@ abstract public class OrderingProcess extends BuyingProcess
 	public OrderType getOrder(Correspondence correspondence)
 	{
 		if(order == null)
-			order = (OrderType) correspondence.getLastDocument(OrderType.class);
+			order = correspondence.getLastDocument(OrderType.class);
 		return order;
 	}
 
@@ -57,7 +57,7 @@ abstract public class OrderingProcess extends BuyingProcess
 	public OrderResponseType getOrderResponse(Correspondence correspondence)
 	{
 		if(orderResponse == null)
-			orderResponse = (OrderResponseType) correspondence.getLastDocument(OrderResponseType.class);
+			orderResponse = correspondence.getLastDocument(OrderResponseType.class);
 		return orderResponse;
 	}
 
@@ -76,7 +76,7 @@ abstract public class OrderingProcess extends BuyingProcess
 	public OrderResponseSimpleType getOrderResponseSimple(Correspondence correspondence)
 	{
 		if(orderResponseSimple == null)
-			orderResponseSimple = (OrderResponseSimpleType) correspondence.getLastDocument(OrderResponseSimpleType.class);
+			orderResponseSimple = correspondence.getLastDocument(OrderResponseSimpleType.class);
 		return orderResponseSimple;
 	}
 
@@ -95,7 +95,7 @@ abstract public class OrderingProcess extends BuyingProcess
 	public OrderChangeType getOrderChange(Correspondence correspondence)
 	{
 		if(orderChange == null)
-			orderChange = (OrderChangeType) correspondence.getLastDocument(OrderChangeType.class);
+			orderChange = correspondence.getLastDocument(OrderChangeType.class);
 		return orderChange;
 	}
 
@@ -129,7 +129,7 @@ abstract public class OrderingProcess extends BuyingProcess
 	public OrderCancellationType getOrderCancellation(Correspondence correspondence)
 	{
 		if(orderCancellation == null)
-			orderCancellation = (OrderCancellationType) correspondence.getLastDocument(OrderCancellationType.class);
+			orderCancellation = correspondence.getLastDocument(OrderCancellationType.class);
 		return orderCancellation;
 	}
 
@@ -148,7 +148,7 @@ abstract public class OrderingProcess extends BuyingProcess
 	public ApplicationResponseType getApplicationResponse(Correspondence correspondence)
 	{
 		if(applicationResponse == null)
-			applicationResponse = (ApplicationResponseType) correspondence.getLastDocument(ApplicationResponseType.class);
+			applicationResponse = correspondence.getLastDocument(ApplicationResponseType.class);
 		return applicationResponse;
 	}
 
@@ -156,7 +156,6 @@ abstract public class OrderingProcess extends BuyingProcess
 	{
 		this.applicationResponse = applicationResponse;
 	}
-
 
 	public Future<?> getFuture()
 	{

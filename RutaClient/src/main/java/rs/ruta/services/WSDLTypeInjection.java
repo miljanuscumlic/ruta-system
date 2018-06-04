@@ -4,6 +4,7 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -12,12 +13,12 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
 
 
 /**
- * <p>Java class for TypeInclusion complex type.
+ * <p>Java class for WSDLTypeInjection complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="TypeInclusion">
+ * &lt;complexType name="WSDLTypeInjection">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -26,6 +27,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
  *         &lt;element name="arg2" type="{urn:oasis:names:specification:ubl:schema:xsd:OrderResponseSimple-2}OrderResponseSimpleType" minOccurs="0"/>
  *         &lt;element name="arg3" type="{urn:oasis:names:specification:ubl:schema:xsd:OrderChange-2}OrderChangeType" minOccurs="0"/>
  *         &lt;element name="arg4" type="{urn:oasis:names:specification:ubl:schema:xsd:OrderCancellation-2}OrderCancellationType" minOccurs="0"/>
+ *         &lt;element name="arg5" type="{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}InvoiceType" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -35,20 +37,22 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "TypeInclusion", propOrder = {
+@XmlType(name = "WSDLTypeInjection", propOrder = {
     "arg0",
     "arg1",
     "arg2",
     "arg3",
-    "arg4"
+    "arg4",
+    "arg5"
 })
-public class TypeInclusion {
+public class WSDLTypeInjection {
 
     protected OrderType arg0;
     protected OrderResponseType arg1;
     protected OrderResponseSimpleType arg2;
     protected OrderChangeType arg3;
     protected OrderCancellationType arg4;
+    protected InvoiceType arg5;
 
     /**
      * Gets the value of the arg0 property.
@@ -168,6 +172,30 @@ public class TypeInclusion {
      */
     public void setArg4(OrderCancellationType value) {
         this.arg4 = value;
+    }
+
+    /**
+     * Gets the value of the arg5 property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link InvoiceType }
+     *     
+     */
+    public InvoiceType getArg5() {
+        return arg5;
+    }
+
+    /**
+     * Sets the value of the arg5 property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link InvoiceType }
+     *     
+     */
+    public void setArg5(InvoiceType value) {
+        this.arg5 = value;
     }
 
 }

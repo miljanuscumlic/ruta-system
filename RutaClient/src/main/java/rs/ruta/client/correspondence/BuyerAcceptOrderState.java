@@ -62,7 +62,7 @@ public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 	{
 		process.getClient().getClientFrame().appendToConsole(
 				new StringBuilder("Collecting data and preparing the Application Response..."), Color.BLACK);
-		return InstanceFactory.produceApplicationResponse(document);
+		return InstanceFactory.produceApplicationResponse(document, InstanceFactory.APP_RESPONSE_POSITIVE, null);
 	}
 
 	/**

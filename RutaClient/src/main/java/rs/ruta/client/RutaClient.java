@@ -1055,7 +1055,7 @@ public class RutaClient implements RutaNode
 			{
 				serviceCallFinished.acquire();
 				if(documentReference.getStatus().equals(DocumentReference.Status.CLIENT_FAILED))
-					throw new StateActivityException(/*documentName + " " + documentID + " has not been deposited to the CDR!"*/);
+					throw new StateActivityException(documentName + " " + documentID + " has not been deposited to the CDR!");
 			}
 			catch (InterruptedException e)
 			{
@@ -1423,7 +1423,10 @@ public class RutaClient implements RutaNode
 								finally
 								{
 									if(document != null)
+									{
 										port.deleteDocBoxDocumentAsync(myParty.getCDRUsername(), docID, deleteFuture -> {});
+										//MMM send DocumentReceipt to the CDR as an argument of DocBoxDocument webmethod
+									}
 									finished.countDown();
 								}
 							});
@@ -1689,6 +1692,28 @@ public class RutaClient implements RutaNode
 			}
 			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
 					append("'s Application Response " + ((ApplicationResponseType) document).getIDValue() +
+							" has been appended to its correspondence."),
+					Color.BLACK);
+		}
+		else if(documentClazz == InvoiceType.class)
+		{
+			frame.appendToConsole(new StringBuilder("Invoice ").
+					append(((InvoiceType) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxInvoice((InvoiceType) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((InvoiceType) document).getAccountingSupplierParty().getParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Invoice " + ((InvoiceType) document).getIDValue() +
 							" has been appended to its correspondence."),
 					Color.BLACK);
 		}

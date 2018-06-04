@@ -30,16 +30,16 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 		else
 		{
 			correspondence.setDiscarded(true);
-			process.getClient().getClientFrame().appendToConsole(new StringBuilder("Discarding the Order..."), Color.BLACK);
+			process.getClient().getClientFrame().appendToConsole(new StringBuilder("Order has been discarded."), Color.BLACK);
 			changeState(process, ClosingState.getInstance());
 		}
 	}
 
 	/**
-	 * Creates {@link OrderType orderLines} populating it with the data.
+	 * Creates {@link OrderType Order} populating it with the data.
 	 * @param process process that this state belongs to
 	 * @param correspondentID correspondent's ID
-	 * @return prepared Order or {@code null} if order creation has been failed or has been discarded
+	 * @return prepared Order or {@code null} if Order creation has been failed or has been discarded
 	 * by the user, or Order does not conform to the {@code UBL} standard
 	 */
 	private OrderType prepareOrder(RutaProcess process, String correspondentID)
@@ -52,8 +52,8 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 	/**
 	 * Sets Order in the process, adds it's {@link DocumentReference} to the correspondence and stores it
 	 * in the database.
-	 * @param correspondence which order is part of
-	 * @param order order to save
+	 * @param correspondence which Order is part of
+	 * @param order Order to save
 	 */
 	private void saveOrder(Correspondence correspondence, OrderType order)
 	{

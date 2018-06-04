@@ -16,7 +16,7 @@ public class OrderDialog extends AbstractOrderDialog
 
 	/**
 	 * Creates new Order Dialogue displaying its orderLines line items. {@code corr} argument should be set to {@code null}
-	 * when new {@code Order} is to be created or old one viewed and to some non-{@code null} value only when
+	 * when new {@code Order} is to be created or old one viewed and to appropriate non-{@code null} value only when
 	 * some old {@code Order} failed to be delievered and new sending atempt of it could be tried.
 	 * @param owner parent frame of this dialogue
 	 * @param order {@link OrderType order} to display
@@ -80,17 +80,19 @@ public class OrderDialog extends AbstractOrderDialog
 			final OrderType previewOrder = order.clone();
 			if(trimOrderLines(previewOrder.getOrderLine()))
 			{
-				final PreviewOrderDialog previewDialog = new PreviewOrderDialog(owner, previewOrder);
-				previewDialog.setTitle("Order Preview");
-				previewDialog.setVisible(true);
+//				final PreviewOrderDialog previewDialog = new PreviewOrderDialog(owner, previewOrder);
+//				previewDialog.setTitle("Order Preview");
+//				previewDialog.setVisible(true);
+				owner.showOrderDialog("Preview Order", previewOrder, false, null);
 			}
 			else
 			{
 				JOptionPane.showMessageDialog(OrderDialog.this, "Removal of items with quantity of zero has failed!",
 						 "Error message", JOptionPane.ERROR_MESSAGE);
-				final PreviewOrderDialog previewDialog = new PreviewOrderDialog(owner, previewOrder);
-				previewDialog.setTitle("Order Preview");
-				previewDialog.setVisible(true);
+//				final PreviewOrderDialog previewDialog = new PreviewOrderDialog(owner, previewOrder);
+//				previewDialog.setTitle("Order Preview");
+//				previewDialog.setVisible(true);
+				owner.showOrderDialog("Preview Order", previewOrder, false, null);
 			}
 		});
 //		buttonPanel.add(previewButton);
@@ -120,13 +122,14 @@ public class OrderDialog extends AbstractOrderDialog
 		}
 		else
 		{
+			getRootPane().setDefaultButton(closeButton);
 			if(corr != null)
 			{
 				buttonPanel.add(resendButton);
 				getRootPane().setDefaultButton(resendButton);
 			}
 			buttonPanel.add(closeButton);
-			getRootPane().setDefaultButton(closeButton);
+
 		}
 
 		add(buttonPanel, BorderLayout.SOUTH);

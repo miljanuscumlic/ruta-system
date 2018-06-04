@@ -46,7 +46,7 @@ public class SellerAddDetailState extends SellerOrderingProcessState
 	{
 		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
 		final MyParty myParty = process.getClient().getMyParty();
-		DocumentReference documentReference = correspondence.getLastDocumentReference();
+		final DocumentReference documentReference = correspondence.getLastDocumentReference();
 		OrderType order = null;
 		if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
 			order = process.getOrder(correspondence);

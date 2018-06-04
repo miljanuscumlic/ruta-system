@@ -1454,13 +1454,13 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	}
 
 	/**
-	 * Opens xml document from the database collection which path and name are passed as the arguments.
+	 * Opens xml document from the database collection which path and name are passed as arguments.
 	 * Method does not use transactions.
 	 * @param collectionPath path of collection relative to the main collection of the Ruta application in which the document resides
 	 * @param documentName document name
 	 * @return {@code String} representing the contents of the document or {@code null}
 	 * if the document does not exist
-	 * @throws DatabaseException if collection or document could not ber opened
+	 * @throws DatabaseException if collection or document could not be opened
 	 */
 	protected String openXmlDocument(String collectionPath, @Nonnull String documentName) throws DatabaseException
 	{

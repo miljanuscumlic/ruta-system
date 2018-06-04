@@ -44,7 +44,7 @@ public class OrderChangeDialog extends AbstractOrderDialog
 				((int) headerTable.getPreferredSize().getWidth()),
 				((int) headerTable.getPreferredSize().getHeight()) + 5);
 		headerPanel.setPreferredSize(buttonPanelSize);
-		headerTable.addMouseListener(stopTableEditingListener);
+		headerTable.addMouseListener(stopEditingListener);
 
 		JButton sendButton = new JButton("Send");
 		JButton discardButton = new JButton("Discard");
@@ -102,7 +102,6 @@ public class OrderChangeDialog extends AbstractOrderDialog
 			buttonPanel.add(closeButton);
 			getRootPane().setDefaultButton(closeButton);
 		}
-
 	}
 
 	public boolean isSendPressed()

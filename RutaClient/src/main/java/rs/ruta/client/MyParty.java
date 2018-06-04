@@ -33,6 +33,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Com
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemLocationQuantityType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
@@ -51,11 +52,13 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.Descrip
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.LineExtensionAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PackSizeNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PriceAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.RejectionNoteType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.UUIDType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -68,6 +71,8 @@ import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.CreateCatalogueProcess;
 import rs.ruta.client.correspondence.CreateCatalogueProcessState;
+import rs.ruta.client.correspondence.CustomerBillingProcess;
+import rs.ruta.client.correspondence.CustomerReceiveInvoiceState;
 import rs.ruta.client.correspondence.DeleteCatalogueProcess;
 import rs.ruta.client.correspondence.NotifyOfCatalogueDeletionState;
 import rs.ruta.client.correspondence.OrderingProcess;
@@ -77,6 +82,8 @@ import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.client.correspondence.SellerReceiveOrderChangeCancellationState;
 import rs.ruta.client.correspondence.SellerReceiveOrderState;
+import rs.ruta.client.correspondence.SupplierBillingProcess;
+import rs.ruta.client.correspondence.SupplierReceiveApplicationResponseState;
 import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.InstanceFactory;
@@ -164,6 +171,8 @@ public class MyParty extends BusinessParty
 	private long catalogueDeletionID;
 	@XmlElement(name = "OrderID")
 	private long orderID;
+	@XmlElement(name = "InvoiceID")
+	private long invoiceID;
 	@XmlElement(name = "ItemID")
 	private long itemID;
 	@XmlElement(name = "CatalogueIssueDate")
@@ -823,7 +832,7 @@ public class MyParty extends BusinessParty
 	/**
 	 * Returns next ID for the newly created {@link OrderType order} document. As a side effect
 	 * it increases orderID counter.
-	 * @return next catalogue deletion ID
+	 * @return next Order ID
 	 */
 	public long nextOrderID()
 	{
@@ -837,6 +846,35 @@ public class MyParty extends BusinessParty
 	{
 		if(orderID > 0)
 			orderID--;
+	}
+
+	public long getInvoiceID()
+	{
+		return invoiceID;
+	}
+
+	public void setInvoiceID(long invoiceID)
+	{
+		this.invoiceID = invoiceID;
+	}
+
+	/**
+	 * Returns next ID for the newly created {@link InvoiceType invoice} document. As a side effect
+	 * it increases invoiceID counter.
+	 * @return next Invoice ID
+	 */
+	public long nextInvoiceID()
+	{
+		return ++invoiceID;
+	}
+
+	/**
+	 * Decreases invoiceID counter by 1.
+	 */
+	public void decreaseInvoiceID()
+	{
+		if(invoiceID > 0)
+			invoiceID--;
 	}
 
 	/**
@@ -2015,6 +2053,8 @@ public class MyParty extends BusinessParty
 			final LineItemType orderLineItem = new LineItemType();
 			orderLineItem.setItem(catalogueline.getItem().clone());
 			orderLine.setLineItem(orderLineItem);
+			orderLineItem.setPrice(catalogueline.getRequiredItemLocationQuantityAtIndex(0).getPrice());
+	//		orderLineItem.getItem().setClassifiedTaxCategory(catalogueline.getItem().getClassifiedTaxCategory());
 			orderLines.add(orderLine);
 		}
 		return order;
@@ -2118,15 +2158,7 @@ public class MyParty extends BusinessParty
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		orderResponse.setIssueDate(now);
 		orderResponse.setIssueTime(now);
-		final OrderReferenceType orderReference = new OrderReferenceType();
-		orderReference.setID(id);
-		final DocumentReferenceType docReference = new DocumentReferenceType();
-		docReference.setID(order.getID());
-		docReference.setUUID(order.getUUIDValue());
-		docReference.setIssueDate(order.getIssueDate());
-		docReference.setIssueTime(order.getIssueTime());
-		docReference.setDocumentType(order.getClass().getName());
-		orderReference.setDocumentReference(docReference);
+		final OrderReferenceType orderReference = InstanceFactory.createOrderReference(order);
 		orderResponse.addOrderReference(orderReference);
 		orderResponse.setSellerSupplierParty(order.getSellerSupplierParty());
 		orderResponse.setBuyerCustomerParty(order.getBuyerCustomerParty());
@@ -2151,44 +2183,40 @@ public class MyParty extends BusinessParty
 		final XMLGregorianCalendar now = InstanceFactory.getDate();
 		orderResponse.setIssueDate(now);
 		orderResponse.setIssueTime(now);
-		final OrderReferenceType orderReference = new OrderReferenceType();
-		orderReference.setID(UUID.randomUUID().toString());
-		final DocumentReferenceType docReference = new DocumentReferenceType();
-		docReference.setID(order.getID());
-		docReference.setUUID(order.getUUID());
-		docReference.setIssueDate(order.getIssueDate());
-		docReference.setIssueTime(order.getIssueTime());
-		docReference.setDocumentType(order.getClass().getName());
-		orderReference.setDocumentReference(docReference);
+		final OrderReferenceType orderReference = InstanceFactory.createOrderReference(order);
 		orderResponse.addOrderReference(orderReference);
 		orderResponse.setSellerSupplierParty(order.getSellerSupplierParty());
 		orderResponse.setBuyerCustomerParty(order.getBuyerCustomerParty());
 
 		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
-		List<OrderLineType> newOrderLines = new ArrayList<>();
+		List<OrderLineType> orderResponseOrderLines = new ArrayList<>();
 		for(CatalogueLineType catalogueline: catalogueLines)
 		{
 			final OrderLineType orderLine =  new OrderLineType();
 			final LineItemType orderLineItem = new LineItemType();
 			orderLineItem.setItem(catalogueline.getItem().clone());
+			orderLineItem.setPrice(catalogueline.getRequiredItemLocationQuantityAtIndex(0).getPrice());
 			orderLine.setLineItem(orderLineItem);
-			newOrderLines.add(orderLine);
+			orderResponseOrderLines.add(orderLine);
 		}
 
 		final List<OrderLineType> orderLines = order.getOrderLine();
 		for(OrderLineType orderLine: orderLines)
 		{
-			for(OrderLineType newOrderLine: newOrderLines)
+			for(OrderLineType orderResponseOrderLine: orderResponseOrderLines)
 			{
-				if(orderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue().
-						equals(newOrderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue()))
+				final LineItemType orderLineItem = orderLine.getLineItem();
+				final LineItemType orderResponseLineItem = orderResponseOrderLine.getLineItem();
+				if(orderLineItem.getItem().getSellersItemIdentification().getIDValue().
+						equals(orderResponseLineItem.getItem().getSellersItemIdentification().getIDValue()))
 				{
-					newOrderLine.getLineItem().setQuantity(orderLine.getLineItem().getQuantity());
+					orderResponseLineItem.setQuantity(orderLineItem.getQuantity());
+//					orderResponseLineItem.setPrice(orderLineItem.getPrice());
 					break;
 				}
 			}
 		}
-		orderResponse.setOrderLine(newOrderLines);
+		orderResponse.setOrderLine(orderResponseOrderLines);
 		return orderResponse;
 	}
 
@@ -2245,15 +2273,7 @@ public class MyParty extends BusinessParty
 		orderResponseSimple.setIssueDate(now);
 		orderResponseSimple.setIssueTime(now);
 		orderResponseSimple.setAcceptedIndicator(accepted);
-		final OrderReferenceType orderReference = new OrderReferenceType();
-		orderReference.setID(UUID.randomUUID().toString());
-		final DocumentReferenceType docReference = new DocumentReferenceType();
-		docReference.setID(order.getID());
-		docReference.setUUID(order.getUUIDValue());
-		docReference.setIssueDate(order.getIssueDate());
-		docReference.setIssueTime(order.getIssueTime());
-		docReference.setDocumentType(order.getClass().getName());
-		orderReference.setDocumentReference(docReference);
+		final OrderReferenceType orderReference = InstanceFactory.createOrderReference(order);
 		orderResponseSimple.setOrderReference(orderReference);
 		orderResponseSimple.setSellerSupplierParty(order.getSellerSupplierParty());
 		orderResponseSimple.setBuyerCustomerParty(order.getBuyerCustomerParty());
@@ -2269,7 +2289,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Generates {@link OrderChangeType} document that conforms to the {@code UBL} standard.
-	 * @param orderResponse Order Response to wich Order Change is to be created
+	 * @param orderResponse Order Response to which Order Change is to be created
 	 * @param orderChangeSequenceNumber
 	 * @return Order Change or {@code null} if Order Change does not conform to the {@code UBL}, correspondent
 	 * is not a business partner or if user has decided to abort Order Change creation
@@ -2342,37 +2362,40 @@ public class MyParty extends BusinessParty
 		orderChange.setBuyerCustomerParty(orderResponse.getBuyerCustomerParty());
 
 		final List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
-		List<OrderLineType> newOrderLines = new ArrayList<>();
+		List<OrderLineType> orderChangeOrderLines = new ArrayList<>();
 		for(CatalogueLineType catalogueline: catalogueLines)
 		{
 			final OrderLineType orderLine =  new OrderLineType();
 			final LineItemType orderLineItem = new LineItemType();
 			orderLineItem.setItem(catalogueline.getItem().clone());
+			orderLineItem.setPrice(catalogueline.getRequiredItemLocationQuantityAtIndex(0).getPrice());
 			orderLine.setLineItem(orderLineItem);
-			newOrderLines.add(orderLine);
+			orderChangeOrderLines.add(orderLine);
 		}
 
 		final List<OrderLineType> orderLines = orderResponse.getOrderLine();
 		for(OrderLineType orderLine: orderLines)
 		{
-			for(OrderLineType newOrderLine: newOrderLines)
+			for(OrderLineType orderChangeOrderLine: orderChangeOrderLines)
 			{
-				if(orderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue().
-						equals(newOrderLine.getLineItem().getItem().getSellersItemIdentification().getIDValue()))
+				final LineItemType orderLineItem = orderLine.getLineItem();
+				final LineItemType orderChangeLineItem = orderChangeOrderLine.getLineItem();
+				if(orderLineItem.getItem().getSellersItemIdentification().getIDValue().
+						equals(orderChangeLineItem.getItem().getSellersItemIdentification().getIDValue()))
 				{
-					newOrderLine.getLineItem().setQuantity(orderLine.getLineItem().getQuantity());
+					orderChangeLineItem.setQuantity(orderLineItem.getQuantity());
+//					orderChangeLineItem.setPrice(orderLineItem.getPrice());
 					break;
 				}
 			}
 		}
-		orderChange.setOrderLine(newOrderLines);
+		orderChange.setOrderLine(orderChangeOrderLines);
 		return orderChange;
 	}
 
-
 	/**
 	 * Generates {@link OrderCancellationType} document that conforms to the {@code UBL} standard.
-	 * @param orderResponse Order Response to wich Order Cancellation is to be created
+	 * @param orderResponse Order Response to which Order Cancellation is to be created
 	 * @return Order Cancellation or {@code null} if Order Cancellation does not conform to the {@code UBL}, correspondent
 	 * is not a business partner or if user has decided to abort Order Cancellation creation
 	 */
@@ -2424,6 +2447,277 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
+	 * Generates {@link InvoiceType} document that conforms to the {@code UBL} standard.
+	 * @param order Order to which the Invoice is to be made
+	 * @return Invoice or {@code null} if user has aborted Invoice creation, Invoice does not conform to the
+	 * {@code UBL} standard
+	 */
+	public InvoiceType produceInvoice(OrderType order)
+	{
+		boolean valid = false;
+		InvoiceType invoice = null;
+		invoice = createInvoice(order);
+		if(invoice != null)
+			valid = InstanceFactory.validateUBLDocument(invoice, doc -> UBL21Validator.invoice().validate(doc));
+		else
+			decreaseInvoiceID();
+		return valid ? invoice : null;
+	}
+
+	/**
+	 * Generates {@link InvoiceType} document that conforms to the {@code UBL} standard.
+	 * @param orderChange Order to which the Invoice is to be made
+	 * @return Invoice or {@code null} if user has aborted Invoice creation, Invoice does not conform to the
+	 * {@code UBL} standard
+	 */
+	public InvoiceType produceInvoice(OrderChangeType orderChange)
+	{
+		boolean valid = false;
+		InvoiceType invoice = null;
+		invoice = createInvoice(orderChange);
+		if(invoice != null)
+			valid = InstanceFactory.validateUBLDocument(invoice, doc -> UBL21Validator.invoice().validate(doc));
+		else
+			decreaseInvoiceID();
+		return valid ? invoice : null;
+	}
+
+	/**
+	 * Generates {@link InvoiceType} document that conforms to the {@code UBL} standard.
+	 * @param orderResponse Order Response to which the Invoice is to be made
+	 * @return Invoice or {@code null} if user has aborted Invoice creation, Invoice does not conform to the
+	 * {@code UBL} standard
+	 */
+	public InvoiceType produceInvoice(OrderResponseType orderResponse)
+	{
+		boolean valid = false;
+		InvoiceType invoice = null;
+		invoice = createInvoice(orderResponse);
+		if(invoice != null)
+			valid = InstanceFactory.validateUBLDocument(invoice, doc -> UBL21Validator.invoice().validate(doc));
+		else
+			decreaseInvoiceID();
+		return valid ? invoice : null;
+	}
+
+	/**
+	 * Generates {@link InvoiceType} by amending the one passed as an argumentdocument that conforms to the
+	 * {@code UBL} standard.
+	 * @param invoice Invoice to to be amended
+	 * @return Invoice or {@code null} if user has aborted Invoice creation, Invoice does not conform to the
+	 * {@code UBL} standard
+	 */
+	public InvoiceType produceInvoice(InvoiceType invoice)
+	{
+		boolean valid = false;
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		invoice.setIssueDate(now);
+		invoice.setIssueTime(now);
+		invoice.setUUID(UUID.randomUUID().toString());
+		invoice = client.getClientFrame().showInvoiceDialog("Amend Invoice", invoice, true, null);
+		if(invoice != null)
+			valid = InstanceFactory.validateUBLDocument(invoice, doc -> UBL21Validator.invoice().validate(doc));
+//		else
+//			decreaseInvoiceID();
+		return valid ? invoice : null;
+	}
+
+	/**
+	 * Creates {@link InvoiceType} document by displaying {@link InvoiceDialog} for entering Invoice related data.
+	 * @param order {@link OrderType order} that is a base for creation of the Invoice
+	 * @return order created {@link InvoiceType Invoice} or {@code null} if user aborts Invoice creation
+	 */
+	private InvoiceType createInvoice(OrderType order)
+	{
+		final InvoiceType invoice = convertToInvoice(order);
+		return client.getClientFrame().showInvoiceDialog("New Invoice", invoice, true, null);
+	}
+
+	/**
+	 * Creates {@link InvoiceType} document by displaying {@link InvoiceDialog} for entering Invoice related data.
+	 * @param orderChange {@link OrderChangeType order} that is a base for creation of the Invoice
+	 * @return order created {@link InvoiceType Invoice} or {@code null} if user aborts Invoice creation
+	 */
+	private InvoiceType createInvoice(OrderChangeType orderChange)
+	{
+		final InvoiceType invoice = convertToInvoice(orderChange);
+		return client.getClientFrame().showInvoiceDialog("New Invoice", invoice, true, null);
+	}
+
+	/**
+	 * Creates {@link InvoiceType} document by displaying {@link InvoiceDialog} for entering Invoice related data.
+	 * @param orderResponse {@link OrderResponseType order} that is a base for creation of the Invoice
+	 * @return order created {@link InvoiceType Invoice} or {@code null} if user aborts Invoice creation
+	 */
+	private InvoiceType createInvoice(OrderResponseType orderResponse)
+	{
+		final InvoiceType invoice = convertToInvoice(orderResponse);
+		return client.getClientFrame().showInvoiceDialog("New Invoice", invoice, true, null);
+	}
+
+	/**
+	 * Creates new {@link InvoiceType} incorporating data of passed {@link OrderType}.
+	 * @param order Order to process
+	 * @return newly created {@code InvoiceType}
+	 */
+	public InvoiceType convertToInvoice(OrderType order)
+	{
+		final InvoiceType invoice = new InvoiceType();
+		invoice.setID(String.valueOf(nextInvoiceID()));
+		invoice.setUUID(UUID.randomUUID().toString());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		invoice.setIssueDate(now);
+		invoice.setIssueTime(now);
+		final OrderReferenceType orderReference = InstanceFactory.createOrderReference(order);
+		invoice.setOrderReference(orderReference);
+		//MMM OriginatorReference is not used at all - check this!
+		final DocumentReferenceType originatorReference = InstanceFactory.createDocumentReference(
+				getCoreParty(), order.getUUIDValue(), order.getIDValue(), order.getIssueDateValue(),
+				order.getIssueTimeValue(), order.getClass().getName());
+		invoice.getOriginatorDocumentReference().add(originatorReference);
+		invoice.setAccountingSupplierParty(order.getSellerSupplierParty());
+		invoice.setAccountingCustomerParty(order.getBuyerCustomerParty());
+
+		final List<OrderLineType> orderLines = order.getOrderLine();
+		final List<InvoiceLineType> invoiceLines = invoice.getInvoiceLine();
+		for(OrderLineType orderLine: orderLines)
+		{
+			final InvoiceLineType invoiceLine = new InvoiceLineType();
+			final LineItemType orderLineItem = orderLine.getLineItem();
+			final String id = UUID.randomUUID().toString();
+			invoiceLine.setID(id );
+			invoiceLine.setUUID(id);
+			invoiceLine.setInvoicedQuantity(orderLineItem.getQuantityValue());
+			final LineExtensionAmountType lineExtensionAmount = new LineExtensionAmountType();
+			final BigDecimal lineAmount = orderLineItem.getPrice().getPriceAmountValue().multiply(orderLineItem.getQuantityValue());
+			lineExtensionAmount.setValue(lineAmount);
+			lineExtensionAmount.setCurrencyID(InstanceFactory.CURRENCY_CODE);
+			invoiceLine.setLineExtensionAmount(lineExtensionAmount);
+			invoiceLine.setItem(orderLineItem.getItem());
+			invoiceLine.setPrice(orderLineItem.getPrice());
+			invoiceLines.add(invoiceLine);
+		}
+		return invoice;
+	}
+
+	/**
+	 * Creates new {@link InvoiceType} incorporating data of passed {@link OrderChangeType}.
+	 * @param orderChange Order Change to process
+	 * @return newly created {@code InvoiceType}
+	 */
+	public InvoiceType convertToInvoice(OrderChangeType orderChange)
+	{
+		final InvoiceType invoice = new InvoiceType();
+		invoice.setID(String.valueOf(nextInvoiceID()));
+		invoice.setUUID(UUID.randomUUID().toString());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		invoice.setIssueDate(now);
+		invoice.setIssueTime(now);
+		final OrderReferenceType orderReference = orderChange.getOrderReference();
+		invoice.setOrderReference(orderReference);
+		final DocumentReferenceType originatorReference = InstanceFactory.createDocumentReference(
+				getCoreParty(), orderChange.getUUIDValue(), orderChange.getIDValue(), orderChange.getIssueDateValue(),
+				orderChange.getIssueTimeValue(), orderChange.getClass().getName());
+		invoice.getOriginatorDocumentReference().add(originatorReference);
+		invoice.setAccountingSupplierParty(orderChange.getSellerSupplierParty());
+		invoice.setAccountingCustomerParty(orderChange.getBuyerCustomerParty());
+
+		final List<OrderLineType> orderLines = orderChange.getOrderLine();
+		final List<InvoiceLineType> invoiceLines = invoice.getInvoiceLine();
+		for(OrderLineType orderLine: orderLines)
+		{
+			final InvoiceLineType invoiceLine = new InvoiceLineType();
+			final LineItemType orderLineItem = orderLine.getLineItem();
+			final String id = UUID.randomUUID().toString();
+			invoiceLine.setID(id );
+			invoiceLine.setUUID(id);
+			invoiceLine.setInvoicedQuantity(orderLineItem.getQuantityValue());
+			final LineExtensionAmountType lineExtensionAmount = new LineExtensionAmountType();
+			final BigDecimal lineAmount = orderLineItem.getPrice().getPriceAmountValue().multiply(orderLineItem.getQuantityValue());
+			lineExtensionAmount.setValue(lineAmount);
+			lineExtensionAmount.setCurrencyID(InstanceFactory.CURRENCY_CODE);
+			invoiceLine.setLineExtensionAmount(lineExtensionAmount);
+			invoiceLine.setItem(orderLineItem.getItem());
+			invoiceLine.setPrice(orderLineItem.getPrice());
+			invoiceLines.add(invoiceLine);
+		}
+		return invoice;
+	}
+
+	/**
+	 * Creates new {@link InvoiceType} incorporating data of passed {@link OrderResponseType}.
+	 * @param orderResponse Order Response to process
+	 * @return newly created {@code InvoiceType}
+	 */
+	public InvoiceType convertToInvoice(OrderResponseType orderResponse)
+	{
+		final InvoiceType invoice = new InvoiceType();
+		invoice.setID(String.valueOf(nextInvoiceID()));
+		invoice.setUUID(UUID.randomUUID().toString());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		invoice.setIssueDate(now);
+		invoice.setIssueTime(now);
+		final OrderReferenceType orderReference = orderResponse.getOrderReferenceAtIndex(0);
+		invoice.setOrderReference(orderReference);
+		final DocumentReferenceType originatorReference = InstanceFactory.createDocumentReference(
+				getCoreParty(), orderResponse.getUUIDValue(), orderResponse.getIDValue(), orderResponse.getIssueDateValue(),
+				orderResponse.getIssueTimeValue(), orderResponse.getClass().getName());
+		invoice.getOriginatorDocumentReference().add(originatorReference);
+		invoice.setAccountingSupplierParty(orderResponse.getSellerSupplierParty());
+		invoice.setAccountingCustomerParty(orderResponse.getBuyerCustomerParty());
+
+		final List<OrderLineType> orderLines = orderResponse.getOrderLine();
+		final List<InvoiceLineType> invoiceLines = invoice.getInvoiceLine();
+		for(OrderLineType orderLine: orderLines)
+		{
+			final InvoiceLineType invoiceLine = new InvoiceLineType();
+			final LineItemType orderLineItem = orderLine.getLineItem();
+			final String id = UUID.randomUUID().toString();
+			invoiceLine.setID(id );
+			invoiceLine.setUUID(id);
+			invoiceLine.setInvoicedQuantity(orderLineItem.getQuantityValue());
+			final LineExtensionAmountType lineExtensionAmount = new LineExtensionAmountType();
+			final BigDecimal lineAmount = orderLineItem.getPrice().getPriceAmountValue().multiply(orderLineItem.getQuantityValue());
+			lineExtensionAmount.setValue(lineAmount);
+			lineExtensionAmount.setCurrencyID(InstanceFactory.CURRENCY_CODE);
+			invoiceLine.setLineExtensionAmount(lineExtensionAmount);
+			invoiceLine.setItem(orderLineItem.getItem());
+			invoiceLine.setPrice(orderLineItem.getPrice());
+			invoiceLines.add(invoiceLine);
+		}
+		return invoice;
+	}
+
+	/**
+	 * Generates {@link ApplicationResponseType} document that conforms to the {@code UBL} standard.
+	 * @param document document to which Application Response is to be created
+	 * @param responseCode response code of the Application Response as a {@code String}
+	 * @return Application Response or {@code null} if Application Response does not conform to the {@code UBL}
+	 */
+	public ApplicationResponseType produceApplicationResponse(Object document, String responseCode)
+	{
+		boolean valid = false;
+		final ApplicationResponseType appResponse = createApplicationResponse(document, responseCode);
+		valid = InstanceFactory.validateUBLDocument(appResponse,
+				doc -> UBL21Validator.applicationResponse().validate(doc));
+		return valid ? appResponse : null;
+	}
+
+	/**
+	 * Creates {@link ApplicationResponseType} document by displaying {@link ApplicationResponseDialog} for
+	 * entering Application Response related data.
+	 * @param document document to which Application Response is to be created
+	 * @param responseCode response code of the Application Response as a {@code String}
+	 * @return created {@link ApplicationResponseType Application Response} or {@code null} if user has decided
+	 * to abort the creation of it
+	 */
+	private ApplicationResponseType createApplicationResponse(Object document, String responseCode)
+	{
+		final ApplicationResponseType appResponse = InstanceFactory.produceApplicationResponse(document, responseCode, null);
+		return client.getClientFrame().showApplicationResponseDialog("Create Application Response", appResponse, true, null);
+	}
+
+	/**
 	 * Creates {@link ApplicationResponseType} document.
 	 * @param applicationResponse Order Response Simple to which Application Response is to be made
 	 * @return created {@link ApplicationResponseType Application Response}
@@ -2436,7 +2730,7 @@ public class MyParty extends BusinessParty
 		String uuid = orderResponseSimple.getUUIDValue();
 		String id = orderResponseSimple.getIDValue();
 		String responseCode = InstanceFactory.APP_RESPONSE_POSITIVE;
-		return InstanceFactory.createApplicationResponse(senderParty, receiverParty, uuid, id, responseCode);
+		return InstanceFactory.createApplicationResponse(senderParty, receiverParty, uuid, id, responseCode, null);
 	}
 
 	/**
@@ -3021,6 +3315,45 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
+	 * Processes {@link invoiceType} document by appending it to a proper {@link BillingCorrespondence correspondence}.
+	 * @param invoice Invoice to process
+	 * @throws DetailException if correspondent could not be found, Invoice has already been received, or new
+	 * correspondence could not be inserted into the data store
+	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
+	 */
+	public void processDocBoxInvoice(InvoiceType invoice) throws DetailException, InterruptedException
+	{
+		final String correspondentID = invoice.getAccountingSupplierParty().getParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final String orderUUID = invoice.getOrderReference().getDocumentReference().getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence is closed or could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		{
+			final RutaProcess process =  (RutaProcess) corr.getState();
+			if(process instanceof CustomerBillingProcess &&
+					process.getState() instanceof CustomerReceiveInvoiceState)
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(invoice);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(invoice.getAccountingSupplierParty().getParty(),
+						invoice.getUUIDValue(), invoice.getIDValue(),
+						invoice.getIssueDateValue(), invoice.getIssueTimeValue(),
+						invoice.getClass().getName(), null);
+				((CustomerBillingProcess) process).setInvoice(invoice);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else
+				throw new DetailException("Invoice " + invoice.getIDValue() +
+						" does not belong to the current state of the correspondence.");
+		}
+	}
+
+	/**
 	 * Processes {@link OrderType} document by appending it to a proper {@link BuyingCorrespondence correspondence}.
 	 * @param order Order to process
 	 * @throws DetailException if correspondent could not be found, order already received, or new
@@ -3223,7 +3556,7 @@ public class MyParty extends BusinessParty
 		{
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
-					process.getState() instanceof SellerReceiveOrderChangeCancellationState) //MMM expand with else branch for Billing Process
+					process.getState() instanceof SellerReceiveOrderChangeCancellationState)
 			{
 				if(!corr.isAlive())
 					corr.start();
@@ -3234,6 +3567,21 @@ public class MyParty extends BusinessParty
 						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
 						applicationResponse.getClass().getName(), null);
 				((SellerOrderingProcess) process).setApplicationResponse(applicationResponse);
+				corr.setRecentlyUpdated(true);
+				corr.proceed();
+			}
+			else if(process instanceof SupplierBillingProcess &&
+					process.getState() instanceof SupplierReceiveApplicationResponseState)
+			{
+				if(!corr.isAlive())
+					corr.start();
+				corr.storeDocument(applicationResponse);
+				corr.waitThreadBlocked();
+				corr.addDocumentReference(applicationResponse.getSenderParty(),
+						applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
+						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
+						applicationResponse.getClass().getName(), null);
+				((SupplierBillingProcess) process).setApplicationResponse(applicationResponse);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
@@ -3305,9 +3653,12 @@ public class MyParty extends BusinessParty
 		Correspondence corr = null;
 		if(corrs != null)
 		{
-			foundCorrs = corrs.stream().filter(elem -> elem.isActive()).
+			foundCorrs = corrs.stream().
+					filter(elem -> elem.isActive()).
 					filter(elem -> ! elem.getDocumentReferences().stream().
-							filter(ref -> docUUID.equals(ref.getUUIDValue())).collect(Collectors.toList()).isEmpty()).
+							filter(ref -> docUUID.equals(ref.getUUIDValue())).
+							collect(Collectors.toList()).
+							isEmpty()).
 					collect(Collectors.toList());
 			if(foundCorrs.size() == 1)
 				corr = foundCorrs.get(0);

@@ -13,7 +13,7 @@ import rs.ruta.client.correspondence.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 
 /**
- * Data model for a orderLinesTable displaying one {@link Correspondence} of a party.
+ * Data model for a table displaying one {@link Correspondence} of a party.
  */
 public class CorrespondenceTableModel extends DefaultTableModel
 {

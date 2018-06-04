@@ -33,6 +33,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -47,11 +48,13 @@ import rs.ruta.client.correspondence.BuyerOrderingProcess;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
+import rs.ruta.client.correspondence.CustomerBillingProcess;
 import rs.ruta.client.correspondence.DocumentReference;
 import rs.ruta.client.correspondence.RutaProcess;
 import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.client.correspondence.SellerProcessOrderState;
+import rs.ruta.client.correspondence.SupplierBillingProcess;
 import rs.ruta.common.datamapper.DetailException;
 
 /**
@@ -358,9 +361,11 @@ public class TabCorrespondences extends TabComponent
 
 		JPopupMenu correspondencePopupMenu = new JPopupMenu();
 		JMenuItem processDocumentItem = new JMenuItem("Process");
-		JMenuItem resendItem = new JMenuItem("Resend");
+		JMenuItem resendDocumentItem = new JMenuItem("Resend");
 		JMenuItem viewApplicationResponseItem = new JMenuItem("View");
 		JMenuItem viewResendApplicationResponseItem = new JMenuItem("View and Resend");
+		JMenuItem viewInvoiceItem = new JMenuItem("View");
+		JMenuItem viewResendInvoiceItem = new JMenuItem("View and Resend");
 		JMenuItem viewOrderItem = new JMenuItem("View");
 		JMenuItem viewResendOrderItem = new JMenuItem("View and Resend");
 		JMenuItem viewOrderChangeItem = new JMenuItem("View");
@@ -422,6 +427,38 @@ public class TabCorrespondences extends TabComponent
 							(ApplicationResponseType) document, false, corr);
 				else
 					clientFrame.appendToConsole(new StringBuilder("Application Response does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewInvoiceItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showInvoiceDialog("View Invoice", (InvoiceType) document, false, null);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Invoice does not exist!"), Color.BLACK);
+			}).start();
+		});
+
+		viewResendInvoiceItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+				final int vieRowIndex = table.getSelectedRow();
+				final int modelRowIndex = table.convertRowIndexToModel(vieRowIndex);
+				final Object document = corr.getDocumentAtIndex(modelRowIndex);
+
+				if(document != null)
+					clientFrame.showInvoiceDialog("View Invoice", (InvoiceType) document, false, corr);
+				else
+					clientFrame.appendToConsole(new StringBuilder("Invoice does not exist!"), Color.BLACK);
 			}).start();
 		});
 
@@ -590,7 +627,7 @@ public class TabCorrespondences extends TabComponent
 			}).start();
 		});
 
-		resendItem.addActionListener(event ->
+		resendDocumentItem.addActionListener(event ->
 		{
 			new Thread(() ->
 			{
@@ -626,14 +663,49 @@ public class TabCorrespondences extends TabComponent
 						final DocumentReference documentReference = corr.getDocumentReferenceAtIndex(modelRowIndex);
 						correspondencePopupMenu.removeAll();
 						final RutaProcess process = (RutaProcess) corr.getState();
-						if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						if(ApplicationResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == BuyerOrderingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								correspondencePopupMenu.add(viewResendApplicationResponseItem);
+								correspondencePopupMenu.add(resendDocumentItem);
+							}
+							else
+								correspondencePopupMenu.add(viewApplicationResponseItem);
+
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == SupplierBillingProcess.class)
+							{
+								correspondencePopupMenu.add(processDocumentItem);
+							}
+						}
+						else if(InvoiceType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						{
+							if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == SupplierBillingProcess.class &&
+									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							{
+								correspondencePopupMenu.add(viewResendInvoiceItem);
+								correspondencePopupMenu.add(resendDocumentItem);
+							}
+							else if(documentReference == corr.getLastDocumentReference() &&
+									process.getClass() == CustomerBillingProcess.class)
+							{
+								correspondencePopupMenu.add(processDocumentItem);
+							}
+							else
+								correspondencePopupMenu.add(viewInvoiceItem);
+						}
+						else if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
 							if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == BuyerOrderingProcess.class &&
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
 								correspondencePopupMenu.add(viewResendOrderItem);
-								correspondencePopupMenu.add(resendItem);
+								correspondencePopupMenu.add(resendDocumentItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
 									process instanceof SellerOrderingProcess &&
@@ -653,7 +725,7 @@ public class TabCorrespondences extends TabComponent
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
 								correspondencePopupMenu.add(viewResendOrderResponseItem);
-								correspondencePopupMenu.add(resendItem);
+								correspondencePopupMenu.add(resendDocumentItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == BuyerOrderingProcess.class &&
@@ -672,7 +744,7 @@ public class TabCorrespondences extends TabComponent
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
 								correspondencePopupMenu.add(viewResendOrderResponseSimpleItem);
-								correspondencePopupMenu.add(resendItem);
+								correspondencePopupMenu.add(resendDocumentItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == BuyerOrderingProcess.class &&
@@ -692,7 +764,7 @@ public class TabCorrespondences extends TabComponent
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
 								correspondencePopupMenu.add(viewResendOrderChangeItem);
-								correspondencePopupMenu.add(resendItem);
+								correspondencePopupMenu.add(resendDocumentItem);
 							}
 							else if(documentReference == corr.getLastDocumentReference() &&
 									process.getClass() == SellerOrderingProcess.class &&
@@ -711,22 +783,10 @@ public class TabCorrespondences extends TabComponent
 									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
 							{
 								correspondencePopupMenu.add(viewResendOrderCancellationItem);
-								correspondencePopupMenu.add(resendItem);
+								correspondencePopupMenu.add(resendDocumentItem);
 							}
 							else
 								correspondencePopupMenu.add(viewOrderCancellationItem);
-						}
-						else if(ApplicationResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
-						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
-							{
-								correspondencePopupMenu.add(viewResendApplicationResponseItem);
-								correspondencePopupMenu.add(resendItem);
-							}
-							else
-								correspondencePopupMenu.add(viewApplicationResponseItem);
 						}
 						correspondencePopupMenu.show(table, event.getX(), event.getY());
 					}
@@ -738,9 +798,9 @@ public class TabCorrespondences extends TabComponent
 	}
 
 	/**
-	 * Creates orderLinesTable showing list of Business Partners.
+	 * Creates table showing list of Business Partners.
 	 * @param tableModel model containing party data to display
-	 * @return constructed orderLinesTable object
+	 * @return constructed table object
 	 */
 	private JTable createPartyListTable(DefaultTableModel tableModel)
 	{
@@ -758,7 +818,7 @@ public class TabCorrespondences extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
@@ -789,7 +849,7 @@ public class TabCorrespondences extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
@@ -820,8 +880,8 @@ public class TabCorrespondences extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) orderLinesTable.getModel()).getParty(realRowIndex);
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			new Thread(()->
 			{
 				try
@@ -845,8 +905,8 @@ public class TabCorrespondences extends TabComponent
 
 		addPartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) orderLinesTable.getModel()).getParty(realRowIndex);
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			new Thread(() ->
 			{
 				selectedParty.setPartner(true);
@@ -869,9 +929,9 @@ public class TabCorrespondences extends TabComponent
 
 		removePartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = orderLinesTable.convertRowIndexToModel(orderLinesTable.getSelectedRow());
+			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 
-			final BusinessParty selectedParty = ((PartyListTableModel) orderLinesTable.getModel()).getParty(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
 			{
 				selectedParty.setPartner(false);
 				try

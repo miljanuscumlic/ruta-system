@@ -32,9 +32,7 @@ public class ObjectFactory {
 
     private final static QName _FindAllBugReportsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllBugReportsResponse");
     private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
-    private final static QName _TypeInclusion_QNAME = new QName("http://ruta.rs/services", "TypeInclusion");
     private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
-    private final static QName _TypeInclusionResponse_QNAME = new QName("http://ruta.rs/services", "TypeInclusionResponse");
     private final static QName _UpdateCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponseResponse");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
@@ -43,6 +41,7 @@ public class ObjectFactory {
     private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
     private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
     private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
+    private final static QName _WSDLTypeInjectionResponse_QNAME = new QName("http://ruta.rs/services", "WSDLTypeInjectionResponse");
     private final static QName _DistributionOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DistributionOperation");
     private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
     private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "SearchCatalogueResponse");
@@ -80,6 +79,7 @@ public class ObjectFactory {
     private final static QName _DatabaseTransaction_QNAME = new QName("http://www.ruta.rs/ns/common", "DatabaseTransaction");
     private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/services", "InsertBugReportResponse");
     private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClientResponse");
+    private final static QName _WSDLTypeInjection_QNAME = new QName("http://ruta.rs/services", "WSDLTypeInjection");
     private final static QName _PartyID_QNAME = new QName("http://www.ruta.rs/ns/common", "PartyID");
     private final static QName _AddBugReportCommentResponse_QNAME = new QName("http://ruta.rs/services", "AddBugReportCommentResponse");
     private final static QName _NotifyUpdate_QNAME = new QName("http://ruta.rs/services", "NotifyUpdate");
@@ -209,6 +209,14 @@ public class ObjectFactory {
      */
     public UpdateCatalogueWithAppResponse createUpdateCatalogueWithAppResponse() {
         return new UpdateCatalogueWithAppResponse();
+    }
+
+    /**
+     * Create an instance of {@link WSDLTypeInjection }
+     * 
+     */
+    public WSDLTypeInjection createWSDLTypeInjection() {
+        return new WSDLTypeInjection();
     }
 
     /**
@@ -444,6 +452,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WSDLTypeInjectionResponse }
+     * 
+     */
+    public WSDLTypeInjectionResponse createWSDLTypeInjectionResponse() {
+        return new WSDLTypeInjectionResponse();
+    }
+
+    /**
      * Create an instance of {@link FindCatalogue }
      * 
      */
@@ -500,27 +516,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TypeInclusionResponse }
-     * 
-     */
-    public TypeInclusionResponse createTypeInclusionResponse() {
-        return new TypeInclusionResponse();
-    }
-
-    /**
      * Create an instance of {@link UpdateCatalogueWithAppResponseResponse }
      * 
      */
     public UpdateCatalogueWithAppResponseResponse createUpdateCatalogueWithAppResponseResponse() {
         return new UpdateCatalogueWithAppResponseResponse();
-    }
-
-    /**
-     * Create an instance of {@link TypeInclusion }
-     * 
-     */
-    public TypeInclusion createTypeInclusion() {
-        return new TypeInclusion();
     }
 
     /**
@@ -694,30 +694,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TypeInclusion }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TypeInclusion")
-    public JAXBElement<TypeInclusion> createTypeInclusion(TypeInclusion value) {
-        return new JAXBElement<TypeInclusion>(_TypeInclusion_QNAME, TypeInclusion.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClient }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClient")
     public JAXBElement<UpdateRutaClient> createUpdateRutaClient(UpdateRutaClient value) {
         return new JAXBElement<UpdateRutaClient>(_UpdateRutaClient_QNAME, UpdateRutaClient.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link TypeInclusionResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "TypeInclusionResponse")
-    public JAXBElement<TypeInclusionResponse> createTypeInclusionResponse(TypeInclusionResponse value) {
-        return new JAXBElement<TypeInclusionResponse>(_TypeInclusionResponse_QNAME, TypeInclusionResponse.class, null, value);
     }
 
     /**
@@ -790,6 +772,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RutaException")
     public JAXBElement<FaultInfo> createRutaException(FaultInfo value) {
         return new JAXBElement<FaultInfo>(_RutaException_QNAME, FaultInfo.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WSDLTypeInjectionResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "WSDLTypeInjectionResponse")
+    public JAXBElement<WSDLTypeInjectionResponse> createWSDLTypeInjectionResponse(WSDLTypeInjectionResponse value) {
+        return new JAXBElement<WSDLTypeInjectionResponse>(_WSDLTypeInjectionResponse_QNAME, WSDLTypeInjectionResponse.class, null, value);
     }
 
     /**
@@ -1123,6 +1114,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClientResponse")
     public JAXBElement<UpdateRutaClientResponse> createUpdateRutaClientResponse(UpdateRutaClientResponse value) {
         return new JAXBElement<UpdateRutaClientResponse>(_UpdateRutaClientResponse_QNAME, UpdateRutaClientResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WSDLTypeInjection }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "WSDLTypeInjection")
+    public JAXBElement<WSDLTypeInjection> createWSDLTypeInjection(WSDLTypeInjection value) {
+        return new JAXBElement<WSDLTypeInjection>(_WSDLTypeInjection_QNAME, WSDLTypeInjection.class, null, value);
     }
 
     /**

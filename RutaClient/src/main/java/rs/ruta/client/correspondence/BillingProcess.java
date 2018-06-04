@@ -1,60 +1,70 @@
 package rs.ruta.client.correspondence;
 
-import java.util.UUID;
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-import rs.ruta.client.RutaClient;
-
-@XmlRootElement(name = "BillingProcess")
-@XmlType(name = "BillingProcess")
-@XmlAccessorType(XmlAccessType.NONE)
-public class BillingProcess extends DocumentProcess
+abstract public class BillingProcess extends BuyingProcess
 {
+	protected ApplicationResponseType applicationResponse;
+	protected InvoiceType invoice;
+	private boolean invoiceAccepted;
+	private boolean invoiceRejected;
+
 	/**
-	 * Constructs new instance of a {@link BillingProcess} and sets its state to
-	 * default value and uuid to a random value.
-	 * @param {@link RutaClient} object
-	 * @return {@code BillingProcess}
+	 * Gets the {@link ApplicationResponseType} document.
+	 * @param correspondence correspondence which document is part of
+	 * @return {@link ApplicationResponseType} document or {@code null} if document could not
+	 * be found in correspondence
+	 * @throws StateActivityException if Application Response could not be retrieved from the database
 	 */
-	public static BillingProcess newInstance(RutaClient client)
+	public ApplicationResponseType getApplicationResponse(Correspondence correspondence)
 	{
-		BillingProcess process = new BillingProcess();
-		process.setState(ClosingState.getInstance()); //MMM: default state should be changed
-		process.setId(UUID.randomUUID().toString());
-		process.setClient(client);
-		process.setActive(true);
-		return process;
+		if(applicationResponse == null)
+			applicationResponse = correspondence.getLastDocument(ApplicationResponseType.class);
+		return applicationResponse;
 	}
 
-	@Override
-	public void doActivity(Correspondence correspondence) throws StateActivityException
+	public void setApplicationResponse(ApplicationResponseType applicationResponse)
 	{
-		try
-		{
-			while(active)
-				state.doActivity(correspondence);
-		}
-		catch(Exception e)
-		{
-			try
-			{
-				correspondence.stop();
-			}
-			catch (InterruptedException e1)
-			{
-				throw new StateActivityException("Unable to stop the correspondence!", e1);
-			}
-			throw new StateActivityException("Interrupted execution of Billing Process.", e);
-		}
-		finally
-		{
-			correspondence.changeState(ClosingProcess.newInstance(client));
-		}
-
+		this.applicationResponse = applicationResponse;
 	}
 
+	/**
+	 * Gets the {@link InvoiceType} document.
+	 * @param correspondence correspondence which document is part of
+	 * @return {@link InvoiceType} document or {@code null} if document could not
+	 * be found in correspondence
+	 * @throws StateActivityException if Invoice could not be retrieved from the database
+	 */
+	public InvoiceType getInvoice(Correspondence correspondence)
+	{
+		if(invoice == null)
+			invoice = correspondence.getLastDocument(InvoiceType.class);
+		return invoice;
+	}
+
+	public void setInvoice(InvoiceType invoice)
+	{
+		this.invoice = invoice;
+	}
+
+	public boolean isInvoiceAccepted()
+	{
+		return invoiceAccepted;
+	}
+
+	public void setInvoiceAccepted(boolean invoiceAccepted)
+	{
+		this.invoiceAccepted = invoiceAccepted;
+	}
+
+	public boolean isInvoiceRejected()
+	{
+		return invoiceRejected;
+	}
+
+	public void setInvoiceRejected(boolean invoiceRejected)
+	{
+		this.invoiceRejected = invoiceRejected;
+	}
 }

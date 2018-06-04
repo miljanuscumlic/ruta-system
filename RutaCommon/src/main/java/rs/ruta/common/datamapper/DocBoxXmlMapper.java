@@ -14,6 +14,7 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -111,6 +112,9 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == ApplicationResponseType.class)
 					((ApplicationResponseXmlMapper) mapperRegistry.getMapper(ApplicationResponseType.class)).
 					insert(collection, (ApplicationResponseType) document, docID, null);
+				else if(documentClazz == InvoiceType.class)
+					((InvoiceXmlMapper) mapperRegistry.getMapper(InvoiceType.class)).
+					insert(collection, (InvoiceType) document, docID, null);
 				//MMM other document types
 
 				((DistributionTransaction) transaction).removeOperation();
@@ -294,6 +298,8 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((OrderCancellationXmlMapper) mapperRegistry.getMapper(OrderCancellationType.class)).unmarshalFromXML(result);
 			else if(objectClazz == ApplicationResponseType.class)
 				object = ((ApplicationResponseXmlMapper) mapperRegistry.getMapper(ApplicationResponseType.class)).unmarshalFromXML(result);
+			else if(objectClazz == InvoiceType.class)
+				object = ((InvoiceXmlMapper) mapperRegistry.getMapper(InvoiceType.class)).unmarshalFromXML(result);
 			//MMM other document types
 
 			document.setDocument(object);
@@ -337,6 +343,8 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return OrderType.class;
 		else if(start.matches("<((.)+:)?ApplicationResponse (.)+"))
 			return ApplicationResponseType.class;
+		else if(start.matches("<((.)+:)?Invoice (.)+"))
+			return InvoiceType.class;
 		//MMM other document types
 		else
 			return null;

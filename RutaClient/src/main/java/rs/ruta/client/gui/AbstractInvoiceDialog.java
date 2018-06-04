@@ -14,40 +14,40 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
-import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 
-public abstract class AbstractOrderDialog extends JDialog
+abstract public class AbstractInvoiceDialog extends JDialog
 {
 	private static final long serialVersionUID = 4226073055517318153L;
-	protected List<OrderLineType> orderLines;
+	protected List<InvoiceLineType> invoiceLines;
 	protected JPanel headerPanel;
 	protected JPanel buttonPanel;
-	protected JTable orderLinesTable;
+	protected JTable invoiceLinesTable;
 	protected MouseAdapter stopEditingListener;
 
 	/**
-	 * Constructor that is setting the common part of all {@code AbstractOrderTable} instances
-	 * i.e. a orderLinesTable displaying orderLines line items.
+	 * Constructor that is setting the common part of all {@code AbstractInvoiceTable} instances
+	 * i.e. a invoiceLinesTable displaying Invoice Lines items.
 	 * @param owner parent frame of this dialogue
-	 * @param orderLines {@link OrderLineType Order lines} to display
-	 * @param editable whether the Order lines are editable i.e. their quantity value
+	 * @param invoiceLines {@link InvoiceLineType Invoice Lines} to display
+	 * @param editable whether the Invoice lines are editable
 	 */
-	public AbstractOrderDialog(RutaClientFrame owner, List<OrderLineType> orderLines, boolean editable)
+	public AbstractInvoiceDialog(RutaClientFrame owner, List<InvoiceLineType> invoiceLines, boolean editable)
 	{
 		super(owner, true);
 		setSize(700, 500);
 		setLocationRelativeTo(owner);
-		this.orderLines = orderLines;
+		this.invoiceLines = invoiceLines;
 
 		headerPanel = new JPanel(new BorderLayout());
 		add(headerPanel, BorderLayout.NORTH);
 
-		final JPanel orderPanel = new JPanel(new BorderLayout());
-		final OrderLinesTableModel orderTableModel = new OrderLinesTableModel(orderLines, editable);
-		orderLinesTable = createOrderTable(orderTableModel);
-		orderPanel.add(new JScrollPane(orderLinesTable));
-		add(orderPanel, BorderLayout.CENTER);
+		final JPanel invoicePanel = new JPanel(new BorderLayout());
+		final InvoiceLinesTableModel invoiceTableModel = new InvoiceLinesTableModel(invoiceLines, editable);
+		invoiceLinesTable = createInvoiceTable(invoiceTableModel);
+		invoicePanel.add(new JScrollPane(invoiceLinesTable));
+		add(invoicePanel, BorderLayout.CENTER);
 
 		stopEditingListener = new MouseAdapter()
 		{
@@ -59,8 +59,8 @@ public abstract class AbstractOrderDialog extends JDialog
 		};
 		addMouseListener(stopEditingListener);
 		getRootPane().addMouseListener(stopEditingListener);
-		orderLinesTable.getTableHeader().addMouseListener(stopEditingListener);
-		orderLinesTable.addMouseListener(stopEditingListener);
+		invoiceLinesTable.getTableHeader().addMouseListener(stopEditingListener);
+		invoiceLinesTable.addMouseListener(stopEditingListener);
 
 		buttonPanel = new JPanel();
 		buttonPanel.addMouseListener(stopEditingListener);
@@ -70,16 +70,16 @@ public abstract class AbstractOrderDialog extends JDialog
 
 	protected void stopEditing()
 	{
-		if(orderLinesTable.isEditing())
-			orderLinesTable.getCellEditor().stopCellEditing();
+		if(invoiceLinesTable.isEditing())
+			invoiceLinesTable.getCellEditor().stopCellEditing();
 	}
 
-	public List<OrderLineType> getOrderLines()
+	public List<InvoiceLineType> getInvoiceLines()
 	{
-		return orderLines;
+		return invoiceLines;
 	}
 
-	private JTable createOrderTable(DefaultTableModel tableModel)
+	private JTable createInvoiceTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
 		table.setFillsViewportHeight(true);
@@ -95,17 +95,19 @@ public abstract class AbstractOrderDialog extends JDialog
 	}
 
 	/**
-	 * Removes all {@link OrderLineType order lines} which {@link LineItemType line items} have a quantity
+	 * Removes all {@link OrderLineType Invoice lines} which {@link LineItemType line items} have a quantity
 	 * that is a {@code null} value or 0.
-	 * @param orderLines Order Lines to process
+	 * @param invoiceLines invoiceLines to process
 	 * @return true if trimming is done without throwing any exception; false otherwise
 	 */
-	protected boolean trimOrderLines(List<OrderLineType> orderLines)
+	//MMM not used
+	@Deprecated
+	protected boolean trimInvoiceLines(List<OrderLineType> invoiceLines)
 	{
 		boolean success = true;
 		try
 		{
-			orderLines.removeIf(orderLine ->
+			invoiceLines.removeIf(orderLine ->
 			orderLine.getLineItem().getQuantityValue() == null ||
 			new BigDecimal(0).compareTo(orderLine.getLineItem().getQuantityValue()) >= 0);
 		}
@@ -116,12 +118,12 @@ public abstract class AbstractOrderDialog extends JDialog
 		return success;
 	}
 
-	protected void numberOrderLines(List<OrderLineType> orderLines)
+	protected void numberInvoiceLines(List<InvoiceLineType> invoiceLines)
 	{
 		int lineNumber = 0;
-		for(OrderLineType orderLine: orderLines)
+		for(InvoiceLineType invoiceLine: invoiceLines)
 		{
-			orderLine.getLineItem().setID(String.valueOf(lineNumber++));
+			invoiceLine.setID(String.valueOf(lineNumber++));
 		}
 	}
 

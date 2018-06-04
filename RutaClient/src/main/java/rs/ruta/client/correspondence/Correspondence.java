@@ -22,6 +22,7 @@ import com.helger.ubl21.UBL21ValidatorBuilder;
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -645,13 +646,14 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 
 	/**
 	 * Gets the most recently received document of specific type.
+	 * @param <T>
 	 * @param documentClazz class of the document
 	 * @return document or {@code null} if document could not be found in correspondence
 	 * @throws StateActivityException if document could not be retrieved from the database
 	 */
-	public Object getLastDocument(Class<?> documentClazz)
+	public <T> T getLastDocument(Class<T> documentClazz)
 	{
-		Object document = null;
+		T document = null;
 		String id = null;
 		/*final ArrayList<DocumentReference> allReferences = getDocumentReferences();
 		for(DocumentReference documentReference : allReferences)
@@ -859,6 +861,19 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 							" does not conform to UBL standard!");
 				}
 			}
+			else if(document.getClass() == InvoiceType.class)
+			{
+				docReference = getDocumentReference(((InvoiceType) document).getUUIDValue());
+				if(!InstanceFactory.validateUBLDocument(document,
+						doc -> UBL21Validator.invoice().validate((InvoiceType) doc)))
+				{
+					valid = false;
+					if(docReference != null)
+						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
+					throw new StateActivityException("Invoice " + ((InvoiceType) document).getIDValue() +
+							" does not conform to UBL standard!");
+				}
+			}
 			else
 				throw new StateActivityException("Document of unexpected type!");
 			if(valid && docReference != null)
@@ -902,18 +917,21 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		{
 			try
 			{
-				if(document.getClass() == OrderType.class)
+				final Class<? extends Object> documentClazz = document.getClass();
+				if(documentClazz == OrderType.class)
 					MapperRegistry.getInstance().getMapper(OrderType.class).insert(null, (OrderType) document);
-				else if(document.getClass() == OrderResponseType.class)
+				else if(documentClazz == OrderResponseType.class)
 					MapperRegistry.getInstance().getMapper(OrderResponseType.class).insert(null, (OrderResponseType) document);
-				else if(document.getClass() == OrderResponseSimpleType.class)
+				else if(documentClazz == OrderResponseSimpleType.class)
 					MapperRegistry.getInstance().getMapper(OrderResponseSimpleType.class).insert(null, (OrderResponseSimpleType) document);
-				else if(document.getClass() == OrderChangeType.class)
+				else if(documentClazz == OrderChangeType.class)
 					MapperRegistry.getInstance().getMapper(OrderChangeType.class).insert(null, (OrderChangeType) document);
-				else if(document.getClass() == OrderCancellationType.class)
+				else if(documentClazz == OrderCancellationType.class)
 					MapperRegistry.getInstance().getMapper(OrderCancellationType.class).insert(null, (OrderCancellationType) document);
-				else if(document.getClass() == ApplicationResponseType.class)
+				else if(documentClazz == ApplicationResponseType.class)
 					MapperRegistry.getInstance().getMapper(ApplicationResponseType.class).insert(null, (ApplicationResponseType) document);
+				else if(documentClazz == InvoiceType.class)
+					MapperRegistry.getInstance().getMapper(InvoiceType.class).insert(null, (InvoiceType) document);
 				//MMM other document types
 				else
 					throw new StateActivityException("Document could not be stored to the database because of its unexpected type.");

@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for TypeInclusionResponse complex type.
+ * <p>Java class for WSDLTypeInjectionResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="TypeInclusionResponse">
+ * &lt;complexType name="WSDLTypeInjectionResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "TypeInclusionResponse")
-public class TypeInclusionResponse {
+@XmlType(name = "WSDLTypeInjectionResponse")
+public class WSDLTypeInjectionResponse {
 
 
 }

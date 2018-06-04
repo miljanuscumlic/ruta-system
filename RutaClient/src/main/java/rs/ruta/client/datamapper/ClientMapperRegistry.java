@@ -14,6 +14,7 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -39,6 +40,7 @@ import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.DocBoxXmlMapper;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.FollowersXmlMapper;
+import rs.ruta.common.datamapper.InvoiceXmlMapper;
 import rs.ruta.common.datamapper.DatabaseTransactionMapper;
 import rs.ruta.common.datamapper.DatabaseTransaction;
 
@@ -111,6 +113,8 @@ public class ClientMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new OrderCancellationXmlMapper(getConnector());
 			else if(clazz == ApplicationResponseType.class)
 				dataMapper = (DataMapper<S, String>) new ApplicationResponseXmlMapper(getConnector());
+			else if(clazz == InvoiceType.class)
+				dataMapper = (DataMapper<S, String>) new InvoiceXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

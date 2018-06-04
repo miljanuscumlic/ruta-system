@@ -35,11 +35,13 @@ import com.helger.ubl21.UBL21Validator;
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxSchemeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NoteType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
@@ -52,14 +54,15 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
  */
 public final class InstanceFactory
 {
-	public static String TAX_CATEGORY_0 = "0";
-	public static String TAX_CATEGORY_10 = "10";
-	public static String TAX_CATEGORY_20 = "20";
-	public static TaxSchemeType TAX_SCHEME = new TaxSchemeType();
-	private static Map<String, TaxCategoryType> taxCategories;
+	public static final String CURRENCY_CODE = "RSD";
+	public static final String TAX_CATEGORY_0 = "0";
+	public static final String TAX_CATEGORY_10 = "10";
+	public static final String TAX_CATEGORY_20 = "20";
+	public static final TaxSchemeType TAX_SCHEME = new TaxSchemeType();
+	public static final Map<String, TaxCategoryType> taxCategories;
 
-	public static String APP_RESPONSE_POSITIVE = "POSITIVE";
-	public static String APP_RESPONSE_NEGATIVE = "NEGATIVE";
+	public static final String APP_RESPONSE_POSITIVE = "POSITIVE";
+	public static final String APP_RESPONSE_NEGATIVE = "NEGATIVE";
 
 	public static final String ACCEPT_ORDER = "Accept Order";
 	public static final String ADD_DETAIL = "Add Detail";
@@ -67,12 +70,16 @@ public final class InstanceFactory
 	public static final String REJECT_ORDER = "Reject Order";
 	public static final String CANCEL_ORDER = "Cancel Order";
 	public static final String CHANGE_ORDER = "Change Order";
-	private final static Logger logger = LoggerFactory.getLogger("rs.ruta.common");
+	public static final String ACCEPT_INVOICE = "Accept Invoice";
+	public static final String MODIFY_INVOICE = "Modify Invoice";
+	public static final String REJECT_INVOICE = "Reject Invoice";
+	public static final String ACCEPT = "Accept";
+	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 
 	static
 	{
 		TAX_SCHEME.setName("Serbian tax scheme");
-		TAX_SCHEME.setCurrencyCode("RSD");
+		TAX_SCHEME.setCurrencyCode(CURRENCY_CODE);
 
 		Map<String, TaxCategoryType> tempMap = new HashMap<String, TaxCategoryType>();
 		TaxCategoryType tc0 = new TaxCategoryType();
@@ -278,19 +285,19 @@ public final class InstanceFactory
 			{
 				logger.error(errors.toString());
 				//MMM Printing for a test
-//				if(document instanceof OrderType)
-//				try
-//				{
-//					JAXBContext jc = JAXBContext.newInstance(OrderType.class);
-//					Marshaller m = jc.createMarshaller();
-//					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//					m.marshal(new JAXBElement<OrderType>(new QName("", "OrderType"),
-//							OrderType.class, null, (OrderType) document), System.out);
-//				}
-//				catch (JAXBException e)
-//				{
-//					e.printStackTrace();
-//				}
+				if(document instanceof InvoiceType)
+				try
+				{
+					JAXBContext jc = JAXBContext.newInstance(InvoiceType.class);
+					Marshaller m = jc.createMarshaller();
+					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+					m.marshal(new JAXBElement<InvoiceType>(new QName("", "InvoiceType"),
+							InvoiceType.class, null, (InvoiceType) document), System.out);
+				}
+				catch (JAXBException e)
+				{
+					e.printStackTrace();
+				}
 			}
 			else
 				valid = true;
@@ -322,6 +329,8 @@ public final class InstanceFactory
 				senderID = ((OrderCancellationType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 			else if(documentClazz == ApplicationResponseType.class)
 				senderID = ((ApplicationResponseType) document).getSenderParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == InvoiceType.class)
+				senderID = ((InvoiceType) document).getAccountingSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 			//MMM other document types
 
 
@@ -355,6 +364,8 @@ public final class InstanceFactory
 				receiverID = ((OrderCancellationType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 			else if(documentClazz == ApplicationResponseType.class)
 				receiverID = ((ApplicationResponseType) document).getReceiverParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == InvoiceType.class)
+				receiverID = ((InvoiceType) document).getAccountingCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 			//MMM other document types
 
 		}
@@ -384,6 +395,8 @@ public final class InstanceFactory
 			documentID = ((OrderCancellationType) document).getIDValue();
 		else if(documentClazz == ApplicationResponseType.class)
 			documentID = ((ApplicationResponseType) document).getIDValue();
+		else if(documentClazz == InvoiceType.class)
+			documentID = ((InvoiceType) document).getIDValue();
 		//MMM other document types
 
 		return documentID;
@@ -410,6 +423,8 @@ public final class InstanceFactory
 			documentID = ((OrderCancellationType) document).getUUIDValue();
 		else if(documentClazz == ApplicationResponseType.class)
 			documentID = ((ApplicationResponseType) document).getUUIDValue();
+		else if(documentClazz == InvoiceType.class)
+			documentID = ((InvoiceType) document).getUUIDValue();
 		//MMM other document types
 
 		return documentID;
@@ -422,10 +437,12 @@ public final class InstanceFactory
 	 * @param refUUID UUID of referenced document
 	 * @param refID ID of the referenced document
 	 * @param responseCode response code of the {@code Application Response} document
+	 * @param note note
 	 * @return {@code ApplicationResponseType}
 	 */
 	public static ApplicationResponseType createApplicationResponse(
-			PartyType senderParty, PartyType receiverParty, String refUUID, String refID, String responseCode)
+			PartyType senderParty, PartyType receiverParty, String refUUID, String refID,
+			String responseCode, String note)
 	{
 		final ApplicationResponseType appResponse = new ApplicationResponseType();
 		final String id = UUID.randomUUID().toString();
@@ -445,15 +462,20 @@ public final class InstanceFactory
 		docReference.setID(refID);
 		docResponse.getDocumentReference().add(docReference);
 		appResponse.getDocumentResponse().add(docResponse);
+		final NoteType appNote = new NoteType();
+		appNote.setValue(note);
+		appResponse.getNote().add(appNote);
 		return appResponse;
 	}
 
 	/**
 	 * Generates {@link ApplicationResponseType} document that conforms to the {@code UBL} standard.
 	 * @param document document to which Application Response is to be created
+	 * @param responseCode response code of the Application Response as a {@code String}
+	 * @param note note
 	 * @return Application Response or {@code null} if Application Response does not conform to the {@code UBL}
 	 */
-	public static ApplicationResponseType produceApplicationResponse(Object document)
+	public static ApplicationResponseType produceApplicationResponse(Object document, String responseCode, String note)
 	{
 		boolean valid = false;
 		ApplicationResponseType appResponse = null;
@@ -462,23 +484,69 @@ public final class InstanceFactory
 			OrderResponseSimpleType orderResponseSimple = (OrderResponseSimpleType) document;
 			appResponse = createApplicationResponse(orderResponseSimple.getBuyerCustomerParty().getParty(),
 					orderResponseSimple.getSellerSupplierParty().getParty(), orderResponseSimple.getUUIDValue(),
-					orderResponseSimple.getIDValue(), APP_RESPONSE_POSITIVE);
+					orderResponseSimple.getIDValue(), responseCode, note);
 		}
 		if(document.getClass() == OrderResponseType.class)
 		{
 			OrderResponseType orderResponse = (OrderResponseType) document;
 			appResponse = createApplicationResponse(orderResponse.getBuyerCustomerParty().getParty(),
 					orderResponse.getSellerSupplierParty().getParty(), orderResponse.getUUIDValue(),
-					orderResponse.getIDValue(), APP_RESPONSE_POSITIVE);
+					orderResponse.getIDValue(), responseCode, note);
 		}
 		else if(document.getClass() == InvoiceType.class)
 		{
-			//MMM TODO
+			//MMM check this
+			InvoiceType invoice = (InvoiceType) document;
+			appResponse = createApplicationResponse(invoice.getAccountingCustomerParty().getParty(),
+					invoice.getAccountingSupplierParty().getParty(), invoice.getUUIDValue(),
+					invoice.getIDValue(), responseCode, note);
 		}
 
 		valid = validateUBLDocument(appResponse,
 				doc -> UBL21Validator.applicationResponse().validate(doc));
 		return valid ? appResponse : null;
+	}
+
+	/**
+	 * Creates {@link OrderReferenceType Order Reference} to a passed {@code Order} argument.
+	 * @param order
+	 * @return created {@code OrderReferenceType}
+	 */
+	public static OrderReferenceType createOrderReference(OrderType order)
+	{
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(UUID.randomUUID().toString());
+		final DocumentReferenceType docReference = new DocumentReferenceType();
+		docReference.setID(order.getID());
+		docReference.setUUID(order.getUUIDValue());
+		docReference.setIssueDate(order.getIssueDate());
+		docReference.setIssueTime(order.getIssueTime());
+		docReference.setDocumentType(order.getClass().getName());
+		orderReference.setDocumentReference(docReference);
+		return orderReference;
+	}
+
+	/**
+	 * Creates {@link DocumentReferenceType Document Reference}.
+	 * @param issuerParty Party that issued referenced document
+	 * @param uuid referenced document's UUID
+	 * @param id referenced document's ID
+	 * @param issueDate issue date of referenced document
+	 * @param issueTime issue time of referenced document
+	 * @param docType document's type as fully qualified name
+	 * @result created Documnet Reference
+	 */
+	public static DocumentReferenceType createDocumentReference(PartyType issuerParty, String uuid, String id,
+			XMLGregorianCalendar issueDate, XMLGregorianCalendar issueTime, String docType)
+	{
+		final DocumentReferenceType docReference = new DocumentReferenceType();
+		docReference.setID(id);
+		docReference.setUUID(uuid);
+		docReference.setIssueDate(issueDate);
+		docReference.setIssueTime(issueTime);
+		docReference.setIssuerParty(issuerParty);
+		docReference.setDocumentType(docType);
+		return docReference;
 	}
 
 }

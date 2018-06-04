@@ -52,7 +52,7 @@ public class BuyingCorrespondence extends Correspondence
 		corr.setStopped(false);
 		corr.setRecentlyUpdated(true);
 		client.getClientFrame().appendToConsole(new StringBuilder("Correspondence ").
-				append(corr.getName()).append(" is opened."), Color.BLACK);
+				append(corr.getName()).append(" has been opened."), Color.BLACK);
 		return corr;
 	}
 
@@ -78,7 +78,8 @@ public class BuyingCorrespondence extends Correspondence
 /*			EventQueue.invokeLater(() ->
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error messsage", JOptionPane.ERROR_MESSAGE));*/
 			getClient().getClientFrame().
-			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence is deactivated!"));
+			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence ").
+					append(getIdValue()).append(" has been deactivated!"));
 		}
 		finally
 		{

@@ -5,41 +5,37 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.LineItemType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.QuantityType;
-import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
 
-public class OrderLinesTableModel extends DefaultTableModel
+public class InvoiceLinesTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 19327649202925544L;
 
 	private static String[] columnNames =
 		{
-				"No.", "Name", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Tax", "Quantity"
+				"No.", "Name", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Quantity", "Amount", "Tax"
 		};
-
-	private List<OrderLineType> orderLines;
+	private static final int ALLOWANCE_INDEX = 10; //MMM to amend
+	private List<InvoiceLineType> invoiceLines;
 	private boolean editable;
 
-	public OrderLinesTableModel(List<OrderLineType> orderLines, boolean editable)
+	public InvoiceLinesTableModel(List<InvoiceLineType> invoiceLines, boolean editable)
 	{
 		super();
-		this.orderLines = orderLines;
+		this.invoiceLines = invoiceLines;
 		this.editable = editable;
 	}
 
 	@Override
 	public boolean isCellEditable(int row, int column)
 	{
-		return editable ? (column == getColumnCount() - 1 ? true : false ) : false;
+		return editable ? (column == ALLOWANCE_INDEX ? true : false ) : false;
 	}
 
 	@Override
 	public int getRowCount()
 	{
-		return orderLines != null ? orderLines.size() : 0;
+		return invoiceLines != null ? invoiceLines.size() : 0;
 	}
 
 	@Override
@@ -59,7 +55,7 @@ public class OrderLinesTableModel extends DefaultTableModel
 	{
 		try
 		{
-			final LineItemType lineItem = orderLines.get(rowIndex).getLineItem();
+			final InvoiceLineType lineItem = invoiceLines.get(rowIndex);
 
 			switch(columnIndex)
 			{
@@ -78,9 +74,11 @@ public class OrderLinesTableModel extends DefaultTableModel
 			case 6:
 				return lineItem.getPrice().getPriceAmountValue();
 			case 7:
-				return lineItem.getItem().getClassifiedTaxCategoryAtIndex(0).getPercentValue();
+				return lineItem.getInvoicedQuantityValue();
 			case 8:
-				return lineItem.getQuantityValue();
+				return lineItem.getLineExtensionAmountValue();
+			case 9:
+				return lineItem.getItem().getClassifiedTaxCategoryAtIndex(0).getPercentValue();
 			default:
 				return null;
 			}
@@ -91,27 +89,27 @@ public class OrderLinesTableModel extends DefaultTableModel
 		}
 	}
 
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
-	{
-		final LineItemType lineItem = orderLines.get(rowIndex).getLineItem();
-
-		switch(columnIndex)
-		{
-		case 8:
-			lineItem.setQuantity((BigDecimal) aValue);
-			break;
-		default:
-			break;
-		}
-	}
+	//	@Override
+	//	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
+	//	{
+	//		final InvoiceLineType lineItem = invoiceLines.get(rowIndex);
+	//
+	//		switch(columnIndex)
+	//		{
+	//		case 9:
+	//			lineItem.setLineExtensionAmount((BigDecimal) aValue);
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//	}
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
 	{
 		switch(columnIndex)
 		{
-		case 6: case 7: case 8:
+		case 6: case 7: case 8: case 9:
 			return BigDecimal.class;
 		default:
 			return super.getColumnClass(columnIndex);

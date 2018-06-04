@@ -22,7 +22,7 @@ public class ProcessOrderResponseSimpleDialog extends AbstractOrderResponseSimpl
 	{
 		super(owner, orderResponseSimple, false);
 
-		JButton acceptButton = new JButton(InstanceFactory.ACCEPT_ORDER);
+		JButton acceptButton = new JButton(InstanceFactory.ACCEPT);
 		JButton cancelButton = new JButton(InstanceFactory.CANCEL_ORDER);
 		JButton postponeButton = new JButton(InstanceFactory.DECIDE_LATER);
 

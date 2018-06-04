@@ -85,7 +85,4 @@ public class Item extends ItemType
 		return id;
 	}
 
-
-
-
 }

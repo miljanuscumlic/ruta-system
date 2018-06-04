@@ -211,7 +211,7 @@ public class CDR implements Server
 			final String docUUID = catalogue.getUUIDValue();
 			final String docID = catalogue.getIDValue();
 			appResponse = InstanceFactory.
-					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE, null);
 
 			docBoxPool.submit(() ->
 			{
@@ -294,7 +294,7 @@ public class CDR implements Server
 			final String docUUID = catalogueDeletion.getUUIDValue();
 			final String docID = catalogueDeletion.getIDValue();
 			appResponse = InstanceFactory.
-					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE);
+					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE, null);
 
 			docBoxPool.submit(() ->
 			{
@@ -735,11 +735,12 @@ public class CDR implements Server
 	}
 
 	@Override
-	public void deleteDocBoxDocument(String username, String id) throws RutaException
+	public void deleteDocBoxDocument(String username, String id /*, DocumentReceipt documentReceipt*/) throws RutaException
 	{
 		try
 		{
 			init();
+			//MMM put here call to distributeDocument(DocumentReceipt)
 			mapperRegistry.getMapper(DocBox.class).deleteDocBoxDocument(username, id);
 		}
 		catch(Exception e)
@@ -879,7 +880,7 @@ public class CDR implements Server
 			final String receiverID = recepient.getAssociateAtIndex(0);
 			if(!mapperRegistry.getMapper(RutaUser.class).checkUser(receiverID))
 				throw new DatabaseException("User with ID" + receiverID + " is not registered with the CDR service!");
-			docBoxPool.submit(() ->
+			docBoxPool.submit(() -> //MMM maybe this should not be submitted to the ExecutorService
 			{
 				try
 				{

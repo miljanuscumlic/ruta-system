@@ -16,7 +16,7 @@ public class OrderResponseSimpleDialog extends AbstractOrderResponseSimpleDialog
 	/**
 	 * Creates {@link OrderResponseSimpleDialog} for making new {@link OrderResponseSimpleType} document.
 	 * {@code corr} argument should be set to {@code null}
-	 * when new {@code Order Response} is to be created or old one viewed and to some non-{@code null} value only when
+	 * when new {@code Order Response} is to be created or old one viewed and to appropriate non-{@code null} value only when
 	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
 	 * @param owner parent frame
 	 * @param orderResponseSimple Order Response Simple to show or amend

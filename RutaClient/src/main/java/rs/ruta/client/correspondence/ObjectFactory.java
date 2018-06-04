@@ -109,8 +109,25 @@ public class ObjectFactory
 	private static final QName _SellerSendOrderResponseSimpleState_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "SellerSendOrderResponseSimpleState");
 
-	private static final QName _BillingProcess_QNAME =
-			new QName("http://www.ruta.rs/ns/client", "BillingProcess");
+	private static final QName _CustomerBillingProcess_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "CustomerBillingProcess");
+	private static final QName _CustomerCreateApplicationResponseState_QNAME =
+	new QName("http://www.ruta.rs/ns/client", "CustomerCreateApplicationResponseState");
+	private static final QName _CustomerReceiveInvoiceState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "CustomerReceiveInvoiceState");
+	private static final QName _CustomerReconcileChargesState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "CustomerReconcileChargesState");
+	private static final QName _CustomerSendApplicationResponseState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "CustomerSendApplicationResponseState");
+
+	private static final QName _SupplierBillingProcess_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SupplierBillingProcess");
+	private static final QName _SupplierRaiseInvoiceState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SupplierRaiseInvoiceState");
+	private static final QName _SupplierSendInvoiceState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SupplierSendInvoiceState");
+	private static final QName _SupplierReceiveApplicationResponseState_QNAME =
+			new QName("http://www.ruta.rs/ns/client", "SupplierReceiveApplicationResponseState");
 
 	private static final QName _PaymentNotificationProcess_QNAME =
 			new QName("http://www.ruta.rs/ns/client", "PaymentNotificationProcess");
@@ -992,28 +1009,206 @@ public class ObjectFactory
 				_SellerSendOrderResponseSimpleState_QNAME, SellerSendOrderResponseSimpleState.class, null, value);
 	}
 
-	//Billing Process
+	//Customer Billing Process
 
 	/**
-	 * Creates an instance of {@link BillingProcess}.
-	 * @return created {@code BillingProcess} object and never {@code null}
+	 * Creates an instance of {@link CustomerBillingProcess}.
+	 * @return created {@code CustomerBillingProcess} object and never {@code null}
 	 */
 	@Nonnull
-	public BillingProcess createBillingProcess()
+	public CustomerBillingProcess createCustomerBillingProcess()
 	{
-		return new BillingProcess();
+		return new CustomerBillingProcess();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BillingProcess }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CustomerBillingProcess }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "BillingProcess")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "CustomerBillingProcess")
 	@Nonnull
-	public JAXBElement<BillingProcess> createBillingProcess(@Nullable final BillingProcess value)
+	public JAXBElement<CustomerBillingProcess> createCustomerBillingProcess(@Nullable final CustomerBillingProcess value)
 	{
-		return new JAXBElement<BillingProcess>(_BillingProcess_QNAME, BillingProcess.class, null, value);
+		return new JAXBElement<CustomerBillingProcess>(_CustomerBillingProcess_QNAME, CustomerBillingProcess.class, null, value);
 	}
+
+	/**
+	 * Creates an instance of {@link CustomerCreateApplicationResponseState}.
+	 * @return created {@code CustomerCreateApplicationResponseState} object and never {@code null}
+	 */
+	@Nonnull
+	public CustomerCreateApplicationResponseState createCustomerCreateApplicationResponseState()
+	{
+		return new CustomerCreateApplicationResponseState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CustomerCreateApplicationResponseState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "CustomerCreateApplicationResponseState")
+	@Nonnull
+	public JAXBElement<CustomerCreateApplicationResponseState> createCustomerCreateApplicationResponseState(@Nullable final CustomerCreateApplicationResponseState value)
+	{
+		return new JAXBElement<CustomerCreateApplicationResponseState>(_CustomerCreateApplicationResponseState_QNAME, CustomerCreateApplicationResponseState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link CustomerReceiveInvoiceState}.
+	 * @return created {@code CustomerReceiveInvoiceState} object and never {@code null}
+	 */
+	@Nonnull
+	public CustomerReceiveInvoiceState createCustomerReceiveInvoiceState()
+	{
+		return new CustomerReceiveInvoiceState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CustomerReceiveInvoiceState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "CustomerReceiveInvoiceState")
+	@Nonnull
+	public JAXBElement<CustomerReceiveInvoiceState> createCustomerReceiveInvoiceState(@Nullable final CustomerReceiveInvoiceState value)
+	{
+		return new JAXBElement<CustomerReceiveInvoiceState>(_CustomerReceiveInvoiceState_QNAME, CustomerReceiveInvoiceState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link CustomerReconcileChargesState}.
+	 * @return created {@code CustomerReconcileChargesState} object and never {@code null}
+	 */
+	@Nonnull
+	public CustomerReconcileChargesState createCustomerReconcileChargesState()
+	{
+		return new CustomerReconcileChargesState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CustomerReconcileChargesState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "CustomerReconcileChargesState")
+	@Nonnull
+	public JAXBElement<CustomerReconcileChargesState> createCustomerReconcileChargesState(@Nullable final CustomerReconcileChargesState value)
+	{
+		return new JAXBElement<CustomerReconcileChargesState>(_CustomerReconcileChargesState_QNAME, CustomerReconcileChargesState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link CustomerSendApplicationResponseState}.
+	 * @return created {@code CustomerSendApplicationResponseState} object and never {@code null}
+	 */
+	@Nonnull
+	public CustomerSendApplicationResponseState createCustomerSendApplicationResponseState()
+	{
+		return new CustomerSendApplicationResponseState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link CustomerSendApplicationResponseState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "CustomerSendApplicationResponseState")
+	@Nonnull
+	public JAXBElement<CustomerSendApplicationResponseState> createCustomerSendApplicationResponseState(@Nullable final CustomerSendApplicationResponseState value)
+	{
+		return new JAXBElement<CustomerSendApplicationResponseState>(_CustomerSendApplicationResponseState_QNAME, CustomerSendApplicationResponseState.class, null, value);
+	}
+
+	//Supplier Billing Process
+
+	/**
+	 * Creates an instance of {@link SupplierBillingProcess}.
+	 * @return created {@code SupplierBillingProcess} object and never {@code null}
+	 */
+	@Nonnull
+	public SupplierBillingProcess createSupplierBillingProcess()
+	{
+		return new SupplierBillingProcess();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SupplierBillingProcess }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SupplierBillingProcess")
+	@Nonnull
+	public JAXBElement<SupplierBillingProcess> createSupplierBillingProcess(@Nullable final SupplierBillingProcess value)
+	{
+		return new JAXBElement<SupplierBillingProcess>(_SupplierBillingProcess_QNAME, SupplierBillingProcess.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link SupplierRaiseInvoiceState}.
+	 * @return created {@code SupplierRaiseInvoiceState} object and never {@code null}
+	 */
+	@Nonnull
+	public SupplierRaiseInvoiceState createSupplierRaiseInvoiceState()
+	{
+		return new SupplierRaiseInvoiceState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SupplierRaiseInvoiceState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SupplierRaiseInvoiceState")
+	@Nonnull
+	public JAXBElement<SupplierRaiseInvoiceState> createSupplierRaiseInvoiceState(@Nullable final SupplierRaiseInvoiceState value)
+	{
+		return new JAXBElement<SupplierRaiseInvoiceState>(_SupplierRaiseInvoiceState_QNAME, SupplierRaiseInvoiceState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link SupplierSendInvoiceState}.
+	 * @return created {@code SupplierSendInvoiceState} object and never {@code null}
+	 */
+	@Nonnull
+	public SupplierSendInvoiceState createSupplierSendInvoiceState()
+	{
+		return new SupplierSendInvoiceState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SupplierSendInvoiceState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SupplierSendInvoiceState")
+	@Nonnull
+	public JAXBElement<SupplierSendInvoiceState> createSupplierSendInvoiceState(@Nullable final SupplierSendInvoiceState value)
+	{
+		return new JAXBElement<SupplierSendInvoiceState>(_SupplierSendInvoiceState_QNAME, SupplierSendInvoiceState.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link SupplierReceiveApplicationResponseState}.
+	 * @return created {@code SupplierReceiveApplicationResponseState} object and never {@code null}
+	 */
+	@Nonnull
+	public SupplierReceiveApplicationResponseState createSupplierReceiveApplicationResponseState()
+	{
+		return new SupplierReceiveApplicationResponseState();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link SupplierReceiveApplicationResponseState }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/client", name = "SupplierReceiveApplicationResponseState")
+	@Nonnull
+	public JAXBElement<SupplierReceiveApplicationResponseState> createSupplierReceiveApplicationResponseState(@Nullable final SupplierReceiveApplicationResponseState value)
+	{
+		return new JAXBElement<SupplierReceiveApplicationResponseState>(_SupplierReceiveApplicationResponseState_QNAME, SupplierReceiveApplicationResponseState.class, null, value);
+	}
+
+
+
+
+
+
+
+
 
 	//Payment Notification Process
 

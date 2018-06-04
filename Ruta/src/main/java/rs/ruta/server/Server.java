@@ -13,6 +13,7 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -305,11 +306,9 @@ public interface Server
 	 * so that other webmethods that are passing arguments which declared type is the {@code Object} class
 	 * can have runtime types like {@link OrderType} in the JAXB context for marshalling and unmarshalling.
 	 * List of arguments contains variables of all types that are passed as {@code Objects}.
-	 * @param o
-	 * @param or
 	 */
-	@WebMethod(operationName = "TypeInclusion")
+	@WebMethod(operationName = "WSDLTypeInjection")
 	default public void typeInclusion(OrderType o, OrderResponseType or, OrderResponseSimpleType ors,
-			OrderChangeType oc, OrderCancellationType oca) {}
+			OrderChangeType oc, OrderCancellationType oca, InvoiceType i) {}
 
 }

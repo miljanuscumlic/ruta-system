@@ -13,7 +13,7 @@ public class PartyDialog extends JDialog
 	private static final long serialVersionUID = 8652433075065940074L;
 	private Party party;
 	/**
-	 * True when orderLinesTable content has changed.
+	 * True when table content has changed.
 	 */
 	private boolean changed;
 	private DefaultTableModel partyTableModel;
@@ -65,7 +65,7 @@ public class PartyDialog extends JDialog
 		addMouseListener(tableLostFocus);
 
 //		TableCellRenderer renderer = new PartyTableCellRenderer();
-//		orderLinesTable.setDefaultRenderer(Object.class, renderer);
+//		table.setDefaultRenderer(Object.class, renderer);
 
 		JPanel buttonPanel = new JPanel();
 
@@ -84,10 +84,10 @@ public class PartyDialog extends JDialog
 				JOptionPane.showMessageDialog(PartyDialog.this, missingField + " field is mandatory.",
 						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE);
 		});
-		//getRootPane().setDefaultButton(okButton); does not work
+		//getRootPane().setDefaultButton(okButton); does not work //MMM check this
 
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setVerifyInputWhenFocusTarget(false);//do not verify previously focused element when Cancel is clicked
+		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked
 		buttonPanel.add(cancelButton);
 		cancelButton.addActionListener(event ->
 		{

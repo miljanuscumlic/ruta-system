@@ -68,6 +68,7 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -113,7 +114,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private NotifyDialog notifyDialog;
 	private BugReportDialog bugReportDialog;
 	private BugExploreDialog bugExploreDialog;
-	private OrderDialog orderDialog;
 	private JFileChooser chooser;
 
 	private JMenuItem myPartyItem = new JMenuItem("My Party");
@@ -187,7 +187,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 			/**
 			 * Dispatches false {@link MouseEvent mouse event} to trigger {@code focusTracker}
-			 * event listener which will save the data of a last edited cell of the orderLinesTable
+			 * event listener which will save the data of a last edited cell of the table
 			 * in current view if it is still in editing state.
 			 */
 			private void dispatchFalseMouseEvent()
@@ -1034,7 +1034,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 	/**
 	 * Shows {@link OrderDialog} for making new {@link OrderType order}. {@code corr} argument should be set to {@code null}
-	 * when new {@code Order} is to be created or old one viewed and to some non-{@code null} value only when
+	 * when new {@code Order} is to be created or old one viewed and to appropriate non-{@code null} value only when
 	 * some old {@code Order} failed to be delievered and new sending atempt of it could be tried.
 	 * @param title {@code OrderDialog}'s title
 	 * @param order {@code Order} to display
@@ -1044,7 +1044,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	public OrderType showOrderDialog(String title, OrderType order, boolean editable, Correspondence corr)
 	{
-		orderDialog = new OrderDialog(RutaClientFrame.this, order, editable, corr);
+		OrderDialog orderDialog = new OrderDialog(RutaClientFrame.this, order, editable, corr);
 		orderDialog.setTitle(title);
 		orderDialog.setVisible(true);
 		if(orderDialog.isSendPressed())
@@ -1087,7 +1087,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	/**
 	 * Shows {@link OrderResponseDialog} for making new {@link OrderResponseType} document.  {@code corr}
 	 * argument should be set to {@code null}
-	 * when new {@code Order Response} is to be created or old one viewed and to some non-{@code null} value only when
+	 * when new {@code Order Response} is to be created or old one viewed and to appropriate non-{@code null} value only when
 	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
 	 * @param title dialog's title
 	 * @param orderResponse Order Response to show and/or amend
@@ -1146,7 +1146,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	/**
 	 * Shows {@link OrderResponseSimpleDialog} for making new {@link OrderResponseSimpleType} document.
 	 * {@code corr} argument should be set to {@code null}
-	 * when new {@code Order Response} is to be created or old one viewed and to some non-{@code null} value only when
+	 * when new {@code Order Response} is to be created or old one viewed and to appropriate non-{@code null} value only when
 	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
 	 * @param title dialog's title
 	 * @param orderResponseSimple Order Response Simple to show and/or amend
@@ -1254,6 +1254,59 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		else
 			applicationResponse = null;
 		return applicationResponse;
+	}
+
+	/**
+	 * Shows {@link ProcessApplicationResponseDialog} for making a deciosion about a response to an
+	 * {@link ApplicationResponseType Application Response}.
+	 * @param applicationResponse Application Response to make decision upon about the response
+	 * @result {@code String} representing the decision
+	 */
+	public String showProcessApplicationResponseDialog(ApplicationResponseType applicationResponse)
+	{
+		final ProcessApplicationResponseDialog processDialog =
+				new ProcessApplicationResponseDialog(RutaClientFrame.this, applicationResponse);
+		processDialog.setTitle("Process Application Response");
+		processDialog.setVisible(true);
+		return processDialog.getDecision();
+	}
+
+	/**
+	 * Shows {@link InvoiceDialog} for making new {@link InvoiceType Invoice}. {@code corr} argument should be set to {@code null}
+	 * when new {@code Invoice} is to be created or old one viewed and to appropriate non-{@code null} value only when
+	 * some old {@code Invoice} failed to be delievered and new sending atempt of it could be tried.
+	 * @param title {@code InvoiceDialog}'s title
+	 * @param invoice {@code Invoice} to display
+	 * @param editable whether the Invoice is editable
+	 * @param corr {@link Correspondence} of the {@link InvoiceType}
+	 * @return {@code InvoiceType} or {@code null} if user aborts Invoice creation
+	 */
+	public InvoiceType showInvoiceDialog(String title, InvoiceType invoice, boolean editable, Correspondence corr)
+	{
+		InvoiceDialog invoiceDialog = new InvoiceDialog(RutaClientFrame.this, invoice, editable, corr);
+		invoiceDialog.setTitle(title);
+		invoiceDialog.setVisible(true);
+		if(invoiceDialog.isSendPressed())
+		{
+			invoice = invoiceDialog.getInvoice();
+			invoiceDialog.setSendPressed(false);
+		}
+		else
+			invoice = null;
+		return invoice;
+	}
+
+	/**
+	 * Shows {@link ProcessInvoiceDialog} for making a decision about a response to an {@link InvoiceType Invoice}.
+	 * @param invoice Invoice to make decision upon about the response
+	 * @result {@code String} representing the decision
+	 */
+	public String showProcessInvoiceDialog(InvoiceType invoice)
+	{
+		final ProcessInvoiceDialog processInvoiceDialog = new ProcessInvoiceDialog(RutaClientFrame.this, invoice);
+		processInvoiceDialog.setTitle("Process Invoice");
+		processInvoiceDialog.setVisible(true);
+		return processInvoiceDialog.getDecision();
 	}
 
 	public RutaClient getClient()
@@ -1422,5 +1475,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		return message.replaceFirst("(.*?)Client received SOAP Fault from server: (.+) "
 				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$2");
 	}
+
+
 
 }

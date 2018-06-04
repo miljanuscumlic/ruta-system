@@ -42,7 +42,7 @@ public class TabProducts extends TabComponent
 		final MyParty myParty = clientFrame.getClient().getMyParty();
 		final DefaultTableModel tableModel = new ProductTableModel(myParty, true);
 		final JTable table = createCatalogueTable(tableModel);
-		//			orderLinesTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+		//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		TableColumn tableColumn = table.getColumnModel().getColumn(8);

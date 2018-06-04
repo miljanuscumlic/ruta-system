@@ -4,6 +4,7 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -74,7 +75,8 @@ public class DocumentDistribution
 				documentClazz == OrderResponseSimpleType.class ||
 				documentClazz == OrderChangeType.class ||
 				documentClazz == OrderCancellationType.class ||
-				documentClazz == ApplicationResponseType.class)
+				documentClazz == ApplicationResponseType.class ||
+				documentClazz == InvoiceType.class)
 			//MMM other document types
 			valid = true;
 		return valid;

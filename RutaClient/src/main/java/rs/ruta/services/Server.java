@@ -17,6 +17,7 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
@@ -46,52 +47,6 @@ import rs.ruta.common.RutaVersion;
 })
 public interface Server {
 
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.SearchPartyResponse>
-     */
-    @WebMethod(operationName = "SearchParty")
-    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
-    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
-    public Response<SearchPartyResponse> searchPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        PartySearchCriterion arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "SearchParty")
-    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
-    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
-    public Future<?> searchPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        PartySearchCriterion arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<SearchPartyResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "SearchParty")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
-    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
-    public List<PartyType> searchParty(
-        @WebParam(name = "arg0", targetNamespace = "")
-        PartySearchCriterion arg0)
-        throws RutaException
-    ;
 
     /**
      * 
@@ -147,6 +102,52 @@ public interface Server {
 
     /**
      * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.SearchPartyResponse>
+     */
+    @WebMethod(operationName = "SearchParty")
+    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
+    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
+    public Response<SearchPartyResponse> searchPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartySearchCriterion arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "SearchParty")
+    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
+    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
+    public Future<?> searchPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartySearchCriterion arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<SearchPartyResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "SearchParty")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
+    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
+    public List<PartyType> searchParty(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartySearchCriterion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
      * @param arg1
      * @param arg0
      * @return
@@ -196,82 +197,6 @@ public interface Server {
         ReportComment arg1)
         throws RutaException
     ;
-
-    /**
-     * 
-     * @param arg3
-     * @param arg2
-     * @param arg4
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.TypeInclusionResponse>
-     */
-    @WebMethod(operationName = "TypeInclusion")
-    @RequestWrapper(localName = "TypeInclusion", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.TypeInclusion")
-    @ResponseWrapper(localName = "TypeInclusionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.TypeInclusionResponse")
-    public Response<TypeInclusionResponse> typeInclusionAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        OrderType arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        OrderResponseType arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        OrderResponseSimpleType arg2,
-        @WebParam(name = "arg3", targetNamespace = "")
-        OrderChangeType arg3,
-        @WebParam(name = "arg4", targetNamespace = "")
-        OrderCancellationType arg4);
-
-    /**
-     * 
-     * @param arg3
-     * @param arg2
-     * @param arg4
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "TypeInclusion")
-    @RequestWrapper(localName = "TypeInclusion", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.TypeInclusion")
-    @ResponseWrapper(localName = "TypeInclusionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.TypeInclusionResponse")
-    public Future<?> typeInclusionAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        OrderType arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        OrderResponseType arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        OrderResponseSimpleType arg2,
-        @WebParam(name = "arg3", targetNamespace = "")
-        OrderChangeType arg3,
-        @WebParam(name = "arg4", targetNamespace = "")
-        OrderCancellationType arg4,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<TypeInclusionResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg3
-     * @param arg2
-     * @param arg4
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod(operationName = "TypeInclusion")
-    @RequestWrapper(localName = "TypeInclusion", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.TypeInclusion")
-    @ResponseWrapper(localName = "TypeInclusionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.TypeInclusionResponse")
-    public void typeInclusion(
-        @WebParam(name = "arg0", targetNamespace = "")
-        OrderType arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        OrderResponseType arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        OrderResponseSimpleType arg2,
-        @WebParam(name = "arg3", targetNamespace = "")
-        OrderChangeType arg3,
-        @WebParam(name = "arg4", targetNamespace = "")
-        OrderCancellationType arg4);
 
     /**
      * 
@@ -444,6 +369,91 @@ public interface Server {
         Object arg0)
         throws RutaException
     ;
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg5
+     * @param arg4
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.WSDLTypeInjectionResponse>
+     */
+    @WebMethod(operationName = "WSDLTypeInjection")
+    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjection")
+    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
+    public Response<WSDLTypeInjectionResponse> wsdlTypeInjectionAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        OrderType arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        OrderResponseType arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        OrderResponseSimpleType arg2,
+        @WebParam(name = "arg3", targetNamespace = "")
+        OrderChangeType arg3,
+        @WebParam(name = "arg4", targetNamespace = "")
+        OrderCancellationType arg4,
+        @WebParam(name = "arg5", targetNamespace = "")
+        InvoiceType arg5);
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg5
+     * @param arg4
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "WSDLTypeInjection")
+    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjection")
+    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
+    public Future<?> wsdlTypeInjectionAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        OrderType arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        OrderResponseType arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        OrderResponseSimpleType arg2,
+        @WebParam(name = "arg3", targetNamespace = "")
+        OrderChangeType arg3,
+        @WebParam(name = "arg4", targetNamespace = "")
+        OrderCancellationType arg4,
+        @WebParam(name = "arg5", targetNamespace = "")
+        InvoiceType arg5,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<WSDLTypeInjectionResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg5
+     * @param arg4
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod(operationName = "WSDLTypeInjection")
+    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjection")
+    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
+    public void wsdlTypeInjection(
+        @WebParam(name = "arg0", targetNamespace = "")
+        OrderType arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        OrderResponseType arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        OrderResponseSimpleType arg2,
+        @WebParam(name = "arg3", targetNamespace = "")
+        OrderChangeType arg3,
+        @WebParam(name = "arg4", targetNamespace = "")
+        OrderCancellationType arg4,
+        @WebParam(name = "arg5", targetNamespace = "")
+        InvoiceType arg5);
 
     /**
      * 
