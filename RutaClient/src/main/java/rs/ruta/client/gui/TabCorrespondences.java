@@ -49,12 +49,12 @@ import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.CustomerBillingProcess;
-import rs.ruta.client.correspondence.DocumentReference;
 import rs.ruta.client.correspondence.RutaProcess;
 import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.client.correspondence.SellerProcessOrderState;
 import rs.ruta.client.correspondence.SupplierBillingProcess;
+import rs.ruta.common.DocumentReference;
 import rs.ruta.common.datamapper.DetailException;
 
 /**

@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 
 @XmlRootElement(name = "SellerProcessOrderState")

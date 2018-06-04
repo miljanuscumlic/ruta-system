@@ -8,6 +8,7 @@ import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancel
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
+import rs.ruta.common.DocumentReference;
 
 abstract public class OrderingProcess extends BuyingProcess
 {

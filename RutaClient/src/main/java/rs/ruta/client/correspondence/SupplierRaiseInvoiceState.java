@@ -9,6 +9,7 @@ import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import rs.ruta.client.RutaClient;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "SupplierRaiseInvoiceState")
 public class SupplierRaiseInvoiceState extends SupplierBillingProcessState

@@ -6,6 +6,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.Accepte
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.gui.ProcessOrderResponseSimpleDialog;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 
 @XmlRootElement(name = "BuyerProcessOrderResponseSimpleState")

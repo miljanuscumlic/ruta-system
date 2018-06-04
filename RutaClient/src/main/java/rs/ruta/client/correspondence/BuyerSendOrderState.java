@@ -1,6 +1,7 @@
 package rs.ruta.client.correspondence;
 
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import rs.ruta.common.DocumentReference;
 
 public class BuyerSendOrderState extends BuyerOrderingProcessState
 {

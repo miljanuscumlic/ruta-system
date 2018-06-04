@@ -3,6 +3,7 @@ package rs.ruta.client.correspondence;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "CustomerSendApplicationResponseState")
 public class CustomerSendApplicationResponseState extends CustomerBillingProcessState

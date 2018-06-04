@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import rs.ruta.client.MyParty;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "BuyerCancelOrderState")
 public class BuyerCancelOrderState extends BuyerOrderingProcessState

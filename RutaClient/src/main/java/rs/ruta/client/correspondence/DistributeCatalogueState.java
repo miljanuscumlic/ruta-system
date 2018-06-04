@@ -4,6 +4,7 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "DistributeCatalogueState")
 public class DistributeCatalogueState extends CreateCatalogueProcessState

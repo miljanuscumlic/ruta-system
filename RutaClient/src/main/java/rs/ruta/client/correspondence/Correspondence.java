@@ -30,6 +30,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseTy
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.RutaClientFrameEvent;
+import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;

@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.AcceptedIndicatorType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "SellerSendOrderResponseSimpleState")
 public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessState

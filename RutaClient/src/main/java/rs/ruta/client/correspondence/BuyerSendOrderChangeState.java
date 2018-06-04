@@ -3,6 +3,7 @@ package rs.ruta.client.correspondence;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "BuyerSendOrderChangeState")
 public class BuyerSendOrderChangeState extends BuyerOrderingProcessState

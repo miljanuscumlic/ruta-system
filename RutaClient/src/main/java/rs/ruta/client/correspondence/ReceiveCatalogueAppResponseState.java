@@ -4,6 +4,8 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import rs.ruta.common.DocumentReference;
+
 @XmlRootElement(name = "ReceiveCatalogueAppResponseState")
 public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessState
 {

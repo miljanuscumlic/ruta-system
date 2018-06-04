@@ -6,6 +6,7 @@ import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.gui.OrderResponseDialog;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "SupplierSendInvoiceState")
 public class SupplierSendInvoiceState extends SupplierBillingProcessState

@@ -14,6 +14,7 @@ import rs.ruta.client.Catalogue;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "ProduceCatalogueState")
 public class ProduceCatalogueState extends CreateCatalogueProcessState

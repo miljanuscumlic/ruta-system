@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "BuyerReceiveOrderResponseState")
 public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState

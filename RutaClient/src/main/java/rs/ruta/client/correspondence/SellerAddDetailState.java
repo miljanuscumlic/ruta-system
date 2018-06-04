@@ -8,6 +8,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseTy
 import rs.ruta.client.MyParty;
 import rs.ruta.client.gui.OrderResponseDialog;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "SellerAddDetailState")
 public class SellerAddDetailState extends SellerOrderingProcessState

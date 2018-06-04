@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.client.RutaClient;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "BuyerPrepareOrderState")
 public class BuyerPrepareOrderState extends BuyerOrderingProcessState

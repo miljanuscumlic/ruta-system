@@ -7,6 +7,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.common.DocumentReference;
 
 @XmlRootElement(name = "SellerAcceptOrderState")
 public class SellerAcceptOrderState extends SellerOrderingProcessState

@@ -3,6 +3,7 @@ package rs.ruta.client.correspondence;
 import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import rs.ruta.client.MyParty;
+import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 
 @XmlRootElement(name = "CustomerCreateApplicationResponseState")
