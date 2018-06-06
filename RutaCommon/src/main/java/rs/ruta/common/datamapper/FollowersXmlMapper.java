@@ -59,7 +59,7 @@ public class FollowersXmlMapper extends XmlMapper<Associates>
 	@Override
 	protected JAXBElement<Associates> getJAXBElement(Associates object)
 	{
-		return new ObjectFactory().createFollowers(object);
+		return new ObjectFactory().createAssociates(object);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class FollowersXmlMapper extends XmlMapper<Associates>
 				//soon, and there is no need for this step
 				if(! userID.equals(followers.getPartyID()))
 				{
-					followers.remove(userID);
+					followers.removeAssociate(userID);
 					update(null, followers, transaction);
 				}
 			}

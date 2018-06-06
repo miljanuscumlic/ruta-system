@@ -2702,7 +2702,7 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Sends the follow request to the CDR if the party to be followed is not My Party or is not among the
+	 * Sends follow request to the CDR if the party to be followed is not My Party or is not among the
 	 * following parties. If argument {@code partner} is set to {@code true} following party is set to be a
 	 * {@code Business Parter}, otherwise a regular following {@code Party}.
 	 * @param followingName name of the party to follow

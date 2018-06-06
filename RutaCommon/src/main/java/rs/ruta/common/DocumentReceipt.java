@@ -133,8 +133,7 @@ public class DocumentReceipt
 	{
 		if(id == null)
 			id = new IDType(value);
-		else
-			id.setValue(value);
+		id.setValue(value);
 		return id;
 	}
 

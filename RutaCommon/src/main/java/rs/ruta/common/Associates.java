@@ -82,10 +82,10 @@ public class Associates
 	}
 
 	/**
-	 * Appends associate's IDs from the {@code Associates} object to the list of associate's IDs of this .
+	 * Appends associate's IDs from the {@code Associates} object to the list of associate's IDs of this.
 	 * @param associates
 	 */
-	public void add(Associates associates)
+	public void addAllAssociates(Associates associates)
 	{
 		getAssociateIDs().addAll(associates.getAssociateIDs());
 	}
@@ -94,7 +94,7 @@ public class Associates
 	 * Appends associate's ID to the list of all associates.
 	 * @param uuid associate's ID to be added
 	 */
-	public void add(String uuid)
+	public void addAssociate(String uuid)
 	{
 		getAssociateIDs().add(uuid);
 	}
@@ -103,7 +103,7 @@ public class Associates
 	 * Removes associate's ID from the list of all associates.
 	 * @param uuid associate's ID to be removed
 	 */
-	public void remove(String uuid)
+	public void removeAssociate(String uuid)
 	{
 		getAssociateIDs().remove(uuid);
 	}

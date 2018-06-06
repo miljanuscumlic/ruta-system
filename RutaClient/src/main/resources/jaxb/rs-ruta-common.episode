@@ -92,5 +92,17 @@
 			<class ref="rs.ruta.common.DocumentReceipt" />
 		</bindings>
 	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
+		if-exists="true">
+		<bindings scd="~tns:BusinessPartnershipRequest">
+			<class ref="rs.ruta.common.BusinessPartnershipRequest" />
+		</bindings>
+	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
+		if-exists="true">
+		<bindings scd="~tns:BusinessPartnershipResponse">
+			<class ref="rs.ruta.common.BusinessPartnershipResponse" />
+		</bindings>
+	</bindings>
 	
 </bindings>

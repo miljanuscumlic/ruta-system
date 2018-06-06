@@ -13,16 +13,15 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="status">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="CDR_RECEIVED"/>
- *     &lt;enumeration value="CDR_DOWN"/>
- *     &lt;enumeration value="CDR_FAILED"/>
- *     &lt;enumeration value="CLIENT_FAILED"/>
- *     &lt;enumeration value="CLIENT_SENT"/>
- *     &lt;enumeration value="CORR_RECEIVED"/>
- *     &lt;enumeration value="CORR_FAILED"/>
- *     &lt;enumeration value="CORR_REJECTED"/>
  *     &lt;enumeration value="UBL_INVALID"/>
  *     &lt;enumeration value="UBL_VALID"/>
+ *     &lt;enumeration value="CLIENT_FAILED"/>
+ *     &lt;enumeration value="CLIENT_SENT"/>
+ *     &lt;enumeration value="CDR_DOWN"/>
+ *     &lt;enumeration value="CDR_FAILED"/>
+ *     &lt;enumeration value="CDR_RECEIVED"/>
+ *     &lt;enumeration value="CORR_FAILED"/>
+ *     &lt;enumeration value="CORR_RECEIVED"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -32,16 +31,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum Status {
 
-    CDR_RECEIVED,
-    CDR_DOWN,
-    CDR_FAILED,
+    UBL_INVALID,
+    UBL_VALID,
     CLIENT_FAILED,
     CLIENT_SENT,
-    CORR_RECEIVED,
+    CDR_DOWN,
+    CDR_FAILED,
+    CDR_RECEIVED,
     CORR_FAILED,
-    CORR_REJECTED,
-    UBL_INVALID,
-    UBL_VALID;
+    CORR_RECEIVED;
 
     public String value() {
         return name();

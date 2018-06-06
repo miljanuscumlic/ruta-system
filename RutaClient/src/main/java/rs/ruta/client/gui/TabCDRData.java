@@ -624,8 +624,8 @@ public class TabCDRData extends TabComponent
 		followPartnerItem.addActionListener(event ->
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
 					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
@@ -655,9 +655,8 @@ public class TabCDRData extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			//			final int rowIndex = table.getSelectedRow()*/;
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
 					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
@@ -688,8 +687,8 @@ public class TabCDRData extends TabComponent
 		unfollowPartyItem.addActionListener(event ->
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 			new Thread(()->
 			{
 				try
@@ -714,8 +713,8 @@ public class TabCDRData extends TabComponent
 		addPartnerItem.addActionListener(event ->
 		{
 			//			final int rowIndex = table.getSelectedRow()*/;
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 			new Thread(() ->
 			{
 				selectedParty.setPartner(true);
@@ -738,9 +737,9 @@ public class TabCDRData extends TabComponent
 
 		removePartnerItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 			{
 				selectedParty.setPartner(false);
 				try
@@ -762,8 +761,8 @@ public class TabCDRData extends TabComponent
 
 		deleteArchivedItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
 			new Thread(() ->
 			{
 				final String partyName = selectedParty.getPartySimpleName();
@@ -786,8 +785,8 @@ public class TabCDRData extends TabComponent
 
 		deleteDeregisteredItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
 			new Thread(() ->
 			{
 				final String partyName = selectedParty.getPartySimpleName();
@@ -818,7 +817,7 @@ public class TabCDRData extends TabComponent
 					final int rowIndex = table.rowAtPoint(event.getPoint());
 					if(rowIndex != -1)
 					{
-						final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+						final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
 						if(SwingUtilities.isRightMouseButton(event))
 						{
 							table.setRowSelectionInterval(rowIndex, rowIndex);
@@ -861,7 +860,7 @@ public class TabCDRData extends TabComponent
 						else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 						{
 							final PartyListTableModel partyListTableModel = (PartyListTableModel) table.getModel();
-							final BusinessParty party = partyListTableModel.getPartyAtIndex(realRowIndex);
+							final BusinessParty party = partyListTableModel.getPartyAtIndex(modelRowIndex);
 							partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
 							rightScrollPane.setViewportView(partnerCatalogueTable);
 							selectNode(partyTree, party);
@@ -906,8 +905,8 @@ public class TabCDRData extends TabComponent
 		//in all listeners table model must be get with table.getModel() in orderLines to have a current instance of it
 		againSearchItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(modelRowIndex);
 			new Thread(()->
 			{
 				try
@@ -932,8 +931,8 @@ public class TabCDRData extends TabComponent
 
 		renameSearchItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(modelRowIndex);
 			String newName = (String) JOptionPane.showInputDialog(clientFrame, "Enter new name: ", "Rename a search",
 					JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
 			if(newName != null)
@@ -956,8 +955,8 @@ public class TabCDRData extends TabComponent
 
 		deleteSearchItem.addActionListener( event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(modelRowIndex);
 			new Thread(() ->
 			{
 				try
@@ -980,7 +979,7 @@ public class TabCDRData extends TabComponent
 				final int rowIndex = table.rowAtPoint(event.getPoint());
 				if(rowIndex != -1)
 				{
-					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+					final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
 					if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
 						final Object selectedSearchListNode = getSelectedUserObject(searchTree);
@@ -990,14 +989,14 @@ public class TabCDRData extends TabComponent
 							final String nodeTitle = (String) selectedSearchListNode;
 							if(PARTIES.equals(nodeTitle))
 							{
-								final Search<PartyType> selectedSearch = myParty.getPartySearches().get(realRowIndex);
+								final Search<PartyType> selectedSearch = myParty.getPartySearches().get(modelRowIndex);
 								searchesPartyTableModel.setSearch(selectedSearch);
 								selectNode(searchTree, selectedSearch);
 								rightScrollPane.setViewportView(searchesPartyTable);
 							}
 							else if(CATALOGUES.equals(nodeTitle))
 							{
-								final Search<CatalogueType> selectedSearch = myParty.getCatalogueSearches().get(realRowIndex);
+								final Search<CatalogueType> selectedSearch = myParty.getCatalogueSearches().get(modelRowIndex);
 								searchesCatalogueTableModel.setSearch(selectedSearch);
 								selectNode(searchTree, selectedSearch);
 								rightScrollPane.setViewportView(searchesCatalogueTable);
@@ -1036,8 +1035,8 @@ public class TabCDRData extends TabComponent
 		followPartnerItem.addActionListener(event ->
 		{
 			//			int rowIndex = table.getSelectedRow();
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
 			final String followingName =
 					InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
@@ -1065,8 +1064,8 @@ public class TabCDRData extends TabComponent
 		followPartyItem.addActionListener(event ->
 		{
 			//			int rowIndex = table.getSelectedRow();
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
 			final String followingName =
 					InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
@@ -1141,8 +1140,8 @@ public class TabCDRData extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = searchesCatalogueTableModel.getParty(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
 			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0),
 					PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
@@ -1169,8 +1168,8 @@ public class TabCDRData extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = searchesCatalogueTableModel.getParty(realRowIndex);
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
 			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0),
 					PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),

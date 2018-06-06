@@ -304,11 +304,11 @@ public class TabCorrespondences extends TabComponent
 				final int rowIndex = table.rowAtPoint(event.getPoint());
 				if(rowIndex != -1)
 				{
-					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+					final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
 					if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
-						//					final Correspondence corr = ((CorrespondenceListTableModel) tableModel).getCorrespondenceAtIndex(realRowIndex);
-						final Correspondence corr = ((CorrespondenceListTableModel) table.getModel()).getCorrespondenceAtIndex(realRowIndex);
+						//					final Correspondence corr = ((CorrespondenceListTableModel) tableModel).getCorrespondenceAtIndex(modelRowIndex);
+						final Correspondence corr = ((CorrespondenceListTableModel) table.getModel()).getCorrespondenceAtIndex(modelRowIndex);
 						partnerCorrespondenceTableModel.setCorrespondence(corr);
 						((DefaultTableModel) partnerCorrespondenceTableModel).fireTableDataChanged();
 						rightScrollPane.setViewportView(partnerCorrespondenceTable);
@@ -1185,8 +1185,8 @@ public class TabCorrespondences extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getParty(modelRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
 					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
@@ -1216,8 +1216,8 @@ public class TabCorrespondences extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(realRowIndex);
+			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = partiesTableModel.getParty(modelRowIndex);
 			final Party coreParty = selectedParty.getCoreParty();
 			final String followingName = InstanceFactory.
 					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
@@ -1247,8 +1247,8 @@ public class TabCorrespondences extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(modelRowIndex);
 			new Thread(()->
 			{
 				try
@@ -1272,8 +1272,8 @@ public class TabCorrespondences extends TabComponent
 
 		addPartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(modelRowIndex);
 			new Thread(() ->
 			{
 				selectedParty.setPartner(true);
@@ -1296,9 +1296,9 @@ public class TabCorrespondences extends TabComponent
 
 		removePartnerItem.addActionListener(event ->
 		{
-			/*			final int realRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(realRowIndex);
+			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(modelRowIndex);
 			{
 				selectedParty.setPartner(false);
 				try
@@ -1326,7 +1326,7 @@ public class TabCorrespondences extends TabComponent
 				final int rowIndex = table.rowAtPoint(event.getPoint());
 				if(rowIndex != -1)
 				{
-					final int realRowIndex = table.convertRowIndexToModel(rowIndex);
+					final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
 					if(SwingUtilities.isRightMouseButton(event))
 					{
 						table.setRowSelectionInterval(rowIndex, rowIndex);
@@ -1349,8 +1349,8 @@ public class TabCorrespondences extends TabComponent
 					}
 					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
-						//					final BusinessParty party = ((PartyListTableModel) tableModel).getPartyAtIndex(realRowIndex);
-						final BusinessParty party = ((PartyListTableModel) table.getModel()).getPartyAtIndex(realRowIndex);
+						//					final BusinessParty party = ((PartyListTableModel) tableModel).getPartyAtIndex(modelRowIndex);
+						final BusinessParty party = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 						final String partyID = party.getPartyID();
 						partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(partyID));
 						((DefaultTableModel) partnerCorrespondenceListTableModel).fireTableDataChanged();

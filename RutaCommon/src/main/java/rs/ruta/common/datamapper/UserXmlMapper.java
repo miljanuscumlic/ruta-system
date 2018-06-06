@@ -249,7 +249,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 				//setting party as a follower of himself
 				Associates iFollower = new Associates();
 				iFollower.setPartyID(partyID);
-				iFollower.add(partyID);
+				iFollower.addAssociate(partyID);
 				((FollowersXmlMapper) mapperRegistry.getMapper(Associates.class)).insert(username, iFollower, transaction);
 				logger.info("Finished registration of the user " + username + " with the CDR service.");
 			}

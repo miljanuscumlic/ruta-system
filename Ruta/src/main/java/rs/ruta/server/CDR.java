@@ -39,6 +39,8 @@ import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.BusinessPartnershipRequest;
+import rs.ruta.common.BusinessPartnershipResponse;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
@@ -639,14 +641,14 @@ public class CDR implements Server
 			}
 			synchronized(followers)
 			{
-				followers.add(partyID);
+				followers.addAssociate(partyID);
 				mapperRegistry.getMapper(Associates.class).update(null, followers);
 			}
 			docBoxPool.submit(() ->
 			{
 				final Associates iFollower = new Associates();
-				iFollower.add(partyID);
 				iFollower.setPartyID(followID);
+				iFollower.addAssociate(partyID);
 				try
 				{
 					final CatalogueType cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(followID);
@@ -690,7 +692,7 @@ public class CDR implements Server
 			}
 			synchronized(followers)
 			{
-				followers.remove(partyID);
+				followers.removeAssociate(partyID);
 				mapperRegistry.getMapper(Associates.class).update(null, followers);
 			}
 		}
@@ -915,9 +917,56 @@ public class CDR implements Server
 		}
 	}
 
+	@Override
+	public void requestBusinessPartnership(BusinessPartnershipRequest request) throws RutaException
+	{
+		try
+		{
+			init();
+			final Associates recepient = getAssociates(request);
+			final String senderID = recepient.getPartyID();
+			final String receiverID = recepient.getAssociateAtIndex(0);
+			if(!mapperRegistry.getMapper(RutaUser.class).checkUser(receiverID))
+				throw new DatabaseException("User with ID" + receiverID + " is not registered with the CDR service!");
+			docBoxPool.submit(() -> //MMM maybe this should not be submitted to the ExecutorService
+			{
+				try
+				{
+					final DocumentDistribution documentDistribution = new DocumentDistribution(request, recepient);
+					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to distribute " + InstanceFactory.getDocumentName(request.getClass().getSimpleName()) +
+							InstanceFactory.getDocumentID(request) + " of the sender: " + senderID + ".\n Exception is ", e);
+				}
+				try
+				{
+					mapperRegistry.getMapper(BusinessPartnershipRequest.class).insert(null, request);
+				}
+				catch(DetailException e)
+				{
+					logger.error("Unable to insert " + InstanceFactory.getDocumentName(request.getClass().getSimpleName()) +
+							InstanceFactory.getDocumentID(request) + " of the sender: " + senderID + "to the data store.\n Exception is ", e);
+				}
+			});
+		}
+		catch(Exception e)
+		{
+			processException(e, "Business Partner Request could not be distributed to the Receiver Party!");
+		}
+	}
+
+	@Override
+	public void responseBusinessPartnership(BusinessPartnershipResponse response) throws RutaException
+	{
+		//MMM to do
+	}
+
 	/**
-	 * Creates {@link Associates} object.
-	 * @param document {@code UBL document} from which sender's and receiver's party IDs are retrieved
+	 * Creates {@link Associates} object from the data of passed document. {@code Associates} object is
+	 * used for that document distribution.
+	 * @param document {@code UBL document} which sender and receiver party's IDs are used
 	 * @return {@link Associates} object
 	 */
 	private Associates getAssociates(Object document)
@@ -928,7 +977,7 @@ public class CDR implements Server
 		receiverID = InstanceFactory.getDocumentReceiverID(document);
 
 		recepient.setPartyID(senderID);
-		recepient.add(receiverID);
+		recepient.addAssociate(receiverID);
 
 		return recepient;
 

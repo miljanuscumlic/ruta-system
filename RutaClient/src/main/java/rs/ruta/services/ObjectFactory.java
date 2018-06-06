@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import rs.ruta.common.Associates;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.BusinessPartnershipRequest;
+import rs.ruta.common.BusinessPartnershipResponse;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.ReportAttachment;
@@ -33,12 +35,14 @@ public class ObjectFactory {
 
     private final static QName _FindAllBugReportsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllBugReportsResponse");
     private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
+    private final static QName _ResponseBusinessPartnership_QNAME = new QName("http://ruta.rs/services", "ResponseBusinessPartnership");
     private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
     private final static QName _UpdateCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponseResponse");
     private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
     private final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
     private final static QName _DistributeDocument_QNAME = new QName("http://ruta.rs/services", "DistributeDocument");
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
+    private final static QName _ResponseBusinessPartnershipResponse_QNAME = new QName("http://ruta.rs/services", "ResponseBusinessPartnershipResponse");
     private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
     private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
     private final static QName _DeleteDocBoxDocumentWithDocumentReceipt_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentWithDocumentReceipt");
@@ -62,6 +66,7 @@ public class ObjectFactory {
     private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
     private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
     private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
+    private final static QName _RequestBusinessPartnershipResponse_QNAME = new QName("http://ruta.rs/services", "RequestBusinessPartnershipResponse");
     private final static QName _SearchBugReport_QNAME = new QName("http://ruta.rs/services", "SearchBugReport");
     private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
     private final static QName _RutaVersion_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaVersion");
@@ -96,13 +101,16 @@ public class ObjectFactory {
     private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
+    private final static QName _BusinessPartnershipRequest_QNAME = new QName("http://www.ruta.rs/ns/common", "BusinessPartnershipRequest");
     private final static QName _FindAllDocBoxDocumentIDs_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDs");
     private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
+    private final static QName _BusinessPartnershipResponse_QNAME = new QName("http://www.ruta.rs/ns/common", "BusinessPartnershipResponse");
     private final static QName _DocumentReceipt_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentReceipt");
     private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/services", "InsertBugReport");
     private final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
     private final static QName _DeleteCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponse");
     private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
+    private final static QName _RequestBusinessPartnership_QNAME = new QName("http://ruta.rs/services", "RequestBusinessPartnership");
     private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
     private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
     private final static QName _ReportAttachment_QNAME = new QName("http://www.ruta.rs/ns/common", "ReportAttachment");
@@ -368,6 +376,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RequestBusinessPartnership }
+     * 
+     */
+    public RequestBusinessPartnership createRequestBusinessPartnership() {
+        return new RequestBusinessPartnership();
+    }
+
+    /**
      * Create an instance of {@link DeleteDocBoxDocument }
      * 
      */
@@ -520,6 +536,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ResponseBusinessPartnershipResponse }
+     * 
+     */
+    public ResponseBusinessPartnershipResponse createResponseBusinessPartnershipResponse() {
+        return new ResponseBusinessPartnershipResponse();
+    }
+
+    /**
      * Create an instance of {@link FindAllParties }
      * 
      */
@@ -541,6 +565,14 @@ public class ObjectFactory {
      */
     public UpdateCatalogueWithAppResponseResponse createUpdateCatalogueWithAppResponseResponse() {
         return new UpdateCatalogueWithAppResponseResponse();
+    }
+
+    /**
+     * Create an instance of {@link ResponseBusinessPartnership }
+     * 
+     */
+    public ResponseBusinessPartnership createResponseBusinessPartnership() {
+        return new ResponseBusinessPartnership();
     }
 
     /**
@@ -613,6 +645,14 @@ public class ObjectFactory {
      */
     public InsertParty createInsertParty() {
         return new InsertParty();
+    }
+
+    /**
+     * Create an instance of {@link RequestBusinessPartnershipResponse }
+     * 
+     */
+    public RequestBusinessPartnershipResponse createRequestBusinessPartnershipResponse() {
+        return new RequestBusinessPartnershipResponse();
     }
 
     /**
@@ -714,6 +754,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBusinessPartnership }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ResponseBusinessPartnership")
+    public JAXBElement<ResponseBusinessPartnership> createResponseBusinessPartnership(ResponseBusinessPartnership value) {
+        return new JAXBElement<ResponseBusinessPartnership>(_ResponseBusinessPartnership_QNAME, ResponseBusinessPartnership.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClient }{@code >}}
      * 
      */
@@ -765,6 +814,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindBugReportResponse")
     public JAXBElement<FindBugReportResponse> createFindBugReportResponse(FindBugReportResponse value) {
         return new JAXBElement<FindBugReportResponse>(_FindBugReportResponse_QNAME, FindBugReportResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBusinessPartnershipResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ResponseBusinessPartnershipResponse")
+    public JAXBElement<ResponseBusinessPartnershipResponse> createResponseBusinessPartnershipResponse(ResponseBusinessPartnershipResponse value) {
+        return new JAXBElement<ResponseBusinessPartnershipResponse>(_ResponseBusinessPartnershipResponse_QNAME, ResponseBusinessPartnershipResponse.class, null, value);
     }
 
     /**
@@ -972,6 +1030,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdatePartyResponse")
     public JAXBElement<UpdatePartyResponse> createUpdatePartyResponse(UpdatePartyResponse value) {
         return new JAXBElement<UpdatePartyResponse>(_UpdatePartyResponse_QNAME, UpdatePartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequestBusinessPartnershipResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RequestBusinessPartnershipResponse")
+    public JAXBElement<RequestBusinessPartnershipResponse> createRequestBusinessPartnershipResponse(RequestBusinessPartnershipResponse value) {
+        return new JAXBElement<RequestBusinessPartnershipResponse>(_RequestBusinessPartnershipResponse_QNAME, RequestBusinessPartnershipResponse.class, null, value);
     }
 
     /**
@@ -1281,6 +1348,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BusinessPartnershipRequest }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "BusinessPartnershipRequest")
+    public JAXBElement<BusinessPartnershipRequest> createBusinessPartnershipRequest(BusinessPartnershipRequest value) {
+        return new JAXBElement<BusinessPartnershipRequest>(_BusinessPartnershipRequest_QNAME, BusinessPartnershipRequest.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDs }{@code >}}
      * 
      */
@@ -1296,6 +1372,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
     public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
         return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BusinessPartnershipResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "BusinessPartnershipResponse")
+    public JAXBElement<BusinessPartnershipResponse> createBusinessPartnershipResponse(BusinessPartnershipResponse value) {
+        return new JAXBElement<BusinessPartnershipResponse>(_BusinessPartnershipResponse_QNAME, BusinessPartnershipResponse.class, null, value);
     }
 
     /**
@@ -1341,6 +1426,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogue")
     public JAXBElement<InsertCatalogue> createInsertCatalogue(InsertCatalogue value) {
         return new JAXBElement<InsertCatalogue>(_InsertCatalogue_QNAME, InsertCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequestBusinessPartnership }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RequestBusinessPartnership")
+    public JAXBElement<RequestBusinessPartnership> createRequestBusinessPartnership(RequestBusinessPartnership value) {
+        return new JAXBElement<RequestBusinessPartnership>(_RequestBusinessPartnership_QNAME, RequestBusinessPartnership.class, null, value);
     }
 
     /**

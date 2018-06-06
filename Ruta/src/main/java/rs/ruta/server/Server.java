@@ -23,6 +23,8 @@ import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.BusinessPartnershipRequest;
+import rs.ruta.common.BusinessPartnershipResponse;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
@@ -158,7 +160,7 @@ public interface Server
 	public void updateParty(String username, PartyType party) throws RutaException;
 
 	/**
-	 * Adds Party as another's Party follower.
+	 * Adds Party as another Party's follower.
 	 * @param partyID party's ID
 	 * @param followID following party's ID
 	 * @return follower's {@link PartyType} object
@@ -168,7 +170,7 @@ public interface Server
 	public PartyType followParty(String partyID, String followID) throws RutaException;
 
 	/**
-	 * Removes Party from another's Party follower list.
+	 * Removes Party from another Party's follower list.
 	 * @param partyID party's ID
 	 * @param followID following party's ID
 	 * @throws RutaException if party could not be added as a follower
@@ -222,6 +224,12 @@ public interface Server
 	 */
 	@WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
 	public void deleteDocBoxDocumentWithDocumentReceipt(String username, String id, DocumentReceipt receipt) throws RutaException;
+
+	@WebMethod(operationName = "RequestBusinessPartnership")
+	public void requestBusinessPartnership(BusinessPartnershipRequest request) throws RutaException;
+
+	@WebMethod(operationName = "ResponseBusinessPartnership")
+	public void responseBusinessPartnership(BusinessPartnershipResponse response) throws RutaException;
 
 	/**
 	 * Searches the database for all {@link BugReport}s that conforms to the {@link SearchCriterion search criterion}.
@@ -285,6 +293,16 @@ public interface Server
 	public BugReport findBugReport(String id) throws RutaException;
 
 	/**
+	 * Serves as an dirty injection of types in the wsdl file. All types of arguments are included in wsdl file,
+	 * so that other webmethods that are passing arguments which declared type is the {@code Object} class
+	 * can have runtime types like {@link OrderType} in the JAXB context for marshalling and unmarshalling.
+	 * List of arguments contains variables of all types that are passed as {@code Objects}.
+	 */
+	@WebMethod(operationName = "WSDLTypeInjection")
+	default public void typeInclusion(OrderType o, OrderResponseType or, OrderResponseSimpleType ors,
+			OrderChangeType oc, OrderCancellationType oca, InvoiceType i) {}
+
+	/**
 	 * Temporary methods for clearing of server side in-memory cache.
 	 * @throws RutaException
 	 */
@@ -312,15 +330,5 @@ public interface Server
 	@Deprecated
 	@WebMethod(operationName = "InsertAttachment")
 	public void insertAttachment(ReportAttachment attachment, String filename) throws RutaException;
-
-	/**
-	 * Serves as an dirty injection of types in the wsdl file. All types of arguments are included in wsdl file,
-	 * so that other webmethods that are passing arguments which declared type is the {@code Object} class
-	 * can have runtime types like {@link OrderType} in the JAXB context for marshalling and unmarshalling.
-	 * List of arguments contains variables of all types that are passed as {@code Objects}.
-	 */
-	@WebMethod(operationName = "WSDLTypeInjection")
-	default public void typeInclusion(OrderType o, OrderResponseType or, OrderResponseSimpleType ors,
-			OrderChangeType oc, OrderCancellationType oca, InvoiceType i) {}
 
 }
