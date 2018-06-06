@@ -23,6 +23,7 @@ import rs.ruta.common.Associates;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.ObjectFactory;
 
 public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistribution>
@@ -195,6 +196,9 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 				else if(documentClazz == InvoiceType.class)
 					((InvoiceXmlMapper) mapperRegistry.getMapper(InvoiceType.class)).
 					insert(collection, (InvoiceType) document, docID, null);
+				else if(documentClazz == DocumentReceipt.class)
+					((DocumentReceiptXmlMapper) mapperRegistry.getMapper(DocumentReceipt.class)).
+					insert(collection, (DocumentReceipt) document, docID, null);
 				//MMM other document types
 
 			}

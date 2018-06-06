@@ -26,6 +26,7 @@ import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.DocumentException;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.SearchCriterion;
 
 public class DocBoxXmlMapper extends XmlMapper<DocBox>
@@ -115,6 +116,9 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == InvoiceType.class)
 					((InvoiceXmlMapper) mapperRegistry.getMapper(InvoiceType.class)).
 					insert(collection, (InvoiceType) document, docID, null);
+				else if(documentClazz == DocumentReceipt.class)
+					((DocumentReceiptXmlMapper) mapperRegistry.getMapper(DocumentReceipt.class)).
+					insert(collection, (DocumentReceipt) document, docID, null);
 				//MMM other document types
 
 				((DistributionTransaction) transaction).removeOperation();
@@ -300,6 +304,8 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((ApplicationResponseXmlMapper) mapperRegistry.getMapper(ApplicationResponseType.class)).unmarshalFromXML(result);
 			else if(objectClazz == InvoiceType.class)
 				object = ((InvoiceXmlMapper) mapperRegistry.getMapper(InvoiceType.class)).unmarshalFromXML(result);
+			else if(objectClazz == DocumentReceipt.class)
+				object = ((DocumentReceiptXmlMapper) mapperRegistry.getMapper(DocumentReceipt.class)).unmarshalFromXML(result);
 			//MMM other document types
 
 			document.setDocument(object);
@@ -345,6 +351,9 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return ApplicationResponseType.class;
 		else if(start.matches("<((.)+:)?Invoice (.)+"))
 			return InvoiceType.class;
+		else if(start.matches("<((.)+:)?DocumentReceipt (.)+"))
+			return DocumentReceipt.class;
+
 		//MMM other document types
 		else
 			return null;

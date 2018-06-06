@@ -14,6 +14,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.Associates;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
@@ -27,6 +28,7 @@ import rs.ruta.common.datamapper.DataManipulationException;
 import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.DocumentDistributionXmlMapper;
+import rs.ruta.common.datamapper.DocumentReceiptXmlMapper;
 import rs.ruta.common.datamapper.DistributionTransaction;
 import rs.ruta.common.datamapper.DistributionTransactionMapper;
 import rs.ruta.common.datamapper.DocBoxXmlMapper;
@@ -121,6 +123,8 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new ApplicationResponseXmlMapper(getConnector());
 			else if(clazz == InvoiceType.class)
 				dataMapper = (DataMapper<S, String>) new InvoiceXmlMapper(getConnector());
+			else if(clazz == DocumentReceipt.class)
+				dataMapper = (DataMapper<S, String>) new DocumentReceiptXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

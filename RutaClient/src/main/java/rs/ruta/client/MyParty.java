@@ -86,6 +86,8 @@ import rs.ruta.client.correspondence.SupplierBillingProcess;
 import rs.ruta.client.correspondence.SupplierReceiveApplicationResponseState;
 import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
+import rs.ruta.common.DocumentReceipt;
+import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.DataMapper;
@@ -2447,6 +2449,59 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
+	 * Generates {@link OrderCancellationType} document that conforms to the {@code UBL} standard.
+	 * @param orderResponseSimple Order Response Simple to which Order Cancellation is to be created
+	 * @return Order Cancellation or {@code null} if Order Cancellation does not conform to the {@code UBL}, correspondent
+	 * is not a business partner or if user has decided to abort Order Cancellation creation
+	 */
+	public OrderCancellationType produceOrderCancellation(OrderResponseSimpleType orderResponseSimple)
+	{
+		boolean valid = false;
+		OrderCancellationType orderCancellation = null;
+		orderCancellation = createOrderCancellation(orderResponseSimple);
+		valid = InstanceFactory.validateUBLDocument(orderCancellation, doc -> UBL21Validator.orderCancellation().validate(doc));
+		return valid ? orderCancellation : null;
+	}
+
+	/**
+	 * Creates {@link OrderCancellationType} document by displaying {@link OrderCancellationDialog} for entering Order Cancellation
+	 * related data.
+	 * @param orderResponseSimple Order Response to which Order Cancellation is to be made
+	 * @return created {@link OrderCancellationType Order Cancellation} or {@code null} if user has decided to abort the
+	 * creation of it
+	 */
+	private OrderCancellationType createOrderCancellation(OrderResponseSimpleType orderResponseSimple)
+	{
+		final OrderCancellationType orderCancellation = convertToOrderCancellation(orderResponseSimple);
+		return client.getClientFrame().showOrderCancellationDialog("Create Order Cancellation", orderCancellation, true, null);
+	}
+
+	/**
+	 * Creates new {@link OrderCancellationType} using data of passed {@link OrderResponseType}.
+	 * @param orderResponseSimple Order Response which data are incorporated
+	 * @return newly created {@code OrderCancellationType}
+	 */
+	private OrderCancellationType convertToOrderCancellation(OrderResponseSimpleType orderResponseSimple)
+	{
+		final OrderCancellationType orderCancellation = new OrderCancellationType();
+		final String id = String.valueOf(nextOrderID());
+		orderCancellation.setID(id);
+		orderCancellation.setUUID(UUID.randomUUID().toString());
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		orderCancellation.setIssueDate(now);
+		orderCancellation.setIssueTime(now);
+		final OrderReferenceType orderReference = new OrderReferenceType();
+		orderReference.setID(UUID.randomUUID().toString());
+		final DocumentReferenceType docReference = orderResponseSimple.getOrderReference().getDocumentReference();
+		orderReference.setDocumentReference(docReference);
+		orderCancellation.addOrderReference(orderReference);
+		orderCancellation.setSellerSupplierParty(orderResponseSimple.getSellerSupplierParty());
+		orderCancellation.setBuyerCustomerParty(orderResponseSimple.getBuyerCustomerParty());
+
+		return orderCancellation;
+	}
+
+	/**
 	 * Generates {@link InvoiceType} document that conforms to the {@code UBL} standard.
 	 * @param order Order to which the Invoice is to be made
 	 * @return Invoice or {@code null} if user has aborted Invoice creation, Invoice does not conform to the
@@ -3326,7 +3381,7 @@ public class MyParty extends BusinessParty
 		final String correspondentID = invoice.getAccountingSupplierParty().getParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
 		final String orderUUID = invoice.getOrderReference().getDocumentReference().getUUIDValue();
-		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
@@ -3347,6 +3402,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
+			else if(corr.getId().equals(findCorrespondence(correspondentID, invoice.getUUIDValue()).getId()))
+				throw new DetailException("Invoice " + invoice.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Invoice " + invoice.getIDValue() +
 						" does not belong to the current state of the correspondence.");
@@ -3359,7 +3416,7 @@ public class MyParty extends BusinessParty
 	 * @throws DetailException if correspondent could not be found, order already received, or new
 	 * correspondence could not be inserted into the data store
 	 */
-	public void processDocBoxOrder(OrderType order) throws DetailException
+	public synchronized void processDocBoxOrder(OrderType order) throws DetailException
 	{
 		String correspondentID = null;
 		try
@@ -3373,15 +3430,19 @@ public class MyParty extends BusinessParty
 		final BusinessParty correspondentParty = getBusinessPartner(correspondentID);
 		if(correspondentParty == null)
 			throw new DetailException("Failed to find the correspondent Party!");
-		if(findCorrespondence(correspondentID, order.getUUIDValue()) != null)
+		if(findActiveCorrespondence(correspondentID, order.getUUIDValue()) != null)
 			throw new DetailException("Order " + order.getIDValue() + " has been already received and processed.");
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, false);
 		addBuyingCorrespondence(newCorr);
 		newCorr.storeDocument(order);
 		((OrderingProcess) newCorr.getState()).setOrder(order);
-		newCorr.addDocumentReference(order.getBuyerCustomerParty().getParty(), order.getUUIDValue(),
-				order.getIDValue(), order.getIssueDateValue(), order.getIssueTimeValue(),
-				order.getClass().getName(), null);
+
+//		newCorr.addDocumentReference(order.getBuyerCustomerParty().getParty(), order.getUUIDValue(),
+//				order.getIDValue(), order.getIssueDateValue(), order.getIssueTimeValue(),
+//				order.getClass().getName(), null);
+
+		newCorr.addDocumentReference(order, null);
+
 		newCorr.start();
 		newCorr.setRecentlyUpdated(true);
 	}
@@ -3397,7 +3458,7 @@ public class MyParty extends BusinessParty
 		final String correspondentID = orderResponse.getSellerSupplierParty().getParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
 		final String orderUUID = orderResponse.getOrderReferenceAtIndex(0).getDocumentReference().getUUIDValue();
-		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
@@ -3418,6 +3479,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
+			else if(corr.getId().equals(findCorrespondence(correspondentID, orderResponse.getUUIDValue()).getId()))
+				throw new DetailException("Invoice " + orderResponse.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Response " + orderResponse.getIDValue() +
 						" does not belong to the current state of the correspondence.");
@@ -3435,7 +3498,7 @@ public class MyParty extends BusinessParty
 		final String correspondentID = orderResponseSimple.getSellerSupplierParty().getParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
 		final String orderUUID = orderResponseSimple.getOrderReference().getDocumentReference().getUUIDValue();
-		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
@@ -3456,6 +3519,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
+			else if(corr.getId().equals(findCorrespondence(correspondentID, orderResponseSimple.getUUIDValue()).getId()))
+				throw new DetailException("Invoice " + orderResponseSimple.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Response Simple " + orderResponseSimple.getIDValue()
 				+ " does not belong to the current state of the correspondence.");
@@ -3473,7 +3538,7 @@ public class MyParty extends BusinessParty
 		final String correspondentID = orderChange.getBuyerCustomerParty().getParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
 		final String orderUUID = orderChange.getOrderReference().getDocumentReference().getUUIDValue();
-		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
@@ -3494,6 +3559,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
+			else if(corr.getId().equals(findCorrespondence(correspondentID, orderChange.getUUIDValue()).getId()))
+				throw new DetailException("Invoice " + orderChange.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Change " + orderChange.getIDValue()
 				+ " does not belong to the current state of the correspondence.");
@@ -3511,7 +3578,7 @@ public class MyParty extends BusinessParty
 		final String correspondentID = orderCancellation.getBuyerCustomerParty().getParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
 		final String orderUUID = orderCancellation.getOrderReferenceAtIndex(0).getDocumentReference().getUUIDValue();
-		final Correspondence corr = findCorrespondence(correspondentID, orderUUID);
+		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
@@ -3532,6 +3599,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
+			else if(corr.getId().equals(findCorrespondence(correspondentID, orderCancellation.getUUIDValue()).getId()))
+				throw new DetailException("Invoice " + orderCancellation.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Cancellation" + orderCancellation.getIDValue() +
 						" does not belong to the current state of the correspondence.");
@@ -3549,7 +3618,7 @@ public class MyParty extends BusinessParty
 		final String correspondentID = applicationResponse.getSenderParty().
 				getPartyIdentificationAtIndex(0).getIDValue();
 		final String docUUID = applicationResponse.getDocumentResponseAtIndex(0).getDocumentReferenceAtIndex(0).getUUIDValue();
-		final Correspondence corr = findCorrespondence(correspondentID, docUUID);
+		final Correspondence corr = findActiveCorrespondence(correspondentID, docUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
@@ -3585,9 +3654,32 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
+			else if(corr.getId().equals(findCorrespondence(correspondentID, applicationResponse.getUUIDValue()).getId()))
+				throw new DetailException("Invoice " + applicationResponse.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Application Response" + applicationResponse.getIDValue() +
 						" does not belong to the current state of the correspondence.");
+		}
+	}
+
+	/**
+	 * Processes {@link DocumentReceipt} document by updating a proper {@link DocumentReference}.
+	 * @param documentReceipt Documnet Reference to process
+	 * @throws DetailException if document could not be matched with a proper {@link Correspondence}
+	 */
+	public void processDocBoxDocumentReceipt(DocumentReceipt documentReceipt) throws DetailException
+	{
+		final String correspondentID = documentReceipt.getSenderParty().
+				getPartyIdentificationAtIndex(0).getIDValue();
+		final String docUUID = documentReceipt.getDocumentReference().getUUIDValue();
+		final Correspondence corr = findCorrespondence(correspondentID, docUUID);
+		if(corr == null)
+			throw new DetailException("Matching correspondence could not be found.");
+		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		{
+			final String documentUUID = documentReceipt.getDocumentReference().getUUIDValue();
+			final DocumentReference documentReference = corr.getDocumentReference(documentUUID);
+			corr.updateDocumentStatus(documentReference, DocumentReference.Status.CORR_RECEIVED);
 		}
 	}
 
@@ -3647,6 +3739,31 @@ public class MyParty extends BusinessParty
 	 * @return {@code Correspondence} or {@code null} if no correspondence is found
 	 */
 	public Correspondence findCorrespondence(final String correspondentID, final String docUUID)
+	{
+		final List<Correspondence> corrs = findAllCorrespondences(correspondentID);
+		final List<Correspondence> foundCorrs;
+		Correspondence corr = null;
+		if(corrs != null)
+		{
+			foundCorrs = corrs.stream().
+					filter(elem -> ! elem.getDocumentReferences().stream().
+							filter(ref -> docUUID.equals(ref.getUUIDValue())).
+							collect(Collectors.toList()).
+							isEmpty()).
+					collect(Collectors.toList());
+			if(foundCorrs.size() == 1)
+				corr = foundCorrs.get(0);
+		}
+		return corr;
+	}
+
+	/**
+	 * Finds active {@link Correspondence} with particular party that contains particular document.
+	 * @param correspondentID ID of the correspondent party
+	 * @param docUUID UUID of the document as String
+	 * @return {@code Correspondence} or {@code null} if no active correspondence is found
+	 */
+	public Correspondence findActiveCorrespondence(final String correspondentID, final String docUUID)
 	{
 		final List<Correspondence> corrs = findAllCorrespondences(correspondentID);
 		final List<Correspondence> foundCorrs;

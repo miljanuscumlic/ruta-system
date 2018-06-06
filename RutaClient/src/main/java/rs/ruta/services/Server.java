@@ -29,6 +29,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
@@ -486,6 +487,67 @@ public interface Server {
     @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
     @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
     public void clearCache()
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse>
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public Response<DeleteDocBoxDocumentWithDocumentReceiptResponse> deleteDocBoxDocumentWithDocumentReceiptAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        DocumentReceipt arg2);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public Future<?> deleteDocBoxDocumentWithDocumentReceiptAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        DocumentReceipt arg2,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeleteDocBoxDocumentWithDocumentReceiptResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public void deleteDocBoxDocumentWithDocumentReceipt(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        DocumentReceipt arg2)
         throws RutaException
     ;
 

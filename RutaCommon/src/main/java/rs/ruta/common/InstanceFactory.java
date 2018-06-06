@@ -316,7 +316,9 @@ public final class InstanceFactory
 		String senderID = null;
 		try
 		{
-			final Class<? extends Object> documentClazz = document.getClass();
+			senderID = getDocumentSenderParty(document).getPartyIdentificationAtIndex(0).getIDValue();
+
+/*			final Class<? extends Object> documentClazz = document.getClass();
 			if(documentClazz == OrderType.class)
 				senderID = ((OrderType) document).getBuyerCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 			else if(documentClazz == OrderResponseType.class)
@@ -331,13 +333,46 @@ public final class InstanceFactory
 				senderID = ((ApplicationResponseType) document).getSenderParty().getPartyIdentificationAtIndex(0).getIDValue();
 			else if(documentClazz == InvoiceType.class)
 				senderID = ((InvoiceType) document).getAccountingSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == DocumentReceipt.class)
+				senderID = ((DocumentReceipt) document).getSenderParty().getPartyIdentificationAtIndex(0).getIDValue();
+			//MMM other document types
+*/
+
+		}
+		catch(Exception e) { }
+
+		return senderID;
+	}
+
+	public static PartyType getDocumentSenderParty(Object document)
+	{
+		PartyType senderParty = null;
+		try
+		{
+			final Class<? extends Object> documentClazz = document.getClass();
+			if(documentClazz == OrderType.class)
+				senderParty = ((OrderType) document).getBuyerCustomerParty().getParty();
+			else if(documentClazz == OrderResponseType.class)
+				senderParty = ((OrderResponseType) document).getSellerSupplierParty().getParty();
+			else if(documentClazz == OrderResponseSimpleType.class)
+				senderParty = ((OrderResponseSimpleType) document).getSellerSupplierParty().getParty();
+			else if(documentClazz == OrderChangeType.class)
+				senderParty = ((OrderChangeType) document).getBuyerCustomerParty().getParty();
+			else if(documentClazz == OrderCancellationType.class)
+				senderParty = ((OrderCancellationType) document).getBuyerCustomerParty().getParty();
+			else if(documentClazz == ApplicationResponseType.class)
+				senderParty = ((ApplicationResponseType) document).getSenderParty();
+			else if(documentClazz == InvoiceType.class)
+				senderParty = ((InvoiceType) document).getAccountingSupplierParty().getParty();
+			else if(documentClazz == DocumentReceipt.class)
+				senderParty = ((DocumentReceipt) document).getSenderParty();
 			//MMM other document types
 
 
 		}
 		catch(Exception e) { }
 
-		return senderID;
+		return senderParty;
 	}
 
 	/**
@@ -351,7 +386,10 @@ public final class InstanceFactory
 		String receiverID = null;
 		try
 		{
-			final Class<? extends Object> documentClazz = document.getClass();
+
+			receiverID = getDocumentReceiverParty(document).getPartyIdentificationAtIndex(0).getIDValue();
+
+/*			final Class<? extends Object> documentClazz = document.getClass();
 			if(documentClazz == OrderType.class)
 				receiverID = ((OrderType) document).getSellerSupplierParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
 			else if(documentClazz == OrderResponseType.class)
@@ -366,12 +404,44 @@ public final class InstanceFactory
 				receiverID = ((ApplicationResponseType) document).getReceiverParty().getPartyIdentificationAtIndex(0).getIDValue();
 			else if(documentClazz == InvoiceType.class)
 				receiverID = ((InvoiceType) document).getAccountingCustomerParty().getParty().getPartyIdentificationAtIndex(0).getIDValue();
+			else if(documentClazz == DocumentReceipt.class)
+				receiverID = ((DocumentReceipt) document).getReceiverParty().getPartyIdentificationAtIndex(0).getIDValue();
+			//MMM other document types
+*/
+		}
+		catch(Exception e) { }
+
+		return receiverID;
+	}
+
+	public static PartyType getDocumentReceiverParty(Object document)
+	{
+		PartyType receiverParty = null;
+		try
+		{
+			final Class<? extends Object> documentClazz = document.getClass();
+			if(documentClazz == OrderType.class)
+				receiverParty = ((OrderType) document).getSellerSupplierParty().getParty();
+			else if(documentClazz == OrderResponseType.class)
+				receiverParty = ((OrderResponseType) document).getBuyerCustomerParty().getParty();
+			else if(documentClazz == OrderResponseSimpleType.class)
+				receiverParty = ((OrderResponseSimpleType) document).getBuyerCustomerParty().getParty();
+			else if(documentClazz == OrderChangeType.class)
+				receiverParty = ((OrderChangeType) document).getSellerSupplierParty().getParty();
+			else if(documentClazz == OrderCancellationType.class)
+				receiverParty = ((OrderCancellationType) document).getSellerSupplierParty().getParty();
+			else if(documentClazz == ApplicationResponseType.class)
+				receiverParty = ((ApplicationResponseType) document).getReceiverParty();
+			else if(documentClazz == InvoiceType.class)
+				receiverParty = ((InvoiceType) document).getAccountingCustomerParty().getParty();
+			else if(documentClazz == DocumentReceipt.class)
+				receiverParty = ((DocumentReceipt) document).getReceiverParty();
 			//MMM other document types
 
 		}
 		catch(Exception e) { }
 
-		return receiverID;
+		return receiverParty;
 	}
 
 	/**
@@ -397,6 +467,8 @@ public final class InstanceFactory
 			documentID = ((ApplicationResponseType) document).getIDValue();
 		else if(documentClazz == InvoiceType.class)
 			documentID = ((InvoiceType) document).getIDValue();
+		else if(documentClazz == DocumentReceipt.class)
+			documentID = ((DocumentReceipt) document).getIDValue();
 		//MMM other document types
 
 		return documentID;
@@ -425,6 +497,8 @@ public final class InstanceFactory
 			documentID = ((ApplicationResponseType) document).getUUIDValue();
 		else if(documentClazz == InvoiceType.class)
 			documentID = ((InvoiceType) document).getUUIDValue();
+		else if(documentClazz == DocumentReceipt.class)
+			documentID = ((DocumentReceipt) document).getIDValue();
 		//MMM other document types
 
 		return documentID;

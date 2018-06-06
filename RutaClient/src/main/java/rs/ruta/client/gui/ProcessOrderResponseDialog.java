@@ -44,6 +44,7 @@ public class ProcessOrderResponseDialog extends AbstractOrderResponseDialog
 		postponeButton.addActionListener(listener);
 
 		getRootPane().setDefaultButton(postponeButton);
+		postponeButton.requestFocusInWindow();
 		buttonPanel.add(acceptButton);
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(changeButton);

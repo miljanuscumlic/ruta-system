@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,6 +15,7 @@ import javax.swing.DefaultRowSorter;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -45,16 +47,23 @@ import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.correspondence.BuyerOrderingProcess;
+import rs.ruta.client.correspondence.BuyerProcessOrderResponseSimpleState;
+import rs.ruta.client.correspondence.BuyerProcessOrderResponseState;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.CustomerBillingProcess;
+import rs.ruta.client.correspondence.CustomerReconcileChargesState;
 import rs.ruta.client.correspondence.RutaProcess;
 import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.client.correspondence.SellerProcessOrderState;
 import rs.ruta.client.correspondence.SupplierBillingProcess;
+import rs.ruta.client.correspondence.SupplierBillingProcessState;
+import rs.ruta.client.correspondence.SupplierRaiseInvoiceState;
+import rs.ruta.client.correspondence.SupplierValidateResponseState;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.DocumentReference.Status;
 import rs.ruta.common.datamapper.DetailException;
 
 /**
@@ -94,7 +103,7 @@ public class TabCorrespondences extends TabComponent
 		final BusinessParty cdrParty = new BusinessParty();
 		cdrParty.setCoreParty(client.getCDRParty());
 		final DefaultTreeModel correspondenceTreeModel =
-		new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
+				new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
 		correspondenceTree = new JTree(correspondenceTreeModel);
 		correspondenceTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		final CorrespondenceTreeCellRenderer correspondenceTreeCellRenderer = new CorrespondenceTreeCellRenderer();
@@ -176,7 +185,7 @@ public class TabCorrespondences extends TabComponent
 				else if(BUSINESS_PARTNERS.equals(secondLevelObject))
 					partyList = myParty.getBusinessPartners();
 
-/*				//MMM TODO
+				/*				//MMM TODO
  				else if(ARCHIVED.equals((String) selectedObject))
 					partyList = myParty.getArchivedParties();*/
 
@@ -202,7 +211,7 @@ public class TabCorrespondences extends TabComponent
 			new Thread(() ->
 			{
 				final String correspondentID = selectedParty.getPartyID();
-//				final PartyType correspondentParty = selectedParty.getCoreParty();
+				//				final PartyType correspondentParty = selectedParty.getCoreParty();
 				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, selectedParty, true);
 				try
 				{
@@ -362,6 +371,14 @@ public class TabCorrespondences extends TabComponent
 		JPopupMenu correspondencePopupMenu = new JPopupMenu();
 		JMenuItem processDocumentItem = new JMenuItem("Process");
 		JMenuItem resendDocumentItem = new JMenuItem("Resend");
+		JMenuItem resendApplicationResponseItem = new JMenuItem("Resend Application Response");
+		JMenuItem resendInvoiceItem = new JMenuItem("Resend Invoice");
+		JMenuItem resendOrderItem = new JMenuItem("Resend Order");
+		JMenuItem resendOrderResponseItem = new JMenuItem("Resend Order Response");
+		JMenuItem resendOrderResponseSimpleItem = new JMenuItem("Resend Order Response Simple");
+		JMenuItem resendOrderChangeItem = new JMenuItem("Resend Order Response Change");
+		JMenuItem resendOrderCancellationItem = new JMenuItem("Resend Order Cancellation");
+
 		JMenuItem viewApplicationResponseItem = new JMenuItem("View");
 		JMenuItem viewResendApplicationResponseItem = new JMenuItem("View and Resend");
 		JMenuItem viewInvoiceItem = new JMenuItem("View");
@@ -394,6 +411,237 @@ public class TabCorrespondences extends TabComponent
 					clientFrame.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
 				}
 			}).start();
+		});
+
+		resendDocumentItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				try
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					if(!corr.isAlive())
+						corr.start();
+					corr.waitThreadBlocked();
+					corr.proceed();
+				}
+				catch(Exception e)
+				{
+					clientFrame.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+				}
+			}).start();
+		});
+
+		resendApplicationResponseItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Application Response");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final ApplicationResponseType appResponse = corr.getLastDocument(ApplicationResponseType.class);
+					if(appResponse != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(appResponse.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(appResponse, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Application Response has failed!"));
+						}
+					}
+					else
+					{
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Application Response has not been sent to the CDR service! Application Response could not be found!"), Color.BLACK);
+					}
+				}).start();
+
+		});
+
+		resendInvoiceItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Invoice");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final InvoiceType invoice = corr.getLastDocument(InvoiceType.class);
+					if(invoice != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(invoice.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(invoice, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Invoice has failed!"));
+						}
+					}
+					else
+					{
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Invoice has not been sent to the CDR service! Invoice could not be found!"), Color.BLACK);
+					}
+				}).start();
+
+		});
+
+		resendOrderItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Order");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final OrderType order = corr.getLastDocument(OrderType.class);
+					if(order != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(order.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(order, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order has failed!"));
+						}
+					}
+					else
+					{
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Order has not been sent to the CDR service! Order could not be found!"), Color.BLACK);
+					}
+				}).start();
+
+		});
+
+		resendOrderResponseItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Order Response");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final OrderResponseType orderResponse = corr.getLastDocument(OrderResponseType.class);
+					if(orderResponse != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(orderResponse.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(orderResponse, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response has failed!"));
+						}
+					}
+					else
+					{
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Order Response has not been sent to the CDR service! Order Response could not be found!"),
+								Color.BLACK);
+					}
+				}).start();
+		});
+
+		resendOrderResponseSimpleItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Order Response Simple");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final OrderResponseSimpleType orderResponseSimple = corr.getLastDocument(OrderResponseSimpleType.class);
+					if(orderResponseSimple != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(orderResponseSimple.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(orderResponseSimple, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response Simple has failed!"));
+						}
+					}
+					else
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Order Response Simple has not been sent to the CDR service! ").
+								append("Order Response Simple could not be found!"),
+								Color.BLACK);
+				}).start();
+		});
+
+		resendOrderChangeItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Order Change");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final OrderChangeType orderChange = corr.getLastDocument(OrderChangeType.class);
+					if(orderChange != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(orderChange.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(orderChange, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Change has failed!"));
+						}
+					}
+					else
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Order Change has not been sent to the CDR service! Order Change could not be found!"),
+								Color.BLACK);
+				}).start();
+		});
+
+		resendOrderCancellationItem.addActionListener(event ->
+		{
+			final int option = showConfirmDialog("Order Cancellation");
+			if(option == JOptionPane.YES_OPTION)
+				new Thread(() ->
+				{
+					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
+					final RutaProcess process = (RutaProcess) corr.getState();
+					final OrderCancellationType orderCancellation = corr.getLastDocument(OrderCancellationType.class);
+					if(orderCancellation != null)
+					{
+						final DocumentReference documentReference = corr.getDocumentReference(orderCancellation.getUUIDValue());
+						try
+						{
+							process.getClient().cdrSendDocument(orderCancellation, documentReference, corr);
+						}
+						catch(Exception e)
+						{
+							process.getClient().getClientFrame().
+							processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Cancellation has failed!"));
+						}
+					}
+					else
+						process.getClient().getClientFrame().appendToConsole(
+								new StringBuilder("Order Cancellation has not been sent to the CDR service! Order Cancellation could not be found!"),
+								Color.BLACK);
+				}).start();
 		});
 
 		viewApplicationResponseItem.addActionListener(event ->
@@ -536,7 +784,7 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-//					clientFrame.showPreviewOrderDialog("View Order", (OrderType) document);
+					//					clientFrame.showPreviewOrderDialog("View Order", (OrderType) document);
 					clientFrame.showOrderDialog("View Order", (OrderType) document, false, null);
 				else
 					clientFrame.appendToConsole(new StringBuilder("Order does not exist!"), Color.BLACK);
@@ -627,25 +875,6 @@ public class TabCorrespondences extends TabComponent
 			}).start();
 		});
 
-		resendDocumentItem.addActionListener(event ->
-		{
-			new Thread(() ->
-			{
-				try
-				{
-					final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
-					if(!corr.isAlive())
-						corr.start();
-					corr.waitThreadBlocked();
-					corr.proceed();
-				}
-				catch(Exception e)
-				{
-					clientFrame.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
-				}
-			}).start();
-		});
-
 		table.addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -659,134 +888,260 @@ public class TabCorrespondences extends TabComponent
 					{
 						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 						final Correspondence corr = ((CorrespondenceTableModel) tableModel).getCorrespondence();
-						//MMM maybe it should be tested for the rigth state of the process also before displaying menu item
+						//MMM maybe it should be tested for the right state of the process also before displaying menu item
 						final DocumentReference documentReference = corr.getDocumentReferenceAtIndex(modelRowIndex);
 						correspondencePopupMenu.removeAll();
 						final RutaProcess process = (RutaProcess) corr.getState();
+						final Status documentStatus = documentReference.getStatus();
 						if(ApplicationResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendApplicationResponseItem);
-								correspondencePopupMenu.add(resendDocumentItem);
+								if(process.getClass() == BuyerOrderingProcess.class  ||
+										process.getClass() == CustomerBillingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewApplicationResponseItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewApplicationResponseItem);
+										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendApplicationResponseItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewApplicationResponseItem);
+								}
+								else if(process.getClass() == SupplierBillingProcess.class &&
+										(process.getState().getClass() == SupplierRaiseInvoiceState.class ||
+												process.getState().getClass() == SupplierValidateResponseState.class))
+								{
+									correspondencePopupMenu.add(viewApplicationResponseItem);
+									correspondencePopupMenu.add(processDocumentItem);
+								}
+								else
+									correspondencePopupMenu.add(viewApplicationResponseItem);
 							}
 							else
 								correspondencePopupMenu.add(viewApplicationResponseItem);
-
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == SupplierBillingProcess.class)
-							{
-								correspondencePopupMenu.add(processDocumentItem);
-							}
 						}
 						else if(InvoiceType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == SupplierBillingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendInvoiceItem);
-								correspondencePopupMenu.add(resendDocumentItem);
-							}
-							else if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == CustomerBillingProcess.class)
-							{
-								correspondencePopupMenu.add(processDocumentItem);
+								if(process.getClass() == SupplierBillingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewInvoiceItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewInvoiceItem);
+										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendInvoiceItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewInvoiceItem);
+								}
+								else if(process.getClass() == CustomerBillingProcess.class &&
+										process.getState().getClass() == CustomerReconcileChargesState.class)
+								{
+									if(corr.getLastDocument() != null) // after the document has been inserted in the database
+										correspondencePopupMenu.add(processDocumentItem);
+									correspondencePopupMenu.add(viewInvoiceItem);
+								}
+								else
+									correspondencePopupMenu.add(viewInvoiceItem);
 							}
 							else
 								correspondencePopupMenu.add(viewInvoiceItem);
 						}
 						else if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendOrderItem);
-								correspondencePopupMenu.add(resendDocumentItem);
-							}
-							else if(documentReference == corr.getLastDocumentReference() &&
-									process instanceof SellerOrderingProcess &&
-									process.getState() instanceof SellerProcessOrderState &&
-									corr.getLastDocument() != null) // after the Order has been inserted in the database
-							{
-								correspondencePopupMenu.add(viewOrderItem);
-								correspondencePopupMenu.add(processDocumentItem);
+								if(process.getClass() == BuyerOrderingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewOrderItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderItem);
+										correspondencePopupMenu.add(resendOrderItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendOrderItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewOrderItem);
+								}
+								else if(process instanceof SellerOrderingProcess &&
+										process.getState() instanceof SellerProcessOrderState)
+								{
+									if(corr.getLastDocument() != null) // after the document has been inserted in the database
+										correspondencePopupMenu.add(processDocumentItem);
+									correspondencePopupMenu.add(viewOrderItem);
+								}
+								else
+									correspondencePopupMenu.add(viewOrderItem);
 							}
 							else
 								correspondencePopupMenu.add(viewOrderItem);
 						}
-						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
+						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue())) //MMM to finish
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == SellerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendOrderResponseItem);
-								correspondencePopupMenu.add(resendDocumentItem);
-							}
-							else if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									corr.getLastDocument() != null)
-							{
-								correspondencePopupMenu.add(viewOrderResponseItem);
-								correspondencePopupMenu.add(processDocumentItem);
+								if(process.getClass() == SellerOrderingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewOrderResponseItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseItem);
+										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendOrderResponseItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewOrderResponseItem);
+								}
+								else if(process.getClass() == BuyerOrderingProcess.class &&
+										process.getState().getClass() == BuyerProcessOrderResponseState.class)
+								{
+									if(corr.getLastDocument() != null) // after the document has been inserted in the database
+										correspondencePopupMenu.add(processDocumentItem);
+									correspondencePopupMenu.add(viewOrderResponseItem);
+								}
+								else
+									correspondencePopupMenu.add(viewOrderResponseItem);
 							}
 							else
 								correspondencePopupMenu.add(viewOrderResponseItem);
 						}
 						else if(OrderResponseSimpleType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == SellerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendOrderResponseSimpleItem);
-								correspondencePopupMenu.add(resendDocumentItem);
-							}
-							else if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									corr.getLastDocument() != null &&
-									((BuyerOrderingProcess) process).getOrderResponseSimple(corr).isAcceptedIndicatorValue(false)) //MMM does this work???
-							{
-								correspondencePopupMenu.add(viewOrderResponseSimpleItem);
-								correspondencePopupMenu.add(processDocumentItem);
+								if(process.getClass() == SellerOrderingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendOrderResponseSimpleItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+								}
+								else if(process.getClass() == BuyerOrderingProcess.class &&
+										process.getState().getClass() == BuyerProcessOrderResponseSimpleState.class)
+								{
+									if(corr.getLastDocument() != null)// && // after the document has been inserted in the database
+											//((BuyerOrderingProcess) process).getOrderResponseSimple(corr).isAcceptedIndicatorValue(false)) //MMM does this work???
+										correspondencePopupMenu.add(processDocumentItem);
+									correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+								}
+								else if(process.getClass() == SupplierBillingProcess.class)
+								{
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
+									}
+									else
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+								}
+								else
+									correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 							}
 							else
 								correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 						}
 						else if(OrderChangeType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendOrderChangeItem);
-								correspondencePopupMenu.add(resendDocumentItem);
-							}
-							else if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == SellerOrderingProcess.class &&
-									corr.getLastDocument() != null)
-							{
-								correspondencePopupMenu.add(viewOrderChangeItem);
-								correspondencePopupMenu.add(processDocumentItem);
+								if(process.getClass() == BuyerOrderingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewOrderChangeItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderChangeItem);
+										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendOrderChangeItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewOrderChangeItem);
+								}
+								else if(process.getClass() == SellerOrderingProcess.class &&
+										process.getState() instanceof SellerProcessOrderState)
+								{
+									if(corr.getLastDocument() != null) // after the document has been inserted in the database
+										correspondencePopupMenu.add(processDocumentItem);
+									correspondencePopupMenu.add(viewOrderChangeItem);
+								}
+								else
+									correspondencePopupMenu.add(viewOrderChangeItem);
 							}
 							else
-								correspondencePopupMenu.add(viewOrderChangeItem);
+								correspondencePopupMenu.add(viewOrderItem);
 						}
 						else if(OrderCancellationType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference() &&
-									process.getClass() == BuyerOrderingProcess.class &&
-									!documentReference.getStatus().equals(DocumentReference.Status.CDR_RECEIVED)) //sending failed earlier
+							if(documentReference == corr.getLastDocumentReference())
 							{
-								correspondencePopupMenu.add(viewResendOrderCancellationItem);
-								correspondencePopupMenu.add(resendDocumentItem);
+								if(process.getClass() == BuyerOrderingProcess.class)
+								{
+									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+										correspondencePopupMenu.add(viewOrderCancellationItem);
+									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderCancellationItem);
+										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
+									}
+									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									{
+										correspondencePopupMenu.add(viewResendOrderCancellationItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
+									else // CORR_RECEIVED
+										correspondencePopupMenu.add(viewOrderCancellationItem);
+								}
+								//								else if(process.getClass() == SellerOrderingProcess.class &&
+								//										process.getState() instanceof SellerProcessOrderState)
+								//								{
+								//									if(corr.getLastDocument() != null) // after the document has been inserted in the database
+								//										correspondencePopupMenu.add(processDocumentItem);
+								//									correspondencePopupMenu.add(viewOrderCancellationItem);
+								//								}
+								else
+									correspondencePopupMenu.add(viewOrderCancellationItem);
 							}
 							else
-								correspondencePopupMenu.add(viewOrderCancellationItem);
+								correspondencePopupMenu.add(viewOrderItem);
 						}
 						correspondencePopupMenu.show(table, event.getX(), event.getY());
 					}
@@ -795,6 +1150,18 @@ public class TabCorrespondences extends TabComponent
 		});
 
 		return table;
+	}
+
+	/**
+	 * Shows the dialog requesting confirmation for resending the document to the CDR.
+	 * @param documentName name of the document e.g. "Order"
+	 * @return integer representing chosen option
+	 */
+	private int showConfirmDialog(String documentName)
+	{
+		return JOptionPane.showConfirmDialog(myParty.getClient().getClientFrame(),
+				documentName + " has been successfully received by the CDR.\n Do you still want to resend it?",
+				"Confirm Resend", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 	}
 
 	/**
@@ -1007,40 +1374,40 @@ public class TabCorrespondences extends TabComponent
 			Correspondence corr = (Correspondence) source;
 			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
 			{
-					makeVisibleNode(correspondenceTree, corr);
-					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
-					if(selectedUserObject instanceof BusinessParty)
+				makeVisibleNode(correspondenceTree, corr);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof BusinessParty)
+				{
+					final String correspondentID = corr.getCorrespondentID();
+					if(((BusinessParty) selectedUserObject).getPartyID().equals(correspondentID))
 					{
-						final String correspondentID = corr.getCorrespondentID();
-						if(((BusinessParty) selectedUserObject).getPartyID().equals(correspondentID))
-						{
-							List<Correspondence> correspondences = new ArrayList<>();
-							if(corr.getCorrespondentPartyName().equals(CDR))
-								correspondences.add(corr);
-							else
-								correspondences = myParty.findAllCorrespondences(correspondentID);
-							partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
-							partnerCorrespondenceListTableModel.fireTableDataChanged();
-						}
+						List<Correspondence> correspondences = new ArrayList<>();
+						if(corr.getCorrespondentPartyName().equals(CDR))
+							correspondences.add(corr);
+						else
+							correspondences = myParty.findAllCorrespondences(correspondentID);
+						partnerCorrespondenceListTableModel.setCorrespondences(correspondences);
+						partnerCorrespondenceListTableModel.fireTableDataChanged();
 					}
-					else if(selectedUserObject instanceof Correspondence)
-					{
-						if(corr == selectedUserObject)
-							partnerCorrespondenceTableModel.fireTableDataChanged();
-					}
+				}
+				else if(selectedUserObject instanceof Correspondence)
+				{
+					if(corr == selectedUserObject)
+						partnerCorrespondenceTableModel.fireTableDataChanged();
+				}
 			}
 			else if(CorrespondenceEvent.CORRESPONDENCE_UPDATED.equals(command))
 			{
-					makeVisibleNode(correspondenceTree, corr);
-					final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
-					if(selectedUserObject instanceof Correspondence)
-						if(corr == selectedUserObject)
-						{
-							final int selectedRow = partnerCorrespondenceTable.getSelectedRow();
-							partnerCorrespondenceTableModel.fireTableDataChanged();
-							if(selectedRow != -1)
-								partnerCorrespondenceTable.setRowSelectionInterval(selectedRow, selectedRow);
-						}
+				makeVisibleNode(correspondenceTree, corr);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof Correspondence)
+					if(corr == selectedUserObject)
+					{
+						final int selectedRow = partnerCorrespondenceTable.getSelectedRow();
+						partnerCorrespondenceTableModel.fireTableDataChanged();
+						if(selectedRow != -1)
+							partnerCorrespondenceTable.setRowSelectionInterval(selectedRow, selectedRow);
+					}
 			}
 			else if(CorrespondenceEvent.CORRESPONDENCE_REMOVED.equals(command))
 			{

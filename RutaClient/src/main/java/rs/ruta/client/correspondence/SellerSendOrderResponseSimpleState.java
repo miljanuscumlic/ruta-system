@@ -54,13 +54,14 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 			{
 				process.getClient().cdrSendDocument(orderResponseSimple, documentReference, correspondence);
 				if(process.isOrderAccepted() && !process.isOrderRejected())
+				{
+					process.setOrderAccepted(false);
 					changeState(process, SellerReceiveOrderChangeCancellationState.getInstance());
+				}
 				else if(process.isOrderRejected() && !process.isOrderAccepted())
 					changeState(process, ClosingState.getInstance());
 				else
 					throw new StateActivityException("Unexpected state of the Order Response Simple processing.");
-				process.setOrderAccepted(false);
-				process.setOrderRejected(false);
 			}
 			catch(Exception e)
 			{

@@ -429,6 +429,20 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	}
 
 	/**
+	 * @param document
+	 * @param status
+	 * @throws DetailException if a document of an unexpected type is passed to the method
+	 */
+	public <T> void addDocumentReference(T document, DocumentReference.Status status) throws DetailException
+	{
+		final DocumentReference docReference = DocumentReference.newInstance(document, status);
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		getDocumentReferences().add(docReference);
+		setLastActivityTime(now);
+		client.getMyParty().notifyListeners(new CorrespondenceEvent(this, CorrespondenceEvent.CORRESPONDENCE_UPDATED));
+	}
+
+	/**
 	 * Adds new {@link DocumentReferenceType document reference}. This is just convinient method.
 	 * @param docReference document reference to add
 	 */

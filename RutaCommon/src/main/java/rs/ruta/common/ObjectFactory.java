@@ -18,14 +18,15 @@ import rs.ruta.common.RutaVersion;
 @XmlRegistry
 public class ObjectFactory
 {
-	public static final QName _RutaVersion_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaVersion");
-	public final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
 	public final static QName _Attachment_QNAME = new QName("http://www.ruta.rs/ns/common", "Attachment");
+	public final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
+	public final static QName _DocumentDistribution_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentDistribution");
+	public final static QName _DocumentReceipt_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentReceipt");
+	public final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
+	public final static QName _Followers_QNAME = new QName("http://www.ruta.rs/ns/common", "Associates");
 	public final static QName _PartyID_QNAME = new QName("http://www.ruta.rs/ns/common", "PartyID");
 	public final static QName _RutaUser_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaUser");
-	public final static QName _Followers_QNAME = new QName("http://www.ruta.rs/ns/common", "Associates");
-	public final static QName _DocumentDistribution_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentDistribution");
-	public final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
+	public static final QName _RutaVersion_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaVersion");
 
 	/**Creates an instance of {@link RutaVersion}.
 	 * @return created {@code RutaVersion} object and never {@code null}
@@ -162,6 +163,26 @@ public class ObjectFactory
 	public JAXBElement<DocumentDistribution> createDocumentDistribution(@Nullable final DocumentDistribution value)
 	{
 		return new JAXBElement<DocumentDistribution>(_DocumentDistribution_QNAME, DocumentDistribution.class, null, value);
+	}
+
+	/**Creates an instance of {@link DocumentReceipt}.
+	 * @return created {@code DocumentReceipt} object and never {@code null}
+	 */
+	@Nonnull
+	public DocumentReceipt createDocumentReceipt()
+	{
+		return new DocumentReceipt();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link DocumentReceipt }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "DocumentReceipt")
+	@Nonnull
+	public JAXBElement<DocumentReceipt> createDocumentReceipt(@Nullable final DocumentReceipt value)
+	{
+		return new JAXBElement<DocumentReceipt>(_DocumentReceipt_QNAME, DocumentReceipt.class, null, value);
 	}
 
 	/**

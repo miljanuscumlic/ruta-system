@@ -96,11 +96,13 @@ public class OrderChangeDialog extends AbstractOrderDialog
 			buttonPanel.add(sendButton);
 			buttonPanel.add(discardButton);
 			getRootPane().setDefaultButton(sendButton);
+			sendButton.requestFocusInWindow();
 		}
 		else
 		{
 			buttonPanel.add(closeButton);
 			getRootPane().setDefaultButton(closeButton);
+			closeButton.requestFocusInWindow();
 		}
 	}
 

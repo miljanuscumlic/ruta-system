@@ -35,6 +35,7 @@ public class ProcessInvoiceDialog extends AbstractInvoiceDialog
 		postponeButton.addActionListener(listener);
 
 		getRootPane().setDefaultButton(postponeButton);
+		postponeButton.requestFocusInWindow();
 		buttonPanel.add(acceptButton);
 		buttonPanel.add(rejectButton);
 		buttonPanel.add(postponeButton);

@@ -35,6 +35,7 @@ public class PreviewOrderDialog extends AbstractOrderDialog
 		super(owner, order.getOrderLine(), false);
 		final JButton closeButton = new JButton("Close");
 		getRootPane().setDefaultButton(closeButton);
+		closeButton.requestFocusInWindow();
 		closeButton.addActionListener(event ->
 		{
 			setVisible(false);

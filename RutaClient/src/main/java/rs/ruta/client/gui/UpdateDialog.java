@@ -52,6 +52,7 @@ public class UpdateDialog extends JDialog
 		JButton download = new JButton("Download");
 		JButton ok = new JButton("OK");
 		getRootPane().setDefaultButton(ok);
+		ok.requestFocusInWindow();
 
 		buttonPanel.add(check);
 		//		buttonPanel.add(cancel);

@@ -42,7 +42,6 @@ public class SupplierBillingProcess extends BillingProcess
 		{
 			while(active && !correspondence.isStopped())
 				state.doActivity(correspondence);
-
 			if(!correspondence.isStopped())
 				correspondence.changeState(ClosingProcess.newInstance(client));
 		}

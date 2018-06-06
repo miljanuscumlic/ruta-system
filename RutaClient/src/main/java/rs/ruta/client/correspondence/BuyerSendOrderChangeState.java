@@ -38,6 +38,7 @@ public class BuyerSendOrderChangeState extends BuyerOrderingProcessState
 			try
 			{
 				process.getClient().cdrSendDocument(orderChange, documentReference, correspondence);
+				process.setOrderChanged(false);
 				changeState(process, BuyerReceiveOrderResponseState.getInstance());
 			}
 			catch(Exception e)

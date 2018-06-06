@@ -76,7 +76,8 @@ public class DocumentDistribution
 				documentClazz == OrderChangeType.class ||
 				documentClazz == OrderCancellationType.class ||
 				documentClazz == ApplicationResponseType.class ||
-				documentClazz == InvoiceType.class)
+				documentClazz == InvoiceType.class ||
+				documentClazz == DocumentReceipt.class)
 			//MMM other document types
 			valid = true;
 		return valid;

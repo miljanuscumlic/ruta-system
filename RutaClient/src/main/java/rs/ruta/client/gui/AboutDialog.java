@@ -47,6 +47,7 @@ public class AboutDialog extends JDialog
 		panel.add(ok);
 		add(panel, BorderLayout.SOUTH);
 		getRootPane().setDefaultButton(ok);
+		ok.requestFocusInWindow();
 		setSize(370, 120);
 		setLocationRelativeTo(owner);
 

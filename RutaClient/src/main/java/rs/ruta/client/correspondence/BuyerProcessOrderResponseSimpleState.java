@@ -44,7 +44,11 @@ public class BuyerProcessOrderResponseSimpleState extends BuyerOrderingProcessSt
 								changeState(process, BuyerCancelOrderState.getInstance());
 						}
 						else
+						{
+							process.getClient().getClientFrame().showOrderResponseSimpleDialog("View Order Response Simple",
+									orderResponseSimple, false, false, null);
 							changeState(process, BuyerOrderRejectedState.getInstance());
+						}
 					}
 					else
 						throw new StateActivityException("Order Response Simple has no Accepted Indicator defined!");

@@ -27,6 +27,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.Associates;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
@@ -209,7 +210,18 @@ public interface Server
 	 * @throws RutaException if document could not be deleted
 	 */
 	@WebMethod(operationName = "DeleteDocBoxDocument")
-	void deleteDocBoxDocument(String username, String id) throws RutaException;
+	public void deleteDocBoxDocument(String username, String id) throws RutaException;
+
+	/**
+	 * Deletes a DocBox document and sends {@link DocumentReceipt} that is distributed to the sender of the
+	 * document
+	 * @param username user's username
+	 * @param id document's id
+	 * @param receipt document receipt
+	 * @throws RutaException if document could not be deleted
+	 */
+	@WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+	public void deleteDocBoxDocumentWithDocumentReceipt(String username, String id, DocumentReceipt receipt) throws RutaException;
 
 	/**
 	 * Searches the database for all {@link BugReport}s that conforms to the {@link SearchCriterion search criterion}.

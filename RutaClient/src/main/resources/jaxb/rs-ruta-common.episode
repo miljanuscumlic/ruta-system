@@ -80,5 +80,17 @@
 			<class ref="rs.ruta.common.DeregistrationNotice" />
 		</bindings>
 	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
+		if-exists="true">
+		<bindings scd="~tns:DocumentReference">
+			<class ref="rs.ruta.common.DocumentReference" />
+		</bindings>
+	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
+		if-exists="true">
+		<bindings scd="~tns:DocumentReceipt">
+			<class ref="rs.ruta.common.DocumentReceipt" />
+		</bindings>
+	</bindings>
 	
 </bindings>

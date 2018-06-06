@@ -84,7 +84,8 @@ public class PartyDialog extends JDialog
 				JOptionPane.showMessageDialog(PartyDialog.this, missingField + " field is mandatory.",
 						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE);
 		});
-		//getRootPane().setDefaultButton(okButton); does not work //MMM check this
+		getRootPane().setDefaultButton(okButton);
+		okButton.requestFocusInWindow();
 
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked

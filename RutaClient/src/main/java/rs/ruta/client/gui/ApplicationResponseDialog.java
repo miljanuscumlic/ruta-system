@@ -91,15 +91,18 @@ public class ApplicationResponseDialog extends AbstractApplicationResponseDialog
 		{
 			buttonPanel.add(sendButton);
 			getRootPane().setDefaultButton(sendButton);
+			sendButton.requestFocusInWindow();
 			buttonPanel.add(discardButton);
 		}
 		else
 		{
 			getRootPane().setDefaultButton(closeButton);
+			closeButton.requestFocusInWindow();
 			if(corr != null)
 			{
 				buttonPanel.add(resendButton);
 				getRootPane().setDefaultButton(resendButton);
+				resendButton.requestFocusInWindow();
 			}
 			buttonPanel.add(closeButton);
 		}

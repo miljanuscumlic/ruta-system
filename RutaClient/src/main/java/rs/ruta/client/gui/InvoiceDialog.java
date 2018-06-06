@@ -75,8 +75,8 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 		});
 		discardButton.setVerifyInputWhenFocusTarget(false);
 
-
 		getRootPane().setDefaultButton(closeButton);
+		closeButton.requestFocusInWindow();
 		closeButton.addActionListener(event ->
 		{
 			setVisible(false);
@@ -87,14 +87,17 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 			buttonPanel.add(sendButton);
 			buttonPanel.add(discardButton);
 			getRootPane().setDefaultButton(sendButton);
+			sendButton.requestFocusInWindow();
 		}
 		else
 		{
 			getRootPane().setDefaultButton(closeButton);
+			closeButton.requestFocusInWindow();
 			if(corr != null)
 			{
 				buttonPanel.add(resendButton);
 				getRootPane().setDefaultButton(resendButton);
+				resendButton.requestFocusInWindow();
 			}
 			buttonPanel.add(closeButton);
 		}

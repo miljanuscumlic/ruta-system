@@ -45,12 +45,14 @@ public class ProcessApplicationResponseDialog extends AbstractApplicationRespons
 		{
 			buttonPanel.add(acceptButton);
 			getRootPane().setDefaultButton(acceptButton);
+			acceptButton.requestFocusInWindow();
 		}
 		else //if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 		{
 			buttonPanel.add(invoiceButton);
 			buttonPanel.add(postponeButton);
 			getRootPane().setDefaultButton(postponeButton);
+			postponeButton.requestFocusInWindow();
 		}
 	}
 

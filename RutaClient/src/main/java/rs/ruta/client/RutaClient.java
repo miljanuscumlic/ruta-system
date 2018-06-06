@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -89,6 +90,7 @@ import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DatabaseException;
@@ -1040,8 +1042,8 @@ public class RutaClient implements RutaNode
 						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 					else
 						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-					frame.processExceptionAndAppendToConsole(e,
-							new StringBuilder(documentName + " has not been deposited to the CDR! "));
+//					frame.processExceptionAndAppendToConsole(e,
+//							new StringBuilder(documentName + " has not been deposited to the CDR! "));
 				}
 				finally
 				{
@@ -1054,7 +1056,8 @@ public class RutaClient implements RutaNode
 			try
 			{
 				serviceCallFinished.acquire();
-				if(documentReference.getStatus().equals(DocumentReference.Status.CLIENT_FAILED))
+				if(documentReference.getStatus() == DocumentReference.Status.CLIENT_FAILED ||
+						documentReference.getStatus() == DocumentReference.Status.CDR_FAILED)
 					throw new StateActivityException(documentName + " " + documentID + " has not been deposited to the CDR!");
 			}
 			catch (InterruptedException e)
@@ -1384,11 +1387,12 @@ public class RutaClient implements RutaNode
 						for(String docID : docBoxDocumentIDs)
 						{
 							oneAtATime.acquire();
-							DocBoxDocumentSearchCriterion docCriterion = new DocBoxDocumentSearchCriterion();
+							final DocBoxDocumentSearchCriterion docCriterion = new DocBoxDocumentSearchCriterion();
 							docCriterion.setPartyID(myPartyId);
 							docCriterion.setDocumentID(docID);
 							port.findDocBoxDocumentAsync(docCriterion, docFuture ->
 							{
+								DocumentReceipt documentReceipt = null;
 								Object document = null;
 								try
 								{
@@ -1398,7 +1402,7 @@ public class RutaClient implements RutaNode
 									if(document != null)
 									{
 										downloadCount.incrementAndGet();
-										processDocBoxDocument(document, docID);
+										documentReceipt = processDocBoxDocument(document, docID);
 									}
 									else
 										frame.appendToConsole(new StringBuilder("Document ").append(docID).
@@ -1415,18 +1419,25 @@ public class RutaClient implements RutaNode
 								catch (Exception e)
 								{
 									oneAtATime.release();
+									if(e.getMessage() != null && e.getMessage().contains("has been already received and processed"))
+									{
+										try
+										{	//MMM continue from here
+											port.distributeDocumentAsync(DocumentReceipt.newInstance(document));
+										}
+										catch (DetailException e1)
+										{
+										}
+									}
 									frame.processExceptionAndAppendToConsole(e, new StringBuilder("Document ").
 											append(docID).append(" could not be placed where it belogs in the data model!"));
 									logger.error(new StringBuilder("Document ").
-											append(docID).append(" could not be downloaded!").toString(), e);
+											append(docID).append(" could not be placed where it belogs in the data model!").toString(), e);
 								}
 								finally
 								{
 									if(document != null)
-									{
-										port.deleteDocBoxDocumentAsync(myParty.getCDRUsername(), docID, deleteFuture -> {});
-										//MMM send DocumentReceipt to the CDR as an argument of DocBoxDocument webmethod
-									}
+										port.deleteDocBoxDocumentWithDocumentReceiptAsync(myParty.getCDRUsername(), docID, documentReceipt);
 									finished.countDown();
 								}
 							});
@@ -1450,10 +1461,7 @@ public class RutaClient implements RutaNode
 							frame.appendToConsole(new StringBuilder("Successful download of ").append(plural).append(". ").append(failed),
 									Color.BLACK);
 						else
-						{
-							//MMM checking wether some correspondence is in a new wait state for Get New Documents feature to be called
 							frame.appendToConsole(new StringBuilder("Successful download of ").append(plural).append("."), Color.BLACK);
-						}
 					}
 					else
 						frame.appendToConsole(new StringBuilder("There are no new documents in my DocBox."), Color.GREEN);
@@ -1489,12 +1497,16 @@ public class RutaClient implements RutaNode
 	 * executing procedure in conection with it.
 	 * @param document document to be processed and placed
 	 * @param docID document's ID get from the service side
+	 * @return {@link DocumentReceipt} describing the receipt of processed document or {@code null} if a
+	 * document is of type of {@code DocumentReceipt} or of an unexpected type
 	 * @throws DetailException due to the connectivity issues with the data store
 	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
 	 */
-	private void processDocBoxDocument(Object document, String docID) throws DetailException, InterruptedException
+	private DocumentReceipt processDocBoxDocument(Object document, String docID) throws DetailException, InterruptedException
 	{
+		DocumentReceipt documentReceipt = null;
 		final Class<?> documentClazz = document.getClass();
+		boolean validDocumentType = true;
 		if(documentClazz == CatalogueType.class)
 		{
 			frame.appendToConsole(new StringBuilder("Catalogue document ").append(docID).
@@ -1567,14 +1579,15 @@ public class RutaClient implements RutaNode
 		}
 		else if(documentClazz == OrderType.class)
 		{
-			frame.appendToConsole(new StringBuilder("Order ").append(((OrderType) document).getIDValue()).
+			final OrderType order = (OrderType) document;
+			frame.appendToConsole(new StringBuilder("Order ").append(order.getIDValue()).
 					append(" has been successfully retrieved."), Color.GREEN);
-			myParty.processDocBoxOrder((OrderType) document);
+			myParty.processDocBoxOrder(order);
 			String partyName;
 			try
 			{
 				partyName = InstanceFactory.getPropertyOrNull(
-						((OrderType) document).getBuyerCustomerParty().getParty().getPartyName().get(0),
+						order.getBuyerCustomerParty().getParty().getPartyName().get(0),
 						PartyNameType::getNameValue);
 			}
 			catch(Exception e)
@@ -1582,8 +1595,36 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order " + ((OrderType) document).getIDValue() + " has been appended to its correspondence."),
+					append("'s Order " + order.getIDValue() + " has been appended to its correspondence."),
 					Color.BLACK);
+
+//			documentReceipt = DocumentReceipt.newInstance(document);
+
+	/*		documentReceipt = new DocumentReceipt();
+			documentReceipt.setID(UUID.randomUUID().toString());
+			documentReceipt.setSenderParty(order.getSellerSupplierParty().getParty());
+			documentReceipt.setReceiverParty(order.getBuyerCustomerParty().getParty());
+
+			final DocumentReference docReference = DocumentReference.newInstance(order, DocumentReference.Status.CORR_RECEIVED);
+			documentReceipt.setDocumentReference(docReference);*/
+
+
+//			docReference.setIssuerParty(issuerParty);
+//			docReference.setDocumentType(documentClazz.getName());
+//			docReference.setUUID(UUID.randomUUID().toString());
+//			docReference.setID(id);
+//			docReference.setIssueDate(issueDate);
+//			docReference.setIssueTime(issueTime);
+//			final XMLGregorianCalendar now = InstanceFactory.getDate();
+//			docReference.setReceivedTime(now);
+//			docReference.setStatus(status);
+
+//			addDocumentReference(order.getBuyerCustomerParty().getParty(), order.getUUIDValue(),
+//					order.getIDValue(), order.getIssueDateValue(), order.getIssueTimeValue(),
+//					order.getClass().getName(), null)
+//			documentReceipt.setDocumentReference(docReference);
+
+
 		}
 		else if(documentClazz == OrderResponseType.class)
 		{
@@ -1717,10 +1758,40 @@ public class RutaClient implements RutaNode
 							" has been appended to its correspondence."),
 					Color.BLACK);
 		}
+		else if(documentClazz == DocumentReceipt.class)
+		{
+			validDocumentType = false;
+			frame.appendToConsole(new StringBuilder("Document Receipt ").
+					append(((DocumentReceipt) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxDocumentReceipt((DocumentReceipt) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((DocumentReceipt) document).getSenderParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Document Receipt " + ((DocumentReceipt) document).getIDValue() +
+							" has been updated its document status."),
+					Color.BLACK);
+		}
 		else
+		{
+			validDocumentType = false;
 			frame.appendToConsole(new StringBuilder("Document ").append(docID).
 					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
 					Color.BLACK);
+		}
+		if(validDocumentType)
+			documentReceipt = DocumentReceipt.newInstance(document);
+
+		return documentReceipt;
 	}
 
 	public void testPhax()
@@ -2154,7 +2225,7 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * MMM: This method should be moved to new project CDR SErviceInterface <br/>
+	 * MMM: This method should be moved to new project Ruta ServiceInterface <br/>
 	 * Sends request to CDr service to clear in-memory cache object.
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation

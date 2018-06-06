@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 import rs.ruta.common.Associates;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.DeregistrationNotice;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
@@ -40,6 +41,7 @@ public class ObjectFactory {
     private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
     private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
     private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
+    private final static QName _DeleteDocBoxDocumentWithDocumentReceipt_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentWithDocumentReceipt");
     private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
     private final static QName _WSDLTypeInjectionResponse_QNAME = new QName("http://ruta.rs/services", "WSDLTypeInjectionResponse");
     private final static QName _DistributionOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DistributionOperation");
@@ -90,11 +92,13 @@ public class ObjectFactory {
     private final static QName _UnfollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "UnfollowPartyResponse");
     private final static QName _DatabaseOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DatabaseOperation");
     private final static QName _ClearCacheResponse_QNAME = new QName("http://ruta.rs/services", "ClearCacheResponse");
+    private final static QName _DeleteDocBoxDocumentWithDocumentReceiptResponse_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentWithDocumentReceiptResponse");
     private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
     private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
     private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
     private final static QName _FindAllDocBoxDocumentIDs_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDs");
     private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
+    private final static QName _DocumentReceipt_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentReceipt");
     private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/services", "InsertBugReport");
     private final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
     private final static QName _DeleteCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponse");
@@ -225,6 +229,14 @@ public class ObjectFactory {
      */
     public ClearCacheResponse createClearCacheResponse() {
         return new ClearCacheResponse();
+    }
+
+    /**
+     * Create an instance of {@link DeleteDocBoxDocumentWithDocumentReceiptResponse }
+     * 
+     */
+    public DeleteDocBoxDocumentWithDocumentReceiptResponse createDeleteDocBoxDocumentWithDocumentReceiptResponse() {
+        return new DeleteDocBoxDocumentWithDocumentReceiptResponse();
     }
 
     /**
@@ -425,6 +437,14 @@ public class ObjectFactory {
      */
     public InsertBugReport createInsertBugReport() {
         return new InsertBugReport();
+    }
+
+    /**
+     * Create an instance of {@link DeleteDocBoxDocumentWithDocumentReceipt }
+     * 
+     */
+    public DeleteDocBoxDocumentWithDocumentReceipt createDeleteDocBoxDocumentWithDocumentReceipt() {
+        return new DeleteDocBoxDocumentWithDocumentReceipt();
     }
 
     /**
@@ -763,6 +783,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindDocBoxDocumentResponse")
     public JAXBElement<FindDocBoxDocumentResponse> createFindDocBoxDocumentResponse(FindDocBoxDocumentResponse value) {
         return new JAXBElement<FindDocBoxDocumentResponse>(_FindDocBoxDocumentResponse_QNAME, FindDocBoxDocumentResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentWithDocumentReceipt }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocumentWithDocumentReceipt")
+    public JAXBElement<DeleteDocBoxDocumentWithDocumentReceipt> createDeleteDocBoxDocumentWithDocumentReceipt(DeleteDocBoxDocumentWithDocumentReceipt value) {
+        return new JAXBElement<DeleteDocBoxDocumentWithDocumentReceipt>(_DeleteDocBoxDocumentWithDocumentReceipt_QNAME, DeleteDocBoxDocumentWithDocumentReceipt.class, null, value);
     }
 
     /**
@@ -1216,6 +1245,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentWithDocumentReceiptResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public JAXBElement<DeleteDocBoxDocumentWithDocumentReceiptResponse> createDeleteDocBoxDocumentWithDocumentReceiptResponse(DeleteDocBoxDocumentWithDocumentReceiptResponse value) {
+        return new JAXBElement<DeleteDocBoxDocumentWithDocumentReceiptResponse>(_DeleteDocBoxDocumentWithDocumentReceiptResponse_QNAME, DeleteDocBoxDocumentWithDocumentReceiptResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InsertImage }{@code >}}
      * 
      */
@@ -1258,6 +1296,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
     public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
         return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DocumentReceipt }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "DocumentReceipt")
+    public JAXBElement<DocumentReceipt> createDocumentReceipt(DocumentReceipt value) {
+        return new JAXBElement<DocumentReceipt>(_DocumentReceipt_QNAME, DocumentReceipt.class, null, value);
     }
 
     /**

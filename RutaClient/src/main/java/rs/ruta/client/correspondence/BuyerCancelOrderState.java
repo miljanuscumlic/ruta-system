@@ -3,6 +3,8 @@ package rs.ruta.client.correspondence;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.MyParty;
 import rs.ruta.common.DocumentReference;
 
@@ -41,9 +43,21 @@ public class BuyerCancelOrderState extends BuyerOrderingProcessState
 	 */
 	private OrderCancellationType prepareOrderCancellation(Correspondence correspondence)
 	{
+		OrderCancellationType orderCancellation = null;
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		final MyParty myParty = process.getClient().getMyParty();
-		return myParty.produceOrderCancellation(process.getOrderResponse(correspondence));
+		final DocumentReference docReference = correspondence.getLastDocumentReference();
+		if(docReference != null)
+		{
+			if(OrderResponseType.class.getName().equals(docReference.getDocumentTypeValue()))
+				orderCancellation = myParty.produceOrderCancellation(process.getOrderResponse(correspondence));
+			else if(OrderResponseSimpleType.class.getName().equals(docReference.getDocumentTypeValue()))
+				orderCancellation = myParty.produceOrderCancellation(process.getOrderResponseSimple(correspondence));
+		}
+		else
+			throw new StateActivityException("No document references in the correspondence!");
+
+		return orderCancellation;
 	}
 
 	/**

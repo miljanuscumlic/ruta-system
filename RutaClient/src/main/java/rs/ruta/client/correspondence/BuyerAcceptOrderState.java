@@ -10,6 +10,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
 @XmlRootElement(name = "BuyerAcceptOrderState")
 public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 {
@@ -74,27 +75,36 @@ public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 	 * @return prepared Application Response or {@code null} if order creation has been failed,
 	 * or Application Response does not conform to the {@code UBL} standard
 	 */
-//	private ApplicationResponseType prepareApplicationResponse(RutaProcess process, OrderResponseSimpleType applicationResponse)
-//	{
-//		final RutaClient client = process.getClient();
-//		client.getClientFrame().appendToConsole(new StringBuilder("Collecting data and preparing the Application Response..."),
-//				Color.BLACK);
-//		return client.getMyParty().produceApplicationResponse(applicationResponse);
-//	}
+	//	private ApplicationResponseType prepareApplicationResponse(RutaProcess process, OrderResponseSimpleType applicationResponse)
+	//	{
+	//		final RutaClient client = process.getClient();
+	//		client.getClientFrame().appendToConsole(new StringBuilder("Collecting data and preparing the Application Response..."),
+	//				Color.BLACK);
+	//		return client.getMyParty().produceApplicationResponse(applicationResponse);
+	//	}
 
 	/**
 	 * Sets Application Response in the process, adds it's {@link DocumentReference} to the correspondence and stores it
 	 * in the database.
 	 * @param correspondence which Application Response is part of
 	 * @param appResponse Application Response to save
+	 * @throws StateActivityException if a document of an unexpected type is passed to the method
 	 */
-	private void saveApplicationResponse(Correspondence correspondence, ApplicationResponseType appResponse)
+	private void saveApplicationResponse(Correspondence correspondence, ApplicationResponseType appResponse) throws StateActivityException
 	{
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		((BuyerOrderingProcess) process).setApplicationResponse(appResponse);
-		correspondence.addDocumentReference(appResponse.getSenderParty(),
-				appResponse.getUUIDValue(), appResponse.getIDValue(), appResponse.getIssueDateValue(),
-				appResponse.getIssueTimeValue(), appResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(appResponse);
+		//		correspondence.addDocumentReference(appResponse.getSenderParty(),
+		//				appResponse.getUUIDValue(), appResponse.getIDValue(), appResponse.getIssueDateValue(),
+		//				appResponse.getIssueTimeValue(), appResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		try
+		{
+			correspondence.addDocumentReference(appResponse, DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(appResponse);
+		}
+		catch(DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
 	}
 }

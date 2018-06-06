@@ -52,8 +52,6 @@ public class OrderDialog extends AbstractOrderDialog
 				setVisible(false);
 			}
 		});
-//		getRootPane().setDefaultButton(sendButton);
-//		buttonPanel.add(sendButton);
 
 		resendButton.addActionListener(event ->
 		{
@@ -103,15 +101,13 @@ public class OrderDialog extends AbstractOrderDialog
 			setVisible(false);
 		});
 		discardButton.setVerifyInputWhenFocusTarget(false);
-//		buttonPanel.add(discardButton);
-
 
 		getRootPane().setDefaultButton(closeButton);
+		closeButton.requestFocusInWindow();
 		closeButton.addActionListener(event ->
 		{
 			setVisible(false);
 		});
-//		buttonPanel.add(closeButton);
 
 		if(editable)
 		{
@@ -119,14 +115,17 @@ public class OrderDialog extends AbstractOrderDialog
 			buttonPanel.add(previewButton);
 			buttonPanel.add(discardButton);
 			getRootPane().setDefaultButton(sendButton);
+			sendButton.requestFocusInWindow();
 		}
 		else
 		{
 			getRootPane().setDefaultButton(closeButton);
+			closeButton.requestFocusInWindow();
 			if(corr != null)
 			{
 				buttonPanel.add(resendButton);
 				getRootPane().setDefaultButton(resendButton);
+				resendButton.requestFocusInWindow();
 			}
 			buttonPanel.add(closeButton);
 

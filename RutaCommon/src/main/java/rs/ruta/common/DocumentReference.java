@@ -6,7 +6,15 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
+import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
+import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
+import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
+import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
+import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
+import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlType(name = "DocumentReference")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -15,10 +23,11 @@ public class DocumentReference extends DocumentReferenceType
 	private static final long serialVersionUID = 995064612236910411L;
 	public static enum Status
 	{
-		CDR_RECEIVED, CDR_DOWN, CDR_FAILED,
+		UBL_INVALID, UBL_VALID,
 		CLIENT_FAILED, CLIENT_SENT,
-		CORR_RECEIVED, CORR_FAILED, CORR_REJECTED,
-		UBL_INVALID, UBL_VALID
+		CDR_DOWN, CDR_FAILED, CDR_RECEIVED,
+		CORR_FAILED, CORR_RECEIVED
+
 	};
 	@XmlElement(name = "ReceivedTime")
 	XMLGregorianCalendar receivedTime;
@@ -27,7 +36,7 @@ public class DocumentReference extends DocumentReferenceType
 	 */
 	@XmlElement(name = "Valid")
 	boolean valid;
-	@XmlElement(name = "Status")
+	@XmlElement(name = "DocumentStatus")
 	Status status;
 
 	public DocumentReference() { super(); }
@@ -36,6 +45,110 @@ public class DocumentReference extends DocumentReferenceType
 	{
 		super();
 		docReference.cloneTo(this);
+	}
+
+	private DocumentReference(OrderType order)
+	{
+		setIssuerParty(order.getBuyerCustomerParty().getParty());
+		setUUID(order.getUUIDValue());
+		setID(order.getID());
+		setIssueDate(order.getIssueDate());
+		setIssueTime(order.getIssueTimeValue());
+		setDocumentType(order.getClass().getName());
+	}
+
+	private DocumentReference(OrderResponseType document)
+	{
+		setIssuerParty(document.getSellerSupplierParty().getParty());
+		setUUID(document.getUUIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueDate());
+		setIssueTime(document.getIssueTimeValue());
+		setDocumentType(document.getClass().getName());
+	}
+
+	private DocumentReference(OrderResponseSimpleType document)
+	{
+		setIssuerParty(document.getSellerSupplierParty().getParty());
+		setUUID(document.getUUIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueDate());
+		setIssueTime(document.getIssueTimeValue());
+		setDocumentType(document.getClass().getName());
+	}
+
+	private DocumentReference(OrderChangeType document)
+	{
+		setIssuerParty(document.getBuyerCustomerParty().getParty());
+		setUUID(document.getUUIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueDate());
+		setIssueTime(document.getIssueTimeValue());
+		setDocumentType(document.getClass().getName());
+	}
+
+	private DocumentReference(OrderCancellationType document)
+	{
+		setIssuerParty(document.getBuyerCustomerParty().getParty());
+		setUUID(document.getUUIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueDate());
+		setIssueTime(document.getIssueTimeValue());
+		setDocumentType(document.getClass().getName());
+	}
+
+	private DocumentReference(ApplicationResponseType document)
+	{
+		setIssuerParty(document.getSenderParty());
+		setUUID(document.getUUIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueDate());
+		setIssueTime(document.getIssueTimeValue());
+		setDocumentType(document.getClass().getName());
+	}
+
+	private DocumentReference(InvoiceType document)
+	{
+		setIssuerParty(document.getAccountingSupplierParty().getParty());
+		setUUID(document.getUUIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueDate());
+		setIssueTime(document.getIssueTimeValue());
+		setDocumentType(document.getClass().getName());
+	}
+
+	/**
+	 * Creates ne instance of {@link DocumentReference}
+	 * @param document documnet which reference is to be created
+	 * @param status document's status
+	 * @return {@link DocumentReference}
+	 * @throws DetailException if a document of an unexpected type is passed to the method
+	 */
+	public static <T> DocumentReference newInstance(T document, Status status) throws DetailException
+	{
+		DocumentReference docReference = null;
+		final Class<? extends Object> documentClazz = document.getClass();
+		if(documentClazz == OrderType.class)
+			docReference = new DocumentReference((OrderType) document);
+		else if(documentClazz == OrderResponseType.class)
+			docReference = new DocumentReference((OrderResponseType) document);
+		else if(documentClazz == OrderResponseSimpleType.class)
+			docReference = new DocumentReference((OrderResponseSimpleType) document);
+		else if(documentClazz == OrderChangeType.class)
+			docReference = new DocumentReference((OrderChangeType) document);
+		else if(documentClazz == OrderCancellationType.class)
+			docReference = new DocumentReference((OrderCancellationType) document);
+		else if(documentClazz == ApplicationResponseType.class)
+			docReference = new DocumentReference((ApplicationResponseType) document);
+		else if(documentClazz == InvoiceType.class)
+			docReference = new DocumentReference((InvoiceType) document);
+		else
+			throw new DetailException("Document of an unexpected type has been passed for creation of the Document Reference.");
+
+		final XMLGregorianCalendar now = InstanceFactory.getDate();
+		docReference.setReceivedTime(now);
+		docReference.setStatus(status);
+		return docReference;
 	}
 
 	@Override

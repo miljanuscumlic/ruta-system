@@ -76,14 +76,17 @@ public class OrderResponseDialog extends AbstractOrderResponseDialog
 			buttonPanel.add(sendButton);
 			buttonPanel.add(discardButton);
 			getRootPane().setDefaultButton(sendButton);
+			sendButton.requestFocusInWindow();
 		}
 		else
 		{
 			getRootPane().setDefaultButton(closeButton);
+			closeButton.requestFocusInWindow();
 			if(corr != null)
 			{
 				buttonPanel.add(resendButton);
 				getRootPane().setDefaultButton(resendButton);
+				resendButton.requestFocusInWindow();
 			}
 			buttonPanel.add(closeButton);
 		}

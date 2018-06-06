@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,6 +45,7 @@ import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
+import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartySearchCriterion;
@@ -735,12 +735,27 @@ public class CDR implements Server
 	}
 
 	@Override
-	public void deleteDocBoxDocument(String username, String id /*, DocumentReceipt documentReceipt*/) throws RutaException
+	public void deleteDocBoxDocument(String username, String id) throws RutaException
 	{
 		try
 		{
 			init();
-			//MMM put here call to distributeDocument(DocumentReceipt)
+			mapperRegistry.getMapper(DocBox.class).deleteDocBoxDocument(username, id);
+		}
+		catch(Exception e)
+		{
+			processException(e, "DocBox document could not be deleted!");
+		}
+	}
+
+	@Override
+	public void deleteDocBoxDocumentWithDocumentReceipt(String username, String id, DocumentReceipt documentReceipt) throws RutaException
+	{
+		try
+		{
+			init();
+			if(documentReceipt != null)
+				distributeDocument(documentReceipt);
 			mapperRegistry.getMapper(DocBox.class).deleteDocBoxDocument(username, id);
 		}
 		catch(Exception e)

@@ -1,26 +1,81 @@
 package rs.ruta.common;
 
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import rs.ruta.common.DocumentReference.Status;
+import rs.ruta.common.datamapper.DetailException;
 
 /**
  * Class describing the receipt of the {@code UBL} document by a {@link #receiverParty} in the Ruta System.
  */
+@XmlRootElement(name = "DocumentReceipt")
+@XmlType(name = "DocumentReceipt")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DocumentReceipt
 {
 	/**
-	 * Sender of the document not of the Document Receipt.
+	 * Sender of the Document Receipt.
 	 */
+	@XmlElement(name = "SenderParty")
 	private PartyType senderParty;
 	/**
-	 * Receiver of the document not of the Document Receipt.
+	 * Receiver of the Document Receipt.
 	 */
+	@XmlElement(name = "ReceiverParty")
 	private PartyType receiverParty;
-	private IDType uuid;
+	@XmlElement(name = "ID")
+	private IDType id;
+	@XmlElement(name = "DocumentReference")
 	private DocumentReference documentReference;
 
+	public DocumentReceipt() {}
+
 	/**
-	 * Gets the {@link PartyType sender} of the document not of the {@link DocumentReceipt}.
+	 * Creates new {@link DocumentReceipt}.
+	 * @param document
+	 * @param status document's status
+	 * @return
+	 * @throws DetailException if a document of an unexpected type is passed to the method
+	 */
+	public static <T> DocumentReceipt newInstance(T document, Status status) throws DetailException
+	{
+		DocumentReceipt documentReceipt = new DocumentReceipt();
+		documentReceipt.setID(UUID.randomUUID().toString());
+		documentReceipt.setSenderParty(InstanceFactory.getDocumentSenderParty(document));
+		documentReceipt.setReceiverParty(InstanceFactory.getDocumentReceiverParty(document));
+		final DocumentReference docReference = DocumentReference.newInstance(document, status);
+		documentReceipt.setDocumentReference(docReference);
+		return documentReceipt;
+	}
+
+	/**
+	 * Creates new {@link DocumentReceipt} setting the status of the received document to {@code CORR_RECEIVED}.
+	 * @param document
+	 * @return
+	 * @throws DetailException if a document of an unexpected type is passed to the method
+	 */
+	public static <T> DocumentReceipt newInstance(T document) throws DetailException
+	{
+		DocumentReceipt documentReceipt = new DocumentReceipt();
+		documentReceipt.setID(UUID.randomUUID().toString());
+		documentReceipt.setSenderParty(InstanceFactory.getDocumentReceiverParty(document));
+		documentReceipt.setReceiverParty(InstanceFactory.getDocumentSenderParty(document));
+		final DocumentReference docReference = DocumentReference.newInstance(document, DocumentReference.Status.CORR_RECEIVED);
+		documentReceipt.setDocumentReference(docReference);
+		return documentReceipt;
+	}
+
+	/**
+	 * Gets the {@link PartyType sender} of the {@link DocumentReceipt}.
 	 * @return
 	 */
 	public PartyType getSenderParty()
@@ -29,7 +84,7 @@ public class DocumentReceipt
 	}
 
 	/**
-	 * Sets the {@link PartyType sender} of the document not of the {@link DocumentReceipt}.
+	 * Sets the {@link PartyType sender} of the {@link DocumentReceipt}.
 	 */
 	public void setSenderParty(PartyType senderParty)
 	{
@@ -37,7 +92,7 @@ public class DocumentReceipt
 	}
 
 	/**
-	 * Gets the {@link PartyType receiver} of the document not of the {@link DocumentReceipt}.
+	 * Gets the {@link PartyType receiver} of the {@link DocumentReceipt}.
 	 * @return
 	 */
 	public PartyType getReceiverParty()
@@ -46,26 +101,41 @@ public class DocumentReceipt
 	}
 
 	/**
-	 * Sets the receiverr of the document not of the {@link DocumentReceipt}.
+	 * Sets the receiverr of the {@link DocumentReceipt}.
 	 */
 	public void setReceiverParty(PartyType receiverParty)
 	{
 		this.receiverParty = receiverParty;
 	}
 
-	public IDType getUUUID()
+	public IDType getID()
 	{
-		return uuid;
+		return id;
 	}
 
-	public void setUUUID(IDType uuid)
+	public String getIDValue()
 	{
-		this.uuid = uuid;
+		return id != null ? id.getValue() : null;
 	}
 
-	public void setUuid(String value)
+	public void setID(IDType id)
 	{
-		this.uuid.setValue(value);
+		this.id = id;
+	}
+
+	/**
+	 * Sets a new value for an {@link IDType ID} field. If ID is {@code null} it creates a new
+	 * {@link IDType ID} object.
+	 * @param value value to set
+	 * @return {@link IDType ID} object
+	 */
+	public IDType setID(@Nullable final String value)
+	{
+		if(id == null)
+			id = new IDType(value);
+		else
+			id.setValue(value);
+		return id;
 	}
 
 	/**
