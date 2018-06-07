@@ -1,7 +1,7 @@
 package rs.ruta.common.datamapper;
 
-/**Auxiliary class containing detailed description or reason for the exception which is a part of.
- *
+/**
+ * Auxiliary class containing detailed description or reason for the exception which is a part of.
  */
 public class FaultInfo
 {

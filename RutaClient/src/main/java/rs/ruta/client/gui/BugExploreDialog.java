@@ -55,7 +55,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
-import rs.ruta.common.datamapper.RutaException;
+import rs.ruta.services.RutaException;
 import rs.ruta.services.AddBugReportCommentResponse;
 import rs.ruta.services.FindAllBugReportsResponse;
 import rs.ruta.services.FindBugReportResponse;

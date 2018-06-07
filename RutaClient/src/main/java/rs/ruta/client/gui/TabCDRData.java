@@ -180,7 +180,6 @@ public class TabCDRData extends TabComponent
 				{
 					partiesTableModel.setParties(partyList);
 					partiesSorter.allRowsChanged();
-					//					partiesSorter.setSortable(0, false);
 					rightScrollPane.setViewportView(partiesTable);
 				}
 				else
@@ -213,14 +212,14 @@ public class TabCDRData extends TabComponent
 						getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
-					if(ret != null)
-					{
-						ret.get();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						//						EventQueue.invokeLater(() -> selectNode(partyTree, followedParty));
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, true);
+//					if(ret != null)
+//					{
+//						ret.get();
+//						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+//						//						EventQueue.invokeLater(() -> selectNode(partyTree, followedParty));
+//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+//					}
 				}
 				catch(Exception e)
 				{
@@ -244,14 +243,7 @@ public class TabCDRData extends TabComponent
 						getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
-					if(ret != null)
-					{
-						ret.get();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
-						//						EventQueue.invokeLater(() -> selectNode(partyTree, followedParty));
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, false);
 				}
 				catch(Exception e)
 				{
@@ -268,19 +260,19 @@ public class TabCDRData extends TabComponent
 			if(selectedParty == null) return;
 			new Thread(()->
 			{
-				DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
-				Future<?> ret = clientFrame.getClient().cdrUnfollowParty((BusinessParty) selectedParty);
 				try
 				{
-					if(ret != null)
-					{
-						ret.get();
-						EventQueue.invokeLater(() ->
-						{
-							selectNode(partyTree, nodeToSelect);
-							makeVisibleNode(partyTree, selectedParty);
-						});
-					}
+//					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
+					clientFrame.getClient().cdrUnfollowParty((BusinessParty) selectedParty);
+//					if(ret != null)
+//					{
+//						ret.get();
+//						EventQueue.invokeLater(() ->
+//						{
+//							selectNode(partyTree, nodeToSelect);
+//							makeVisibleNode(partyTree, selectedParty);
+//						});
+//					}
 				}
 				catch(Exception e)
 				{
@@ -302,7 +294,7 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.followParty(otherParty);
-					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
+//					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(otherParty.getPartySimpleName()).
 							append(" has been moved from Other Parties to Business Partners.").
 							append(" Party is still followed by My Party."), Color.GREEN);
@@ -326,7 +318,7 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.followParty(otherParty);
-					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
+//					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(otherParty.getPartySimpleName()).
 							append(" has been moved from Business Partners to Other Parties. ").
 							append("Party is still followed by My Party."), Color.GREEN);
@@ -348,12 +340,10 @@ public class TabCDRData extends TabComponent
 				final String partyName = selectedParty.getPartySimpleName();
 				try
 				{
-					//commented line is a privious variant of a selection
-					//					selectNextNode(partyTree, selectedParty);
-					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
+//					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
 					myParty.purgeParty(selectedParty);
-					partiesSorter.allRowsChanged();
-					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
+//					partiesSorter.allRowsChanged();
+//					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Archived Parties."), Color.GREEN);
 				}
@@ -376,11 +366,10 @@ public class TabCDRData extends TabComponent
 				final String partyName = selectedParty.getPartySimpleName();
 				try
 				{
-					//					selectNextNode(partyTree, selectedParty);
-					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
+//					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
 					myParty.purgeParty(selectedParty);
-					partiesSorter.allRowsChanged();
-					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
+//					partiesSorter.allRowsChanged();
+//					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Deregistered Parties."), Color.GREEN);
 				}
@@ -517,7 +506,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					final Future<?> ret = clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
+					clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
 					/*					if(ret != null)
 					{
 						ret.get();
@@ -570,9 +559,9 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					final DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(searchTree, selectedSearch);
+//					final DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(searchTree, selectedSearch);
 					myParty.removeSearch(selectedSearch);
-					selectNode(searchTree, nodeToSelect);
+//					selectNode(searchTree, nodeToSelect);
 				}
 				catch(Exception e)
 				{
@@ -635,14 +624,14 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
-					if(ret != null)
-					{
-						ret.get();
-						partiesTableModel.fireTableDataChanged();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, true);
+//					if(ret != null)
+//					{
+//						ret.get();
+//						partiesTableModel.fireTableDataChanged();
+////						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+////						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+//					}
 				}
 				catch(Exception e)
 				{
@@ -666,14 +655,15 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
-					if(ret != null)
-					{
-						ret.get();
-						partiesTableModel.fireTableDataChanged();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, false);
+					//MMM commented code below currently stays just for the record
+//					if(ret != null)
+//					{
+//						ret.get();
+//						partiesTableModel.fireTableDataChanged();
+//						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
+//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+//					}
 				}
 				catch(Exception e)
 				{
@@ -686,20 +676,19 @@ public class TabCDRData extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			//			final int rowIndex = table.getSelectedRow()*/;
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 			new Thread(()->
 			{
 				try
 				{
-					Future<?> ret = clientFrame.getClient().cdrUnfollowParty(selectedParty);
-					if(ret != null)
-					{
-						ret.get();
-						partiesTableModel.fireTableDataChanged();
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
-					}
+					clientFrame.getClient().cdrUnfollowParty(selectedParty);
+//					if(ret != null)
+//					{
+//						ret.get();
+//						partiesTableModel.fireTableDataChanged();
+//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+//					}
 				}
 				catch(Exception e)
 				{
@@ -712,7 +701,6 @@ public class TabCDRData extends TabComponent
 
 		addPartnerItem.addActionListener(event ->
 		{
-			//			final int rowIndex = table.getSelectedRow()*/;
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 			new Thread(() ->
@@ -721,8 +709,8 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.followParty(selectedParty);
-					partiesTableModel.fireTableDataChanged();
-					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+//					partiesTableModel.fireTableDataChanged();
+//					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
 							append(" has been moved from Other Parties to Business Partners.").
 							append(" Party is still followed by My Party."), Color.GREEN);
@@ -738,15 +726,16 @@ public class TabCDRData extends TabComponent
 		removePartnerItem.addActionListener(event ->
 		{
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-
+			new Thread(() ->
+			{
 			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
 			{
 				selectedParty.setPartner(false);
 				try
 				{
 					myParty.followParty(selectedParty);
-					partiesTableModel.fireTableDataChanged();
-					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
+//					partiesTableModel.fireTableDataChanged();
+//					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
 							append(" has been moved from Business Partners to Other Parties.").
 							append(" Party is still followed by My Party."), Color.GREEN);
@@ -757,6 +746,7 @@ public class TabCDRData extends TabComponent
 							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
 				}
 			}
+			}).start();
 		});
 
 		deleteArchivedItem.addActionListener(event ->
@@ -769,7 +759,7 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.purgeParty(selectedParty);
-					partiesTableModel.fireTableDataChanged();
+//					partiesTableModel.fireTableDataChanged();
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Archived Parties."), Color.GREEN);
 				}
@@ -793,7 +783,7 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.purgeParty(selectedParty);
-					partiesTableModel.fireTableDataChanged();
+//					partiesTableModel.fireTableDataChanged();
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Deregistered Parties."), Color.GREEN);
 				}
@@ -1034,7 +1024,6 @@ public class TabCDRData extends TabComponent
 
 		followPartnerItem.addActionListener(event ->
 		{
-			//			int rowIndex = table.getSelectedRow();
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
 			final String followingName =
@@ -1045,13 +1034,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
-					if(ret != null)
-					{
-						ret.get();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, true);
 				}
 				catch(Exception e)
 				{
@@ -1063,7 +1046,6 @@ public class TabCDRData extends TabComponent
 
 		followPartyItem.addActionListener(event ->
 		{
-			//			int rowIndex = table.getSelectedRow();
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
 			final String followingName =
@@ -1074,13 +1056,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
-					if(ret != null)
-					{
-						ret.get();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, false);
 				}
 				catch(Exception e)
 				{
@@ -1151,12 +1127,12 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
-					if(ret != null)
-					{
-						ret.get();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+//					if(ret != null)
+//					{
+//						ret.get();
+//						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
+//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
+//					}
 				}
 				catch(Exception e)
 				{
@@ -1178,13 +1154,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
-					if(ret != null)
-					{
-						ret.get();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-					}
+					clientFrame.getClient().followParty(followingName, followingID, false);
 				}
 				catch(Exception e)
 				{
@@ -1222,7 +1192,6 @@ public class TabCDRData extends TabComponent
 		if(source.getClass() == BusinessParty.class)
 		{
 			BusinessParty party = (BusinessParty) source;
-			//MMM: there should be more commands; every command responsible for an update of a specific table
 			if(BusinessPartyEvent.CATALOGUE_UPDATED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
@@ -1233,6 +1202,66 @@ public class TabCDRData extends TabComponent
 						partnerCatalogueTableModel.setCatalogue(party.getCatalogue());
 					partnerCatalogueTableModel.fireTableDataChanged();
 				}
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+				selectNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+//				selectNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_REMOVED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+//				selectNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.OTHER_PARTY_ADDED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.OTHER_PARTY_TRANSFERED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+//				selectNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.OTHER_PARTY_REMOVED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.DEREGISTERED_PARTY_REMOVED.equals(command))
+			{
+				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
 			}
 			else if(BusinessPartyEvent.PARTY_UPDATED.equals(command))
 			{
@@ -1266,6 +1295,10 @@ public class TabCDRData extends TabComponent
 				makeVisibleNode(searchTree, source);
 				searchesPartyTableModel.fireTableDataChanged();
 				selectNode(searchTree, source);
+			}
+			else if(RutaClientFrameEvent.SELECT_NEXT.equals(command))
+			{
+				selectNextNode(searchTree, source);
 			}
 		}
 	}

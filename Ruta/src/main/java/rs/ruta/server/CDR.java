@@ -74,7 +74,7 @@ import rs.ruta.server.datamapper.ServiceMapperRegistry;
 	wsdlLocation = "/wsdl/CDR.wsdl")*/
 
 //wildfly wsdl generation
-@WebService(endpointInterface = "rs.ruta.server.Server", targetNamespace = "http://ruta.rs/services")
+@WebService(endpointInterface = "rs.ruta.server.Server", targetNamespace = "http://ruta.rs/ns/services")
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING)
 //@XmlSeeAlso({OrderResponseType.class, OrderType.class}) //not necessary when typeInclusion method is used
 public class CDR implements Server

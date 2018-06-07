@@ -10,7 +10,7 @@ import javax.xml.ws.WebFault;
  * Generated source version: 2.2
  * 
  */
-@WebFault(name = "RutaException", targetNamespace = "http://ruta.rs/services")
+@WebFault(name = "RutaException", targetNamespace = "http://ruta.rs/ns/services")
 public class RutaException
     extends Exception
 {

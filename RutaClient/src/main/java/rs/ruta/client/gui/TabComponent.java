@@ -403,17 +403,24 @@ public abstract class TabComponent extends Container
 	/**
 	 * Delegates {@link ActionEvent event} to a particular subclass of {@link TabComponent}. Events that are
 	 * dispatched are ones that update the view, like selecting tree node, updating table view etc.
-	 * <p>This method blocks until the event is completely processed.</p>
+	 * <p>This method blocks until the event is completely processed. This is necessary beacuse the
+	 * race condition between EventQueue and the other threads that are changing the model</p>
 	 * @param event event to dispatch
 	 */
 	public void dispatchEvent(ActionEvent event)
 	{
 		Semaphore waitEDT = new Semaphore(0);
-		EventQueue.invokeLater(() ->
+		if(EventQueue.isDispatchThread()) //this should never happen???
 		{
 			doDispatchEvent(event);
 			waitEDT.release();
-		});
+		}
+		else
+			EventQueue.invokeLater(() ->
+			{
+				doDispatchEvent(event);
+				waitEDT.release();
+			});
 		try
 		{
 			waitEDT.acquire();

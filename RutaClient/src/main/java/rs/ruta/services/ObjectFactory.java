@@ -33,91 +33,91 @@ import rs.ruta.common.SearchCriterion;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _FindAllBugReportsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllBugReportsResponse");
-    private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/services", "NotifyUpdateResponse");
-    private final static QName _ResponseBusinessPartnership_QNAME = new QName("http://ruta.rs/services", "ResponseBusinessPartnership");
-    private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClient");
-    private final static QName _UpdateCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponseResponse");
-    private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/services", "FindAllParties");
+    private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/ns/services", "UpdateParty");
+    private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/ns/services", "DeleteCatalogue");
+    private final static QName _RequestBusinessPartnership_QNAME = new QName("http://ruta.rs/ns/services", "RequestBusinessPartnership");
+    private final static QName _DeleteDocBoxDocument_QNAME = new QName("http://ruta.rs/ns/services", "DeleteDocBoxDocument");
+    private final static QName _FollowParty_QNAME = new QName("http://ruta.rs/ns/services", "FollowParty");
+    private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/ns/services", "RegisterUser");
     private final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
-    private final static QName _DistributeDocument_QNAME = new QName("http://ruta.rs/services", "DistributeDocument");
-    private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/services", "FindBugReportResponse");
-    private final static QName _ResponseBusinessPartnershipResponse_QNAME = new QName("http://ruta.rs/services", "ResponseBusinessPartnershipResponse");
-    private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/services", "ClearCache");
-    private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocumentResponse");
-    private final static QName _DeleteDocBoxDocumentWithDocumentReceipt_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentWithDocumentReceipt");
-    private final static QName _RutaException_QNAME = new QName("http://ruta.rs/services", "RutaException");
-    private final static QName _WSDLTypeInjectionResponse_QNAME = new QName("http://ruta.rs/services", "WSDLTypeInjectionResponse");
+    private final static QName _FindAllDocBoxDocumentIDs_QNAME = new QName("http://ruta.rs/ns/services", "FindAllDocBoxDocumentIDs");
+    private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/ns/services", "UpdateCatalogue");
+    private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/ns/services", "InsertCatalogueResponse");
     private final static QName _DistributionOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DistributionOperation");
-    private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/services", "FindCatalogue");
-    private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "SearchCatalogueResponse");
-    private final static QName _DeleteDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentResponse");
-    private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/services", "InsertPartyResponse");
-    private final static QName _DeregisterUser_QNAME = new QName("http://ruta.rs/services", "DeregisterUser");
-    private final static QName _FindAllDocBoxDocumentIDsResponse_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDsResponse");
-    private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/services", "FindAllBugReports");
-    private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "FindCatalogueResponse");
-    private final static QName _UnfollowParty_QNAME = new QName("http://ruta.rs/services", "UnfollowParty");
-    private final static QName _InsertImageResponse_QNAME = new QName("http://ruta.rs/services", "InsertImageResponse");
-    private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/services", "RegisterUserResponse");
+    private final static QName _DeleteCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/ns/services", "DeleteCatalogueWithAppResponse");
+    private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/ns/services", "InsertCatalogue");
+    private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/ns/services", "InsertBugReport");
+    private final static QName _AddBugReportCommentResponse_QNAME = new QName("http://ruta.rs/ns/services", "AddBugReportCommentResponse");
+    private final static QName _NotifyUpdate_QNAME = new QName("http://ruta.rs/ns/services", "NotifyUpdate");
+    private final static QName _SearchPartyResponse_QNAME = new QName("http://ruta.rs/ns/services", "SearchPartyResponse");
+    private final static QName _UpdateCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/ns/services", "UpdateCatalogueWithAppResponse");
+    private final static QName _WSDLTypeInjection_QNAME = new QName("http://ruta.rs/ns/services", "WSDLTypeInjection");
+    private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/ns/services", "DeleteCatalogueResponse");
+    private final static QName _ClearCacheResponse_QNAME = new QName("http://ruta.rs/ns/services", "ClearCacheResponse");
+    private final static QName _DeleteDocBoxDocumentWithDocumentReceiptResponse_QNAME = new QName("http://ruta.rs/ns/services", "DeleteDocBoxDocumentWithDocumentReceiptResponse");
+    private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/ns/services", "InsertImage");
+    private final static QName _InsertAttachmentResponse_QNAME = new QName("http://ruta.rs/ns/services", "InsertAttachmentResponse");
+    private final static QName _UnfollowPartyResponse_QNAME = new QName("http://ruta.rs/ns/services", "UnfollowPartyResponse");
     private final static QName _Associates_QNAME = new QName("http://www.ruta.rs/ns/common", "Associates");
-    private final static QName _DistributeDocumentResponse_QNAME = new QName("http://ruta.rs/services", "DistributeDocumentResponse");
-    private final static QName _FollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "FollowPartyResponse");
-    private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/services", "SearchCatalogue");
-    private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/services", "InsertAttachment");
-    private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/services", "UpdatePartyResponse");
-    private final static QName _RequestBusinessPartnershipResponse_QNAME = new QName("http://ruta.rs/services", "RequestBusinessPartnershipResponse");
-    private final static QName _SearchBugReport_QNAME = new QName("http://ruta.rs/services", "SearchBugReport");
-    private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/services", "InsertParty");
+    private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/ns/services", "FindAllPartiesResponse");
+    private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/ns/services", "UpdateCatalogueResponse");
+    private final static QName _AddBugReportComment_QNAME = new QName("http://ruta.rs/ns/services", "AddBugReportComment");
+    private final static QName _DeleteCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/ns/services", "DeleteCatalogueWithAppResponseResponse");
+    private final static QName _InsertFile_QNAME = new QName("http://ruta.rs/ns/services", "InsertFile");
+    private final static QName _SearchParty_QNAME = new QName("http://ruta.rs/ns/services", "SearchParty");
+    private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/ns/services", "UpdateRutaClientResponse");
+    private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/ns/services", "InsertBugReportResponse");
     private final static QName _RutaVersion_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaVersion");
-    private final static QName _InsertFileResponse_QNAME = new QName("http://ruta.rs/services", "InsertFileResponse");
-    private final static QName _SearchBugReportResponse_QNAME = new QName("http://ruta.rs/services", "SearchBugReportResponse");
-    private final static QName _FindBugReport_QNAME = new QName("http://ruta.rs/services", "FindBugReport");
-    private final static QName _InsertFile_QNAME = new QName("http://ruta.rs/services", "InsertFile");
-    private final static QName _SearchParty_QNAME = new QName("http://ruta.rs/services", "SearchParty");
-    private final static QName _AddBugReportComment_QNAME = new QName("http://ruta.rs/services", "AddBugReportComment");
-    private final static QName _DeleteCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponseResponse");
-    private final static QName _UpdateCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueResponse");
-    private final static QName _FindAllPartiesResponse_QNAME = new QName("http://ruta.rs/services", "FindAllPartiesResponse");
-    private final static QName _DeregisterUserResponse_QNAME = new QName("http://ruta.rs/services", "DeregisterUserResponse");
-    private final static QName _FindDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "FindDocBoxDocument");
+    private final static QName _DeregisterUserResponse_QNAME = new QName("http://ruta.rs/ns/services", "DeregisterUserResponse");
+    private final static QName _FindDocBoxDocument_QNAME = new QName("http://ruta.rs/ns/services", "FindDocBoxDocument");
+    private final static QName _UpdatePartyResponse_QNAME = new QName("http://ruta.rs/ns/services", "UpdatePartyResponse");
+    private final static QName _InsertAttachment_QNAME = new QName("http://ruta.rs/ns/services", "InsertAttachment");
+    private final static QName _FollowPartyResponse_QNAME = new QName("http://ruta.rs/ns/services", "FollowPartyResponse");
+    private final static QName _SearchCatalogue_QNAME = new QName("http://ruta.rs/ns/services", "SearchCatalogue");
+    private final static QName _DistributeDocumentResponse_QNAME = new QName("http://ruta.rs/ns/services", "DistributeDocumentResponse");
+    private final static QName _FindBugReport_QNAME = new QName("http://ruta.rs/ns/services", "FindBugReport");
+    private final static QName _InsertFileResponse_QNAME = new QName("http://ruta.rs/ns/services", "InsertFileResponse");
+    private final static QName _SearchBugReportResponse_QNAME = new QName("http://ruta.rs/ns/services", "SearchBugReportResponse");
+    private final static QName _InsertParty_QNAME = new QName("http://ruta.rs/ns/services", "InsertParty");
     private final static QName _Attachment_QNAME = new QName("http://www.ruta.rs/ns/common", "Attachment");
     private final static QName _DocumentDistribution_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentDistribution");
+    private final static QName _RequestBusinessPartnershipResponse_QNAME = new QName("http://ruta.rs/ns/services", "RequestBusinessPartnershipResponse");
+    private final static QName _SearchBugReport_QNAME = new QName("http://ruta.rs/ns/services", "SearchBugReport");
     private final static QName _DatabaseTransaction_QNAME = new QName("http://www.ruta.rs/ns/common", "DatabaseTransaction");
-    private final static QName _InsertBugReportResponse_QNAME = new QName("http://ruta.rs/services", "InsertBugReportResponse");
-    private final static QName _UpdateRutaClientResponse_QNAME = new QName("http://ruta.rs/services", "UpdateRutaClientResponse");
-    private final static QName _WSDLTypeInjection_QNAME = new QName("http://ruta.rs/services", "WSDLTypeInjection");
+    private final static QName _InsertPartyResponse_QNAME = new QName("http://ruta.rs/ns/services", "InsertPartyResponse");
+    private final static QName _DeleteDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/ns/services", "DeleteDocBoxDocumentResponse");
     private final static QName _PartyID_QNAME = new QName("http://www.ruta.rs/ns/common", "PartyID");
-    private final static QName _AddBugReportCommentResponse_QNAME = new QName("http://ruta.rs/services", "AddBugReportCommentResponse");
-    private final static QName _NotifyUpdate_QNAME = new QName("http://ruta.rs/services", "NotifyUpdate");
-    private final static QName _SearchPartyResponse_QNAME = new QName("http://ruta.rs/services", "SearchPartyResponse");
-    private final static QName _UpdateCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogueWithAppResponse");
     private final static QName _DistributionTransaction_QNAME = new QName("http://www.ruta.rs/ns/common", "DistributionTransaction");
-    private final static QName _InsertAttachmentResponse_QNAME = new QName("http://ruta.rs/services", "InsertAttachmentResponse");
-    private final static QName _UnfollowPartyResponse_QNAME = new QName("http://ruta.rs/services", "UnfollowPartyResponse");
+    private final static QName _InsertImageResponse_QNAME = new QName("http://ruta.rs/ns/services", "InsertImageResponse");
+    private final static QName _RegisterUserResponse_QNAME = new QName("http://ruta.rs/ns/services", "RegisterUserResponse");
+    private final static QName _FindCatalogueResponse_QNAME = new QName("http://ruta.rs/ns/services", "FindCatalogueResponse");
+    private final static QName _UnfollowParty_QNAME = new QName("http://ruta.rs/ns/services", "UnfollowParty");
+    private final static QName _FindAllBugReports_QNAME = new QName("http://ruta.rs/ns/services", "FindAllBugReports");
+    private final static QName _FindAllDocBoxDocumentIDsResponse_QNAME = new QName("http://ruta.rs/ns/services", "FindAllDocBoxDocumentIDsResponse");
     private final static QName _DatabaseOperation_QNAME = new QName("http://www.ruta.rs/ns/common", "DatabaseOperation");
-    private final static QName _ClearCacheResponse_QNAME = new QName("http://ruta.rs/services", "ClearCacheResponse");
-    private final static QName _DeleteDocBoxDocumentWithDocumentReceiptResponse_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocumentWithDocumentReceiptResponse");
-    private final static QName _InsertImage_QNAME = new QName("http://ruta.rs/services", "InsertImage");
-    private final static QName _DeleteCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueResponse");
-    private final static QName _InsertCatalogueResponse_QNAME = new QName("http://ruta.rs/services", "InsertCatalogueResponse");
+    private final static QName _DeregisterUser_QNAME = new QName("http://ruta.rs/ns/services", "DeregisterUser");
+    private final static QName _RutaException_QNAME = new QName("http://ruta.rs/ns/services", "RutaException");
     private final static QName _BusinessPartnershipRequest_QNAME = new QName("http://www.ruta.rs/ns/common", "BusinessPartnershipRequest");
-    private final static QName _FindAllDocBoxDocumentIDs_QNAME = new QName("http://ruta.rs/services", "FindAllDocBoxDocumentIDs");
-    private final static QName _UpdateCatalogue_QNAME = new QName("http://ruta.rs/services", "UpdateCatalogue");
+    private final static QName _DeleteDocBoxDocumentWithDocumentReceipt_QNAME = new QName("http://ruta.rs/ns/services", "DeleteDocBoxDocumentWithDocumentReceipt");
+    private final static QName _ClearCache_QNAME = new QName("http://ruta.rs/ns/services", "ClearCache");
+    private final static QName _FindDocBoxDocumentResponse_QNAME = new QName("http://ruta.rs/ns/services", "FindDocBoxDocumentResponse");
     private final static QName _BusinessPartnershipResponse_QNAME = new QName("http://www.ruta.rs/ns/common", "BusinessPartnershipResponse");
     private final static QName _DocumentReceipt_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentReceipt");
-    private final static QName _InsertBugReport_QNAME = new QName("http://ruta.rs/services", "InsertBugReport");
+    private final static QName _SearchCatalogueResponse_QNAME = new QName("http://ruta.rs/ns/services", "SearchCatalogueResponse");
     private final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
-    private final static QName _DeleteCatalogueWithAppResponse_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogueWithAppResponse");
-    private final static QName _InsertCatalogue_QNAME = new QName("http://ruta.rs/services", "InsertCatalogue");
-    private final static QName _RequestBusinessPartnership_QNAME = new QName("http://ruta.rs/services", "RequestBusinessPartnership");
-    private final static QName _DeleteCatalogue_QNAME = new QName("http://ruta.rs/services", "DeleteCatalogue");
-    private final static QName _UpdateParty_QNAME = new QName("http://ruta.rs/services", "UpdateParty");
+    private final static QName _FindCatalogue_QNAME = new QName("http://ruta.rs/ns/services", "FindCatalogue");
+    private final static QName _WSDLTypeInjectionResponse_QNAME = new QName("http://ruta.rs/ns/services", "WSDLTypeInjectionResponse");
     private final static QName _ReportAttachment_QNAME = new QName("http://www.ruta.rs/ns/common", "ReportAttachment");
     private final static QName _RutaUser_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaUser");
-    private final static QName _RegisterUser_QNAME = new QName("http://ruta.rs/services", "RegisterUser");
-    private final static QName _DeleteDocBoxDocument_QNAME = new QName("http://ruta.rs/services", "DeleteDocBoxDocument");
-    private final static QName _FollowParty_QNAME = new QName("http://ruta.rs/services", "FollowParty");
+    private final static QName _FindAllBugReportsResponse_QNAME = new QName("http://ruta.rs/ns/services", "FindAllBugReportsResponse");
+    private final static QName _NotifyUpdateResponse_QNAME = new QName("http://ruta.rs/ns/services", "NotifyUpdateResponse");
+    private final static QName _DistributeDocument_QNAME = new QName("http://ruta.rs/ns/services", "DistributeDocument");
+    private final static QName _FindBugReportResponse_QNAME = new QName("http://ruta.rs/ns/services", "FindBugReportResponse");
+    private final static QName _ResponseBusinessPartnershipResponse_QNAME = new QName("http://ruta.rs/ns/services", "ResponseBusinessPartnershipResponse");
+    private final static QName _FindAllParties_QNAME = new QName("http://ruta.rs/ns/services", "FindAllParties");
+    private final static QName _UpdateCatalogueWithAppResponseResponse_QNAME = new QName("http://ruta.rs/ns/services", "UpdateCatalogueWithAppResponseResponse");
+    private final static QName _UpdateRutaClient_QNAME = new QName("http://ruta.rs/ns/services", "UpdateRutaClient");
+    private final static QName _ResponseBusinessPartnership_QNAME = new QName("http://ruta.rs/ns/services", "ResponseBusinessPartnership");
     private final static QName _SearchCriterion_QNAME = new QName("http://www.ruta.rs/ns/common", "SearchCriterion");
 
     /**
@@ -736,57 +736,57 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReportsResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateParty }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllBugReportsResponse")
-    public JAXBElement<FindAllBugReportsResponse> createFindAllBugReportsResponse(FindAllBugReportsResponse value) {
-        return new JAXBElement<FindAllBugReportsResponse>(_FindAllBugReportsResponse_QNAME, FindAllBugReportsResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateParty")
+    public JAXBElement<UpdateParty> createUpdateParty(UpdateParty value) {
+        return new JAXBElement<UpdateParty>(_UpdateParty_QNAME, UpdateParty.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NotifyUpdateResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogue }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "NotifyUpdateResponse")
-    public JAXBElement<NotifyUpdateResponse> createNotifyUpdateResponse(NotifyUpdateResponse value) {
-        return new JAXBElement<NotifyUpdateResponse>(_NotifyUpdateResponse_QNAME, NotifyUpdateResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteCatalogue")
+    public JAXBElement<DeleteCatalogue> createDeleteCatalogue(DeleteCatalogue value) {
+        return new JAXBElement<DeleteCatalogue>(_DeleteCatalogue_QNAME, DeleteCatalogue.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBusinessPartnership }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequestBusinessPartnership }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ResponseBusinessPartnership")
-    public JAXBElement<ResponseBusinessPartnership> createResponseBusinessPartnership(ResponseBusinessPartnership value) {
-        return new JAXBElement<ResponseBusinessPartnership>(_ResponseBusinessPartnership_QNAME, ResponseBusinessPartnership.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "RequestBusinessPartnership")
+    public JAXBElement<RequestBusinessPartnership> createRequestBusinessPartnership(RequestBusinessPartnership value) {
+        return new JAXBElement<RequestBusinessPartnership>(_RequestBusinessPartnership_QNAME, RequestBusinessPartnership.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClient }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocument }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClient")
-    public JAXBElement<UpdateRutaClient> createUpdateRutaClient(UpdateRutaClient value) {
-        return new JAXBElement<UpdateRutaClient>(_UpdateRutaClient_QNAME, UpdateRutaClient.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteDocBoxDocument")
+    public JAXBElement<DeleteDocBoxDocument> createDeleteDocBoxDocument(DeleteDocBoxDocument value) {
+        return new JAXBElement<DeleteDocBoxDocument>(_DeleteDocBoxDocument_QNAME, DeleteDocBoxDocument.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueWithAppResponseResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link FollowParty }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogueWithAppResponseResponse")
-    public JAXBElement<UpdateCatalogueWithAppResponseResponse> createUpdateCatalogueWithAppResponseResponse(UpdateCatalogueWithAppResponseResponse value) {
-        return new JAXBElement<UpdateCatalogueWithAppResponseResponse>(_UpdateCatalogueWithAppResponseResponse_QNAME, UpdateCatalogueWithAppResponseResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FollowParty")
+    public JAXBElement<FollowParty> createFollowParty(FollowParty value) {
+        return new JAXBElement<FollowParty>(_FollowParty_QNAME, FollowParty.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllParties }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUser }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllParties")
-    public JAXBElement<FindAllParties> createFindAllParties(FindAllParties value) {
-        return new JAXBElement<FindAllParties>(_FindAllParties_QNAME, FindAllParties.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "RegisterUser")
+    public JAXBElement<RegisterUser> createRegisterUser(RegisterUser value) {
+        return new JAXBElement<RegisterUser>(_RegisterUser_QNAME, RegisterUser.class, null, value);
     }
 
     /**
@@ -799,75 +799,30 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeDocument }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDs }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeDocument")
-    public JAXBElement<DistributeDocument> createDistributeDocument(DistributeDocument value) {
-        return new JAXBElement<DistributeDocument>(_DistributeDocument_QNAME, DistributeDocument.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindAllDocBoxDocumentIDs")
+    public JAXBElement<FindAllDocBoxDocumentIDs> createFindAllDocBoxDocumentIDs(FindAllDocBoxDocumentIDs value) {
+        return new JAXBElement<FindAllDocBoxDocumentIDs>(_FindAllDocBoxDocumentIDs_QNAME, FindAllDocBoxDocumentIDs.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindBugReportResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindBugReportResponse")
-    public JAXBElement<FindBugReportResponse> createFindBugReportResponse(FindBugReportResponse value) {
-        return new JAXBElement<FindBugReportResponse>(_FindBugReportResponse_QNAME, FindBugReportResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateCatalogue")
+    public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
+        return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBusinessPartnershipResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertCatalogueResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ResponseBusinessPartnershipResponse")
-    public JAXBElement<ResponseBusinessPartnershipResponse> createResponseBusinessPartnershipResponse(ResponseBusinessPartnershipResponse value) {
-        return new JAXBElement<ResponseBusinessPartnershipResponse>(_ResponseBusinessPartnershipResponse_QNAME, ResponseBusinessPartnershipResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ClearCache }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ClearCache")
-    public JAXBElement<ClearCache> createClearCache(ClearCache value) {
-        return new JAXBElement<ClearCache>(_ClearCache_QNAME, ClearCache.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindDocBoxDocumentResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindDocBoxDocumentResponse")
-    public JAXBElement<FindDocBoxDocumentResponse> createFindDocBoxDocumentResponse(FindDocBoxDocumentResponse value) {
-        return new JAXBElement<FindDocBoxDocumentResponse>(_FindDocBoxDocumentResponse_QNAME, FindDocBoxDocumentResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentWithDocumentReceipt }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocumentWithDocumentReceipt")
-    public JAXBElement<DeleteDocBoxDocumentWithDocumentReceipt> createDeleteDocBoxDocumentWithDocumentReceipt(DeleteDocBoxDocumentWithDocumentReceipt value) {
-        return new JAXBElement<DeleteDocBoxDocumentWithDocumentReceipt>(_DeleteDocBoxDocumentWithDocumentReceipt_QNAME, DeleteDocBoxDocumentWithDocumentReceipt.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FaultInfo }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RutaException")
-    public JAXBElement<FaultInfo> createRutaException(FaultInfo value) {
-        return new JAXBElement<FaultInfo>(_RutaException_QNAME, FaultInfo.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WSDLTypeInjectionResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "WSDLTypeInjectionResponse")
-    public JAXBElement<WSDLTypeInjectionResponse> createWSDLTypeInjectionResponse(WSDLTypeInjectionResponse value) {
-        return new JAXBElement<WSDLTypeInjectionResponse>(_WSDLTypeInjectionResponse_QNAME, WSDLTypeInjectionResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertCatalogueResponse")
+    public JAXBElement<InsertCatalogueResponse> createInsertCatalogueResponse(InsertCatalogueResponse value) {
+        return new JAXBElement<InsertCatalogueResponse>(_InsertCatalogueResponse_QNAME, InsertCatalogueResponse.class, null, value);
     }
 
     /**
@@ -880,102 +835,129 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueWithAppResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindCatalogue")
-    public JAXBElement<FindCatalogue> createFindCatalogue(FindCatalogue value) {
-        return new JAXBElement<FindCatalogue>(_FindCatalogue_QNAME, FindCatalogue.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteCatalogueWithAppResponse")
+    public JAXBElement<DeleteCatalogueWithAppResponse> createDeleteCatalogueWithAppResponse(DeleteCatalogueWithAppResponse value) {
+        return new JAXBElement<DeleteCatalogueWithAppResponse>(_DeleteCatalogueWithAppResponse_QNAME, DeleteCatalogueWithAppResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogueResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertCatalogue }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchCatalogueResponse")
-    public JAXBElement<SearchCatalogueResponse> createSearchCatalogueResponse(SearchCatalogueResponse value) {
-        return new JAXBElement<SearchCatalogueResponse>(_SearchCatalogueResponse_QNAME, SearchCatalogueResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertCatalogue")
+    public JAXBElement<InsertCatalogue> createInsertCatalogue(InsertCatalogue value) {
+        return new JAXBElement<InsertCatalogue>(_InsertCatalogue_QNAME, InsertCatalogue.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertBugReport }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocumentResponse")
-    public JAXBElement<DeleteDocBoxDocumentResponse> createDeleteDocBoxDocumentResponse(DeleteDocBoxDocumentResponse value) {
-        return new JAXBElement<DeleteDocBoxDocumentResponse>(_DeleteDocBoxDocumentResponse_QNAME, DeleteDocBoxDocumentResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertBugReport")
+    public JAXBElement<InsertBugReport> createInsertBugReport(InsertBugReport value) {
+        return new JAXBElement<InsertBugReport>(_InsertBugReport_QNAME, InsertBugReport.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertPartyResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddBugReportCommentResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertPartyResponse")
-    public JAXBElement<InsertPartyResponse> createInsertPartyResponse(InsertPartyResponse value) {
-        return new JAXBElement<InsertPartyResponse>(_InsertPartyResponse_QNAME, InsertPartyResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "AddBugReportCommentResponse")
+    public JAXBElement<AddBugReportCommentResponse> createAddBugReportCommentResponse(AddBugReportCommentResponse value) {
+        return new JAXBElement<AddBugReportCommentResponse>(_AddBugReportCommentResponse_QNAME, AddBugReportCommentResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeregisterUser }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotifyUpdate }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeregisterUser")
-    public JAXBElement<DeregisterUser> createDeregisterUser(DeregisterUser value) {
-        return new JAXBElement<DeregisterUser>(_DeregisterUser_QNAME, DeregisterUser.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "NotifyUpdate")
+    public JAXBElement<NotifyUpdate> createNotifyUpdate(NotifyUpdate value) {
+        return new JAXBElement<NotifyUpdate>(_NotifyUpdate_QNAME, NotifyUpdate.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDsResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchPartyResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllDocBoxDocumentIDsResponse")
-    public JAXBElement<FindAllDocBoxDocumentIDsResponse> createFindAllDocBoxDocumentIDsResponse(FindAllDocBoxDocumentIDsResponse value) {
-        return new JAXBElement<FindAllDocBoxDocumentIDsResponse>(_FindAllDocBoxDocumentIDsResponse_QNAME, FindAllDocBoxDocumentIDsResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "SearchPartyResponse")
+    public JAXBElement<SearchPartyResponse> createSearchPartyResponse(SearchPartyResponse value) {
+        return new JAXBElement<SearchPartyResponse>(_SearchPartyResponse_QNAME, SearchPartyResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReports }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueWithAppResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllBugReports")
-    public JAXBElement<FindAllBugReports> createFindAllBugReports(FindAllBugReports value) {
-        return new JAXBElement<FindAllBugReports>(_FindAllBugReports_QNAME, FindAllBugReports.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateCatalogueWithAppResponse")
+    public JAXBElement<UpdateCatalogueWithAppResponse> createUpdateCatalogueWithAppResponse(UpdateCatalogueWithAppResponse value) {
+        return new JAXBElement<UpdateCatalogueWithAppResponse>(_UpdateCatalogueWithAppResponse_QNAME, UpdateCatalogueWithAppResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogueResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link WSDLTypeInjection }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindCatalogueResponse")
-    public JAXBElement<FindCatalogueResponse> createFindCatalogueResponse(FindCatalogueResponse value) {
-        return new JAXBElement<FindCatalogueResponse>(_FindCatalogueResponse_QNAME, FindCatalogueResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "WSDLTypeInjection")
+    public JAXBElement<WSDLTypeInjection> createWSDLTypeInjection(WSDLTypeInjection value) {
+        return new JAXBElement<WSDLTypeInjection>(_WSDLTypeInjection_QNAME, WSDLTypeInjection.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UnfollowParty }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UnfollowParty")
-    public JAXBElement<UnfollowParty> createUnfollowParty(UnfollowParty value) {
-        return new JAXBElement<UnfollowParty>(_UnfollowParty_QNAME, UnfollowParty.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteCatalogueResponse")
+    public JAXBElement<DeleteCatalogueResponse> createDeleteCatalogueResponse(DeleteCatalogueResponse value) {
+        return new JAXBElement<DeleteCatalogueResponse>(_DeleteCatalogueResponse_QNAME, DeleteCatalogueResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertImageResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ClearCacheResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertImageResponse")
-    public JAXBElement<InsertImageResponse> createInsertImageResponse(InsertImageResponse value) {
-        return new JAXBElement<InsertImageResponse>(_InsertImageResponse_QNAME, InsertImageResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "ClearCacheResponse")
+    public JAXBElement<ClearCacheResponse> createClearCacheResponse(ClearCacheResponse value) {
+        return new JAXBElement<ClearCacheResponse>(_ClearCacheResponse_QNAME, ClearCacheResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUserResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentWithDocumentReceiptResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUserResponse")
-    public JAXBElement<RegisterUserResponse> createRegisterUserResponse(RegisterUserResponse value) {
-        return new JAXBElement<RegisterUserResponse>(_RegisterUserResponse_QNAME, RegisterUserResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public JAXBElement<DeleteDocBoxDocumentWithDocumentReceiptResponse> createDeleteDocBoxDocumentWithDocumentReceiptResponse(DeleteDocBoxDocumentWithDocumentReceiptResponse value) {
+        return new JAXBElement<DeleteDocBoxDocumentWithDocumentReceiptResponse>(_DeleteDocBoxDocumentWithDocumentReceiptResponse_QNAME, DeleteDocBoxDocumentWithDocumentReceiptResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertImage }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertImage")
+    public JAXBElement<InsertImage> createInsertImage(InsertImage value) {
+        return new JAXBElement<InsertImage>(_InsertImage_QNAME, InsertImage.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachmentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertAttachmentResponse")
+    public JAXBElement<InsertAttachmentResponse> createInsertAttachmentResponse(InsertAttachmentResponse value) {
+        return new JAXBElement<InsertAttachmentResponse>(_InsertAttachmentResponse_QNAME, InsertAttachmentResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UnfollowPartyResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UnfollowPartyResponse")
+    public JAXBElement<UnfollowPartyResponse> createUnfollowPartyResponse(UnfollowPartyResponse value) {
+        return new JAXBElement<UnfollowPartyResponse>(_UnfollowPartyResponse_QNAME, UnfollowPartyResponse.class, null, value);
     }
 
     /**
@@ -988,75 +970,75 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeDocumentResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllPartiesResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DistributeDocumentResponse")
-    public JAXBElement<DistributeDocumentResponse> createDistributeDocumentResponse(DistributeDocumentResponse value) {
-        return new JAXBElement<DistributeDocumentResponse>(_DistributeDocumentResponse_QNAME, DistributeDocumentResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindAllPartiesResponse")
+    public JAXBElement<FindAllPartiesResponse> createFindAllPartiesResponse(FindAllPartiesResponse value) {
+        return new JAXBElement<FindAllPartiesResponse>(_FindAllPartiesResponse_QNAME, FindAllPartiesResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FollowPartyResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FollowPartyResponse")
-    public JAXBElement<FollowPartyResponse> createFollowPartyResponse(FollowPartyResponse value) {
-        return new JAXBElement<FollowPartyResponse>(_FollowPartyResponse_QNAME, FollowPartyResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateCatalogueResponse")
+    public JAXBElement<UpdateCatalogueResponse> createUpdateCatalogueResponse(UpdateCatalogueResponse value) {
+        return new JAXBElement<UpdateCatalogueResponse>(_UpdateCatalogueResponse_QNAME, UpdateCatalogueResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddBugReportComment }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchCatalogue")
-    public JAXBElement<SearchCatalogue> createSearchCatalogue(SearchCatalogue value) {
-        return new JAXBElement<SearchCatalogue>(_SearchCatalogue_QNAME, SearchCatalogue.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "AddBugReportComment")
+    public JAXBElement<AddBugReportComment> createAddBugReportComment(AddBugReportComment value) {
+        return new JAXBElement<AddBugReportComment>(_AddBugReportComment_QNAME, AddBugReportComment.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachment }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueWithAppResponseResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertAttachment")
-    public JAXBElement<InsertAttachment> createInsertAttachment(InsertAttachment value) {
-        return new JAXBElement<InsertAttachment>(_InsertAttachment_QNAME, InsertAttachment.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteCatalogueWithAppResponseResponse")
+    public JAXBElement<DeleteCatalogueWithAppResponseResponse> createDeleteCatalogueWithAppResponseResponse(DeleteCatalogueWithAppResponseResponse value) {
+        return new JAXBElement<DeleteCatalogueWithAppResponseResponse>(_DeleteCatalogueWithAppResponseResponse_QNAME, DeleteCatalogueWithAppResponseResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdatePartyResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertFile }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdatePartyResponse")
-    public JAXBElement<UpdatePartyResponse> createUpdatePartyResponse(UpdatePartyResponse value) {
-        return new JAXBElement<UpdatePartyResponse>(_UpdatePartyResponse_QNAME, UpdatePartyResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertFile")
+    public JAXBElement<InsertFile> createInsertFile(InsertFile value) {
+        return new JAXBElement<InsertFile>(_InsertFile_QNAME, InsertFile.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link RequestBusinessPartnershipResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchParty }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RequestBusinessPartnershipResponse")
-    public JAXBElement<RequestBusinessPartnershipResponse> createRequestBusinessPartnershipResponse(RequestBusinessPartnershipResponse value) {
-        return new JAXBElement<RequestBusinessPartnershipResponse>(_RequestBusinessPartnershipResponse_QNAME, RequestBusinessPartnershipResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "SearchParty")
+    public JAXBElement<SearchParty> createSearchParty(SearchParty value) {
+        return new JAXBElement<SearchParty>(_SearchParty_QNAME, SearchParty.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SearchBugReport }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClientResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchBugReport")
-    public JAXBElement<SearchBugReport> createSearchBugReport(SearchBugReport value) {
-        return new JAXBElement<SearchBugReport>(_SearchBugReport_QNAME, SearchBugReport.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateRutaClientResponse")
+    public JAXBElement<UpdateRutaClientResponse> createUpdateRutaClientResponse(UpdateRutaClientResponse value) {
+        return new JAXBElement<UpdateRutaClientResponse>(_UpdateRutaClientResponse_QNAME, UpdateRutaClientResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertParty }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertBugReportResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertParty")
-    public JAXBElement<InsertParty> createInsertParty(InsertParty value) {
-        return new JAXBElement<InsertParty>(_InsertParty_QNAME, InsertParty.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertBugReportResponse")
+    public JAXBElement<InsertBugReportResponse> createInsertBugReportResponse(InsertBugReportResponse value) {
+        return new JAXBElement<InsertBugReportResponse>(_InsertBugReportResponse_QNAME, InsertBugReportResponse.class, null, value);
     }
 
     /**
@@ -1069,91 +1051,10 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertFileResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertFileResponse")
-    public JAXBElement<InsertFileResponse> createInsertFileResponse(InsertFileResponse value) {
-        return new JAXBElement<InsertFileResponse>(_InsertFileResponse_QNAME, InsertFileResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SearchBugReportResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchBugReportResponse")
-    public JAXBElement<SearchBugReportResponse> createSearchBugReportResponse(SearchBugReportResponse value) {
-        return new JAXBElement<SearchBugReportResponse>(_SearchBugReportResponse_QNAME, SearchBugReportResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindBugReport }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindBugReport")
-    public JAXBElement<FindBugReport> createFindBugReport(FindBugReport value) {
-        return new JAXBElement<FindBugReport>(_FindBugReport_QNAME, FindBugReport.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertFile }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertFile")
-    public JAXBElement<InsertFile> createInsertFile(InsertFile value) {
-        return new JAXBElement<InsertFile>(_InsertFile_QNAME, InsertFile.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SearchParty }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchParty")
-    public JAXBElement<SearchParty> createSearchParty(SearchParty value) {
-        return new JAXBElement<SearchParty>(_SearchParty_QNAME, SearchParty.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AddBugReportComment }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "AddBugReportComment")
-    public JAXBElement<AddBugReportComment> createAddBugReportComment(AddBugReportComment value) {
-        return new JAXBElement<AddBugReportComment>(_AddBugReportComment_QNAME, AddBugReportComment.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueWithAppResponseResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueWithAppResponseResponse")
-    public JAXBElement<DeleteCatalogueWithAppResponseResponse> createDeleteCatalogueWithAppResponseResponse(DeleteCatalogueWithAppResponseResponse value) {
-        return new JAXBElement<DeleteCatalogueWithAppResponseResponse>(_DeleteCatalogueWithAppResponseResponse_QNAME, DeleteCatalogueWithAppResponseResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogueResponse")
-    public JAXBElement<UpdateCatalogueResponse> createUpdateCatalogueResponse(UpdateCatalogueResponse value) {
-        return new JAXBElement<UpdateCatalogueResponse>(_UpdateCatalogueResponse_QNAME, UpdateCatalogueResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllPartiesResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllPartiesResponse")
-    public JAXBElement<FindAllPartiesResponse> createFindAllPartiesResponse(FindAllPartiesResponse value) {
-        return new JAXBElement<FindAllPartiesResponse>(_FindAllPartiesResponse_QNAME, FindAllPartiesResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DeregisterUserResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeregisterUserResponse")
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeregisterUserResponse")
     public JAXBElement<DeregisterUserResponse> createDeregisterUserResponse(DeregisterUserResponse value) {
         return new JAXBElement<DeregisterUserResponse>(_DeregisterUserResponse_QNAME, DeregisterUserResponse.class, null, value);
     }
@@ -1162,9 +1063,90 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link FindDocBoxDocument }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindDocBoxDocument")
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindDocBoxDocument")
     public JAXBElement<FindDocBoxDocument> createFindDocBoxDocument(FindDocBoxDocument value) {
         return new JAXBElement<FindDocBoxDocument>(_FindDocBoxDocument_QNAME, FindDocBoxDocument.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdatePartyResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdatePartyResponse")
+    public JAXBElement<UpdatePartyResponse> createUpdatePartyResponse(UpdatePartyResponse value) {
+        return new JAXBElement<UpdatePartyResponse>(_UpdatePartyResponse_QNAME, UpdatePartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachment }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertAttachment")
+    public JAXBElement<InsertAttachment> createInsertAttachment(InsertAttachment value) {
+        return new JAXBElement<InsertAttachment>(_InsertAttachment_QNAME, InsertAttachment.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FollowPartyResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FollowPartyResponse")
+    public JAXBElement<FollowPartyResponse> createFollowPartyResponse(FollowPartyResponse value) {
+        return new JAXBElement<FollowPartyResponse>(_FollowPartyResponse_QNAME, FollowPartyResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogue }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "SearchCatalogue")
+    public JAXBElement<SearchCatalogue> createSearchCatalogue(SearchCatalogue value) {
+        return new JAXBElement<SearchCatalogue>(_SearchCatalogue_QNAME, SearchCatalogue.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeDocumentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DistributeDocumentResponse")
+    public JAXBElement<DistributeDocumentResponse> createDistributeDocumentResponse(DistributeDocumentResponse value) {
+        return new JAXBElement<DistributeDocumentResponse>(_DistributeDocumentResponse_QNAME, DistributeDocumentResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindBugReport }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindBugReport")
+    public JAXBElement<FindBugReport> createFindBugReport(FindBugReport value) {
+        return new JAXBElement<FindBugReport>(_FindBugReport_QNAME, FindBugReport.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertFileResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertFileResponse")
+    public JAXBElement<InsertFileResponse> createInsertFileResponse(InsertFileResponse value) {
+        return new JAXBElement<InsertFileResponse>(_InsertFileResponse_QNAME, InsertFileResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchBugReportResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "SearchBugReportResponse")
+    public JAXBElement<SearchBugReportResponse> createSearchBugReportResponse(SearchBugReportResponse value) {
+        return new JAXBElement<SearchBugReportResponse>(_SearchBugReportResponse_QNAME, SearchBugReportResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertParty }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertParty")
+    public JAXBElement<InsertParty> createInsertParty(InsertParty value) {
+        return new JAXBElement<InsertParty>(_InsertParty_QNAME, InsertParty.class, null, value);
     }
 
     /**
@@ -1186,6 +1168,24 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequestBusinessPartnershipResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "RequestBusinessPartnershipResponse")
+    public JAXBElement<RequestBusinessPartnershipResponse> createRequestBusinessPartnershipResponse(RequestBusinessPartnershipResponse value) {
+        return new JAXBElement<RequestBusinessPartnershipResponse>(_RequestBusinessPartnershipResponse_QNAME, RequestBusinessPartnershipResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchBugReport }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "SearchBugReport")
+    public JAXBElement<SearchBugReport> createSearchBugReport(SearchBugReport value) {
+        return new JAXBElement<SearchBugReport>(_SearchBugReport_QNAME, SearchBugReport.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DatabaseTransaction }{@code >}}
      * 
      */
@@ -1195,30 +1195,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertBugReportResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertPartyResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertBugReportResponse")
-    public JAXBElement<InsertBugReportResponse> createInsertBugReportResponse(InsertBugReportResponse value) {
-        return new JAXBElement<InsertBugReportResponse>(_InsertBugReportResponse_QNAME, InsertBugReportResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertPartyResponse")
+    public JAXBElement<InsertPartyResponse> createInsertPartyResponse(InsertPartyResponse value) {
+        return new JAXBElement<InsertPartyResponse>(_InsertPartyResponse_QNAME, InsertPartyResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClientResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateRutaClientResponse")
-    public JAXBElement<UpdateRutaClientResponse> createUpdateRutaClientResponse(UpdateRutaClientResponse value) {
-        return new JAXBElement<UpdateRutaClientResponse>(_UpdateRutaClientResponse_QNAME, UpdateRutaClientResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WSDLTypeInjection }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "WSDLTypeInjection")
-    public JAXBElement<WSDLTypeInjection> createWSDLTypeInjection(WSDLTypeInjection value) {
-        return new JAXBElement<WSDLTypeInjection>(_WSDLTypeInjection_QNAME, WSDLTypeInjection.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteDocBoxDocumentResponse")
+    public JAXBElement<DeleteDocBoxDocumentResponse> createDeleteDocBoxDocumentResponse(DeleteDocBoxDocumentResponse value) {
+        return new JAXBElement<DeleteDocBoxDocumentResponse>(_DeleteDocBoxDocumentResponse_QNAME, DeleteDocBoxDocumentResponse.class, null, value);
     }
 
     /**
@@ -1231,42 +1222,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AddBugReportCommentResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "AddBugReportCommentResponse")
-    public JAXBElement<AddBugReportCommentResponse> createAddBugReportCommentResponse(AddBugReportCommentResponse value) {
-        return new JAXBElement<AddBugReportCommentResponse>(_AddBugReportCommentResponse_QNAME, AddBugReportCommentResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NotifyUpdate }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "NotifyUpdate")
-    public JAXBElement<NotifyUpdate> createNotifyUpdate(NotifyUpdate value) {
-        return new JAXBElement<NotifyUpdate>(_NotifyUpdate_QNAME, NotifyUpdate.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SearchPartyResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "SearchPartyResponse")
-    public JAXBElement<SearchPartyResponse> createSearchPartyResponse(SearchPartyResponse value) {
-        return new JAXBElement<SearchPartyResponse>(_SearchPartyResponse_QNAME, SearchPartyResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueWithAppResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogueWithAppResponse")
-    public JAXBElement<UpdateCatalogueWithAppResponse> createUpdateCatalogueWithAppResponse(UpdateCatalogueWithAppResponse value) {
-        return new JAXBElement<UpdateCatalogueWithAppResponse>(_UpdateCatalogueWithAppResponse_QNAME, UpdateCatalogueWithAppResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DistributionTransaction }{@code >}}
      * 
      */
@@ -1276,21 +1231,57 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertAttachmentResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsertImageResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertAttachmentResponse")
-    public JAXBElement<InsertAttachmentResponse> createInsertAttachmentResponse(InsertAttachmentResponse value) {
-        return new JAXBElement<InsertAttachmentResponse>(_InsertAttachmentResponse_QNAME, InsertAttachmentResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "InsertImageResponse")
+    public JAXBElement<InsertImageResponse> createInsertImageResponse(InsertImageResponse value) {
+        return new JAXBElement<InsertImageResponse>(_InsertImageResponse_QNAME, InsertImageResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UnfollowPartyResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUserResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UnfollowPartyResponse")
-    public JAXBElement<UnfollowPartyResponse> createUnfollowPartyResponse(UnfollowPartyResponse value) {
-        return new JAXBElement<UnfollowPartyResponse>(_UnfollowPartyResponse_QNAME, UnfollowPartyResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "RegisterUserResponse")
+    public JAXBElement<RegisterUserResponse> createRegisterUserResponse(RegisterUserResponse value) {
+        return new JAXBElement<RegisterUserResponse>(_RegisterUserResponse_QNAME, RegisterUserResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogueResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindCatalogueResponse")
+    public JAXBElement<FindCatalogueResponse> createFindCatalogueResponse(FindCatalogueResponse value) {
+        return new JAXBElement<FindCatalogueResponse>(_FindCatalogueResponse_QNAME, FindCatalogueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UnfollowParty }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UnfollowParty")
+    public JAXBElement<UnfollowParty> createUnfollowParty(UnfollowParty value) {
+        return new JAXBElement<UnfollowParty>(_UnfollowParty_QNAME, UnfollowParty.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReports }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindAllBugReports")
+    public JAXBElement<FindAllBugReports> createFindAllBugReports(FindAllBugReports value) {
+        return new JAXBElement<FindAllBugReports>(_FindAllBugReports_QNAME, FindAllBugReports.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDsResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindAllDocBoxDocumentIDsResponse")
+    public JAXBElement<FindAllDocBoxDocumentIDsResponse> createFindAllDocBoxDocumentIDsResponse(FindAllDocBoxDocumentIDsResponse value) {
+        return new JAXBElement<FindAllDocBoxDocumentIDsResponse>(_FindAllDocBoxDocumentIDsResponse_QNAME, FindAllDocBoxDocumentIDsResponse.class, null, value);
     }
 
     /**
@@ -1303,48 +1294,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ClearCacheResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeregisterUser }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "ClearCacheResponse")
-    public JAXBElement<ClearCacheResponse> createClearCacheResponse(ClearCacheResponse value) {
-        return new JAXBElement<ClearCacheResponse>(_ClearCacheResponse_QNAME, ClearCacheResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeregisterUser")
+    public JAXBElement<DeregisterUser> createDeregisterUser(DeregisterUser value) {
+        return new JAXBElement<DeregisterUser>(_DeregisterUser_QNAME, DeregisterUser.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentWithDocumentReceiptResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link FaultInfo }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocumentWithDocumentReceiptResponse")
-    public JAXBElement<DeleteDocBoxDocumentWithDocumentReceiptResponse> createDeleteDocBoxDocumentWithDocumentReceiptResponse(DeleteDocBoxDocumentWithDocumentReceiptResponse value) {
-        return new JAXBElement<DeleteDocBoxDocumentWithDocumentReceiptResponse>(_DeleteDocBoxDocumentWithDocumentReceiptResponse_QNAME, DeleteDocBoxDocumentWithDocumentReceiptResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertImage }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertImage")
-    public JAXBElement<InsertImage> createInsertImage(InsertImage value) {
-        return new JAXBElement<InsertImage>(_InsertImage_QNAME, InsertImage.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueResponse")
-    public JAXBElement<DeleteCatalogueResponse> createDeleteCatalogueResponse(DeleteCatalogueResponse value) {
-        return new JAXBElement<DeleteCatalogueResponse>(_DeleteCatalogueResponse_QNAME, DeleteCatalogueResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertCatalogueResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogueResponse")
-    public JAXBElement<InsertCatalogueResponse> createInsertCatalogueResponse(InsertCatalogueResponse value) {
-        return new JAXBElement<InsertCatalogueResponse>(_InsertCatalogueResponse_QNAME, InsertCatalogueResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "RutaException")
+    public JAXBElement<FaultInfo> createRutaException(FaultInfo value) {
+        return new JAXBElement<FaultInfo>(_RutaException_QNAME, FaultInfo.class, null, value);
     }
 
     /**
@@ -1357,21 +1321,30 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllDocBoxDocumentIDs }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocumentWithDocumentReceipt }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FindAllDocBoxDocumentIDs")
-    public JAXBElement<FindAllDocBoxDocumentIDs> createFindAllDocBoxDocumentIDs(FindAllDocBoxDocumentIDs value) {
-        return new JAXBElement<FindAllDocBoxDocumentIDs>(_FindAllDocBoxDocumentIDs_QNAME, FindAllDocBoxDocumentIDs.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DeleteDocBoxDocumentWithDocumentReceipt")
+    public JAXBElement<DeleteDocBoxDocumentWithDocumentReceipt> createDeleteDocBoxDocumentWithDocumentReceipt(DeleteDocBoxDocumentWithDocumentReceipt value) {
+        return new JAXBElement<DeleteDocBoxDocumentWithDocumentReceipt>(_DeleteDocBoxDocumentWithDocumentReceipt_QNAME, DeleteDocBoxDocumentWithDocumentReceipt.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ClearCache }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateCatalogue")
-    public JAXBElement<UpdateCatalogue> createUpdateCatalogue(UpdateCatalogue value) {
-        return new JAXBElement<UpdateCatalogue>(_UpdateCatalogue_QNAME, UpdateCatalogue.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "ClearCache")
+    public JAXBElement<ClearCache> createClearCache(ClearCache value) {
+        return new JAXBElement<ClearCache>(_ClearCache_QNAME, ClearCache.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindDocBoxDocumentResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindDocBoxDocumentResponse")
+    public JAXBElement<FindDocBoxDocumentResponse> createFindDocBoxDocumentResponse(FindDocBoxDocumentResponse value) {
+        return new JAXBElement<FindDocBoxDocumentResponse>(_FindDocBoxDocumentResponse_QNAME, FindDocBoxDocumentResponse.class, null, value);
     }
 
     /**
@@ -1393,12 +1366,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertBugReport }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link SearchCatalogueResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertBugReport")
-    public JAXBElement<InsertBugReport> createInsertBugReport(InsertBugReport value) {
-        return new JAXBElement<InsertBugReport>(_InsertBugReport_QNAME, InsertBugReport.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "SearchCatalogueResponse")
+    public JAXBElement<SearchCatalogueResponse> createSearchCatalogueResponse(SearchCatalogueResponse value) {
+        return new JAXBElement<SearchCatalogueResponse>(_SearchCatalogueResponse_QNAME, SearchCatalogueResponse.class, null, value);
     }
 
     /**
@@ -1411,48 +1384,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogueWithAppResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindCatalogue }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogueWithAppResponse")
-    public JAXBElement<DeleteCatalogueWithAppResponse> createDeleteCatalogueWithAppResponse(DeleteCatalogueWithAppResponse value) {
-        return new JAXBElement<DeleteCatalogueWithAppResponse>(_DeleteCatalogueWithAppResponse_QNAME, DeleteCatalogueWithAppResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindCatalogue")
+    public JAXBElement<FindCatalogue> createFindCatalogue(FindCatalogue value) {
+        return new JAXBElement<FindCatalogue>(_FindCatalogue_QNAME, FindCatalogue.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link InsertCatalogue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link WSDLTypeInjectionResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "InsertCatalogue")
-    public JAXBElement<InsertCatalogue> createInsertCatalogue(InsertCatalogue value) {
-        return new JAXBElement<InsertCatalogue>(_InsertCatalogue_QNAME, InsertCatalogue.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link RequestBusinessPartnership }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RequestBusinessPartnership")
-    public JAXBElement<RequestBusinessPartnership> createRequestBusinessPartnership(RequestBusinessPartnership value) {
-        return new JAXBElement<RequestBusinessPartnership>(_RequestBusinessPartnership_QNAME, RequestBusinessPartnership.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteCatalogue }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteCatalogue")
-    public JAXBElement<DeleteCatalogue> createDeleteCatalogue(DeleteCatalogue value) {
-        return new JAXBElement<DeleteCatalogue>(_DeleteCatalogue_QNAME, DeleteCatalogue.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateParty }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "UpdateParty")
-    public JAXBElement<UpdateParty> createUpdateParty(UpdateParty value) {
-        return new JAXBElement<UpdateParty>(_UpdateParty_QNAME, UpdateParty.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "WSDLTypeInjectionResponse")
+    public JAXBElement<WSDLTypeInjectionResponse> createWSDLTypeInjectionResponse(WSDLTypeInjectionResponse value) {
+        return new JAXBElement<WSDLTypeInjectionResponse>(_WSDLTypeInjectionResponse_QNAME, WSDLTypeInjectionResponse.class, null, value);
     }
 
     /**
@@ -1474,30 +1420,84 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link RegisterUser }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllBugReportsResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "RegisterUser")
-    public JAXBElement<RegisterUser> createRegisterUser(RegisterUser value) {
-        return new JAXBElement<RegisterUser>(_RegisterUser_QNAME, RegisterUser.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindAllBugReportsResponse")
+    public JAXBElement<FindAllBugReportsResponse> createFindAllBugReportsResponse(FindAllBugReportsResponse value) {
+        return new JAXBElement<FindAllBugReportsResponse>(_FindAllBugReportsResponse_QNAME, FindAllBugReportsResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteDocBoxDocument }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link NotifyUpdateResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "DeleteDocBoxDocument")
-    public JAXBElement<DeleteDocBoxDocument> createDeleteDocBoxDocument(DeleteDocBoxDocument value) {
-        return new JAXBElement<DeleteDocBoxDocument>(_DeleteDocBoxDocument_QNAME, DeleteDocBoxDocument.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "NotifyUpdateResponse")
+    public JAXBElement<NotifyUpdateResponse> createNotifyUpdateResponse(NotifyUpdateResponse value) {
+        return new JAXBElement<NotifyUpdateResponse>(_NotifyUpdateResponse_QNAME, NotifyUpdateResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FollowParty }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DistributeDocument }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://ruta.rs/services", name = "FollowParty")
-    public JAXBElement<FollowParty> createFollowParty(FollowParty value) {
-        return new JAXBElement<FollowParty>(_FollowParty_QNAME, FollowParty.class, null, value);
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "DistributeDocument")
+    public JAXBElement<DistributeDocument> createDistributeDocument(DistributeDocument value) {
+        return new JAXBElement<DistributeDocument>(_DistributeDocument_QNAME, DistributeDocument.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindBugReportResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindBugReportResponse")
+    public JAXBElement<FindBugReportResponse> createFindBugReportResponse(FindBugReportResponse value) {
+        return new JAXBElement<FindBugReportResponse>(_FindBugReportResponse_QNAME, FindBugReportResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBusinessPartnershipResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "ResponseBusinessPartnershipResponse")
+    public JAXBElement<ResponseBusinessPartnershipResponse> createResponseBusinessPartnershipResponse(ResponseBusinessPartnershipResponse value) {
+        return new JAXBElement<ResponseBusinessPartnershipResponse>(_ResponseBusinessPartnershipResponse_QNAME, ResponseBusinessPartnershipResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindAllParties }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "FindAllParties")
+    public JAXBElement<FindAllParties> createFindAllParties(FindAllParties value) {
+        return new JAXBElement<FindAllParties>(_FindAllParties_QNAME, FindAllParties.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateCatalogueWithAppResponseResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateCatalogueWithAppResponseResponse")
+    public JAXBElement<UpdateCatalogueWithAppResponseResponse> createUpdateCatalogueWithAppResponseResponse(UpdateCatalogueWithAppResponseResponse value) {
+        return new JAXBElement<UpdateCatalogueWithAppResponseResponse>(_UpdateCatalogueWithAppResponseResponse_QNAME, UpdateCatalogueWithAppResponseResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateRutaClient }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "UpdateRutaClient")
+    public JAXBElement<UpdateRutaClient> createUpdateRutaClient(UpdateRutaClient value) {
+        return new JAXBElement<UpdateRutaClient>(_UpdateRutaClient_QNAME, UpdateRutaClient.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseBusinessPartnership }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ruta.rs/ns/services", name = "ResponseBusinessPartnership")
+    public JAXBElement<ResponseBusinessPartnership> createResponseBusinessPartnership(ResponseBusinessPartnership value) {
+        return new JAXBElement<ResponseBusinessPartnership>(_ResponseBusinessPartnership_QNAME, ResponseBusinessPartnership.class, null, value);
     }
 
     /**

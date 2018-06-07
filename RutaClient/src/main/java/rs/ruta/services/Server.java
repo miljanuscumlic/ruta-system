@@ -44,7 +44,7 @@ import rs.ruta.common.RutaVersion;
  * Generated source version: 2.2
  * 
  */
-@WebService(name = "Server", targetNamespace = "http://ruta.rs/services")
+@WebService(name = "Server", targetNamespace = "http://ruta.rs/ns/services")
 @XmlSeeAlso({
     ObjectFactory.class
 })
@@ -56,14 +56,118 @@ public interface Server {
      * @param arg1
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.InsertFileResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.UpdatePartyResponse>
      */
-    @WebMethod(operationName = "InsertFile")
-    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFile")
-    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFileResponse")
-    public Response<InsertFileResponse> insertFileAsync(
+    @WebMethod(operationName = "UpdateParty")
+    @RequestWrapper(localName = "UpdateParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateParty")
+    @ResponseWrapper(localName = "UpdatePartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdatePartyResponse")
+    public Response<UpdatePartyResponse> updatePartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        DataHandler arg0,
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        PartyType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "UpdateParty")
+    @RequestWrapper(localName = "UpdateParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateParty")
+    @ResponseWrapper(localName = "UpdatePartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdatePartyResponse")
+    public Future<?> updatePartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        PartyType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<UpdatePartyResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "UpdateParty")
+    @RequestWrapper(localName = "UpdateParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateParty")
+    @ResponseWrapper(localName = "UpdatePartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdatePartyResponse")
+    public void updateParty(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        PartyType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteCatalogueResponse>
+     */
+    @WebMethod(operationName = "DeleteCatalogue")
+    @RequestWrapper(localName = "DeleteCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogue")
+    @ResponseWrapper(localName = "DeleteCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueResponse")
+    public Response<DeleteCatalogueResponse> deleteCatalogueAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeleteCatalogue")
+    @RequestWrapper(localName = "DeleteCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogue")
+    @ResponseWrapper(localName = "DeleteCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueResponse")
+    public Future<?> deleteCatalogueAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeleteCatalogueResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeleteCatalogue")
+    @RequestWrapper(localName = "DeleteCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogue")
+    @ResponseWrapper(localName = "DeleteCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueResponse")
+    public void deleteCatalogue(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertAttachmentResponse>
+     */
+    @WebMethod(operationName = "InsertAttachment")
+    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertAttachment")
+    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertAttachmentResponse")
+    public Response<InsertAttachmentResponse> insertAttachmentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        ReportAttachment arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1);
 
@@ -75,16 +179,16 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "InsertFile")
-    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFile")
-    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFileResponse")
-    public Future<?> insertFileAsync(
+    @WebMethod(operationName = "InsertAttachment")
+    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertAttachment")
+    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertAttachmentResponse")
+    public Future<?> insertAttachmentAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        DataHandler arg0,
+        ReportAttachment arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<InsertFileResponse> asyncHandler);
+        AsyncHandler<InsertAttachmentResponse> asyncHandler);
 
     /**
      * 
@@ -92,12 +196,12 @@ public interface Server {
      * @param arg0
      * @throws RutaException
      */
-    @WebMethod(operationName = "InsertFile")
-    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFile")
-    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertFileResponse")
-    public void insertFile(
+    @WebMethod(operationName = "InsertAttachment")
+    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertAttachment")
+    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertAttachmentResponse")
+    public void insertAttachment(
         @WebParam(name = "arg0", targetNamespace = "")
-        DataHandler arg0,
+        ReportAttachment arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1)
         throws RutaException
@@ -107,14 +211,14 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.SearchPartyResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.SearchCatalogueResponse>
      */
-    @WebMethod(operationName = "SearchParty")
-    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
-    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
-    public Response<SearchPartyResponse> searchPartyAsync(
+    @WebMethod(operationName = "SearchCatalogue")
+    @RequestWrapper(localName = "SearchCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchCatalogue")
+    @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchCatalogueResponse")
+    public Response<SearchCatalogueResponse> searchCatalogueAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        PartySearchCriterion arg0);
+        CatalogueSearchCriterion arg0);
 
     /**
      * 
@@ -123,81 +227,29 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "SearchParty")
-    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
-    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
-    public Future<?> searchPartyAsync(
+    @WebMethod(operationName = "SearchCatalogue")
+    @RequestWrapper(localName = "SearchCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchCatalogue")
+    @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchCatalogueResponse")
+    public Future<?> searchCatalogueAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        PartySearchCriterion arg0,
+        CatalogueSearchCriterion arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<SearchPartyResponse> asyncHandler);
+        AsyncHandler<SearchCatalogueResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
      * @return
-     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
+     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType>
      * @throws RutaException
      */
-    @WebMethod(operationName = "SearchParty")
+    @WebMethod(operationName = "SearchCatalogue")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchParty")
-    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchPartyResponse")
-    public List<PartyType> searchParty(
+    @RequestWrapper(localName = "SearchCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchCatalogue")
+    @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchCatalogueResponse")
+    public List<CatalogueType> searchCatalogue(
         @WebParam(name = "arg0", targetNamespace = "")
-        PartySearchCriterion arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.AddBugReportCommentResponse>
-     */
-    @WebMethod(operationName = "AddBugReportComment")
-    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportComment")
-    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportCommentResponse")
-    public Response<AddBugReportCommentResponse> addBugReportCommentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        ReportComment arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "AddBugReportComment")
-    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportComment")
-    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportCommentResponse")
-    public Future<?> addBugReportCommentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        ReportComment arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<AddBugReportCommentResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "AddBugReportComment")
-    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportComment")
-    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.AddBugReportCommentResponse")
-    public void addBugReportComment(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        ReportComment arg1)
+        CatalogueSearchCriterion arg0)
         throws RutaException
     ;
 
@@ -205,14 +257,14 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.ResponseBusinessPartnershipResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.RequestBusinessPartnershipResponse>
      */
-    @WebMethod(operationName = "ResponseBusinessPartnership")
-    @RequestWrapper(localName = "ResponseBusinessPartnership", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ResponseBusinessPartnership")
-    @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
-    public Response<ResponseBusinessPartnershipResponse> responseBusinessPartnershipAsync(
+    @WebMethod(operationName = "RequestBusinessPartnership")
+    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
+    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
+    public Response<RequestBusinessPartnershipResponse> requestBusinessPartnershipAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipResponse arg0);
+        BusinessPartnershipRequest arg0);
 
     /**
      * 
@@ -221,26 +273,26 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "ResponseBusinessPartnership")
-    @RequestWrapper(localName = "ResponseBusinessPartnership", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ResponseBusinessPartnership")
-    @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
-    public Future<?> responseBusinessPartnershipAsync(
+    @WebMethod(operationName = "RequestBusinessPartnership")
+    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
+    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
+    public Future<?> requestBusinessPartnershipAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipResponse arg0,
+        BusinessPartnershipRequest arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<ResponseBusinessPartnershipResponse> asyncHandler);
+        AsyncHandler<RequestBusinessPartnershipResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
      * @throws RutaException
      */
-    @WebMethod(operationName = "ResponseBusinessPartnership")
-    @RequestWrapper(localName = "ResponseBusinessPartnership", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ResponseBusinessPartnership")
-    @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
-    public void responseBusinessPartnership(
+    @WebMethod(operationName = "RequestBusinessPartnership")
+    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
+    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
+    public void requestBusinessPartnership(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipResponse arg0)
+        BusinessPartnershipRequest arg0)
         throws RutaException
     ;
 
@@ -248,58 +300,12 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FindDocBoxDocumentResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindBugReportResponse>
      */
-    @WebMethod(operationName = "FindDocBoxDocument")
-    @RequestWrapper(localName = "FindDocBoxDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindDocBoxDocument")
-    @ResponseWrapper(localName = "FindDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindDocBoxDocumentResponse")
-    public Response<FindDocBoxDocumentResponse> findDocBoxDocumentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DocBoxDocumentSearchCriterion arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "FindDocBoxDocument")
-    @RequestWrapper(localName = "FindDocBoxDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindDocBoxDocument")
-    @ResponseWrapper(localName = "FindDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindDocBoxDocumentResponse")
-    public Future<?> findDocBoxDocumentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DocBoxDocumentSearchCriterion arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FindDocBoxDocumentResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns java.lang.Object
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "FindDocBoxDocument")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindDocBoxDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindDocBoxDocument")
-    @ResponseWrapper(localName = "FindDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindDocBoxDocumentResponse")
-    public Object findDocBoxDocument(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DocBoxDocumentSearchCriterion arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateRutaClientResponse>
-     */
-    @WebMethod(operationName = "UpdateRutaClient")
-    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClient")
-    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClientResponse")
-    public Response<UpdateRutaClientResponse> updateRutaClientAsync(
+    @WebMethod(operationName = "FindBugReport")
+    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindBugReport")
+    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindBugReportResponse")
+    public Response<FindBugReportResponse> findBugReportAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0);
 
@@ -310,27 +316,27 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "UpdateRutaClient")
-    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClient")
-    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClientResponse")
-    public Future<?> updateRutaClientAsync(
+    @WebMethod(operationName = "FindBugReport")
+    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindBugReport")
+    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindBugReportResponse")
+    public Future<?> findBugReportAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<UpdateRutaClientResponse> asyncHandler);
+        AsyncHandler<FindBugReportResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
      * @return
-     *     returns rs.ruta.common.RutaVersion
+     *     returns rs.ruta.common.BugReport
      * @throws RutaException
      */
-    @WebMethod(operationName = "UpdateRutaClient")
+    @WebMethod(operationName = "FindBugReport")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClient")
-    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateRutaClientResponse")
-    public RutaVersion updateRutaClient(
+    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindBugReport")
+    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindBugReportResponse")
+    public BugReport findBugReport(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0)
         throws RutaException
@@ -338,38 +344,163 @@ public interface Server {
 
     /**
      * 
+     * @param arg1
+     * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllPartiesResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertPartyResponse>
      */
-    @WebMethod(operationName = "FindAllParties")
-    @RequestWrapper(localName = "FindAllParties", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllParties")
-    @ResponseWrapper(localName = "FindAllPartiesResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllPartiesResponse")
-    public Response<FindAllPartiesResponse> findAllPartiesAsync();
+    @WebMethod(operationName = "InsertParty")
+    @RequestWrapper(localName = "InsertParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertParty")
+    @ResponseWrapper(localName = "InsertPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertPartyResponse")
+    public Response<InsertPartyResponse> insertPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        PartyType arg1);
 
     /**
      * 
+     * @param arg1
+     * @param arg0
      * @param asyncHandler
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "FindAllParties")
-    @RequestWrapper(localName = "FindAllParties", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllParties")
-    @ResponseWrapper(localName = "FindAllPartiesResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllPartiesResponse")
-    public Future<?> findAllPartiesAsync(
+    @WebMethod(operationName = "InsertParty")
+    @RequestWrapper(localName = "InsertParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertParty")
+    @ResponseWrapper(localName = "InsertPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertPartyResponse")
+    public Future<?> insertPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        PartyType arg1,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FindAllPartiesResponse> asyncHandler);
+        AsyncHandler<InsertPartyResponse> asyncHandler);
 
     /**
      * 
+     * @param arg1
+     * @param arg0
      * @return
-     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
+     *     returns java.lang.String
      * @throws RutaException
      */
-    @WebMethod(operationName = "FindAllParties")
+    @WebMethod(operationName = "InsertParty")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindAllParties", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllParties")
-    @ResponseWrapper(localName = "FindAllPartiesResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllPartiesResponse")
-    public List<PartyType> findAllParties()
+    @RequestWrapper(localName = "InsertParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertParty")
+    @ResponseWrapper(localName = "InsertPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertPartyResponse")
+    public String insertParty(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        PartyType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteDocBoxDocumentResponse>
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocument")
+    @RequestWrapper(localName = "DeleteDocBoxDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocument")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentResponse")
+    public Response<DeleteDocBoxDocumentResponse> deleteDocBoxDocumentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocument")
+    @RequestWrapper(localName = "DeleteDocBoxDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocument")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentResponse")
+    public Future<?> deleteDocBoxDocumentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeleteDocBoxDocumentResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocument")
+    @RequestWrapper(localName = "DeleteDocBoxDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocument")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentResponse")
+    public void deleteDocBoxDocument(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FollowPartyResponse>
+     */
+    @WebMethod(operationName = "FollowParty")
+    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FollowParty")
+    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FollowPartyResponse")
+    public Response<FollowPartyResponse> followPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FollowParty")
+    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FollowParty")
+    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FollowPartyResponse")
+    public Future<?> followPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FollowPartyResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FollowParty")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FollowParty")
+    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FollowPartyResponse")
+    public PartyType followParty(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
         throws RutaException
     ;
 
@@ -377,14 +508,14 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DistributeDocumentResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.SearchBugReportResponse>
      */
-    @WebMethod(operationName = "DistributeDocument")
-    @RequestWrapper(localName = "DistributeDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DistributeDocument")
-    @ResponseWrapper(localName = "DistributeDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DistributeDocumentResponse")
-    public Response<DistributeDocumentResponse> distributeDocumentAsync(
+    @WebMethod(operationName = "SearchBugReport")
+    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchBugReport")
+    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchBugReportResponse")
+    public Response<SearchBugReportResponse> searchBugReportAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        Object arg0);
+        BugReportSearchCriterion arg0);
 
     /**
      * 
@@ -393,26 +524,675 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "DistributeDocument")
-    @RequestWrapper(localName = "DistributeDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DistributeDocument")
-    @ResponseWrapper(localName = "DistributeDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DistributeDocumentResponse")
-    public Future<?> distributeDocumentAsync(
+    @WebMethod(operationName = "SearchBugReport")
+    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchBugReport")
+    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchBugReportResponse")
+    public Future<?> searchBugReportAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        Object arg0,
+        BugReportSearchCriterion arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DistributeDocumentResponse> asyncHandler);
+        AsyncHandler<SearchBugReportResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns java.util.List<rs.ruta.common.BugReport>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "SearchBugReport")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchBugReport")
+    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchBugReportResponse")
+    public List<BugReport> searchBugReport(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReportSearchCriterion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.RegisterUserResponse>
+     */
+    @WebMethod(operationName = "RegisterUser")
+    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RegisterUser")
+    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RegisterUserResponse")
+    public Response<RegisterUserResponse> registerUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        PartyType arg2);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "RegisterUser")
+    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RegisterUser")
+    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RegisterUserResponse")
+    public Future<?> registerUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        PartyType arg2,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<RegisterUserResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "RegisterUser")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RegisterUser")
+    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RegisterUserResponse")
+    public String registerUser(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        PartyType arg2)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllDocBoxDocumentIDsResponse>
+     */
+    @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
+    @RequestWrapper(localName = "FindAllDocBoxDocumentIDs", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDs")
+    @ResponseWrapper(localName = "FindAllDocBoxDocumentIDsResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDsResponse")
+    public Response<FindAllDocBoxDocumentIDsResponse> findAllDocBoxDocumentIDsAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DocBoxAllIDsSearchCriterion arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
+    @RequestWrapper(localName = "FindAllDocBoxDocumentIDs", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDs")
+    @ResponseWrapper(localName = "FindAllDocBoxDocumentIDsResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDsResponse")
+    public Future<?> findAllDocBoxDocumentIDsAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DocBoxAllIDsSearchCriterion arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FindAllDocBoxDocumentIDsResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns java.util.List<java.lang.String>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FindAllDocBoxDocumentIDs", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDs")
+    @ResponseWrapper(localName = "FindAllDocBoxDocumentIDsResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDsResponse")
+    public List<String> findAllDocBoxDocumentIDs(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DocBoxAllIDsSearchCriterion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateCatalogueResponse>
+     */
+    @WebMethod(operationName = "UpdateCatalogue")
+    @RequestWrapper(localName = "UpdateCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogue")
+    @ResponseWrapper(localName = "UpdateCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueResponse")
+    public Response<UpdateCatalogueResponse> updateCatalogueAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "UpdateCatalogue")
+    @RequestWrapper(localName = "UpdateCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogue")
+    @ResponseWrapper(localName = "UpdateCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueResponse")
+    public Future<?> updateCatalogueAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<UpdateCatalogueResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "UpdateCatalogue")
+    @RequestWrapper(localName = "UpdateCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogue")
+    @ResponseWrapper(localName = "UpdateCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueResponse")
+    public void updateCatalogue(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteCatalogueWithAppResponseResponse>
+     */
+    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
+    public Response<DeleteCatalogueWithAppResponseResponse> deleteCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
+    public Future<?> deleteCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeleteCatalogueWithAppResponseResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
+    public ApplicationResponseType deleteCatalogueWithAppResponse(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueDeletionType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertCatalogueResponse>
+     */
+    @WebMethod(operationName = "InsertCatalogue")
+    @RequestWrapper(localName = "InsertCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertCatalogue")
+    @ResponseWrapper(localName = "InsertCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertCatalogueResponse")
+    public Response<InsertCatalogueResponse> insertCatalogueAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "InsertCatalogue")
+    @RequestWrapper(localName = "InsertCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertCatalogue")
+    @ResponseWrapper(localName = "InsertCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertCatalogueResponse")
+    public Future<?> insertCatalogueAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<InsertCatalogueResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "InsertCatalogue")
+    @RequestWrapper(localName = "InsertCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertCatalogue")
+    @ResponseWrapper(localName = "InsertCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertCatalogueResponse")
+    public void insertCatalogue(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.UnfollowPartyResponse>
+     */
+    @WebMethod(operationName = "UnfollowParty")
+    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UnfollowParty")
+    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UnfollowPartyResponse")
+    public Response<UnfollowPartyResponse> unfollowPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "UnfollowParty")
+    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UnfollowParty")
+    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UnfollowPartyResponse")
+    public Future<?> unfollowPartyAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<UnfollowPartyResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "UnfollowParty")
+    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UnfollowParty")
+    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UnfollowPartyResponse")
+    public void unfollowParty(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllBugReportsResponse>
+     */
+    @WebMethod(operationName = "FindAllBugReports")
+    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllBugReports")
+    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllBugReportsResponse")
+    public Response<FindAllBugReportsResponse> findAllBugReportsAsync();
+
+    /**
+     * 
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FindAllBugReports")
+    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllBugReports")
+    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllBugReportsResponse")
+    public Future<?> findAllBugReportsAsync(
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FindAllBugReportsResponse> asyncHandler);
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<rs.ruta.common.BugReport>
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FindAllBugReports")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllBugReports")
+    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllBugReportsResponse")
+    public List<BugReport> findAllBugReports()
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertBugReportResponse>
+     */
+    @WebMethod(operationName = "InsertBugReport")
+    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertBugReport")
+    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertBugReportResponse")
+    public Response<InsertBugReportResponse> insertBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReport arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "InsertBugReport")
+    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertBugReport")
+    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertBugReportResponse")
+    public Future<?> insertBugReportAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BugReport arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<InsertBugReportResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
      * @throws RutaException
      */
-    @WebMethod(operationName = "DistributeDocument")
-    @RequestWrapper(localName = "DistributeDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DistributeDocument")
-    @ResponseWrapper(localName = "DistributeDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DistributeDocumentResponse")
-    public void distributeDocument(
+    @WebMethod(operationName = "InsertBugReport")
+    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertBugReport")
+    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertBugReportResponse")
+    public void insertBugReport(
         @WebParam(name = "arg0", targetNamespace = "")
-        Object arg0)
+        BugReport arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeregisterUserResponse>
+     */
+    @WebMethod(operationName = "DeregisterUser")
+    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeregisterUser")
+    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeregisterUserResponse")
+    public Response<DeregisterUserResponse> deregisterUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        DeregistrationNotice arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeregisterUser")
+    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeregisterUser")
+    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeregisterUserResponse")
+    public Future<?> deregisterUserAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        DeregistrationNotice arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeregisterUserResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeregisterUser")
+    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeregisterUser")
+    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeregisterUserResponse")
+    public void deregisterUser(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        DeregistrationNotice arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.NotifyUpdateResponse>
+     */
+    @WebMethod(operationName = "NotifyUpdate")
+    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.NotifyUpdate")
+    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.NotifyUpdateResponse")
+    public Response<NotifyUpdateResponse> notifyUpdateAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        RutaVersion arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "NotifyUpdate")
+    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.NotifyUpdate")
+    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.NotifyUpdateResponse")
+    public Future<?> notifyUpdateAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        RutaVersion arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<NotifyUpdateResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "NotifyUpdate")
+    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.NotifyUpdate")
+    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.NotifyUpdateResponse")
+    public void notifyUpdate(
+        @WebParam(name = "arg0", targetNamespace = "")
+        RutaVersion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateCatalogueWithAppResponseResponse>
+     */
+    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
+    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
+    public Response<UpdateCatalogueWithAppResponseResponse> updateCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
+    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
+    public Future<?> updateCatalogueWithAppResponseAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<UpdateCatalogueWithAppResponseResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
+    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
+    public ApplicationResponseType updateCatalogueWithAppResponse(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        CatalogueType arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse>
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public Response<DeleteDocBoxDocumentWithDocumentReceiptResponse> deleteDocBoxDocumentWithDocumentReceiptAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        DocumentReceipt arg2);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public Future<?> deleteDocBoxDocumentWithDocumentReceiptAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        DocumentReceipt arg2,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<DeleteDocBoxDocumentWithDocumentReceiptResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
+    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
+    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
+    public void deleteDocBoxDocumentWithDocumentReceipt(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        DocumentReceipt arg2)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.ClearCacheResponse>
+     */
+    @WebMethod(operationName = "ClearCache")
+    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCache")
+    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCacheResponse")
+    public Response<ClearCacheResponse> clearCacheAsync();
+
+    /**
+     * 
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "ClearCache")
+    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCache")
+    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCacheResponse")
+    public Future<?> clearCacheAsync(
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<ClearCacheResponse> asyncHandler);
+
+    /**
+     * 
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "ClearCache")
+    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCache")
+    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCacheResponse")
+    public void clearCache()
         throws RutaException
     ;
 
@@ -428,8 +1208,8 @@ public interface Server {
      *     returns javax.xml.ws.Response<rs.ruta.services.WSDLTypeInjectionResponse>
      */
     @WebMethod(operationName = "WSDLTypeInjection")
-    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjection")
-    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
+    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.WSDLTypeInjection")
+    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
     public Response<WSDLTypeInjectionResponse> wsdlTypeInjectionAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         OrderType arg0,
@@ -457,8 +1237,8 @@ public interface Server {
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
     @WebMethod(operationName = "WSDLTypeInjection")
-    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjection")
-    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
+    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.WSDLTypeInjection")
+    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
     public Future<?> wsdlTypeInjectionAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         OrderType arg0,
@@ -485,8 +1265,8 @@ public interface Server {
      * @param arg0
      */
     @WebMethod(operationName = "WSDLTypeInjection")
-    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjection")
-    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
+    @RequestWrapper(localName = "WSDLTypeInjection", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.WSDLTypeInjection")
+    @ResponseWrapper(localName = "WSDLTypeInjectionResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.WSDLTypeInjectionResponse")
     public void wsdlTypeInjection(
         @WebParam(name = "arg0", targetNamespace = "")
         OrderType arg0,
@@ -503,111 +1283,16 @@ public interface Server {
 
     /**
      * 
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.ClearCacheResponse>
-     */
-    @WebMethod(operationName = "ClearCache")
-    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
-    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
-    public Response<ClearCacheResponse> clearCacheAsync();
-
-    /**
-     * 
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "ClearCache")
-    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
-    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
-    public Future<?> clearCacheAsync(
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<ClearCacheResponse> asyncHandler);
-
-    /**
-     * 
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "ClearCache")
-    @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCache")
-    @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.ClearCacheResponse")
-    public void clearCache()
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertImageResponse>
      */
-    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
-    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
-    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
-    public Response<DeleteDocBoxDocumentWithDocumentReceiptResponse> deleteDocBoxDocumentWithDocumentReceiptAsync(
+    @WebMethod(operationName = "InsertImage")
+    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertImage")
+    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertImageResponse")
+    public Response<InsertImageResponse> insertImageAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        DocumentReceipt arg2);
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
-    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
-    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
-    public Future<?> deleteDocBoxDocumentWithDocumentReceiptAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        DocumentReceipt arg2,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DeleteDocBoxDocumentWithDocumentReceiptResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "DeleteDocBoxDocumentWithDocumentReceipt")
-    @RequestWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceipt", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceipt")
-    @ResponseWrapper(localName = "DeleteDocBoxDocumentWithDocumentReceiptResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentWithDocumentReceiptResponse")
-    public void deleteDocBoxDocumentWithDocumentReceipt(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        DocumentReceipt arg2)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.NotifyUpdateResponse>
-     */
-    @WebMethod(operationName = "NotifyUpdate")
-    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdate")
-    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdateResponse")
-    public Response<NotifyUpdateResponse> notifyUpdateAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        RutaVersion arg0);
+        DataHandler arg0);
 
     /**
      * 
@@ -616,81 +1301,26 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "NotifyUpdate")
-    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdate")
-    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdateResponse")
-    public Future<?> notifyUpdateAsync(
+    @WebMethod(operationName = "InsertImage")
+    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertImage")
+    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertImageResponse")
+    public Future<?> insertImageAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        RutaVersion arg0,
+        DataHandler arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<NotifyUpdateResponse> asyncHandler);
+        AsyncHandler<InsertImageResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
      * @throws RutaException
      */
-    @WebMethod(operationName = "NotifyUpdate")
-    @RequestWrapper(localName = "NotifyUpdate", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdate")
-    @ResponseWrapper(localName = "NotifyUpdateResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.NotifyUpdateResponse")
-    public void notifyUpdate(
+    @WebMethod(operationName = "InsertImage")
+    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertImage")
+    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertImageResponse")
+    public void insertImage(
         @WebParam(name = "arg0", targetNamespace = "")
-        RutaVersion arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateCatalogueWithAppResponseResponse>
-     */
-    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
-    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
-    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
-    public Response<UpdateCatalogueWithAppResponseResponse> updateCatalogueWithAppResponseAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
-    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
-    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
-    public Future<?> updateCatalogueWithAppResponseAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<UpdateCatalogueWithAppResponseResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "UpdateCatalogueWithAppResponse")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "UpdateCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponse")
-    @ResponseWrapper(localName = "UpdateCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueWithAppResponseResponse")
-    public ApplicationResponseType updateCatalogueWithAppResponse(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1)
+        DataHandler arg0)
         throws RutaException
     ;
 
@@ -701,8 +1331,8 @@ public interface Server {
      *     returns javax.xml.ws.Response<rs.ruta.services.FindCatalogueResponse>
      */
     @WebMethod(operationName = "FindCatalogue")
-    @RequestWrapper(localName = "FindCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindCatalogue")
-    @ResponseWrapper(localName = "FindCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindCatalogueResponse")
+    @RequestWrapper(localName = "FindCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindCatalogue")
+    @ResponseWrapper(localName = "FindCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindCatalogueResponse")
     public Response<FindCatalogueResponse> findCatalogueAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0);
@@ -715,8 +1345,8 @@ public interface Server {
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
     @WebMethod(operationName = "FindCatalogue")
-    @RequestWrapper(localName = "FindCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindCatalogue")
-    @ResponseWrapper(localName = "FindCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindCatalogueResponse")
+    @RequestWrapper(localName = "FindCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindCatalogue")
+    @ResponseWrapper(localName = "FindCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindCatalogueResponse")
     public Future<?> findCatalogueAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0,
@@ -732,8 +1362,8 @@ public interface Server {
      */
     @WebMethod(operationName = "FindCatalogue")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindCatalogue")
-    @ResponseWrapper(localName = "FindCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindCatalogueResponse")
+    @RequestWrapper(localName = "FindCatalogue", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindCatalogue")
+    @ResponseWrapper(localName = "FindCatalogueResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindCatalogueResponse")
     public CatalogueType findCatalogue(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0)
@@ -742,397 +1372,69 @@ public interface Server {
 
     /**
      * 
+     * @param arg1
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.InsertImageResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.AddBugReportCommentResponse>
      */
-    @WebMethod(operationName = "InsertImage")
-    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImage")
-    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImageResponse")
-    public Response<InsertImageResponse> insertImageAsync(
+    @WebMethod(operationName = "AddBugReportComment")
+    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.AddBugReportComment")
+    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.AddBugReportCommentResponse")
+    public Response<AddBugReportCommentResponse> addBugReportCommentAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        DataHandler arg0);
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        ReportComment arg1);
 
     /**
      * 
+     * @param arg1
      * @param arg0
      * @param asyncHandler
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "InsertImage")
-    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImage")
-    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImageResponse")
-    public Future<?> insertImageAsync(
+    @WebMethod(operationName = "AddBugReportComment")
+    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.AddBugReportComment")
+    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.AddBugReportCommentResponse")
+    public Future<?> addBugReportCommentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        ReportComment arg1,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<AddBugReportCommentResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "AddBugReportComment")
+    @RequestWrapper(localName = "AddBugReportComment", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.AddBugReportComment")
+    @ResponseWrapper(localName = "AddBugReportCommentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.AddBugReportCommentResponse")
+    public void addBugReportComment(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        ReportComment arg1)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.InsertFileResponse>
+     */
+    @WebMethod(operationName = "InsertFile")
+    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertFile")
+    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertFileResponse")
+    public Response<InsertFileResponse> insertFileAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         DataHandler arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<InsertImageResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "InsertImage")
-    @RequestWrapper(localName = "InsertImage", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImage")
-    @ResponseWrapper(localName = "InsertImageResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertImageResponse")
-    public void insertImage(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DataHandler arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllDocBoxDocumentIDsResponse>
-     */
-    @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
-    @RequestWrapper(localName = "FindAllDocBoxDocumentIDs", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDs")
-    @ResponseWrapper(localName = "FindAllDocBoxDocumentIDsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDsResponse")
-    public Response<FindAllDocBoxDocumentIDsResponse> findAllDocBoxDocumentIDsAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DocBoxAllIDsSearchCriterion arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
-    @RequestWrapper(localName = "FindAllDocBoxDocumentIDs", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDs")
-    @ResponseWrapper(localName = "FindAllDocBoxDocumentIDsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDsResponse")
-    public Future<?> findAllDocBoxDocumentIDsAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DocBoxAllIDsSearchCriterion arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FindAllDocBoxDocumentIDsResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns java.util.List<java.lang.String>
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "FindAllDocBoxDocumentIDs")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindAllDocBoxDocumentIDs", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDs")
-    @ResponseWrapper(localName = "FindAllDocBoxDocumentIDsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllDocBoxDocumentIDsResponse")
-    public List<String> findAllDocBoxDocumentIDs(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DocBoxAllIDsSearchCriterion arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateCatalogueResponse>
-     */
-    @WebMethod(operationName = "UpdateCatalogue")
-    @RequestWrapper(localName = "UpdateCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogue")
-    @ResponseWrapper(localName = "UpdateCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueResponse")
-    public Response<UpdateCatalogueResponse> updateCatalogueAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "UpdateCatalogue")
-    @RequestWrapper(localName = "UpdateCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogue")
-    @ResponseWrapper(localName = "UpdateCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueResponse")
-    public Future<?> updateCatalogueAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<UpdateCatalogueResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "UpdateCatalogue")
-    @RequestWrapper(localName = "UpdateCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogue")
-    @ResponseWrapper(localName = "UpdateCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateCatalogueResponse")
-    public void updateCatalogue(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DeregisterUserResponse>
-     */
-    @WebMethod(operationName = "DeregisterUser")
-    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUser")
-    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUserResponse")
-    public Response<DeregisterUserResponse> deregisterUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        DeregistrationNotice arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "DeregisterUser")
-    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUser")
-    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUserResponse")
-    public Future<?> deregisterUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        DeregistrationNotice arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DeregisterUserResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "DeregisterUser")
-    @RequestWrapper(localName = "DeregisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUser")
-    @ResponseWrapper(localName = "DeregisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeregisterUserResponse")
-    public void deregisterUser(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        DeregistrationNotice arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.InsertBugReportResponse>
-     */
-    @WebMethod(operationName = "InsertBugReport")
-    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReport")
-    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReportResponse")
-    public Response<InsertBugReportResponse> insertBugReportAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BugReport arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "InsertBugReport")
-    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReport")
-    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReportResponse")
-    public Future<?> insertBugReportAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BugReport arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<InsertBugReportResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "InsertBugReport")
-    @RequestWrapper(localName = "InsertBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReport")
-    @ResponseWrapper(localName = "InsertBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertBugReportResponse")
-    public void insertBugReport(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BugReport arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllBugReportsResponse>
-     */
-    @WebMethod(operationName = "FindAllBugReports")
-    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReports")
-    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReportsResponse")
-    public Response<FindAllBugReportsResponse> findAllBugReportsAsync();
-
-    /**
-     * 
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "FindAllBugReports")
-    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReports")
-    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReportsResponse")
-    public Future<?> findAllBugReportsAsync(
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FindAllBugReportsResponse> asyncHandler);
-
-    /**
-     * 
-     * @return
-     *     returns java.util.List<rs.ruta.common.BugReport>
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "FindAllBugReports")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindAllBugReports", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReports")
-    @ResponseWrapper(localName = "FindAllBugReportsResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindAllBugReportsResponse")
-    public List<BugReport> findAllBugReports()
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteCatalogueWithAppResponseResponse>
-     */
-    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
-    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
-    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
-    public Response<DeleteCatalogueWithAppResponseResponse> deleteCatalogueWithAppResponseAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueDeletionType arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
-    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
-    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
-    public Future<?> deleteCatalogueWithAppResponseAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueDeletionType arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DeleteCatalogueWithAppResponseResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "DeleteCatalogueWithAppResponse")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "DeleteCatalogueWithAppResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponse")
-    @ResponseWrapper(localName = "DeleteCatalogueWithAppResponseResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueWithAppResponseResponse")
-    public ApplicationResponseType deleteCatalogueWithAppResponse(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueDeletionType arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.InsertCatalogueResponse>
-     */
-    @WebMethod(operationName = "InsertCatalogue")
-    @RequestWrapper(localName = "InsertCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertCatalogue")
-    @ResponseWrapper(localName = "InsertCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertCatalogueResponse")
-    public Response<InsertCatalogueResponse> insertCatalogueAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "InsertCatalogue")
-    @RequestWrapper(localName = "InsertCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertCatalogue")
-    @ResponseWrapper(localName = "InsertCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertCatalogueResponse")
-    public Future<?> insertCatalogueAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<InsertCatalogueResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "InsertCatalogue")
-    @RequestWrapper(localName = "InsertCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertCatalogue")
-    @ResponseWrapper(localName = "InsertCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertCatalogueResponse")
-    public void insertCatalogue(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueType arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.UnfollowPartyResponse>
-     */
-    @WebMethod(operationName = "UnfollowParty")
-    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowParty")
-    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowPartyResponse")
-    public Response<UnfollowPartyResponse> unfollowPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1);
 
@@ -1144,16 +1446,16 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "UnfollowParty")
-    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowParty")
-    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowPartyResponse")
-    public Future<?> unfollowPartyAsync(
+    @WebMethod(operationName = "InsertFile")
+    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertFile")
+    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertFileResponse")
+    public Future<?> insertFileAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
+        DataHandler arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<UnfollowPartyResponse> asyncHandler);
+        AsyncHandler<InsertFileResponse> asyncHandler);
 
     /**
      * 
@@ -1161,12 +1463,12 @@ public interface Server {
      * @param arg0
      * @throws RutaException
      */
-    @WebMethod(operationName = "UnfollowParty")
-    @RequestWrapper(localName = "UnfollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowParty")
-    @ResponseWrapper(localName = "UnfollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UnfollowPartyResponse")
-    public void unfollowParty(
+    @WebMethod(operationName = "InsertFile")
+    @RequestWrapper(localName = "InsertFile", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertFile")
+    @ResponseWrapper(localName = "InsertFileResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.InsertFileResponse")
+    public void insertFile(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
+        DataHandler arg0,
         @WebParam(name = "arg1", targetNamespace = "")
         String arg1)
         throws RutaException
@@ -1176,14 +1478,14 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.RequestBusinessPartnershipResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.SearchPartyResponse>
      */
-    @WebMethod(operationName = "RequestBusinessPartnership")
-    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RequestBusinessPartnership")
-    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
-    public Response<RequestBusinessPartnershipResponse> requestBusinessPartnershipAsync(
+    @WebMethod(operationName = "SearchParty")
+    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchParty")
+    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchPartyResponse")
+    public Response<SearchPartyResponse> searchPartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipRequest arg0);
+        PartySearchCriterion arg0);
 
     /**
      * 
@@ -1192,399 +1494,109 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "RequestBusinessPartnership")
-    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RequestBusinessPartnership")
-    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
-    public Future<?> requestBusinessPartnershipAsync(
+    @WebMethod(operationName = "SearchParty")
+    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchParty")
+    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchPartyResponse")
+    public Future<?> searchPartyAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipRequest arg0,
+        PartySearchCriterion arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<RequestBusinessPartnershipResponse> asyncHandler);
+        AsyncHandler<SearchPartyResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
+     * @return
+     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
      * @throws RutaException
      */
-    @WebMethod(operationName = "RequestBusinessPartnership")
-    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RequestBusinessPartnership")
-    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
-    public void requestBusinessPartnership(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipRequest arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.SearchCatalogueResponse>
-     */
-    @WebMethod(operationName = "SearchCatalogue")
-    @RequestWrapper(localName = "SearchCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogue")
-    @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogueResponse")
-    public Response<SearchCatalogueResponse> searchCatalogueAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueSearchCriterion arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "SearchCatalogue")
-    @RequestWrapper(localName = "SearchCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogue")
-    @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogueResponse")
-    public Future<?> searchCatalogueAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueSearchCriterion arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<SearchCatalogueResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType>
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "SearchCatalogue")
+    @WebMethod(operationName = "SearchParty")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "SearchCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogue")
-    @ResponseWrapper(localName = "SearchCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchCatalogueResponse")
-    public List<CatalogueType> searchCatalogue(
+    @RequestWrapper(localName = "SearchParty", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchParty")
+    @ResponseWrapper(localName = "SearchPartyResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.SearchPartyResponse")
+    public List<PartyType> searchParty(
         @WebParam(name = "arg0", targetNamespace = "")
-        CatalogueSearchCriterion arg0)
+        PartySearchCriterion arg0)
         throws RutaException
     ;
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteCatalogueResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.DistributeDocumentResponse>
      */
-    @WebMethod(operationName = "DeleteCatalogue")
-    @RequestWrapper(localName = "DeleteCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogue")
-    @ResponseWrapper(localName = "DeleteCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueResponse")
-    public Response<DeleteCatalogueResponse> deleteCatalogueAsync(
+    @WebMethod(operationName = "DistributeDocument")
+    @RequestWrapper(localName = "DistributeDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DistributeDocument")
+    @ResponseWrapper(localName = "DistributeDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DistributeDocumentResponse")
+    public Response<DistributeDocumentResponse> distributeDocumentAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueDeletionType arg1);
+        Object arg0);
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @param asyncHandler
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "DeleteCatalogue")
-    @RequestWrapper(localName = "DeleteCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogue")
-    @ResponseWrapper(localName = "DeleteCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueResponse")
-    public Future<?> deleteCatalogueAsync(
+    @WebMethod(operationName = "DistributeDocument")
+    @RequestWrapper(localName = "DistributeDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DistributeDocument")
+    @ResponseWrapper(localName = "DistributeDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DistributeDocumentResponse")
+    public Future<?> distributeDocumentAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueDeletionType arg1,
+        Object arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DeleteCatalogueResponse> asyncHandler);
+        AsyncHandler<DistributeDocumentResponse> asyncHandler);
 
     /**
      * 
-     * @param arg1
      * @param arg0
      * @throws RutaException
      */
-    @WebMethod(operationName = "DeleteCatalogue")
-    @RequestWrapper(localName = "DeleteCatalogue", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogue")
-    @ResponseWrapper(localName = "DeleteCatalogueResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteCatalogueResponse")
-    public void deleteCatalogue(
+    @WebMethod(operationName = "DistributeDocument")
+    @RequestWrapper(localName = "DistributeDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DistributeDocument")
+    @ResponseWrapper(localName = "DistributeDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.DistributeDocumentResponse")
+    public void distributeDocument(
         @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        CatalogueDeletionType arg1)
+        Object arg0)
         throws RutaException
     ;
 
     /**
      * 
-     * @param arg1
-     * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.InsertAttachmentResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindAllPartiesResponse>
      */
-    @WebMethod(operationName = "InsertAttachment")
-    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachment")
-    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachmentResponse")
-    public Response<InsertAttachmentResponse> insertAttachmentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        ReportAttachment arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1);
+    @WebMethod(operationName = "FindAllParties")
+    @RequestWrapper(localName = "FindAllParties", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllParties")
+    @ResponseWrapper(localName = "FindAllPartiesResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllPartiesResponse")
+    public Response<FindAllPartiesResponse> findAllPartiesAsync();
 
     /**
      * 
-     * @param arg1
-     * @param arg0
      * @param asyncHandler
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "InsertAttachment")
-    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachment")
-    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachmentResponse")
-    public Future<?> insertAttachmentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        ReportAttachment arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
+    @WebMethod(operationName = "FindAllParties")
+    @RequestWrapper(localName = "FindAllParties", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllParties")
+    @ResponseWrapper(localName = "FindAllPartiesResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllPartiesResponse")
+    public Future<?> findAllPartiesAsync(
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<InsertAttachmentResponse> asyncHandler);
+        AsyncHandler<FindAllPartiesResponse> asyncHandler);
 
     /**
      * 
-     * @param arg1
-     * @param arg0
+     * @return
+     *     returns java.util.List<oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType>
      * @throws RutaException
      */
-    @WebMethod(operationName = "InsertAttachment")
-    @RequestWrapper(localName = "InsertAttachment", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachment")
-    @ResponseWrapper(localName = "InsertAttachmentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertAttachmentResponse")
-    public void insertAttachment(
-        @WebParam(name = "arg0", targetNamespace = "")
-        ReportAttachment arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.UpdatePartyResponse>
-     */
-    @WebMethod(operationName = "UpdateParty")
-    @RequestWrapper(localName = "UpdateParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateParty")
-    @ResponseWrapper(localName = "UpdatePartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdatePartyResponse")
-    public Response<UpdatePartyResponse> updatePartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        PartyType arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "UpdateParty")
-    @RequestWrapper(localName = "UpdateParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateParty")
-    @ResponseWrapper(localName = "UpdatePartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdatePartyResponse")
-    public Future<?> updatePartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        PartyType arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<UpdatePartyResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "UpdateParty")
-    @RequestWrapper(localName = "UpdateParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdateParty")
-    @ResponseWrapper(localName = "UpdatePartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.UpdatePartyResponse")
-    public void updateParty(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        PartyType arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.RegisterUserResponse>
-     */
-    @WebMethod(operationName = "RegisterUser")
-    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
-    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
-    public Response<RegisterUserResponse> registerUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        PartyType arg2);
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "RegisterUser")
-    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
-    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
-    public Future<?> registerUserAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        PartyType arg2,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<RegisterUserResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns java.lang.String
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "RegisterUser")
+    @WebMethod(operationName = "FindAllParties")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "RegisterUser", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUser")
-    @ResponseWrapper(localName = "RegisterUserResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.RegisterUserResponse")
-    public String registerUser(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "arg2", targetNamespace = "")
-        PartyType arg2)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.DeleteDocBoxDocumentResponse>
-     */
-    @WebMethod(operationName = "DeleteDocBoxDocument")
-    @RequestWrapper(localName = "DeleteDocBoxDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocument")
-    @ResponseWrapper(localName = "DeleteDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentResponse")
-    public Response<DeleteDocBoxDocumentResponse> deleteDocBoxDocumentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "DeleteDocBoxDocument")
-    @RequestWrapper(localName = "DeleteDocBoxDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocument")
-    @ResponseWrapper(localName = "DeleteDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentResponse")
-    public Future<?> deleteDocBoxDocumentAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<DeleteDocBoxDocumentResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "DeleteDocBoxDocument")
-    @RequestWrapper(localName = "DeleteDocBoxDocument", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocument")
-    @ResponseWrapper(localName = "DeleteDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.DeleteDocBoxDocumentResponse")
-    public void deleteDocBoxDocument(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FollowPartyResponse>
-     */
-    @WebMethod(operationName = "FollowParty")
-    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowParty")
-    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowPartyResponse")
-    public Response<FollowPartyResponse> followPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "FollowParty")
-    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowParty")
-    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowPartyResponse")
-    public Future<?> followPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FollowPartyResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "FollowParty")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FollowParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowParty")
-    @ResponseWrapper(localName = "FollowPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FollowPartyResponse")
-    public PartyType followParty(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1)
+    @RequestWrapper(localName = "FindAllParties", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllParties")
+    @ResponseWrapper(localName = "FindAllPartiesResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindAllPartiesResponse")
+    public List<PartyType> findAllParties()
         throws RutaException
     ;
 
@@ -1592,113 +1604,12 @@ public interface Server {
      * 
      * @param arg0
      * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.SearchBugReportResponse>
+     *     returns javax.xml.ws.Response<rs.ruta.services.UpdateRutaClientResponse>
      */
-    @WebMethod(operationName = "SearchBugReport")
-    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReport")
-    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReportResponse")
-    public Response<SearchBugReportResponse> searchBugReportAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BugReportSearchCriterion arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "SearchBugReport")
-    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReport")
-    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReportResponse")
-    public Future<?> searchBugReportAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BugReportSearchCriterion arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<SearchBugReportResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns java.util.List<rs.ruta.common.BugReport>
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "SearchBugReport")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "SearchBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReport")
-    @ResponseWrapper(localName = "SearchBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.SearchBugReportResponse")
-    public List<BugReport> searchBugReport(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BugReportSearchCriterion arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.InsertPartyResponse>
-     */
-    @WebMethod(operationName = "InsertParty")
-    @RequestWrapper(localName = "InsertParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertParty")
-    @ResponseWrapper(localName = "InsertPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertPartyResponse")
-    public Response<InsertPartyResponse> insertPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        PartyType arg1);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "InsertParty")
-    @RequestWrapper(localName = "InsertParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertParty")
-    @ResponseWrapper(localName = "InsertPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertPartyResponse")
-    public Future<?> insertPartyAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        PartyType arg1,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<InsertPartyResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns java.lang.String
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "InsertParty")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "InsertParty", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertParty")
-    @ResponseWrapper(localName = "InsertPartyResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.InsertPartyResponse")
-    public String insertParty(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        PartyType arg1)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.FindBugReportResponse>
-     */
-    @WebMethod(operationName = "FindBugReport")
-    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReport")
-    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReportResponse")
-    public Response<FindBugReportResponse> findBugReportAsync(
+    @WebMethod(operationName = "UpdateRutaClient")
+    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateRutaClient")
+    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateRutaClientResponse")
+    public Response<UpdateRutaClientResponse> updateRutaClientAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0);
 
@@ -1709,29 +1620,118 @@ public interface Server {
      * @return
      *     returns java.util.concurrent.Future<? extends java.lang.Object>
      */
-    @WebMethod(operationName = "FindBugReport")
-    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReport")
-    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReportResponse")
-    public Future<?> findBugReportAsync(
+    @WebMethod(operationName = "UpdateRutaClient")
+    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateRutaClient")
+    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateRutaClientResponse")
+    public Future<?> updateRutaClientAsync(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<FindBugReportResponse> asyncHandler);
+        AsyncHandler<UpdateRutaClientResponse> asyncHandler);
 
     /**
      * 
      * @param arg0
      * @return
-     *     returns rs.ruta.common.BugReport
+     *     returns rs.ruta.common.RutaVersion
      * @throws RutaException
      */
-    @WebMethod(operationName = "FindBugReport")
+    @WebMethod(operationName = "UpdateRutaClient")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "FindBugReport", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReport")
-    @ResponseWrapper(localName = "FindBugReportResponse", targetNamespace = "http://ruta.rs/services", className = "rs.ruta.services.FindBugReportResponse")
-    public BugReport findBugReport(
+    @RequestWrapper(localName = "UpdateRutaClient", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateRutaClient")
+    @ResponseWrapper(localName = "UpdateRutaClientResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.UpdateRutaClientResponse")
+    public RutaVersion updateRutaClient(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.FindDocBoxDocumentResponse>
+     */
+    @WebMethod(operationName = "FindDocBoxDocument")
+    @RequestWrapper(localName = "FindDocBoxDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindDocBoxDocument")
+    @ResponseWrapper(localName = "FindDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindDocBoxDocumentResponse")
+    public Response<FindDocBoxDocumentResponse> findDocBoxDocumentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DocBoxDocumentSearchCriterion arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "FindDocBoxDocument")
+    @RequestWrapper(localName = "FindDocBoxDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindDocBoxDocument")
+    @ResponseWrapper(localName = "FindDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindDocBoxDocumentResponse")
+    public Future<?> findDocBoxDocumentAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DocBoxDocumentSearchCriterion arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<FindDocBoxDocumentResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns java.lang.Object
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "FindDocBoxDocument")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "FindDocBoxDocument", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindDocBoxDocument")
+    @ResponseWrapper(localName = "FindDocBoxDocumentResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.FindDocBoxDocumentResponse")
+    public Object findDocBoxDocument(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DocBoxDocumentSearchCriterion arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.ResponseBusinessPartnershipResponse>
+     */
+    @WebMethod(operationName = "ResponseBusinessPartnership")
+    @RequestWrapper(localName = "ResponseBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnership")
+    @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
+    public Response<ResponseBusinessPartnershipResponse> responseBusinessPartnershipAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BusinessPartnershipResponse arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "ResponseBusinessPartnership")
+    @RequestWrapper(localName = "ResponseBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnership")
+    @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
+    public Future<?> responseBusinessPartnershipAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BusinessPartnershipResponse arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<ResponseBusinessPartnershipResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "ResponseBusinessPartnership")
+    @RequestWrapper(localName = "ResponseBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnership")
+    @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
+    public void responseBusinessPartnership(
+        @WebParam(name = "arg0", targetNamespace = "")
+        BusinessPartnershipResponse arg0)
         throws RutaException
     ;
 

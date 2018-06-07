@@ -32,7 +32,8 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 		else
 		{
 			correspondence.setDiscarded(true);
-			process.getClient().getClientFrame().appendToConsole(new StringBuilder("Order has been discarded."), Color.BLACK);
+			process.getClient().getClientFrame().appendToConsole(
+					new StringBuilder("Order has been discarded. Insufficient data to create an Order or user has aborted its creation."), Color.BLACK);
 			changeState(process, ClosingState.getInstance());
 		}
 	}

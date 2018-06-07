@@ -10,7 +10,6 @@ import rs.ruta.client.gui.RutaClientFrame;
 public class RutaClientFrameEvent extends ActionEvent
 {
 	private static final long serialVersionUID = -4405562652384954954L;
-	//MMM not used - could be deleted if is obsolete and also the whole RutaClientFrameEvent class
 	public static final String SELECT_NEXT = "Select next node in a tree";
 
 	public RutaClientFrameEvent(Object source, String command)

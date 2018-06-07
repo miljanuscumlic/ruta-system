@@ -1289,8 +1289,8 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Deletes party from archived or deregistered list depending on which one it belongs and from
-	 * the data store.
+	 * Deletes party from archived or deregistered list depending on which one it belongs to and
+	 * deletes it from the data store.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be deleted
 	 * @throws DetailException if party could not be deleted from the data store
@@ -1299,6 +1299,7 @@ public class MyParty extends BusinessParty
 	{
 		if(party != null)
 		{
+//			notifyListeners(new RutaClientFrameEvent(party, RutaClientFrameEvent.SELECT_NEXT));
 			if(party.isArchived())
 			{
 				removeArchivedParty(party);
@@ -1667,11 +1668,13 @@ public class MyParty extends BusinessParty
 	/**
 	 * Unfollows the party by removing it from appropriate list and by sending the notification to tree model
 	 * listener.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party to unfollow
 	 * @throws DetailException if party could not be deleted from the data store
 	 */
 	public void unfollowParty(BusinessParty party) throws DetailException
 	{
+//		notifyListeners(new RutaClientFrameEvent(party, RutaClientFrameEvent.SELECT_NEXT));
 		boolean partner = party.isPartner();
 		removeFollowingParty(party);
 		addArchivedParty(party);
@@ -1992,7 +1995,8 @@ public class MyParty extends BusinessParty
 	 * Generates {@link OrderType} document that conforms to the {@code UBL} standard.
 	 * @param sellerID ID of the correspondent that is a Seller Party in this process
 	 * @return Order or {@code null} if user has aborted Order creation, Order does not conform to the
-	 * {@code UBL} standard or correspondent is not a business partner of My Party
+	 * {@code UBL} standard or correspondent's catalogue does not exist or correspondent is not a
+	 * business partner of My Party
 	 */
 	public OrderType produceOrder(String sellerID)
 	{
@@ -2013,11 +2017,14 @@ public class MyParty extends BusinessParty
 	/**
 	 * Creates {@link OrderType} document by displaying {@link OrderDialog} for entering Order related data.
 	 * @param seller {@link PartyType seller party} which is a receiver of the {@link OrderType order}
-	 * @return order created {@link OrderType order} or {@code null} if user aborts Order creation
+	 * @return order created {@link OrderType order} or {@code null} if correspondent's catalogue does
+	 * not exist or user aborts Order creation
 	 */
 	private OrderType createOrder(String correspondentID)
 	{
 		final Catalogue correspondentCatalogue = getBusinessPartner(correspondentID).getCatalogue();
+		if(correspondentCatalogue == null)
+			return null;
 		final OrderType order = convertToOrder(correspondentCatalogue, getCoreParty());
 		return client.getClientFrame().showOrderDialog("New Order", order, true, null);
 	}
@@ -3159,6 +3166,7 @@ public class MyParty extends BusinessParty
 	@SuppressWarnings("unchecked")
 	public boolean removeSearch(final Search<?> search) throws DetailException
 	{
+		notifyListeners(new SearchEvent(search, RutaClientFrameEvent.SELECT_NEXT));
 		boolean success = false;
 		if(search instanceof PartySearch)
 			success = removePartySearch((Search<PartyType>) search);
@@ -3350,7 +3358,7 @@ public class MyParty extends BusinessParty
 	/**
 	 * Processes {@link DeregistrationNotice deregistration notice} document by moving
 	 * {@link BusinessParty party} specified in it to the list of deregistered parties.
-	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param notice deregistration notice to process
 	 * @throws DetailException if party could not be updated in the data store
 	 */
@@ -3364,7 +3372,7 @@ public class MyParty extends BusinessParty
 				//				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.SELECT_NEXT));
 				deregisterParty(bParty);
 				bParty.setRecentlyUpdated(true);
-				notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_MOVED));
+				notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_MOVED)); //MMM should be RutaClientFrameEvent.MAKE_VISIBLE ???
 				break;
 			}
 	}

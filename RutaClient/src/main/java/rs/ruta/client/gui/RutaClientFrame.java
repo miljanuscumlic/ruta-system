@@ -89,7 +89,7 @@ import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
-import rs.ruta.common.datamapper.RutaException;
+import rs.ruta.services.RutaException;
 
 public class RutaClientFrame extends JFrame implements ActionListener
 {
@@ -1347,30 +1347,18 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		final Object source = event.getSource();
-		final String command = event.getActionCommand();
 		if(source.getClass() == BusinessParty.class)
 		{
-/*			if(RutaClientFrameEvent.PARTY_UPDATED.equals(command) ||
-					RutaClientFrameEvent.CATALOGUE_UPDATED.equals(command) ||
-					RutaClientFrameEvent.PARTY_MOVED.equals(command) ||
-					RutaClientFrameEvent.SELECT_NEXT.equals(command))*/
 
-			{
-				tabCDR.dispatchEvent(event);
-				if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)
-					repaint();
-			}
+			tabCDR.dispatchEvent(event);
+			if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)
+				repaint();
 		}
 		else if(source instanceof Correspondence)
 		{
-/*			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command) ||
-					CorrespondenceEvent.CORRESPONDENCE_REMOVED.equals(command) ||
-					CorrespondenceEvent.CORRESPONDENCE_UPDATED.equals(command))*/
-			{
-				tabCorrespondences.dispatchEvent(event);
-				if(tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
-					repaint();
-			}
+			tabCorrespondences.dispatchEvent(event);
+			if(tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
+				repaint();
 		}
 		else if(source instanceof Search)
 		{
@@ -1422,14 +1410,14 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final String errorMessage = e.getMessage();
 		if(errorMessage != null)
 			if(e instanceof RutaException)
-				msgBuilder.append("Server responds: ").append(errorMessage).append(" ").
+				msgBuilder.append(" Caused by: ").append(errorMessage).append(" ").
 				append(((RutaException) e).getFaultInfo().getDetail());
 			else
 				msgBuilder.append(" Caused by: ").append(trimSOAPFaultMessage(errorMessage));
 		if(cause != null)
 		{
 			if(cause instanceof RutaException)
-				msgBuilder.append("Server responds: ").append(cause.getMessage()).append(" ").
+				msgBuilder.append(" Caused by: ").append(cause.getMessage()).append(" ").
 				append(((RutaException) cause).getFaultInfo().getDetail());
 			else if(cause.getMessage() != null)
 				msgBuilder.append(" Caused by: ").append(trimSOAPFaultMessage(cause.getMessage()));

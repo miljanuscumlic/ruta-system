@@ -36,7 +36,7 @@ import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.RutaException;
 
-@WebService(targetNamespace = "http://ruta.rs/services")
+@WebService(targetNamespace = "http://ruta.rs/ns/services")
 //@XmlSeeAlso({OrderResponseType.class, OrderType.class})
 public interface Server
 {

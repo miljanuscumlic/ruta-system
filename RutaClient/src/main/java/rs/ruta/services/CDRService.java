@@ -17,14 +17,14 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "CDRService", targetNamespace = "http://ruta.rs/services", wsdlLocation = "http://localhost:9009/ruta-server-0.2.0-SNAPSHOT/CDR?wsdl")
+@WebServiceClient(name = "CDRService", targetNamespace = "http://ruta.rs/ns/services", wsdlLocation = "http://localhost:9009/ruta-server-0.2.0-SNAPSHOT/CDR?wsdl")
 public class CDRService
     extends Service
 {
 
     private final static URL CDRSERVICE_WSDL_LOCATION;
     private final static WebServiceException CDRSERVICE_EXCEPTION;
-    private final static QName CDRSERVICE_QNAME = new QName("http://ruta.rs/services", "CDRService");
+    private final static QName CDRSERVICE_QNAME = new QName("http://ruta.rs/ns/services", "CDRService");
 
     static {
         URL url = null;
@@ -69,7 +69,7 @@ public class CDRService
      */
     @WebEndpoint(name = "CDRPort")
     public Server getCDRPort() {
-        return super.getPort(new QName("http://ruta.rs/services", "CDRPort"), Server.class);
+        return super.getPort(new QName("http://ruta.rs/ns/services", "CDRPort"), Server.class);
     }
 
     /**
@@ -81,7 +81,7 @@ public class CDRService
      */
     @WebEndpoint(name = "CDRPort")
     public Server getCDRPort(WebServiceFeature... features) {
-        return super.getPort(new QName("http://ruta.rs/services", "CDRPort"), Server.class, features);
+        return super.getPort(new QName("http://ruta.rs/ns/services", "CDRPort"), Server.class, features);
     }
 
     private static URL __getWsdlLocation() {
