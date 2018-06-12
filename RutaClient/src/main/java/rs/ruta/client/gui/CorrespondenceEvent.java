@@ -1,8 +1,6 @@
-package rs.ruta.client;
+package rs.ruta.client.gui;
 
 import java.awt.event.ActionEvent;
-
-import rs.ruta.client.gui.CorrespondenceTreeModel;
 
 /**
  * Class that describes updates of the {@link CorrespondenceTreeModel}.

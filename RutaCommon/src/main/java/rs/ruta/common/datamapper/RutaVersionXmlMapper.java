@@ -72,7 +72,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) collection.getService("XQueryService", "1.0");
-			logger.info("Started query of the " + uri);
+			logger.info("Started query of the " + uri + getCollectionPath());
 			queryService.setProperty("indent", "yes");
 
 			String query = null; // search query
@@ -107,7 +107,7 @@ public class RutaVersionXmlMapper extends XmlMapper<RutaVersion>
 								((EXistResource) resource).freeResources();
 						}
 					}
-					logger.info("Finished query of the " + uri);
+					logger.info("Finished query of the " + uri + getCollectionPath());
 					return searchResult;
 				}
 				else

@@ -81,7 +81,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) coll.getService("XQueryService", "1.0");
-			logger.info("Started query of the " + uri);
+			logger.info("Started query of the " + uri + getCollectionPath());
 			queryService.setProperty("indent", "no");
 
 			String query = null; // search query
@@ -115,7 +115,7 @@ public class PartyIDXmlMapper extends XmlMapper<PartyID>
 							((EXistResource)resource).freeResources();
 					}
 				}
-				logger.info("Finished query of the " + uri);
+				logger.info("Finished query of the " + uri + getCollectionPath());
 				return searchResult;
 			}
 			else

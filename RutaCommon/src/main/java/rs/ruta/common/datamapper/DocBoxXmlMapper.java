@@ -1,6 +1,5 @@
 package rs.ruta.common.datamapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -20,8 +19,9 @@ import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancel
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
-import rs.ruta.common.BusinessPartnershipRequest;
-import rs.ruta.common.BusinessPartnershipResponse;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResolution;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
@@ -29,6 +29,7 @@ import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.DocumentException;
 import rs.ruta.common.DocumentReceipt;
+import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.SearchCriterion;
 
 public class DocBoxXmlMapper extends XmlMapper<DocBox>
@@ -121,12 +122,18 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				else if(documentClazz == DocumentReceipt.class)
 					((DocumentReceiptXmlMapper) mapperRegistry.getMapper(DocumentReceipt.class)).
 					insert(collection, (DocumentReceipt) document, docID, null);
-				else if(documentClazz == BusinessPartnershipRequest.class)
-					((BusinessPartnershipRequestXmlMapper) mapperRegistry.getMapper(BusinessPartnershipRequest.class)).
-					insert(collection, (BusinessPartnershipRequest) document, docID, null);
-				else if(documentClazz == BusinessPartnershipResponse.class)
-					((BusinessPartnershipResponseXmlMapper) mapperRegistry.getMapper(BusinessPartnershipResponse.class)).
-					insert(collection, (BusinessPartnershipResponse) document, docID, null);
+				else if(documentClazz == PartnershipRequest.class)
+					((PartnershipRequestXmlMapper) mapperRegistry.getMapper(PartnershipRequest.class)).
+					insert(collection, (PartnershipRequest) document, docID, null);
+				else if(documentClazz == PartnershipResponse.class)
+					((PartnershipResponseXmlMapper) mapperRegistry.getMapper(PartnershipResponse.class)).
+					insert(collection, (PartnershipResponse) document, docID, null);
+				else if(documentClazz == PartnershipResolution.class)
+					((PartnershipResolutionXmlMapper) mapperRegistry.getMapper(PartnershipResolution.class)).
+					insert(collection, (PartnershipResolution) document, docID, null);
+				else if(documentClazz == PartnershipBreakup.class)
+					((PartnershipBreakupXmlMapper) mapperRegistry.getMapper(PartnershipBreakup.class)).
+					insert(collection, (PartnershipBreakup) document, docID, null);
 				//MMM other document types
 
 				((DistributionTransaction) transaction).removeOperation();
@@ -314,10 +321,14 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 				object = ((InvoiceXmlMapper) mapperRegistry.getMapper(InvoiceType.class)).unmarshalFromXML(result);
 			else if(objectClazz == DocumentReceipt.class)
 				object = ((DocumentReceiptXmlMapper) mapperRegistry.getMapper(DocumentReceipt.class)).unmarshalFromXML(result);
-			else if(objectClazz == BusinessPartnershipRequest.class)
-				object = ((BusinessPartnershipRequestXmlMapper) mapperRegistry.getMapper(BusinessPartnershipRequest.class)).unmarshalFromXML(result);
-			else if(objectClazz == BusinessPartnershipResponse.class)
-				object = ((BusinessPartnershipResponseXmlMapper) mapperRegistry.getMapper(BusinessPartnershipResponse.class)).unmarshalFromXML(result);
+			else if(objectClazz == PartnershipRequest.class)
+				object = ((PartnershipRequestXmlMapper) mapperRegistry.getMapper(PartnershipRequest.class)).unmarshalFromXML(result);
+			else if(objectClazz == PartnershipResponse.class)
+				object = ((PartnershipResponseXmlMapper) mapperRegistry.getMapper(PartnershipResponse.class)).unmarshalFromXML(result);
+			else if(objectClazz == PartnershipResolution.class)
+				object = ((PartnershipResolutionXmlMapper) mapperRegistry.getMapper(PartnershipResolution.class)).unmarshalFromXML(result);
+			else if(objectClazz == PartnershipBreakup.class)
+				object = ((PartnershipBreakupXmlMapper) mapperRegistry.getMapper(PartnershipBreakup.class)).unmarshalFromXML(result);
 			//MMM other document types
 
 			document.setDocument(object);
@@ -365,10 +376,14 @@ public class DocBoxXmlMapper extends XmlMapper<DocBox>
 			return InvoiceType.class;
 		else if(start.matches("<((.)+:)?DocumentReceipt (.)+"))
 			return DocumentReceipt.class;
-		else if(start.matches("<((.)+:)?BusinessPartnershipRequest (.)+"))
-			return BusinessPartnershipRequest.class;
-		else if(start.matches("<((.)+:)?BusinessPartnershipResponse (.)+"))
-			return BusinessPartnershipResponse.class;
+		else if(start.matches("<((.)+:)?PartnershipRequest (.)+"))
+			return PartnershipRequest.class;
+		else if(start.matches("<((.)+:)?PartnershipResponse (.)+"))
+			return PartnershipResponse.class;
+		else if(start.matches("<((.)+:)?PartnershipResolution (.)+"))
+			return PartnershipResolution.class;
+		else if(start.matches("<((.)+:)?PartnershipBreakup (.)+"))
+			return PartnershipBreakup.class;
 		//MMM other document types
 		else
 			return null;

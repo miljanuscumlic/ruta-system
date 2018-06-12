@@ -6,6 +6,7 @@ import rs.ruta.common.datamapper.OrderChangeXmlMapper;
 import rs.ruta.common.datamapper.OrderResponseSimpleXmlMapper;
 import rs.ruta.common.datamapper.OrderResponseXmlMapper;
 import rs.ruta.common.datamapper.OrderXmlMapper;
+import rs.ruta.common.datamapper.PartnershipBreakupXmlMapper;
 import rs.ruta.common.datamapper.PartyIDXmlMapper;
 import rs.ruta.common.datamapper.PartyXmlMapper;
 import rs.ruta.common.datamapper.UserXmlMapper;
@@ -30,9 +31,14 @@ import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.CreateCatalogueProcess;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentReceipt;
+import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.Associates;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResolution;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.datamapper.ApplicationResponseXmlMapper;
+import rs.ruta.common.datamapper.PartnershipRequestXmlMapper;
+import rs.ruta.common.datamapper.PartnershipResolutionXmlMapper;
 import rs.ruta.common.datamapper.CatalogueDeletionXmlMapper;
 import rs.ruta.common.datamapper.CatalogueXmlMapper;
 import rs.ruta.common.datamapper.DataManipulationException;
@@ -119,6 +125,12 @@ public class ClientMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new InvoiceXmlMapper(getConnector());
 			else if(clazz == DocumentReceipt.class)
 				dataMapper = (DataMapper<S, String>) new DocumentReceiptXmlMapper(getConnector());
+			else if(clazz == PartnershipRequest.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipRequestXmlMapper(getConnector());
+			else if(clazz == PartnershipResolution.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipResolutionXmlMapper(getConnector());
+			else if(clazz == PartnershipBreakup.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipBreakupXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

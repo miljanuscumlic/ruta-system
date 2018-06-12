@@ -31,7 +31,7 @@ public class Party extends PartyType
 	/**
 	 * Copy constructor that copies passed {@link PartyType} superclass object and
 	 * retrieves new {@code Party} object.
-	 * @param party {@code PartyType} object with which new {@code Catalogue} is initialized
+	 * @param party {@code PartyType} object to initialise newly created {@code Party}
 	 */
 	public Party(PartyType party)
 	{

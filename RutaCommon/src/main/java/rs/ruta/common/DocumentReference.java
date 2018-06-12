@@ -117,9 +117,19 @@ public class DocumentReference extends DocumentReferenceType
 		setDocumentType(document.getClass().getName());
 	}
 
+	public DocumentReference(PartnershipRequest document)
+	{
+		setIssuerParty(document.getRequestedParty());
+		setUUID(document.getIDValue());
+		setID(document.getID());
+		setIssueDate(document.getIssueTime());
+		setIssueTime(document.getIssueTime());
+		setDocumentType(document.getClass().getName());
+	}
+
 	/**
 	 * Creates ne instance of {@link DocumentReference}
-	 * @param document documnet which reference is to be created
+	 * @param document document which reference is to be created
 	 * @param status document's status
 	 * @return {@link DocumentReference}
 	 * @throws DetailException if a document of an unexpected type is passed to the method
@@ -142,6 +152,8 @@ public class DocumentReference extends DocumentReferenceType
 			docReference = new DocumentReference((ApplicationResponseType) document);
 		else if(documentClazz == InvoiceType.class)
 			docReference = new DocumentReference((InvoiceType) document);
+		else if(documentClazz == PartnershipRequest.class)
+			docReference = new DocumentReference((PartnershipRequest) document);
 		else
 			throw new DetailException("Document of an unexpected type has been passed for creation of the Document Reference.");
 

@@ -11,16 +11,23 @@ import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.BugReport;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResolution;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.DocumentReceipt;
+import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.Associates;
 import rs.ruta.common.PartyID;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.ApplicationResponseXmlMapper;
 import rs.ruta.common.datamapper.BugReportXmlMapper;
+import rs.ruta.common.datamapper.PartnershipRequestXmlMapper;
+import rs.ruta.common.datamapper.PartnershipResolutionXmlMapper;
+import rs.ruta.common.datamapper.PartnershipResponseXmlMapper;
 import rs.ruta.common.datamapper.CatalogueDeletionXmlMapper;
 import rs.ruta.common.datamapper.CatalogueXmlMapper;
 import rs.ruta.common.datamapper.DatabaseTransaction;
@@ -43,6 +50,7 @@ import rs.ruta.common.datamapper.OrderChangeXmlMapper;
 import rs.ruta.common.datamapper.OrderResponseSimpleXmlMapper;
 import rs.ruta.common.datamapper.OrderResponseXmlMapper;
 import rs.ruta.common.datamapper.OrderXmlMapper;
+import rs.ruta.common.datamapper.PartnershipBreakupXmlMapper;
 import rs.ruta.common.datamapper.PartyIDXmlMapper;
 import rs.ruta.common.datamapper.PartyXmlMapper;
 import rs.ruta.common.datamapper.RutaVersionXmlMapper;
@@ -125,6 +133,14 @@ public class ServiceMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new InvoiceXmlMapper(getConnector());
 			else if(clazz == DocumentReceipt.class)
 				dataMapper = (DataMapper<S, String>) new DocumentReceiptXmlMapper(getConnector());
+			else if(clazz == PartnershipRequest.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipRequestXmlMapper(getConnector());
+			else if(clazz == PartnershipResponse.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipResponseXmlMapper(getConnector());
+			else if(clazz == PartnershipResolution.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipResolutionXmlMapper(getConnector());
+			else if(clazz == PartnershipBreakup.class)
+				dataMapper = (DataMapper<S, String>) new PartnershipBreakupXmlMapper(getConnector());
 			if(dataMapper != null)
 				getInstance().getMapRegistry().put(clazz, dataMapper);
 		}

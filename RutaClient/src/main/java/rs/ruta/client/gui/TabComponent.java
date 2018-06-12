@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.concurrent.Semaphore;
@@ -25,6 +26,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -122,6 +124,19 @@ public abstract class TabComponent extends Container
 		colModel.getColumn(2).setPreferredWidth(200);
 		colModel.getColumn(3).setPreferredWidth(20);
 		colModel.getColumn(9).setPreferredWidth(200);
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if(SwingUtilities.isRightMouseButton(e))
+				{
+					final int modelRowIndex = table.convertRowIndexToModel(table.rowAtPoint(e.getPoint()));
+					table.setRowSelectionInterval(modelRowIndex, modelRowIndex);
+				}
+			}
+		});
 
 		final AWTEventListener focusTracker = new AWTEventListener()
 		{
@@ -454,7 +469,7 @@ public abstract class TabComponent extends Container
 	 * the table by the column with paseed {@code sortIndex}.
 	 * @param tableModel data model of the table
 	 * @param sortIndex index of the column by which the table should be sorted by default
-	 * @param descending true when sorting orderLines should be descending
+	 * @param descending true when column sorting should be descending
 	 * @return sorter created {@code TableSorter}
 	 */
 	protected TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel, int sortIndex, boolean descending)

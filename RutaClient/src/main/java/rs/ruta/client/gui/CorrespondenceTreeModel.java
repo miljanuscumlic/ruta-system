@@ -22,8 +22,6 @@ import rs.ruta.client.Party;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
-import rs.ruta.client.BusinessPartyEvent;
-import rs.ruta.client.CorrespondenceEvent;
 
 /**
  * Tree model that is an adapter model for the parties of {@link MyParty} object.

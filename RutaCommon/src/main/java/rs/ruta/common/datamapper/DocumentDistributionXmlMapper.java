@@ -20,13 +20,14 @@ import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.Associates;
-import rs.ruta.common.BusinessPartnershipRequest;
-import rs.ruta.common.BusinessPartnershipResponse;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
 import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.ObjectFactory;
+import rs.ruta.common.PartnershipBreakup;
 
 public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistribution>
 {
@@ -201,12 +202,15 @@ public class DocumentDistributionXmlMapper extends XmlMapper<DocumentDistributio
 				else if(documentClazz == DocumentReceipt.class)
 					((DocumentReceiptXmlMapper) mapperRegistry.getMapper(DocumentReceipt.class)).
 					insert(collection, (DocumentReceipt) document, docID, null);
-				else if(documentClazz == BusinessPartnershipRequest.class)
-					((BusinessPartnershipRequestXmlMapper) mapperRegistry.getMapper(BusinessPartnershipRequest.class)).
-					insert(collection, (BusinessPartnershipRequest) document, docID, null);
-				else if(documentClazz == BusinessPartnershipResponse.class)
-					((BusinessPartnershipResponseXmlMapper) mapperRegistry.getMapper(BusinessPartnershipResponse.class)).
-					insert(collection, (BusinessPartnershipResponse) document, docID, null);
+				else if(documentClazz == PartnershipRequest.class)
+					((PartnershipRequestXmlMapper) mapperRegistry.getMapper(PartnershipRequest.class)).
+					insert(collection, (PartnershipRequest) document, docID, null);
+				else if(documentClazz == PartnershipResponse.class)
+					((PartnershipResponseXmlMapper) mapperRegistry.getMapper(PartnershipResponse.class)).
+					insert(collection, (PartnershipResponse) document, docID, null);
+				else if(documentClazz == PartnershipBreakup.class)
+					((PartnershipBreakupXmlMapper) mapperRegistry.getMapper(PartnershipBreakup.class)).
+					insert(collection, (PartnershipBreakup) document, docID, null);
 				//MMM other document types
 
 			}

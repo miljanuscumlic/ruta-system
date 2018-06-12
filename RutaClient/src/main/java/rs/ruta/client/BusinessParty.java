@@ -72,11 +72,19 @@ public class BusinessParty
 		return bp;
 	}
 
+	/**
+	 * Gets timestamp of the last received update of this party from the CDR service.
+	 * @param timestamp
+	 */
 	public XMLGregorianCalendar getTimestamp()
 	{
 		return timestamp;
 	}
 
+	/**
+	 * Sets timestamp of the last received update of this party from the CDR service.
+	 * @param timestamp
+	 */
 	public void setTimestamp(XMLGregorianCalendar timestamp)
 	{
 		this.timestamp = timestamp;

@@ -15,7 +15,6 @@ import rs.ruta.client.CatalogueSearch;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.PartySearch;
 import rs.ruta.client.Search;
-import rs.ruta.client.SearchEvent;
 
 public class SearchTreeModel extends RutaTreeModel
 {

@@ -22,7 +22,7 @@ public class RegisterWithPartyDialog extends JDialog
 		super(owner, true);
 		registerPressed = false;
 		username = password = null;
-		partyModel = new PartyTableModel();
+		partyModel = new PartyTableModel(true);
 		partyModel.setTableEditable(false);
 		setParty(party);
 		setSize(500, 590);
@@ -98,7 +98,7 @@ public class RegisterWithPartyDialog extends JDialog
 		buttonPanel.add(changeButton);
 		changeButton.addActionListener(event ->
 		{
-			Party changedParty = owner.showPartyDialog(party, "My Party", false);
+			Party changedParty = owner.showPartyDialog(party, "My Party", true, false);
 			setParty(changedParty);
 			repaint();
 		});

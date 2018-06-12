@@ -23,13 +23,14 @@ import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
-import rs.ruta.common.BusinessPartnershipRequest;
-import rs.ruta.common.BusinessPartnershipResponse;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentReceipt;
+import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.Associates;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.RutaVersion;
@@ -37,7 +38,6 @@ import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.RutaException;
 
 @WebService(targetNamespace = "http://ruta.rs/ns/services")
-//@XmlSeeAlso({OrderResponseType.class, OrderType.class})
 public interface Server
 {
 	/**
@@ -212,6 +212,7 @@ public interface Server
 	 * @throws RutaException if document could not be deleted
 	 */
 	@WebMethod(operationName = "DeleteDocBoxDocument")
+	@Deprecated
 	public void deleteDocBoxDocument(String username, String id) throws RutaException;
 
 	/**
@@ -226,10 +227,13 @@ public interface Server
 	public void deleteDocBoxDocumentWithDocumentReceipt(String username, String id, DocumentReceipt receipt) throws RutaException;
 
 	@WebMethod(operationName = "RequestBusinessPartnership")
-	public void requestBusinessPartnership(BusinessPartnershipRequest request) throws RutaException;
+	public void requestBusinessPartnership(PartnershipRequest request) throws RutaException;
 
 	@WebMethod(operationName = "ResponseBusinessPartnership")
-	public void responseBusinessPartnership(BusinessPartnershipResponse response) throws RutaException;
+	public void responseBusinessPartnership(PartnershipResponse response) throws RutaException;
+
+	@WebMethod(operationName = "BreakupBusinessPartnership")
+	public void breakupBusinessPartnership(PartnershipBreakup breakup) throws RutaException;
 
 	/**
 	 * Searches the database for all {@link BugReport}s that conforms to the {@link SearchCriterion search criterion}.

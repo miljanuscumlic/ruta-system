@@ -76,17 +76,16 @@ import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseTy
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.Catalogue;
-import rs.ruta.client.CorrespondenceEvent;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
 import rs.ruta.client.RutaClient;
-import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.Search;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.PartnershipRequest;
 import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.services.RutaException;
@@ -241,7 +240,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		myPartyItem.addActionListener(event ->
 		{
-			showPartyDialog(client.getMyParty().getCoreParty(), "My Party", false);
+			showPartyDialog(client.getMyParty().getCoreParty(), "My Party", true, false);
 		});
 
 		myCatalogueItem.addActionListener(event ->
@@ -478,6 +477,38 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}
 		});
 
+		cdrDeregisterPartyItem.addActionListener(event ->
+		{
+			MyParty myParty = client.getMyParty();
+			if(myParty.isRegisteredWithCDR())
+			{
+				if(!myParty.getBusinessPartners().isEmpty())
+				{
+					JOptionPane.showMessageDialog(RutaClientFrame.this, "All Business Partnerships should be broken first!",
+							"Information message", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
+							"By deregistering My Party from the CDR service, all your data in the CDR will be deleted\n" +
+									"and all your followers will be notified about your deregistration.\n" +
+									"Do you want to proceed?",
+									"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(option == JOptionPane.YES_OPTION)
+					{
+						disablePartyMenuItems();
+						new Thread(() ->
+						{
+							client.cdrDeregisterMyParty();
+						}).start();
+					}
+				}
+			}
+			else
+				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the CDR service.").
+						append(" My Party is not registered with the CDR service!"), Color.RED);
+		});
+
 		cdrUpdatePartyItem.addActionListener(event ->
 		{
 			final MyParty myParty = client.getMyParty();
@@ -499,32 +530,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			else
 				appendToConsole(new StringBuilder("Update request of My Party has not been sent to the CDR service.").
 						append(" My Party should be registered with the CDR service first!"), Color.RED);
-		});
-
-		cdrDeregisterPartyItem.addActionListener(event ->
-		{
-			MyParty myParty = client.getMyParty();
-			if(myParty.isRegisteredWithCDR())
-			{
-				EventQueue.invokeLater(() ->
-				{
-					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-							"By deregistering My Party from the CDR service, all your data in the CDR will be deleted\n" +
-									"and all your followers will be notified about your deregistration.\nDo you want to proceed?",
-									"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-					if(option == JOptionPane.YES_OPTION)
-					{
-						disablePartyMenuItems();
-						new Thread(() ->
-						{
-							client.cdrDeregisterMyParty();
-						}).start();
-					}
-				});
-			}
-			else
-				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the CDR service.").
-						append(" My Party is not registered with the CDR service!"), Color.RED);
 		});
 
 		cdrUpdateCatalogueItem.addActionListener(event ->
@@ -588,29 +593,26 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				if(myParty.isCatalogueInCDR())
 				{
-					EventQueue.invokeLater(() ->
+					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
+							"By deleting your catalogue from the CDR all your followers will be\nnotified about the catalogue deletion. Do you want to proceed?",
+							"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(option == JOptionPane.YES_OPTION)
 					{
-						int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-								"By deleting your catalogue from the CDR all your followers will be\nnotified about the catalogue deletion. Do you want to proceed?",
-								"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-						if(option == JOptionPane.YES_OPTION)
+						disableCatalogueMenuItems();
+						new Thread( () ->
 						{
-							disableCatalogueMenuItems();
-							new Thread( () ->
+							try
 							{
-								try
-								{
-									client.cdrDeleteMyCatalogue();
-								}
-								catch(Exception e)
-								{
-									appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service. ").
-											append(e.getMessage()), Color.RED);
-									enableCatalogueMenuItems();
-								}
-							}).start();
-						}
-					});
+								client.cdrDeleteMyCatalogue();
+							}
+							catch(Exception e)
+							{
+								appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service. ").
+										append(e.getMessage()), Color.RED);
+								enableCatalogueMenuItems();
+							}
+						}).start();
+					}
 				}
 				else
 					appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service.").
@@ -929,13 +931,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * object they are saved within this method.
 	 * @param party {@code Party} object which data are to be shown
 	 * @param title title of the dialog
+	 * @param editable TODO
 	 * @param registration whether the dialog is shown during local database registration
 	 * @return {@code Party} with potentially changed data
 	 */
-	//MMM boolean argument editable could be added; = false if party should only be displayed not changed
-	public Party showPartyDialog(Party party, String title, boolean registration)
+	public Party showPartyDialog(Party party, String title, boolean editable, boolean registration)
 	{
-		partyDialog = new PartyDialog(RutaClientFrame.this, registration);
+		partyDialog = new PartyDialog(RutaClientFrame.this, editable, registration);
 		partyDialog.setTitle(title);
 		if(registration)
 		{
@@ -1347,7 +1349,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		final Object source = event.getSource();
-		if(source.getClass() == BusinessParty.class)
+		if(source.getClass() == BusinessParty.class ||
+				source.getClass() == PartnershipRequest.class)
 		{
 
 			tabCDR.dispatchEvent(event);
@@ -1408,7 +1411,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		msgBuilder = msgBuilder.append(" ");
 		final Throwable cause = e.getCause();
 		final String errorMessage = e.getMessage();
-		if(errorMessage != null)
+		if(errorMessage != null && cause.getClass() != RutaException.class)
 			if(e instanceof RutaException)
 				msgBuilder.append(" Caused by: ").append(errorMessage).append(" ").
 				append(((RutaException) e).getFaultInfo().getDetail());

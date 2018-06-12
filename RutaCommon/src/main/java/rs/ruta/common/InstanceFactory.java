@@ -345,15 +345,20 @@ public final class InstanceFactory
 				senderParty = ((InvoiceType) document).getAccountingSupplierParty().getParty();
 			else if(documentClazz == DocumentReceipt.class)
 				senderParty = ((DocumentReceipt) document).getSenderParty();
-			else if(documentClazz == BusinessPartnershipRequest.class)
-				senderParty = ((BusinessPartnershipRequest) document).getRequestedParty();
-			else if(documentClazz == BusinessPartnershipResponse.class)
-				senderParty = ((BusinessPartnershipResponse) document).getRequestedParty();
+			else if(documentClazz == PartnershipRequest.class)
+				senderParty = ((PartnershipRequest) document).getRequesterParty();
+			else if(documentClazz == PartnershipResponse.class)
+				senderParty = ((PartnershipResponse) document).getRequestedParty();
+			else if(documentClazz == PartnershipResolution.class)
+				senderParty = ((PartnershipResolution) document).getRequestedParty();
+			else if(documentClazz == PartnershipBreakup.class)
+				senderParty = ((PartnershipBreakup) document).getRequesterParty();
 			//MMM other document types
 
 
 		}
-		catch(Exception e) { }
+		catch(Exception e) {
+			int i = 1;}
 
 		return senderParty;
 	}
@@ -400,10 +405,14 @@ public final class InstanceFactory
 				receiverParty = ((InvoiceType) document).getAccountingCustomerParty().getParty();
 			else if(documentClazz == DocumentReceipt.class)
 				receiverParty = ((DocumentReceipt) document).getReceiverParty();
-			else if(documentClazz == BusinessPartnershipRequest.class)
-				receiverParty = ((BusinessPartnershipRequest) document).getRequestedParty();
-			else if(documentClazz == BusinessPartnershipResponse.class)
-				receiverParty = ((BusinessPartnershipResponse) document).getRequestedParty();
+			else if(documentClazz == PartnershipRequest.class)
+				receiverParty = ((PartnershipRequest) document).getRequestedParty();
+			else if(documentClazz == PartnershipResponse.class)
+				receiverParty = ((PartnershipResponse) document).getRequesterParty();
+			else if(documentClazz == PartnershipResolution.class)
+				receiverParty = ((PartnershipResolution) document).getRequesterParty();
+			else if(documentClazz == PartnershipBreakup.class)
+				receiverParty = ((PartnershipBreakup) document).getRequestedParty();
 			//MMM other document types
 
 		}
@@ -437,10 +446,8 @@ public final class InstanceFactory
 			documentID = ((InvoiceType) document).getIDValue();
 		else if(documentClazz == DocumentReceipt.class)
 			documentID = ((DocumentReceipt) document).getIDValue();
-		else if(documentClazz == BusinessPartnershipRequest.class)
-			documentID = ((BusinessPartnershipRequest) document).getIDValue();
-		else if(documentClazz == BusinessPartnershipResponse.class)
-			documentID = ((BusinessPartnershipResponse) document).getIDValue();
+		else if(document instanceof PartnershipDocument)
+			documentID = ((PartnershipDocument) document).getIDValue();
 		//MMM other document types
 
 		return documentID;
@@ -453,31 +460,29 @@ public final class InstanceFactory
 	 */
 	public static <T> String getDocumentUUID(T document)
 	{
-		String documentID = null;
+		String documentUUID = null;
 		final Class<? extends Object> documentClazz = document.getClass();
 		if(documentClazz == OrderType.class)
-			documentID = ((OrderType) document).getUUIDValue();
+			documentUUID = ((OrderType) document).getUUIDValue();
 		else if(documentClazz == OrderResponseType.class)
-			documentID = ((OrderResponseType) document).getUUIDValue();
+			documentUUID = ((OrderResponseType) document).getUUIDValue();
 		else if(documentClazz == OrderResponseSimpleType.class)
-			documentID = ((OrderResponseSimpleType) document).getUUIDValue();
+			documentUUID = ((OrderResponseSimpleType) document).getUUIDValue();
 		else if(documentClazz == OrderChangeType.class)
-			documentID = ((OrderChangeType) document).getUUIDValue();
+			documentUUID = ((OrderChangeType) document).getUUIDValue();
 		else if(documentClazz == OrderCancellationType.class)
-			documentID = ((OrderCancellationType) document).getUUIDValue();
+			documentUUID = ((OrderCancellationType) document).getUUIDValue();
 		else if(documentClazz == ApplicationResponseType.class)
-			documentID = ((ApplicationResponseType) document).getUUIDValue();
+			documentUUID = ((ApplicationResponseType) document).getUUIDValue();
 		else if(documentClazz == InvoiceType.class)
-			documentID = ((InvoiceType) document).getUUIDValue();
+			documentUUID = ((InvoiceType) document).getUUIDValue();
 		else if(documentClazz == DocumentReceipt.class)
-			documentID = ((DocumentReceipt) document).getIDValue();
-		else if(documentClazz == BusinessPartnershipRequest.class)
-			documentID = ((BusinessPartnershipRequest) document).getIDValue();
-		else if(documentClazz == BusinessPartnershipResponse.class)
-			documentID = ((BusinessPartnershipResponse) document).getIDValue();
+			documentUUID = ((DocumentReceipt) document).getIDValue();
+		else if(document instanceof PartnershipDocument)
+			documentUUID = ((PartnershipDocument) document).getIDValue();
 		//MMM other document types
 
-		return documentID;
+		return documentUUID;
 	}
 
 	/**
@@ -584,7 +589,7 @@ public final class InstanceFactory
 	 * @param issueDate issue date of referenced document
 	 * @param issueTime issue time of referenced document
 	 * @param docType document's type as fully qualified name
-	 * @result created Documnet Reference
+	 * @result created Document Reference
 	 */
 	public static DocumentReferenceType createDocumentReference(PartyType issuerParty, String uuid, String id,
 			XMLGregorianCalendar issueDate, XMLGregorianCalendar issueTime, String docType)
@@ -599,4 +604,14 @@ public final class InstanceFactory
 		return docReference;
 	}
 
+	public static PartnershipResponse createPartnershipResponse(PartnershipRequest request, boolean accepted)
+	{
+		PartnershipResponse response = new PartnershipResponse();
+		response.setID(UUID.randomUUID().toString());
+		response.setRequesterParty(request.getRequesterParty());
+		response.setRequestedParty(request.getRequestedParty());
+		response.setIssueTime(InstanceFactory.getDate());
+		response.setAccepted(accepted);
+		return response;
+	}
 }

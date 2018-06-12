@@ -165,7 +165,7 @@ public class RutaClientTest
 		}
 		catch(Exception e)
 		{
-			EventQueue.invokeLater( () -> awhileDialog.setVisible(false));
+			awhileDialog.setVisible(false);
 			logger.error("Unable to open Ruta Client application. Exception is ", e);
 			EventQueue.invokeLater( () ->
 			{
@@ -177,7 +177,7 @@ public class RutaClientTest
 	}
 
 	/**
-	 * Creates a Collection from an XMLDB URI
+	 * Creates a Collection from an XMLDB URI.
 	 * @param uri The XMLDB URI to a Collection to create in the database
 	 * @param username
 	 * @param password

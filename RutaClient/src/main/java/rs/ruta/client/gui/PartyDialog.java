@@ -22,12 +22,13 @@ public class PartyDialog extends JDialog
 	/**
 	 * Constructs the dialog for displaying and/or changing the data of a {@link Party}.
 	 * @param owner parent frame
+	 * @param editable true when {@code Party} data are editable
 	 * @param registration true when dialog is shown during local database registration process
 	 */
-	public PartyDialog(RutaClientFrame owner, boolean registration)
+	public PartyDialog(RutaClientFrame owner, boolean editable, boolean registration)
 	{
 		super(owner, true);
-		partyTableModel = new PartyTableModel();
+		partyTableModel = new PartyTableModel(editable);
 		changed = false;
 		party = null;
 
@@ -70,7 +71,6 @@ public class PartyDialog extends JDialog
 		JPanel buttonPanel = new JPanel();
 
 		JButton okButton = new JButton("OK");
-		buttonPanel.add(okButton);
 		okButton.addActionListener(event ->
 		{
 			stopEditing();
@@ -84,12 +84,14 @@ public class PartyDialog extends JDialog
 				JOptionPane.showMessageDialog(PartyDialog.this, missingField + " field is mandatory.",
 						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE);
 		});
-		getRootPane().setDefaultButton(okButton);
-		okButton.requestFocusInWindow();
+		if(editable)
+		{
+			buttonPanel.add(okButton);
+			getRootPane().setDefaultButton(okButton);
+			okButton.requestFocusInWindow();
+		}
 
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked
-		buttonPanel.add(cancelButton);
 		cancelButton.addActionListener(event ->
 		{
 			if(registration)
@@ -100,6 +102,15 @@ public class PartyDialog extends JDialog
 				setVisible(false);
 		});
 
+		if(!editable)
+		{
+			getRootPane().setDefaultButton(cancelButton);
+			cancelButton.requestFocusInWindow();
+			cancelButton.setText("Close");
+
+		}
+		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked
+		buttonPanel.add(cancelButton);
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 

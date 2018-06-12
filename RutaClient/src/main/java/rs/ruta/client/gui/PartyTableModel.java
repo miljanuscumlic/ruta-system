@@ -23,23 +23,23 @@ public class PartyTableModel extends DefaultTableModel
 		};
 
 	private Party party;
-	private boolean tableEditable;
+	private boolean editable;
 
-	public PartyTableModel()
+	public PartyTableModel(boolean editable)
 	{
 		super();
 		party = null;
-		tableEditable = true;
+		this.editable = editable;
 	}
 
 	public boolean isTableEditable()
 	{
-		return tableEditable;
+		return editable;
 	}
 
 	public void setTableEditable(boolean tableEditable)
 	{
-		this.tableEditable = tableEditable;
+		this.editable = tableEditable;
 	}
 
 	public void setParty(Party party)
@@ -276,7 +276,7 @@ public class PartyTableModel extends DefaultTableModel
 	@Override
 	public boolean isCellEditable(int row, int column)
 	{
-		return (!tableEditable) || (column == 0 || row == 4 || row == 16 || row == 27) ? false : true;
+		return (!editable) || (column == 0 || row == 4 || row == 16 || row == 27) ? false : true;
 	}
 
 	@Override

@@ -3,9 +3,6 @@ package rs.ruta.client.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import javax.swing.JButton;
 import javax.xml.datatype.XMLGregorianCalendar;
 

@@ -1,13 +1,8 @@
 package rs.ruta.client.gui;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.swing.table.DefaultTableModel;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
-import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;

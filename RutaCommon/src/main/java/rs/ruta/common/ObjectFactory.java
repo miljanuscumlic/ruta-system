@@ -20,12 +20,14 @@ public class ObjectFactory
 {
 	public final static QName _Associates_QNAME = new QName("http://www.ruta.rs/ns/common", "Associates");
 	public final static QName _Attachment_QNAME = new QName("http://www.ruta.rs/ns/common", "Attachment");
-	public final static QName _BusinessPartnershipRequest_QNAME = new QName("http://www.ruta.rs/ns/common", "BusinessPartnershipRequest");
-	public final static QName _BusinessPartnershipResponse_QNAME = new QName("http://www.ruta.rs/ns/common", "BusinessPartnershipResponse");
 	public final static QName _BugReport_QNAME = new QName("http://www.ruta.rs/ns/common", "BugReport");
 	public final static QName _DocumentDistribution_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentDistribution");
 	public final static QName _DocumentReceipt_QNAME = new QName("http://www.ruta.rs/ns/common", "DocumentReceipt");
 	public final static QName _DeregistrationNotice_QNAME = new QName("http://www.ruta.rs/ns/common", "DeregistrationNotice");
+	public final static QName _PartnershipBreakup_QNAME = new QName("http://www.ruta.rs/ns/common", "PartnershipBreakup");
+	public final static QName _PartnershipRequest_QNAME = new QName("http://www.ruta.rs/ns/common", "PartnershipRequest");
+	public final static QName _PartnershipResponse_QNAME = new QName("http://www.ruta.rs/ns/common", "PartnershipResponse");
+	public final static QName _PartnershipResolution_QNAME = new QName("http://www.ruta.rs/ns/common", "PartnershipResolution");
 	public final static QName _PartyID_QNAME = new QName("http://www.ruta.rs/ns/common", "PartyID");
 	public final static QName _RutaUser_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaUser");
 	public static final QName _RutaVersion_QNAME = new QName("http://www.ruta.rs/ns/common", "RutaVersion");
@@ -73,45 +75,88 @@ public class ObjectFactory
 	}
 
 	/**
-	 * Creates an instance of {@link BusinessPartnershipRequest}.
+	 * Creates an instance of {@link PartnershipBreakup}.
 	 * @return created {@code Attachment} object and never {@code null}
 	 */
 	@Nonnull
-	public BusinessPartnershipRequest createBusinessPartnershipRequest()
+	public PartnershipBreakup createPartnershipBreakup()
 	{
-		return new BusinessPartnershipRequest();
+		return new PartnershipBreakup();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BusinessPartnershipRequest }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link PartnershipBreakup }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "BusinessPartnershipRequest")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "PartnershipBreakup")
 	@Nonnull
-	public JAXBElement<BusinessPartnershipRequest> createBusinessPartnershipRequest(@Nullable final BusinessPartnershipRequest value)
+	public JAXBElement<PartnershipBreakup> createPartnershipBreakup(@Nullable final PartnershipBreakup value)
 	{
-		return new JAXBElement<BusinessPartnershipRequest>(_Attachment_QNAME, BusinessPartnershipRequest.class, null, value);
+		return new JAXBElement<PartnershipBreakup>(_PartnershipBreakup_QNAME, PartnershipBreakup.class, null, value);
 	}
 
 	/**
-	 * Creates an instance of {@link BusinessPartnershipResponse}.
+	 * Creates an instance of {@link PartnershipRequest}.
 	 * @return created {@code Attachment} object and never {@code null}
 	 */
 	@Nonnull
-	public BusinessPartnershipResponse createBusinessPartnershipResponse()
+	public PartnershipRequest createPartnershipRequest()
 	{
-		return new BusinessPartnershipResponse();
+		return new PartnershipRequest();
 	}
 
 	/**
-	 * Creates an instance of {@link JAXBElement }{@code <}{@link BusinessPartnershipResponse }{@code >}.
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link PartnershipRequest }{@code >}.
 	 * @return created JAXBElement and never {@code null}
 	 */
-	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "BusinessPartnershipResponse")
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "PartnershipRequest")
 	@Nonnull
-	public JAXBElement<BusinessPartnershipResponse> createBusinessPartnershipResponse(@Nullable final BusinessPartnershipResponse value)
+	public JAXBElement<PartnershipRequest> createPartnershipRequest(@Nullable final PartnershipRequest value)
 	{
-		return new JAXBElement<BusinessPartnershipResponse>(_Attachment_QNAME, BusinessPartnershipResponse.class, null, value);
+		return new JAXBElement<PartnershipRequest>(_PartnershipRequest_QNAME, PartnershipRequest.class, null, value);
+	}
+
+	/**
+	 * Creates an instance of {@link PartnershipResponse}.
+	 * @return created {@code Attachment} object and never {@code null}
+	 */
+	@Nonnull
+	public PartnershipResponse createPartnershipResponse()
+	{
+		return new PartnershipResponse();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link PartnershipResponse }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "PartnershipResponse")
+	@Nonnull
+	public JAXBElement<PartnershipResponse> createPartnershipResponse(@Nullable final PartnershipResponse value)
+	{
+		return new JAXBElement<PartnershipResponse>(_PartnershipResponse_QNAME, PartnershipResponse.class, null, value);
+	}
+
+
+	/**
+	 * Creates an instance of {@link PartnershipResolution}.
+	 * @return created {@code Attachment} object and never {@code null}
+	 */
+	@Nonnull
+	public PartnershipResolution createPartnershipResolution()
+	{
+		return new PartnershipResolution();
+	}
+
+	/**
+	 * Creates an instance of {@link JAXBElement }{@code <}{@link PartnershipResolution }{@code >}.
+	 * @return created JAXBElement and never {@code null}
+	 */
+	@XmlElementDecl(namespace = "http://www.ruta.rs/ns/common", name = "PartnershipResolution")
+	@Nonnull
+	public JAXBElement<PartnershipResolution> createPartnershipResolution(@Nullable final PartnershipResolution value)
+	{
+		return new JAXBElement<PartnershipResolution>(_PartnershipResolution_QNAME, PartnershipResolution.class, null, value);
 	}
 
 	/**

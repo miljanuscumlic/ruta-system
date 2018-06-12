@@ -241,7 +241,7 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 				throw new DatabaseException("Collection does not exist.");
 			final String uri = getAbsoluteRutaCollectionPath();
 			final XQueryService queryService = (XQueryService) collection.getService("XQueryService", "1.0");
-			logger.info("Started query of the " + uri);
+			logger.info("Started query of the " + uri + getCollectionPath());
 			queryService.setProperty("indent", "yes");
 			StringBuilder queryPath = new StringBuilder(getRelativeRutaCollectionPath()).append(collectionPath);
 			queryService.declareVariable("path", queryPath.toString());
@@ -280,7 +280,7 @@ public class BugReportXmlMapper extends XmlMapper<BugReport>
 							((EXistResource)resource).freeResources();
 					}
 				}
-				logger.info("Finished query of the " + uri);
+				logger.info("Finished query of the " + uri + getCollectionPath());
 			}
 			else
 				throw new DatabaseException("Could not process the query. Query file does not exist.");

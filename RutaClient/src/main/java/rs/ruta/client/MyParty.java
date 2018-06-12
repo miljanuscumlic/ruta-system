@@ -84,12 +84,22 @@ import rs.ruta.client.correspondence.SellerReceiveOrderChangeCancellationState;
 import rs.ruta.client.correspondence.SellerReceiveOrderState;
 import rs.ruta.client.correspondence.SupplierBillingProcess;
 import rs.ruta.client.correspondence.SupplierReceiveApplicationResponseState;
+import rs.ruta.client.gui.BusinessPartyEvent;
+import rs.ruta.client.gui.CorrespondenceEvent;
+import rs.ruta.client.gui.PartnershipEvent;
+import rs.ruta.client.gui.RutaClientFrameEvent;
+import rs.ruta.client.gui.SearchEvent;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResolution;
+import rs.ruta.common.PartnershipSearchCriterion;
 import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.RutaUser;
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.DataMapper;
 import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
@@ -109,7 +119,6 @@ public class MyParty extends BusinessParty
 	/**
 	 * MyParty data retrieved from the CDR service.
 	 */
-	//	@XmlElement(name = "MyFollowingParty")
 	@Nullable
 	private BusinessParty myFollowingParty;
 	/**
@@ -117,7 +126,6 @@ public class MyParty extends BusinessParty
 	 * List of all following parties of MyParty. Should always be accessed with {@link #getFollowingParty(String)}
 	 * method call unless prior to access is checked for {@code null}.
 	 */
-	//	@XmlElement(name = "FollowingParty")
 	@Nullable
 	private List<BusinessParty> followingParties;
 	/**
@@ -136,24 +144,23 @@ public class MyParty extends BusinessParty
 	 * List of unfollowed parties from the CDR service.
 	 * Should always be accessed with {@link #getArchivedParties()} method call unless prior to access is checked for {@code null}.
 	 */
-	//	@XmlElement(name = "ArchivedParty")
 	@Nullable
 	private List<BusinessParty> archivedParties;
 	/**
 	 * List of deregistered parties from the CDR service.
 	 * Should always be accessed with {@link #getArchivedParties()} method call unless prior to access is checked for {@code null}.
 	 */
-	//	@XmlElement(name = "DeregisteredParty")
 	@Nullable
 	private List<BusinessParty> deregisteredParties;
-	//	@XmlElement(name = "PartySearch")
 	private List<Search<PartyType>> partySearches;
-	//	@XmlElement(name = "CatalogueSearch")
 	private List<Search<CatalogueType>> catalogueSearches;
-	//	private List<ActionListener> actionListeners;
 	private Map<Class<? extends ActionEvent>, List<ActionListener>> actionListeners;
 	private CatalogueCorrespondence catalogueCorrespondence;
 	private List<BuyingCorrespondence> buyingCorrespondences;
+	private List<PartnershipRequest> outboundPartnershipRequests;
+	private List<PartnershipRequest> inboundPartnershipRequests;
+	private List<PartnershipRequest> businessResponses;
+	private List<PartnershipBreakup> partnershipBreakups;
 
 	@XmlElement(name = "LocalUser")
 	private RutaUser localUser;
@@ -194,7 +201,7 @@ public class MyParty extends BusinessParty
 		localUser = new RutaUser();
 		cdrUser = new RutaUser();
 		followingParties = businessPartners = otherParties = archivedParties = deregisteredParties = null;
-		//		catalogueProcesses = null;
+		outboundPartnershipRequests = inboundPartnershipRequests = null;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		catalogueIssueDate = null;
 		createListenerMap();
@@ -241,6 +248,21 @@ public class MyParty extends BusinessParty
 		setDeregisteredParties(businessPartyMapper.findMany(criterion));
 		setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
 		setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
+
+		List<PartnershipRequest> allRequests = mapperRegistry.getMapper(PartnershipRequest.class).findAll();
+		if(allRequests != null)
+		{
+			List<PartnershipRequest> outRequests =
+					allRequests.stream().
+					filter(request -> request.getRequesterParty().getPartyIdentificationAtIndex(0).getIDValue().equals(getPartyID())).
+					collect(Collectors.toList());
+			setOutboundPartnershipRequests(outRequests);
+			List<PartnershipRequest> inRequests =
+					allRequests.stream().
+					filter(request -> request.getRequestedParty().getPartyIdentificationAtIndex(0).getIDValue().equals(getPartyID())).
+					collect(Collectors.toList());
+			setInboundPartnershipRequests(inRequests);
+		}
 
 		//			logger.info("*****Start loading catalogue correspondence");
 
@@ -295,8 +317,6 @@ public class MyParty extends BusinessParty
 		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
 		mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
 		mapperRegistry.getMapper(Item.class).insertAll(null, getProducts());
-		/*		if(followingParties != null && !followingParties.isEmpty())
-				mapperRegistry.getMapper(BusinessParty.class).insertAll(null, getFollowingParties());*/
 		if(businessPartners != null && !businessPartners.isEmpty())
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, businessPartners);
 		if(otherParties != null && !otherParties.isEmpty())
@@ -317,6 +337,10 @@ public class MyParty extends BusinessParty
 			List<CatalogueSearch> newList = Search.fromLisfOfGenerics(getCatalogueSearches());
 			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
 		}
+		if(outboundPartnershipRequests != null && !outboundPartnershipRequests.isEmpty())
+			mapperRegistry.getMapper(PartnershipRequest.class).insertAll(null, outboundPartnershipRequests);
+		if(inboundPartnershipRequests != null && !inboundPartnershipRequests.isEmpty())
+			mapperRegistry.getMapper(PartnershipRequest.class).insertAll(null, inboundPartnershipRequests);
 		waitCorrespondencesToStop();
 		if(catalogueCorrespondence != null)
 		{
@@ -418,8 +442,8 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Creates a {@link HashMap map} with (key, value) pairs where the key is a {@link Class} object of the
-	 * event and the value is a list of all listeners that are listening for that event.
+	 * Creates a {@link HashMap map} with {@code (key, value)} pairs where the key is a {@link Class}
+	 * object of the event and the value is a list of all listeners that are listening for that event.
 	 */
 	private void createListenerMap()
 	{
@@ -428,6 +452,7 @@ public class MyParty extends BusinessParty
 		actionListeners.put(SearchEvent.class, new ArrayList<>());
 		actionListeners.put(RutaClientFrameEvent.class, new ArrayList<>());
 		actionListeners.put(CorrespondenceEvent.class, new ArrayList<>());
+		actionListeners.put(PartnershipEvent.class, new ArrayList<>());
 	}
 
 	public Map<Class<? extends ActionEvent>, List<ActionListener>> getActionListeners()
@@ -452,13 +477,7 @@ public class MyParty extends BusinessParty
 	 */
 	public void notifyListeners(ActionEvent event)
 	{
-		/*		List<ActionListener> listeners = actionListeners.stream().filter(listener -> ((RutaTreeModel) listener).
-					listenFor(event.getClass())).collect(Collectors.toList());
-			for(ActionListener listener : listeners)
-				listener.actionPerformed(event);*/
-
 		actionListeners.get(event.getClass()).stream().forEach(listener -> listener.actionPerformed(event));
-
 	}
 
 	public List<Item> getProducts()
@@ -475,22 +494,11 @@ public class MyParty extends BusinessParty
 
 	public void setProducts(CatalogueType catalogue)
 	{
-		/*		try
-			{
-				String strID = InstanceFactory.getPropertyOrNull(catalogue.getID(), IDType::getValue);
-				catalogueID = Integer.parseInt(strID);
-			}
-			catch(Exception e)
-			{
-				catalogueID = 0;
-			}*/
 		List<CatalogueLineType> catalogueLines = catalogue.getCatalogueLine();
 		if(!catalogueLines.isEmpty())
 		{
 			products.clear();
 			products = catalogueLines.stream().map(line -> new Item(line.getItem())).collect(Collectors.toList());
-			/*			for(CatalogueLineType line : catalogueLines)
-					products.add(line.getItem());*/
 		}
 	}
 
@@ -1133,7 +1141,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Removes party from the list of business partners.
+	 * Removes party from the list of other parties.
 	 * @param party party to remove
 	 * @return true if party was contained in list of other parties and removed from it
 	 * @throws DetailException if party could not be deleted from the data store
@@ -1247,8 +1255,9 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Removes party from the list of archived parties.
-	 * @param party party to remove
+	 * Removes party from the list of archived parties. Method does not delete passed argument,
+	 * but the party that has the same ID that passed argument has.
+	 * @param party party that has the same ID to remove
 	 * @return true if party was contained in list of archived parties and removed from it
 	 * @throws DetailException if party could not be deleted from the data store
 	 */
@@ -1382,15 +1391,14 @@ public class MyParty extends BusinessParty
 			party.setDeregistered(true);
 			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			getDeregisteredParties().add(party);
-			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
+//			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
 
-			if(checkArchivedParty(party)) //MMM: superfluos??? remove down below will succeed or not
-			{	//This way it is removed the object with the same Party ID, not just
-				//the same object like in this call: getArchivedParties().remove(party)
-				if(removeArchivedParty(party))
-					//				if(getArchivedParties().remove(getArchivedParty(party.getPartyID())))
-					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
-			}
+//			if(checkArchivedParty(party)) //MMM superfluos??? remove down below will succeed or not - CHECK WHAT IS THIS FOR????
+//			{	//This way it is removed the object with the same Party ID, not just
+//				//the same object like in this call: getArchivedParties().remove(party)
+//				if(removeArchivedParty(party))
+//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+//			}
 		}
 	}
 
@@ -1407,7 +1415,7 @@ public class MyParty extends BusinessParty
 		{
 			try
 			{
-				//MMM: TODO should be removed only if there are no correspondence/documents with the party
+				//MMM TODO should be removed only if there are no correspondence/documents with the party
 				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
 				success = getDeregisteredParties().remove(party);
 				party.setDeregistered(false);
@@ -1431,9 +1439,37 @@ public class MyParty extends BusinessParty
 	{
 		if(party != null)
 		{
-			removeFollowingParty(party);
+			party.setFollowing(false);
+			if(party.isPartner())
+			{
+				if(removeBusinessPartner(party))
+					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
+			}
+			else
+			{
+				if(removeOtherParty(party))
+					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
+			}
+
+//			boolean partner = party.isPartner();
+//			if(removeFollowingParty(party))
+//			{
+//				if(partner)
+//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
+//				else
+//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
+//			}
+
 			addDeregisteredParty(party);
 			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
+
+			if(checkArchivedParty(party)) //MMM superfluos??? removeArchivedParty down below will succeed or not
+			{	//This way it is removed the object with the same Party ID, not just
+				//the same object like in this call: getArchivedParties().remove(party)
+				if(removeArchivedParty(party))
+					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+			}
+
 		}
 	}
 
@@ -1522,79 +1558,12 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Adds party to the list of following parties and to one appropriate helper list while removing it
-	 * from the other. If party is present in the list, this method overwrites it.
-	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
-	 * @param party following party
-	 */
-	@Deprecated
-	private void addFollowingParty(BusinessParty party)
-	{
-		if(party != null)
-		{
-			//removal is necessary when party is already in the list, but its partner status has been changed
-			//so this method is called because Party should be moved to the other helper list. Cumbersome.
-			getFollowingParties().remove(party); //if exists MMM: better to use Sets then?
-			getFollowingParties().add(party);
-
-			if(checkArchivedParty(party))// MMM:superflous???
-			{	//if following party is archived sometime before, object representing that party andreferenced
-				//in the archived list has the same Party ID
-				//but is not the same object as the one passed to this method. There should be removed the
-				//object with the same Party ID, not the same object like it would be done by this method call:
-				//getArchivedParties().remove(party). That's way this is invoked:
-
-				/*if(getArchivedParties().remove(getArchivedParty(party.getPartyID())))
-						notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));*/
-
-				//Not neccessary to separetly notify about deletion from the archived list; archived tree will be
-				//updated by notification below
-				getArchivedParties().remove(getArchivedParty(party.getPartyID()));
-
-			}
-			if(party.isPartner())
-			{
-				getBusinessPartners().add(party);
-				getOtherParties().remove(party);
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_ADDED));
-			}
-			else
-			{
-				getBusinessPartners().remove(party);
-				getOtherParties().add(party);
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_ADDED));
-			}
-		}
-	}
-
-	/**
-	 * Adds party to the list of following parties, and sets it as a business partner in respect of
-	 * {@code partner} argument.
-	 * @param party following party to add
-	 * @param partner whether the party is a business partner
-	 * @return {@code BusinessParty} with its {@code coreParty} field asigned with passed {@code party} argument
-	 * or {@code null} if {@code party} argument has a {@code null} value
-	 */
-	@Deprecated
-	private BusinessParty addFollowingParty(PartyType party, boolean partner)
-	{
-		BusinessParty newParty = null;
-		if(party != null)
-		{
-			newParty = new BusinessParty();
-			newParty.setCoreParty(party);
-			newParty.setPartner(partner);
-			addFollowingParty(newParty);
-		}
-		return newParty;
-	}
-
-	/**
 	 * Removes party from proper list of following parties.
 	 * @param party party to remove
 	 * @return true if party was contained in some of the following lists and removed from it
 	 * @throws DetailException if party could not be deleted from the data store
 	 */
+	@Deprecated
 	private boolean removeFollowingParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
@@ -1622,9 +1591,39 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Adds party to the proper list of {@link BusinessParty BusinessParties} and removes it from the
-	 * archived list if the party was archived before.
-	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
+	 * Adds party to the list of {@link BusinessParty Business Partner}s and removes it from the
+	 * other parties list if it was followed before and from the archived list if it was archived before.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}s.</p>
+	 * @param party party to follow
+	 * @throws DetailException if party could not be inserted or updated with the data store
+	 */
+	public void followBusinessPartner(BusinessParty party) throws DetailException
+	{
+		party.setFollowing(true);
+
+		//if following party is archived sometime before, object representing that party and referenced
+		//in the archived list has the same Party ID
+		//but is not the same object as the one passed to this method. There should be removed the
+		//object with the same Party ID, not the same object like it would be done by method call:
+		//getArchivedParties().remove(party). That's why this is invoked:
+		final BusinessParty archivedParty = getArchivedParty(party.getPartyID());
+		boolean archived = removeArchivedParty(archivedParty);
+		if(archived)
+			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+
+		boolean other = false;
+		party.setPartner(true);
+		other = removeOtherParty(party);
+		addBusinessPartner(party);
+		if(other)
+			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED));
+		else
+			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_ADDED));
+	}
+
+	/**
+	 * Adds party to the list of other parties and removes it from the archived list if party was archived before.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}s.</p>
 	 * @param party party to follow
 	 * @throws DetailException if party could not be inserted or updated with the data store
 	 */
@@ -1641,28 +1640,8 @@ public class MyParty extends BusinessParty
 		boolean archived = removeArchivedParty(archivedParty);
 		if(archived)
 			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
-		//		getArchivedParties().remove(getArchivedParty(party.getPartyID()));
-
-		boolean other = false, partner = false;
-		if(party.isPartner())
-		{
-			//			if(getOtherParties().contains(party))
-			other = removeOtherParty(party);
-			addBusinessPartner(party);
-			if(other)
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED));
-			else
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_ADDED));
-		}
-		else
-		{
-			partner = removeBusinessPartner(party);
-			addOtherParty(party);
-			if(partner)
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_TRANSFERED));
-			else
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_ADDED));
-		}
+		addOtherParty(party);
+		notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_ADDED));
 	}
 
 	/**
@@ -1672,16 +1651,47 @@ public class MyParty extends BusinessParty
 	 * @param party party to unfollow
 	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	public void unfollowParty(BusinessParty party) throws DetailException
+	@Deprecated
+	public void unfollowPartyOLD(BusinessParty party) throws DetailException
 	{
 //		notifyListeners(new RutaClientFrameEvent(party, RutaClientFrameEvent.SELECT_NEXT));
 		boolean partner = party.isPartner();
-		removeFollowingParty(party);
-		addArchivedParty(party);
-		if(partner)
-			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
-		else
+		if(removeFollowingParty(party))
+		{
+			if(partner)
+				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
+			else
+				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
+		}
+		archiveParty(party);
+	}
+
+	/**
+	 * Unfollows party by removing it from the list of other parties and adding it to the archived list.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
+	 * @param party party to unfollow
+	 * @throws DetailException if party could not be deleted from the data store
+	 */
+	public void unfollowParty(BusinessParty party) throws DetailException
+	{
+		party.setFollowing(false);
+		if(removeOtherParty(party))
 			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
+		archiveParty(party);
+	}
+
+	/**
+	 * Unfollows party by removing it from the list of bussines partners and adding it to the archived list.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
+	 * @param party party to unfollow
+	 * @throws DetailException if party could not be deleted from the data store
+	 */
+	public void unfollowBusinessPartner(BusinessParty party) throws DetailException
+	{
+		party.setFollowing(false);
+		if(removeBusinessPartner(party))
+			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
+		archiveParty(party);
 	}
 
 	public List<Search<PartyType>> getPartySearches()
@@ -1878,6 +1888,385 @@ public class MyParty extends BusinessParty
 	public void setCDRUser(RutaUser cdrUser)
 	{
 		this.cdrUser = cdrUser;
+	}
+
+	public List<PartnershipRequest> getOutboundPartnershipRequests()
+	{
+		if(outboundPartnershipRequests == null)
+			outboundPartnershipRequests= new ArrayList<>();
+		return outboundPartnershipRequests;
+	}
+
+	public void setOutboundPartnershipRequests(List<PartnershipRequest> businessRequests)
+	{
+		this.outboundPartnershipRequests = businessRequests;
+	}
+
+	/**
+	 * Adds {@link PartnershipRequest request} to the list of all outbound partnership requests.
+	 * @param request request to add
+	 * @throws DetailException if request could not be inserted in the data store
+	 */
+	private void addOutboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		if(request != null)
+		{
+			MapperRegistry.getInstance().getMapper(PartnershipRequest.class).insert(null, request);
+			getOutboundPartnershipRequests().add(request);
+		}
+	}
+
+	/**
+	 * Removes {@link PartnershipRequest request} from the list of all outbound partnership requests.
+	 * @param request request to remove
+	 * @return true if request was contained in list and removed from it
+	 * @throws DetailException if request could not be deleted from the data store
+	 */
+	private boolean removeOutboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		boolean success = false;
+		if(request != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(PartnershipRequest.class).delete(null, request.getIDValue());
+				success = getOutboundPartnershipRequests().remove(request);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Gets {@link PartnershipRequest request} with passed request's ID from the list
+	 * of all outbound partnership requests.
+	 * @param id request's ID
+	 * @return request or {@code null} if there is no request with specified ID in the
+	 * list of outbound partnership requests
+	 */
+	public PartnershipRequest getOutboundPartnershipRequest(String id)
+	{
+		try
+		{
+			return getOutboundPartnershipRequests().stream().
+					filter(request -> id.equals(request.getIDValue())).
+					findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed uuid
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Gets {@link PartnershipRequest request} sent to the {@code requestedParty} extracting it
+	 * from the list of all outbound partnership requests.
+	 * @param requestedParty requested party
+	 * @return request or {@code null} if there is no request with specified requested party in the
+	 * list of outbound partnership requests
+	 */
+	public PartnershipRequest getOutboundPartnershipRequest(PartyType requestedParty)
+	{
+		final String requestedPartyID = requestedParty.getPartyIdentificationAtIndex(0).getIDValue();
+		try
+		{
+			return getOutboundPartnershipRequests().stream().
+					filter(request -> requestedPartyID.equals(request.getRequestedPartyID())).
+					findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no match
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Adds request to the list of outbound {@link PartnershipRequestoutbound Partnership Requests}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param request request to add
+	 * @throws DetailException if request could not be inserted in the data store
+	 */
+	public void includeOutboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		addOutboundPartnershipRequest(request);
+		notifyListeners(new PartnershipEvent(request, PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_ADDED));
+	}
+
+	/**
+	 * Removes request from the list of outbound {@link PartnershipRequestoutbound Partnership Requests}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param request request to remove
+	 * @throws DetailException if request could not be deleted from the data store
+	 */
+	public void excludeOutboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		if(removeOutboundPartnershipRequest(request))
+			notifyListeners(new PartnershipEvent(request, PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_REMOVED));
+	}
+
+	public List<PartnershipRequest> getInboundPartnershipRequests()
+	{
+		if(inboundPartnershipRequests == null)
+			inboundPartnershipRequests= new ArrayList<>();
+		return inboundPartnershipRequests;
+	}
+
+	public void setInboundPartnershipRequests(List<PartnershipRequest> businessRequests)
+	{
+		this.inboundPartnershipRequests = businessRequests;
+	}
+
+	/**
+	 * Adds {@link PartnershipRequest request} to the list of all inbound partnership requests.
+	 * @param request request to add
+	 * @throws DetailException if request could not be inserted in the data store
+	 */
+	private void addInboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		if(request != null)
+		{
+			MapperRegistry.getInstance().getMapper(PartnershipRequest.class).insert(null, request);
+			getInboundPartnershipRequests().add(request);
+		}
+	}
+
+	/**
+	 * Removes {@link PartnershipRequest request} from the list of all inbound partnership requests.
+	 * @param request request to remove
+	 * @return true if request was contained in list and removed from it
+	 * @throws DetailException if request could not be deleted from the data store
+	 */
+	private boolean removeInboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		boolean success = false;
+		if(request != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(PartnershipRequest.class).delete(null, request.getIDValue());
+				success = getInboundPartnershipRequests().remove(request);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Gets {@link PartnershipRequest request} from the list of all inbound partnership requests with passed ID.
+	 * @param uuid request's ID
+	 * @return request or {@code null} if there is no request with specified ID in the
+	 * list of inbound partnership requests
+	 */
+	public PartnershipRequest getInboundPartnershipRequest(String id)
+	{
+		try
+		{
+			return getInboundPartnershipRequests().stream().
+					filter(request -> id.equals(request.getIDValue())).
+					findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no party with passed uuid
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Gets {@link PartnershipRequest request} received from the {@code requesterParty} extracting it
+	 * from the list of all inbound partnership requests.
+	 * @param requesterParty requester party
+	 * @return request or {@code null} if there is no request with specified requester party in the
+	 * list of inbound partnership requests
+	 */
+	public PartnershipRequest getInboundPartnershipRequest(PartyType requesterParty)
+	{
+		final String requesterPartyID = requesterParty.getPartyIdentificationAtIndex(0).getIDValue();
+		try
+		{
+			return getInboundPartnershipRequests().stream().
+					filter(request -> requesterPartyID.equals(request.getRequesterPartyID())).
+					findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no match
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Removes {@link PartnershipRequest request} from the any list of partnership requests that contain it.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param party correspondent party in the request to remove
+	 * @throws DetailException if request could not be deleted from the data store
+	 */
+	public void excludePartnershipRequest(PartyType party) throws DetailException
+	{
+//		if(!removeInboundPartnershipRequest(request))
+//			removeOutboundPartnershipRequest(request);
+
+		excludeInboundPartnershipRequest(getInboundPartnershipRequest(party));
+		excludeOutboundPartnershipRequest(getOutboundPartnershipRequest(party));
+	}
+
+
+	/**
+	 * Adds request to the list of inbound {@link PartnershipRequest Partnership Requests}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param request request to add
+	 * @throws DetailException if request could not be inserted or updated with the data store
+	 */
+	public void includeInboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		addInboundPartnershipRequest(request);
+		notifyListeners(new PartnershipEvent(request, PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_ADDED));
+	}
+
+	/**
+	 * Updates request in the list of inbound or outbound {@link PartnershipRequest Partnership Requests}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param request request to update
+	 * @param accepted accepted to update the request with
+	 * @throws DetailException if request could not be updated with the data store
+	 */
+	public void updatePartnershipRequest(PartnershipRequest request, PartnershipResolution resolution) throws DetailException
+	{
+		request.setResolved(true);
+		final boolean decision = resolution.isAccepted();
+		request.setAccepted(decision);
+		request.setResponsedTime(resolution.getResponsedTime());
+		if(request.isInbound())
+			notifyListeners(new PartnershipEvent(request, PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_UPDATED));
+		else
+			notifyListeners(new PartnershipEvent(request, PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_UPDATED));
+	}
+
+	/**
+	 * Removes request from the list of inbound {@link PartnershipRequestoutbound Partnership Requests}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param request request to remove
+	 * @throws DetailException if request could not be deleted from the data store
+	 */
+	public void excludeInboundPartnershipRequest(PartnershipRequest request) throws DetailException
+	{
+		if(removeInboundPartnershipRequest(request))
+			notifyListeners(new PartnershipEvent(request, PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_REMOVED));
+	}
+
+	public List<PartnershipRequest> getBusinessResponses()
+	{
+		if(businessResponses == null)
+			businessResponses = new ArrayList<>();
+		return businessResponses;
+	}
+
+	public void setBusinessResponses(List<PartnershipRequest> businessResponses)
+	{
+		this.businessResponses = businessResponses;
+	}
+
+	public void setPartnershipBreakups(List<PartnershipBreakup> partnershipBreakups)
+	{
+		this.partnershipBreakups = partnershipBreakups;
+	}
+
+	public List<PartnershipBreakup> getPartnershipBreakups()
+	{
+		if(partnershipBreakups == null)
+			partnershipBreakups = new ArrayList<>();
+		return partnershipBreakups;
+	}
+
+	/**
+	 * Gets {@link PartnershipBreakup breakup} sent to the {@code requestedParty} extracting it
+	 * from the list of all partnership breakups.
+	 * @param requestedParty requested party
+	 * @return request or {@code null} if there is no breakup with specified requested party in the
+	 * list of outbound partnership breakups
+	 */
+	public PartnershipBreakup getPartnershipBreakup(PartyType requestedParty)
+	{
+		final String requestedPartyID = requestedParty.getPartyIdentificationAtIndex(0).getIDValue();
+		try
+		{
+			return getPartnershipBreakups().stream().
+					filter(request -> requestedPartyID.equals(request.getRequestedPartyID())).
+					findFirst().get();
+		}
+		catch(NoSuchElementException e) //if there is no match
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Adds {@link PartnershipBreakup breakup} to the list of all unresolved partnership breakups.
+	 * @param breakup breakup to add
+	 * @throws DetailException if breakup could not be inserted in the data store
+	 */
+	private void addPartnershipBreakup(PartnershipBreakup breakup) throws DetailException
+	{
+		if(breakup != null)
+		{
+			MapperRegistry.getInstance().getMapper(PartnershipBreakup.class).insert(null, breakup);
+			getPartnershipBreakups().add(breakup);
+		}
+	}
+
+	/**
+	 * Removes {@link PartnershipBreakup breakup} from the list of all unresolved partnership breakups.
+	 * @param breakup breakup to remove
+	 * @return true if breakup was contained in a list and removed from it
+	 * @throws DetailException if breakup could not be deleted from the data store
+	 */
+	private boolean removePartnershipBreakup(PartnershipBreakup breakup) throws DetailException
+	{
+		boolean success = false;
+		if(breakup != null)
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(PartnershipBreakup.class).delete(null, breakup.getIDValue());
+				success = getPartnershipBreakups().remove(breakup);
+			}
+			catch(DatabaseException e)
+			{
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e
+					throw e;
+			}
+		}
+		return success;
+	}
+
+	/**
+	 * Adds request to the list of all unresolved {@link PartnershipBreakup Partnership Breakups}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param breakup breakup to add
+	 * @throws DetailException if breakup could not be inserted in the data store
+	 */
+	public void includePartnershipBreakup(PartnershipBreakup breakup) throws DetailException
+	{
+		addPartnershipBreakup(breakup);
+//		notifyListeners(new PartnershipEvent(breakup, PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_ADDED));
+	}
+
+	/**
+	 * Removes breakup from the list of all unresolved {@link PartnershipBreakup Partnership Breakups}.
+	 * <p>Notifies listeners registered for this type of the {@link PartnershipEvent event}.</p>
+	 * @param breakup breakup to remove
+	 * @throws DetailException if breakup could not be deleted from the data store
+	 */
+	public void excludePartnershipBreakup(PartnershipBreakup breakup) throws DetailException
+	{
+		removePartnershipBreakup(breakup);
+//		notifyListeners(new PartnershipEvent(breakup, PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_REMOVED));
 	}
 
 	/**
@@ -3057,6 +3446,7 @@ public class MyParty extends BusinessParty
 		}
 	}
 
+	//MMM invoke other delete methods if necessary
 	/**
 	 * Clears all data of My Party that are related to the CDR. This method is usually called
 	 * during deregistration from the CDR service.
@@ -3268,16 +3658,18 @@ public class MyParty extends BusinessParty
 	 * to its {@link BusinessParty owner}.
 	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
 	 * @param catalogue catalogue to place
+	 * @throws DetailException if party could not be updated in the data store
 	 */
-	public void processDocBoxCatalogue(CatalogueType catalogue)
+	public void processDocBoxCatalogue(CatalogueType catalogue) throws DetailException
 	{
+		boolean success = false;
 		PartyType provider = catalogue.getProviderParty();
-
 		if(BusinessParty.sameParties(this, provider))
 		{
 			myFollowingParty.setCatalogue(catalogue);
 			myFollowingParty.setRecentlyUpdated(true);
 			notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
+			success = true;
 		}
 		else
 		{
@@ -3288,9 +3680,13 @@ public class MyParty extends BusinessParty
 					bParty.setCatalogue(catalogue);
 					bParty.setRecentlyUpdated(true);
 					notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.CATALOGUE_UPDATED));
+					success = true;
 					break;
 				}
 		}
+		if(!success)
+			throw new DetailException("Could not found " + provider.getPartyNameAtIndex(0).getNameValue() +
+					" Party in the data model.");
 	}
 
 	/**
@@ -3672,7 +4068,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Processes {@link DocumentReceipt} document by updating a proper {@link DocumentReference}.
-	 * @param documentReceipt Documnet Reference to process
+	 * @param documentReceipt Document Reference to process
 	 * @throws DetailException if document could not be matched with a proper {@link Correspondence}
 	 */
 	public void processDocBoxDocumentReceipt(DocumentReceipt documentReceipt) throws DetailException
@@ -3690,6 +4086,101 @@ public class MyParty extends BusinessParty
 			corr.updateDocumentStatus(documentReference, DocumentReference.Status.CORR_RECEIVED);
 		}
 	}
+
+	/**
+	 * Processes {@link PartnershipRequest} document.
+	 * @param request {@code PartnershipRequest} to process
+	 * @throws DetailException if document could not be inserted in the data store
+	 */
+	public synchronized void processDocBoxPartnershipRequest(PartnershipRequest request)  throws DetailException
+	{
+		request.setInbound(true);
+		excludePartnershipRequest(request.getRequesterParty());
+		includeInboundPartnershipRequest(request);
+
+		//MMM think about Document Reference
+/*		final String documentUUID = documentReceipt.getDocumentReference().getUUIDValue();
+		final DocumentReference documentReference = corr.getDocumentReference(documentUUID);
+		corr.updateDocumentStatus(documentReference, DocumentReference.Status.CORR_RECEIVED);*/
+
+	}
+
+	/**
+	 * Processes {@link PartnershipResolution} document by updating proper {@link PartnershipRequest}.
+	 * @param resolution {@code PartnershipResolution} to process
+	 * @throws DetailException if document could not be matched with a proper {@code PartnershipRequest}
+	 * or data store could not be updated
+	 */
+	public synchronized void processDocBoxPartnershipResolution(PartnershipResolution resolution) throws DetailException
+	{
+		final PartnershipSearchCriterion criterion = new PartnershipSearchCriterion();
+		criterion.setRequestedPartyID(resolution.getRequestedPartyID());
+		criterion.setRequesterPartyID(resolution.getRequesterPartyID());
+		PartnershipRequest request = getOutboundPartnershipRequest(resolution.getRequestedParty());
+		if(request != null)
+		{
+			updatePartnershipRequest(request, resolution);
+			if(resolution.isAccepted())
+			{
+				BusinessParty newPartner = getOtherParty(request.getRequestedPartyID());
+				if(newPartner == null)
+				{
+					newPartner = new BusinessParty();
+					newPartner.setCoreParty(request.getRequestedParty());
+				}
+				newPartner.setPartner(true);
+				newPartner.setRecentlyUpdated(true);
+				newPartner.setTimestamp(InstanceFactory.getDate());
+				followBusinessPartner(newPartner);
+			}
+		}
+		else
+		{
+			request = getInboundPartnershipRequest(resolution.getRequesterParty());
+			if(request != null)
+			{
+				updatePartnershipRequest(request, resolution);
+				if(resolution.isAccepted())
+				{
+					final BusinessParty newPartner = new BusinessParty();
+					newPartner.setCoreParty(request.getRequesterParty());
+					newPartner.setRecentlyUpdated(true);
+					newPartner.setTimestamp(InstanceFactory.getDate());
+					followBusinessPartner(newPartner);
+				}
+			}
+			else
+				throw new DetailException("Partenrship Resolution could not be matched with proper Partnership Request.");
+		}
+	}
+
+	/**
+	 * Processes {@link PartnershipBreakup} document by archiving correspondent business partner.
+	 * @param breakup {@code PartnershipBreakup} to process
+	 * @throws DetailException if correspondent party is not a business partner or data store could not be updated
+	 */
+	public void processDocBoxPartnershipBreakup(PartnershipBreakup breakup) throws DetailException
+	{
+		String correspondentID = breakup.getRequestedPartyID();
+		PartyType correspondentParty = breakup.getRequestedParty();
+		if(correspondentID.equals(getPartyID()))
+		{
+			correspondentID = breakup.getRequesterPartyID();
+			correspondentParty = breakup.getRequesterParty();
+		}
+		final BusinessParty partnerBreaker = getBusinessPartner(correspondentID);
+		if(partnerBreaker != null)
+//			unfollowPartyOLD(partnerBreaker);
+			unfollowBusinessPartner(partnerBreaker);
+		else
+			throw new DetailException("Party witd ID " + correspondentID + " is not a Business Partner of MyParty.");
+		excludePartnershipBreakup(getPartnershipBreakup(correspondentParty));
+		excludePartnershipRequest(correspondentParty);
+
+//		if(!removeInboundPartnershipRequest(getInboundPartnershipRequest(correspondentParty)))
+//			removeOutboundPartnershipRequest(getOutboundPartnershipRequest(correspondentParty));
+	}
+
 
 	/**
 	 * Executes the process of creation and update of {@link CatalogueType} in the CDR.

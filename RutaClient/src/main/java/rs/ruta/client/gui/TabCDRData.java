@@ -2,11 +2,8 @@ package rs.ruta.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,24 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
@@ -39,28 +30,25 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.ws.WebServiceException;
-
 import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.client.BusinessParty;
-import rs.ruta.client.BusinessPartyEvent;
 import rs.ruta.client.CatalogueSearch;
 import rs.ruta.client.gui.CatalogueSearchTableModel;
 import rs.ruta.client.gui.CatalogueTableModel;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
 import rs.ruta.client.PartySearch;
-import rs.ruta.client.RutaClientFrameEvent;
 import rs.ruta.client.gui.PartyListTableModel;
 import rs.ruta.client.gui.PartySearchTableModel;
 import rs.ruta.client.gui.PartyTreeModel;
 import rs.ruta.client.Search;
-import rs.ruta.client.SearchEvent;
 import rs.ruta.client.gui.SearchListTableModel;
 import rs.ruta.client.gui.SearchTreeModel;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.DetailException;
 
@@ -76,24 +64,29 @@ public class TabCDRData extends TabComponent
 	private static final String ARCHIVED_PARTIES = "Archived Parties";
 	private static final String OTHER_PARTIES = "Other Parties";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
+	private static final String SENT = "Sent";
+	private static final String RECEIVED = "Received";
 
 	private final JTree partyTree;
 	private final JTree searchTree;
-	//	private final JScrollPane leftScroolPane;
-	private PartySearchTableModel searchesPartyTableModel;
-	private JTable searchesPartyTable;
-	private CatalogueSearchTableModel searchesCatalogueTableModel;
-	private JTable searchesCatalogueTable;
-	private JTable searchesTable;
-	private final TableRowSorter<DefaultTableModel> searchesPartySorter;
-	private final TableRowSorter<DefaultTableModel> searchesCatalogueSorter;
 
-	private CatalogueTableModel partnerCatalogueTableModel;
 	private JTable partnerCatalogueTable;
-	private PartyListTableModel partiesTableModel;
-	private JTable partiesTable;
+	private CatalogueTableModel partnerCatalogueTableModel;
 	private final TableRowSorter<DefaultTableModel> partnerCatalogueSorter;
+	private JTable partiesTable;
+	private PartyListTableModel partiesTableModel;
 	private final TableRowSorter<DefaultTableModel> partiesSorter;
+	private JTable requestsTable;
+	private PartnershipRequestListTableModel sentRequestsTableModel;
+	private final TableRowSorter<DefaultTableModel> requestsSorter;
+
+	private JTable searchesTable;
+	private JTable searchesPartyTable;
+	private PartySearchTableModel searchesPartyTableModel;
+	private final TableRowSorter<DefaultTableModel> searchesPartySorter;
+	private JTable searchesCatalogueTable;
+	private CatalogueSearchTableModel searchesCatalogueTableModel;
+	private final TableRowSorter<DefaultTableModel> searchesCatalogueSorter;
 
 	/**
 	 * Creates tabbed pane for display of the CDR related data.
@@ -144,6 +137,12 @@ public class TabCDRData extends TabComponent
 		partiesSorter = createTableRowSorter(partiesTableModel);
 		partiesTable.setRowSorter(partiesSorter);
 
+		sentRequestsTableModel = new PartnershipRequestListTableModel();
+		requestsTable = createRequestListTable(sentRequestsTableModel);
+		requestsTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
+		requestsSorter = createTableRowSorter(sentRequestsTableModel, 3, true);
+		requestsTable.setRowSorter(requestsSorter);
+
 		//setting action listener for tab repaint on selection of the business party node
 		partyTree.addTreeSelectionListener(event ->
 		{
@@ -154,33 +153,47 @@ public class TabCDRData extends TabComponent
 			{
 				((BusinessParty) selectedParty).setRecentlyUpdated(false);
 				partnerCatalogueTableModel.setCatalogue(((BusinessParty) selectedParty).getCatalogue());
-				//				partnerCatalogueSorter.allRowsChanged();
 				partnerCatalogueTableModel.fireTableDataChanged();
 				rightScrollPane.setViewportView(partnerCatalogueTable);
 			}
 			else //String
 			{
-				List<BusinessParty> partyList = new ArrayList<>();
-				if(MY_PARTY.equals((String) selectedParty))
+				List<BusinessParty> partyList = null;
+				List<PartnershipRequest> requestList = null;
+				final String collectionNode = (String) selectedParty;
+				if(MY_PARTY.equals(collectionNode))
 				{
 					final BusinessParty my = myParty.getMyFollowingParty();
 					if(my != null)
+					{
+						partyList = new ArrayList<>();
 						partyList.add(my);
+					}
 				}
-				else if(BUSINESS_PARTNERS.equals((String) selectedParty))
+				else if(BUSINESS_PARTNERS.equals(collectionNode))
 					partyList = myParty.getBusinessPartners();
-				else if(OTHER_PARTIES.equals((String) selectedParty))
+				else if(OTHER_PARTIES.equals(collectionNode))
 					partyList = myParty.getOtherParties();
-				else if(ARCHIVED_PARTIES.equals((String) selectedParty))
+				else if(ARCHIVED_PARTIES.equals(collectionNode))
 					partyList = myParty.getArchivedParties();
-				else if(DEREGISTERED_PARTIES.equals((String) selectedParty))
+				else if(DEREGISTERED_PARTIES.equals(collectionNode))
 					partyList = myParty.getDeregisteredParties();
+				else if(SENT.equals(collectionNode))
+					requestList = myParty.getOutboundPartnershipRequests();
+				else if(RECEIVED.equals(collectionNode))
+					requestList = myParty.getInboundPartnershipRequests();
 
-				if(!FOLLOWINGS.equals((String) selectedParty))
+				if(partyList != null)
 				{
 					partiesTableModel.setParties(partyList);
 					partiesSorter.allRowsChanged();
 					rightScrollPane.setViewportView(partiesTable);
+				}
+				else if(requestList != null)
+				{
+					sentRequestsTableModel.setRequests(requestList);
+					sentRequestsTableModel.fireTableDataChanged();
+					rightScrollPane.setViewportView(requestsTable);
 				}
 				else
 				{
@@ -191,42 +204,30 @@ public class TabCDRData extends TabComponent
 		});
 
 		JPopupMenu partyTreePopupMenu = new JPopupMenu();
-		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
-		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
-		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
-		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
-		final JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
+		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
+		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow Party");
+		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
+		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
 		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
 		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
 
-		followPartnerItem.addActionListener(event ->
+		requestPartnershipItem.addActionListener(event ->
 		{
 			final Object selectedParty = getSelectedUserObject(partyTree);
 			if(selectedParty == null) return;
 			new Thread(() ->
 			{
-				final Party coreParty = ((BusinessParty) selectedParty).getCoreParty();
-				final String followingName = InstanceFactory.
-						getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-				final String followingID = InstanceFactory.
-						getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
-				try
-				{
-					clientFrame.getClient().followParty(followingName, followingID, true);
-//					if(ret != null)
-//					{
-//						ret.get();
-//						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-//						//						EventQueue.invokeLater(() -> selectNode(partyTree, followedParty));
-//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-//					}
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be added to the following parties as a business partner!"));
-				}
+				clientFrame.getClient().requestPartnership(((BusinessParty) selectedParty).getCoreParty());
+			}).start();
+		});
+
+		breakPartnershipItem.addActionListener(event ->
+		{
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
+			{
+				clientFrame.getClient().breakupPartnership(((BusinessParty) selectedParty).getCoreParty());
 			}).start();
 		});
 
@@ -243,7 +244,7 @@ public class TabCDRData extends TabComponent
 						getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
 				try
 				{
-					clientFrame.getClient().followParty(followingName, followingID, false);
+					clientFrame.getClient().followParty(followingName, followingID);
 				}
 				catch(Exception e)
 				{
@@ -256,77 +257,19 @@ public class TabCDRData extends TabComponent
 
 		unfollowPartyItem.addActionListener(event ->
 		{
-			final Object selectedParty = getSelectedUserObject(partyTree);
+			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(partyTree);
 			if(selectedParty == null) return;
 			new Thread(()->
 			{
 				try
 				{
-//					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
-					clientFrame.getClient().cdrUnfollowParty((BusinessParty) selectedParty);
-//					if(ret != null)
-//					{
-//						ret.get();
-//						EventQueue.invokeLater(() ->
-//						{
-//							selectNode(partyTree, nodeToSelect);
-//							makeVisibleNode(partyTree, selectedParty);
-//						});
-//					}
+					clientFrame.getClient().cdrUnfollowParty(selectedParty);
 				}
 				catch(Exception e)
 				{
 					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(((BusinessParty) selectedParty).getPartySimpleName()).
+							append( selectedParty.getPartySimpleName()).
 							append(" could not be removed from the following parties!"));
-				}
-			}).start();
-		});
-
-		addPartnerItem.addActionListener(event ->
-		{
-			final Object selectedParty = getSelectedUserObject(partyTree);
-			if(selectedParty == null) return;
-			new Thread(() ->
-			{
-				BusinessParty otherParty = ((BusinessParty) selectedParty);
-				otherParty.setPartner(true);
-				try
-				{
-					myParty.followParty(otherParty);
-//					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(otherParty.getPartySimpleName()).
-							append(" has been moved from Other Parties to Business Partners.").
-							append(" Party is still followed by My Party."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(otherParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
-				}
-			}).start();
-		});
-
-		removePartnerItem.addActionListener(event ->
-		{
-			final Object selectedParty = getSelectedUserObject(partyTree);
-			if(selectedParty == null) return;
-			new Thread( () ->
-			{
-				BusinessParty otherParty = ((BusinessParty) selectedParty);
-				otherParty.setPartner(false);
-				try
-				{
-					myParty.followParty(otherParty);
-//					EventQueue.invokeLater(() -> selectNode(partyTree, otherParty));
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(otherParty.getPartySimpleName()).
-							append(" has been moved from Business Partners to Other Parties. ").
-							append("Party is still followed by My Party."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(otherParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
 				}
 			}).start();
 		});
@@ -340,10 +283,7 @@ public class TabCDRData extends TabComponent
 				final String partyName = selectedParty.getPartySimpleName();
 				try
 				{
-//					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
 					myParty.purgeParty(selectedParty);
-//					partiesSorter.allRowsChanged();
-//					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Archived Parties."), Color.GREEN);
 				}
@@ -366,10 +306,7 @@ public class TabCDRData extends TabComponent
 				final String partyName = selectedParty.getPartySimpleName();
 				try
 				{
-//					DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(partyTree, selectedParty);
 					myParty.purgeParty(selectedParty);
-//					partiesSorter.allRowsChanged();
-//					EventQueue.invokeLater(() -> selectNode(partyTree, nodeToSelect));
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Deregistered Parties."), Color.GREEN);
 				}
@@ -399,13 +336,12 @@ public class TabCDRData extends TabComponent
 						if(((BusinessParty) selectedParty).isPartner())
 						{
 							partyTreePopupMenu.removeAll();
-							partyTreePopupMenu.add(unfollowPartyItem);
-							partyTreePopupMenu.add(removePartnerItem);
+							partyTreePopupMenu.add(breakPartnershipItem);
 						}
 						else if(((BusinessParty) selectedParty).isArchived())
 						{
 							partyTreePopupMenu.removeAll();
-							partyTreePopupMenu.add(followPartnerItem);
+							partyTreePopupMenu.add(requestPartnershipItem);
 							partyTreePopupMenu.add(followPartyItem);
 							partyTreePopupMenu.addSeparator();
 							partyTreePopupMenu.add(deleteArchivedItem);
@@ -418,7 +354,7 @@ public class TabCDRData extends TabComponent
 						else //Other Parties
 						{
 							partyTreePopupMenu.removeAll();
-							partyTreePopupMenu.add(addPartnerItem);
+							partyTreePopupMenu.add(requestPartnershipItem);
 							partyTreePopupMenu.add(unfollowPartyItem);
 						}
 						partyTreePopupMenu.show(partyTree, event.getX(), event.getY());
@@ -507,17 +443,6 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					clientFrame.getClient().cdrSearch((Search<?>) selectedSearch, true);
-					/*					if(ret != null)
-					{
-						ret.get();
-						EventQueue.invokeLater(() ->
-						{
-							selectNode(searchTree, selectedSearch);
-							searchesPartyTableModel.fireTableDataChanged();
-//							searchesPartySorter.allRowsChanged();
-							repaint();
-						});
-					}*/
 				}
 				catch(Exception e)
 				{
@@ -559,9 +484,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-//					final DefaultMutableTreeNode nodeToSelect = getNextNodeForSelection(searchTree, selectedSearch);
 					myParty.removeSearch(selectedSearch);
-//					selectNode(searchTree, nodeToSelect);
 				}
 				catch(Exception e)
 				{
@@ -601,44 +524,42 @@ public class TabCDRData extends TabComponent
 		final JTable table = newEmptyPartyListTable(tableModel);
 		final JPopupMenu partyTablePopupMenu = new JPopupMenu();
 		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
-		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
-		final JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
 		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
 		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
-		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
-		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
+		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
+		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
+		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
+		final JMenuItem viewPartyItem = new JMenuItem("View Party");
 
 		final MyParty myParty = clientFrame.getClient().getMyParty();
 
-		followPartnerItem.addActionListener(event ->
+		viewPartyItem.addActionListener(event ->
 		{
-			//			final int rowIndex = table.getSelectedRow()*/;
-			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
-			final Party coreParty = selectedParty.getCoreParty();
-			final String followingName = InstanceFactory.
-					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0),
-					PartyIdentificationType::getIDValue);
-			new Thread(()->
+			new Thread(() ->
 			{
-				try
-				{
-					clientFrame.getClient().followParty(followingName, followingID, true);
-//					if(ret != null)
-//					{
-//						ret.get();
-//						partiesTableModel.fireTableDataChanged();
-////						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-////						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-//					}
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
-				}
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
+				clientFrame.showPartyDialog(selectedParty.getCoreParty(), "View Party", false, false);
+			}).start();
+		});
+
+		requestPartnershipItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
+				clientFrame.getClient().requestPartnership(selectedParty.getCoreParty());
+			}).start();
+		});
+
+		breakPartnershipItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
+				clientFrame.getClient().breakupPartnership(selectedParty.getCoreParty());
 			}).start();
 		});
 
@@ -655,15 +576,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					clientFrame.getClient().followParty(followingName, followingID, false);
-					//MMM commented code below currently stays just for the record
-//					if(ret != null)
-//					{
-//						ret.get();
-//						partiesTableModel.fireTableDataChanged();
-//						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
-//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-//					}
+					clientFrame.getClient().followParty(followingName, followingID);
 				}
 				catch(Exception e)
 				{
@@ -683,12 +596,6 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					clientFrame.getClient().cdrUnfollowParty(selectedParty);
-//					if(ret != null)
-//					{
-//						ret.get();
-//						partiesTableModel.fireTableDataChanged();
-//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
-//					}
 				}
 				catch(Exception e)
 				{
@@ -696,56 +603,6 @@ public class TabCDRData extends TabComponent
 							append(((BusinessParty) selectedParty).getPartySimpleName()).
 							append(" could not be removed from the following parties!"));
 				}
-			}).start();
-		});
-
-		addPartnerItem.addActionListener(event ->
-		{
-			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
-			new Thread(() ->
-			{
-				selectedParty.setPartner(true);
-				try
-				{
-					myParty.followParty(selectedParty);
-//					partiesTableModel.fireTableDataChanged();
-//					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
-							append(" has been moved from Other Parties to Business Partners.").
-							append(" Party is still followed by My Party."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
-				}
-			}).start();
-		});
-
-		removePartnerItem.addActionListener(event ->
-		{
-			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			new Thread(() ->
-			{
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
-			{
-				selectedParty.setPartner(false);
-				try
-				{
-					myParty.followParty(selectedParty);
-//					partiesTableModel.fireTableDataChanged();
-//					EventQueue.invokeLater(() -> makeVisibleNode(partyTree, selectedParty));
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
-							append(" has been moved from Business Partners to Other Parties.").
-							append(" Party is still followed by My Party."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
-				}
-			}
 			}).start();
 		});
 
@@ -759,7 +616,6 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.purgeParty(selectedParty);
-//					partiesTableModel.fireTableDataChanged();
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Archived Parties."), Color.GREEN);
 				}
@@ -783,7 +639,6 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.purgeParty(selectedParty);
-//					partiesTableModel.fireTableDataChanged();
 					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
 							append(" has been deleted from Deregistered Parties."), Color.GREEN);
 				}
@@ -804,46 +659,44 @@ public class TabCDRData extends TabComponent
 			{
 				EventQueue.invokeLater(() ->
 				{
-					final int rowIndex = table.rowAtPoint(event.getPoint());
-					if(rowIndex != -1)
+					final int viewRowIndex = table.rowAtPoint(event.getPoint());
+					if(viewRowIndex != -1)
 					{
-						final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
+						final int modelRowIndex = table.convertRowIndexToModel(viewRowIndex);
 						if(SwingUtilities.isRightMouseButton(event))
 						{
-							table.setRowSelectionInterval(rowIndex, rowIndex);
+							table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 
 							final Object selectedParty = getSelectedUserObject(partyTree);
 							if(selectedParty == null) return;
 							if(selectedParty instanceof String)
 							{
+								partyTablePopupMenu.removeAll();
 								final String nodeTitle = (String) selectedParty;
 								if(BUSINESS_PARTNERS.equals(nodeTitle))
 								{
-									partyTablePopupMenu.removeAll();
-									partyTablePopupMenu.add(removePartnerItem);
-									partyTablePopupMenu.add(unfollowPartyItem);
+									partyTablePopupMenu.add(viewPartyItem);
+									partyTablePopupMenu.add(breakPartnershipItem);
 								}
 								else if(OTHER_PARTIES.equals(nodeTitle))
 								{
-									partyTablePopupMenu.removeAll();
-									partyTablePopupMenu.add(addPartnerItem);
+									partyTablePopupMenu.add(viewPartyItem);
+									partyTablePopupMenu.add(requestPartnershipItem);
 									partyTablePopupMenu.add(unfollowPartyItem);
 								}
 								else if(ARCHIVED_PARTIES.equals(nodeTitle))
 								{
-									partyTablePopupMenu.removeAll();
-									partyTablePopupMenu.add(followPartnerItem);
+									partyTablePopupMenu.add(viewPartyItem);
+									partyTablePopupMenu.add(requestPartnershipItem);
 									partyTablePopupMenu.add(followPartyItem);
 									partyTablePopupMenu.addSeparator();
 									partyTablePopupMenu.add(deleteArchivedItem);
 								}
 								else if(DEREGISTERED_PARTIES.equals(nodeTitle))
 								{
-									partyTablePopupMenu.removeAll();
+									partyTablePopupMenu.add(viewPartyItem);
 									partyTablePopupMenu.add(deleteDeregisteredItem);
 								}
-								else
-									partyTablePopupMenu.removeAll();
 								partyTablePopupMenu.show(table, event.getX(), event.getY());
 							}
 						}
@@ -855,6 +708,142 @@ public class TabCDRData extends TabComponent
 							rightScrollPane.setViewportView(partnerCatalogueTable);
 							selectNode(partyTree, party);
 							repaint();
+						}
+					}
+				});
+			}
+		});
+		return table;
+	}
+
+	/**
+	 * Creates table containing list of Partnership Requests.
+	 * @param tableModel model containing requests' data
+	 * @return constructed table object
+	 */
+	private JTable createRequestListTable(DefaultTableModel tableModel)
+	{
+		JTable table = new JTable(tableModel);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setFillsViewportHeight(true);
+		TableColumnModel colModel = table.getColumnModel();
+		colModel.getColumn(0).setPreferredWidth(20);
+		colModel.getColumn(1).setPreferredWidth(150);
+		colModel.getColumn(2).setPreferredWidth(150);
+		colModel.getColumn(3).setPreferredWidth(100);
+		colModel.getColumn(4).setPreferredWidth(100);
+
+		final JPopupMenu requestTablePopupMenu = new JPopupMenu();
+		final JMenuItem viewRequsterPartyItem = new JMenuItem("View Requester Party");
+		final JMenuItem viewRequstedPartyItem = new JMenuItem("View Requested Party");
+		final JMenuItem processItem = new JMenuItem("Process Request");
+
+		final MyParty myParty = clientFrame.getClient().getMyParty();
+
+		viewRequsterPartyItem.addActionListener(event ->
+		{
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			new Thread(() ->
+			{
+				PartnershipRequest selectedRequest = null;
+				selectedRequest = sentRequestsTableModel.getRequestAtIndex(modelRowIndex);
+				if(selectedRequest == null) return;
+				clientFrame.showPartyDialog(new Party(selectedRequest.getRequesterParty()), "View Requester Party", false, false);
+			}).start();
+		});
+
+		viewRequstedPartyItem.addActionListener(event ->
+		{
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			new Thread(() ->
+			{
+				PartnershipRequest selectedRequest = null;
+				selectedRequest = sentRequestsTableModel.getRequestAtIndex(modelRowIndex);
+				if(selectedRequest == null) return;
+				clientFrame.showPartyDialog(new Party(selectedRequest.getRequestedParty()), "View Requested Party", false, false);
+			}).start();
+		});
+
+		processItem.addActionListener(event ->
+		{
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			new Thread(() ->
+			{
+				PartnershipRequest selectedRequest = null;
+				selectedRequest = sentRequestsTableModel.getRequestAtIndex(modelRowIndex);
+				if(selectedRequest == null) return;
+				final String requesterPartyName = selectedRequest.getRequesterPartyName();
+				final Semaphore waiter = new Semaphore(0);
+				final AtomicInteger aOption = new AtomicInteger();
+				EventQueue.invokeLater( () ->
+				{
+					int option = JOptionPane.showConfirmDialog(clientFrame,
+							"Do you accept Business Partnership with " + requesterPartyName + "?",
+							"Process Business Partnership Request", JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					aOption.set(option);
+					waiter.release();
+				});
+				try
+				{
+					waiter.acquire();
+					PartnershipResponse partnershipResponse;
+					if(aOption.get() == JOptionPane.YES_OPTION)
+					{
+						partnershipResponse = InstanceFactory.createPartnershipResponse(selectedRequest, true);
+						myParty.getClient().cdrResponsePartnership(partnershipResponse);
+					}
+					else if(aOption.get() == JOptionPane.NO_OPTION)
+					{
+						partnershipResponse = InstanceFactory.createPartnershipResponse(selectedRequest, false);
+						myParty.getClient().cdrResponsePartnership(partnershipResponse);
+					}
+				}
+				catch (InterruptedException e)
+				{
+					logger.error("Unable to synchronise with the Event Dispatch Thread.\n", e);
+				}
+			}).start();
+		});
+
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				EventQueue.invokeLater(() ->
+				{
+					final int viewRowIndex = table.rowAtPoint(event.getPoint());
+					if(viewRowIndex != -1)
+					{
+						final int modelRowIndex = table.convertRowIndexToModel(viewRowIndex);
+						if(SwingUtilities.isRightMouseButton(event))
+						{
+							table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+
+							final Object selectedObject = getSelectedUserObject(partyTree);
+							if(selectedObject == null) return;
+							if(selectedObject.getClass() == String.class)
+							{
+								final String nodeTitle = (String) selectedObject;
+								if(SENT.equals(nodeTitle))
+								{
+									requestTablePopupMenu.removeAll();
+									requestTablePopupMenu.add(viewRequstedPartyItem);
+								}
+								else if(RECEIVED.equals(nodeTitle))
+								{
+									requestTablePopupMenu.removeAll();
+									requestTablePopupMenu.add(viewRequsterPartyItem);
+									final PartnershipRequest selectedRequest = sentRequestsTableModel.getRequestAtIndex(modelRowIndex);
+									if(selectedRequest != null && !selectedRequest.isResolved())
+										requestTablePopupMenu.add(processItem);
+								}
+								else
+									requestTablePopupMenu.removeAll();
+								requestTablePopupMenu.show(table, event.getX(), event.getY());
+							}
 						}
 					}
 				});
@@ -909,7 +898,6 @@ public class TabCDRData extends TabComponent
 						{
 							selectNode(searchTree, selectedSearch);
 						});
-						//						((DefaultTableModel) table.getModel()).fireTableDataChanged();
 					}
 				}
 				catch(Exception e)
@@ -1017,30 +1005,31 @@ public class TabCDRData extends TabComponent
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
 		final JPopupMenu popupMenu = new JPopupMenu();
-		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
-		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
-		popupMenu.add(followPartnerItem);
+		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
+		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
+		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+
+		popupMenu.add(viewPartyItem);
+		popupMenu.add(requestPartnershipItem);
 		popupMenu.add(followPartyItem);
 
-		followPartnerItem.addActionListener(event ->
+		viewPartyItem.addActionListener(event ->
 		{
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
-			final String followingName =
-					InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
-					PartyIdentificationType::getIDValue);
-			new Thread(()->
+			new Thread(() ->
 			{
-				try
-				{
-					clientFrame.getClient().followParty(followingName, followingID, true);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(followingName).
-							append(" could not be added to the following parties as a business partner!"));
-				}
+				final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
+				clientFrame.showPartyDialog(new Party(selectedParty), "View Party", false, false);
+			}).start();
+		});
+
+		requestPartnershipItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
+				clientFrame.getClient().requestPartnership(selectedParty);
 			}).start();
 		});
 
@@ -1056,7 +1045,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					clientFrame.getClient().followParty(followingName, followingID, false);
+					clientFrame.getClient().followParty(followingName, followingID);
 				}
 				catch(Exception e)
 				{
@@ -1109,36 +1098,30 @@ public class TabCDRData extends TabComponent
 		table.setFillsViewportHeight(true);
 
 		final JPopupMenu popupMenu = new JPopupMenu();
-		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
-		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
-		popupMenu.add(followPartnerItem);
+		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
+		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
+		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+		popupMenu.add(viewPartyItem);
+		popupMenu.add(requestPartnershipItem);
 		popupMenu.add(followPartyItem);
 
-		followPartnerItem.addActionListener(event ->
+		viewPartyItem.addActionListener(event ->
 		{
-			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
-			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0),
-					PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
-					PartyIdentificationType::getIDValue);
 			new Thread(() ->
 			{
-				try
-				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
-//					if(ret != null)
-//					{
-//						ret.get();
-//						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-//						EventQueue.invokeLater(() -> makeVisibleNode(partyTree, followedParty));
-//					}
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(followingName).
-							append(" could not be added to the following parties as a business partner!"));
-				}
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
+				clientFrame.showPartyDialog(new Party(selectedParty), "View Party", false, false);
+			}).start();
+		});
+
+		requestPartnershipItem.addActionListener(event ->
+		{
+			new Thread(() ->
+			{
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
+				clientFrame.getClient().requestPartnership(selectedParty);
 			}).start();
 		});
 
@@ -1154,7 +1137,7 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					clientFrame.getClient().followParty(followingName, followingID, false);
+					clientFrame.getClient().followParty(followingName, followingID);
 				}
 				catch(Exception e)
 				{
@@ -1180,7 +1163,6 @@ public class TabCDRData extends TabComponent
 				}
 			}
 		});
-
 		return table;
 	}
 
@@ -1206,7 +1188,7 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-				selectNode(partyTree, party);
+//				selectNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
@@ -1214,7 +1196,6 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-//				selectNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
@@ -1222,7 +1203,6 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_REMOVED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-//				selectNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
@@ -1237,7 +1217,6 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.OTHER_PARTY_TRANSFERED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-//				selectNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
@@ -1273,13 +1252,55 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.PARTY_MOVED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-				/*					final Object selectedUserObject = getSelectedUserObject(partyTree);
-					if(!(selectedUserObject instanceof BusinessParty))
-						partiesTableModel.fireTableDataChanged();*/
 			}
 			else if(RutaClientFrameEvent.SELECT_NEXT.equals(command))
 			{
 				selectNextNode(partyTree, party);
+			}
+		}
+		else if(source instanceof PartnershipRequest)
+		{
+			if(PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_ADDED.equals(command))
+			{
+				makeVisibleNode(partyTree, RECEIVED);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					sentRequestsTableModel.fireTableDataChanged();
+			}
+			else if(PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_ADDED.equals(command))
+			{
+				makeVisibleNode(partyTree, SENT);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					sentRequestsTableModel.fireTableDataChanged();
+			}
+			else if(PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_UPDATED.equals(command))
+			{
+				makeVisibleNode(partyTree, RECEIVED);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					sentRequestsTableModel.fireTableDataChanged();
+			}
+			else if(PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_UPDATED.equals(command))
+			{
+				makeVisibleNode(partyTree, SENT);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					sentRequestsTableModel.fireTableDataChanged();
+			}
+			else if(PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_REMOVED.equals(command))
+			{
+				makeVisibleNode(partyTree, RECEIVED);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					sentRequestsTableModel.fireTableDataChanged();
+			}
+			else if(PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_REMOVED.equals(command))
+			{
+				makeVisibleNode(partyTree, SENT);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					sentRequestsTableModel.fireTableDataChanged();
 			}
 		}
 		else if(source instanceof Search)
@@ -1302,5 +1323,4 @@ public class TabCDRData extends TabComponent
 			}
 		}
 	}
-
 }

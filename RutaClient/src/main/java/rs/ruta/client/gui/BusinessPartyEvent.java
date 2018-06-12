@@ -1,6 +1,9 @@
-package rs.ruta.client;
+package rs.ruta.client.gui;
 
 import java.awt.event.ActionEvent;
+
+import rs.ruta.client.BusinessParty;
+import rs.ruta.client.Party;
 
 /**
  * Class that describes the addition, change or removal of a {@link BusinessParty} objects from the data model.

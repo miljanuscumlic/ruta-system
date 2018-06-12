@@ -4,7 +4,7 @@ package rs.ruta.services;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import rs.ruta.common.BusinessPartnershipResponse;
+import rs.ruta.common.PartnershipResponse;
 
 
 /**
@@ -17,7 +17,7 @@ import rs.ruta.common.BusinessPartnershipResponse;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="arg0" type="{http://www.ruta.rs/ns/common}BusinessPartnershipResponse" minOccurs="0"/>
+ *         &lt;element name="arg0" type="{http://www.ruta.rs/ns/common}PartnershipResponse" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -32,17 +32,17 @@ import rs.ruta.common.BusinessPartnershipResponse;
 })
 public class ResponseBusinessPartnership {
 
-    protected BusinessPartnershipResponse arg0;
+    protected PartnershipResponse arg0;
 
     /**
      * Gets the value of the arg0 property.
      * 
      * @return
      *     possible object is
-     *     {@link BusinessPartnershipResponse }
+     *     {@link PartnershipResponse }
      *     
      */
-    public BusinessPartnershipResponse getArg0() {
+    public PartnershipResponse getArg0() {
         return arg0;
     }
 
@@ -51,10 +51,10 @@ public class ResponseBusinessPartnership {
      * 
      * @param value
      *     allowed object is
-     *     {@link BusinessPartnershipResponse }
+     *     {@link PartnershipResponse }
      *     
      */
-    public void setArg0(BusinessPartnershipResponse value) {
+    public void setArg0(PartnershipResponse value) {
         this.arg0 = value;
     }
 

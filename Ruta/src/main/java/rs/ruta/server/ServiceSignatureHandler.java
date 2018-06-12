@@ -94,7 +94,8 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		return true;
 	}
 
-	/**Computes signiture based on the user's username, user sent timestamp and the user's secret key.
+	/**
+	 * Computes signiture based on the user's username, user sent timestamp and the user's secret key.
 	 * @param username user's username
 	 * @param timestamp user sent timestamp
 	 * @param secretBytes secret key transformed to a byte array
@@ -120,7 +121,8 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		}
 	}
 
-	/**Verifies if the contents of two strings are equal.
+	/**
+	 * Verifies if the contents of two strings are equal.
 	 * @param sig1
 	 * @param sig2
 	 * @return true it the contents are equal, false otherwise
@@ -130,7 +132,8 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		return Arrays.equals(sig1.getBytes(), sig2.getBytes());
 	}
 
-	/**Transforms String to a byte array.
+	/**
+	 * Transforms String to a byte array.
 	 * @param str string to be transformed
 	 * @return byte array
 	 */
@@ -143,7 +146,8 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		catch(Exception e) { throw new RuntimeException(e); }
 	}
 
-	/**Connects to the database and retrieves the secret key metadata of the user.
+	/**
+	 * Connects to the database and retrieves the secret key metadata of the user.
 	 * @param username user's username
 	 * @return user's secret key or <code>null</code> if secret key is not stored for the given username
 	 * @throws DetailException if there is a problem with the data store connectivity or user is not registered
@@ -153,7 +157,8 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		return (String) MapperRegistry.getInstance().getMapper(RutaUser.class).findSecretKey(username);
 	}
 
-	/**Generates SOAPFaultException that is thrown as SOAP Fault to the client. Reason for the exception is
+	/**
+	 * Generates SOAPFaultException that is thrown as SOAP Fault to the client. Reason for the exception is
 	 * encapsulated in the SOAPFault object.
 	 * @param reason reason of the SOAP Fault
 	 * @throws SOAPFaultException allways thrown

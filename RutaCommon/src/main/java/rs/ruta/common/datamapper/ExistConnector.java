@@ -424,7 +424,8 @@ public class ExistConnector implements DatastoreConnector
 		}
 	}
 
-	/**Deletes {@link Collection}.
+	/**
+	 * Deletes {@link Collection} and all content in it.
 	 * @param parent parent collection of the collection to be deleted
 	 * @param collectionName collection's name
 	 * @throws XMLDBException if collection could not be deleted or parent collection could not be closed
@@ -436,7 +437,8 @@ public class ExistConnector implements DatastoreConnector
 		mgmt.removeCollection(collectionName);
 	}
 
-	/**Deletes {@link Collection}.
+	/**
+	 * Deletes {@link Collection} and all content in it.
 	 * @param collection collection to be deleted
 	 * @throws XMLDBException if collection could not be deleted or parent collection could not be closed
 	 */
@@ -447,7 +449,8 @@ public class ExistConnector implements DatastoreConnector
 		parent.close();
 	}
 
-	/**Checks if the collection exist. If not, method creates the collection with passed user credentials as an owner of the collection.
+	/**
+	 * Checks if the collection exist. If not, method creates the collection with passed user credentials as an owner of the collection.
 	 * @param collectionPath relative collection path
 	 * @param username user's username
 	 * @param password user's password
@@ -526,7 +529,7 @@ public class ExistConnector implements DatastoreConnector
 	}
 
 	/**
-	 * Stores a xQuery document to the database.
+	 * Stores an xQuery document to the database in collection {@code /system/xquery}.
 	 * @param file xQuery file to write
 	 * @throws Exception if write failed
 	 */

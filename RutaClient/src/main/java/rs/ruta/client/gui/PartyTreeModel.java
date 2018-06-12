@@ -16,19 +16,23 @@ import javax.swing.tree.TreeNode;
 
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.MyParty;
-import rs.ruta.client.BusinessPartyEvent;
+import rs.ruta.common.PartnershipRequest;
 
 /**
  * Tree model that is an adapter model for the parties of {@link MyParty} object.
  */
 public class PartyTreeModel extends RutaTreeModel
 {
+	private static final long serialVersionUID = 4960608964751110674L;
 	private static final String DEREGISTERED_PARTIES = "Deregistered Parties";
 	private static final String ARCHIVED_PARTIES = "Archived Parties";
 	private static final String OTHER_PARTIES = "Other Parties";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
 	private static final String MY_PARTY = "My Party";
-	private static final long serialVersionUID = 4960608964751110674L;
+	private static final String PARTNERSHIP_REQUESTS = "Partnership Requests";
+	private static final String OUTBOUND_PARTNERSHIPS = "Sent";
+	private static final String INBOUND_PARTNERSHIPS = "Received";
+
 	private MyParty myParty;
 	//using sets for keeping sorted collection of parties and because they are faster than lists
 	//when it comes to the sorting; sets should be maintained and represent current view of data model
@@ -45,6 +49,7 @@ public class PartyTreeModel extends RutaTreeModel
 		populateTree();
 		setAsksAllowsChildren(true);
 		myParty.addActionListener(this, BusinessPartyEvent.class);
+//		myParty.addActionListener(this, PartnershipEvent.class);
 	}
 
 	@Override
@@ -89,47 +94,74 @@ public class PartyTreeModel extends RutaTreeModel
 	@Override
 	protected TreeNode populateTree()
 	{
-		DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
+		final DefaultMutableTreeNode myPartyNode = new DefaultMutableTreeNode(MY_PARTY);
 		((DefaultMutableTreeNode) root).add(myPartyNode);
 		if(myParty.getMyFollowingParty() != null)
 		{
-			DefaultMutableTreeNode myFollowingPartyNode = new DefaultMutableTreeNode(myParty.getMyFollowingParty());
+			final DefaultMutableTreeNode myFollowingPartyNode = new DefaultMutableTreeNode(myParty.getMyFollowingParty());
 			myFollowingPartyNode.setAllowsChildren(false);
 			myPartyNode.add(myFollowingPartyNode);
 		}
 
-		DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode(BUSINESS_PARTNERS);
+		final DefaultMutableTreeNode businessPartnersNode = new DefaultMutableTreeNode(BUSINESS_PARTNERS);
 		((DefaultMutableTreeNode) root).add(businessPartnersNode);
 		for(BusinessParty fParty: businessPartners)
 		{
-			DefaultMutableTreeNode partnerNode = new DefaultMutableTreeNode(fParty);
+			final DefaultMutableTreeNode partnerNode = new DefaultMutableTreeNode(fParty);
 			partnerNode.setAllowsChildren(false);
 			businessPartnersNode.add(partnerNode);
 		}
 
-		DefaultMutableTreeNode otherPartiesNode = new DefaultMutableTreeNode(OTHER_PARTIES);
+		final DefaultMutableTreeNode otherPartiesNode = new DefaultMutableTreeNode(OTHER_PARTIES);
 		((DefaultMutableTreeNode) root).add(otherPartiesNode);
 		for(BusinessParty fOther : otherParties)
 		{
-			DefaultMutableTreeNode otherNode = new DefaultMutableTreeNode(fOther);
+			final DefaultMutableTreeNode otherNode = new DefaultMutableTreeNode(fOther);
 			otherNode.setAllowsChildren(false);
 			otherPartiesNode.add(otherNode);
 		}
 
-		DefaultMutableTreeNode archivedPartiesNode = new DefaultMutableTreeNode(ARCHIVED_PARTIES);
+		final DefaultMutableTreeNode partnershipsNode = new DefaultMutableTreeNode(PARTNERSHIP_REQUESTS);
+		((DefaultMutableTreeNode) root).add(partnershipsNode);
+		final DefaultMutableTreeNode outboundPartnershipsNode = new DefaultMutableTreeNode(OUTBOUND_PARTNERSHIPS);
+		outboundPartnershipsNode.setAllowsChildren(false);
+		partnershipsNode.add(outboundPartnershipsNode);
+//		for(PartnershipRequest pRequest: outboundPartnershipRequests)
+//		{
+//			if(!pRequest.isResolved())
+//			{
+//				final DefaultMutableTreeNode outboundNode = new DefaultMutableTreeNode(pRequest);
+//				outboundNode.setAllowsChildren(false);
+//				outboundPartnershipsNode.add(outboundNode);
+//			}
+//		}
+		final DefaultMutableTreeNode inboundPartnershipsNode = new DefaultMutableTreeNode(INBOUND_PARTNERSHIPS);
+		inboundPartnershipsNode.setAllowsChildren(false);
+		partnershipsNode.add(inboundPartnershipsNode);
+//		for(PartnershipRequest pRequest: inboundPartnershipRequests)
+//		{
+//			if(!pRequest.isResolved())
+//			{
+//				final DefaultMutableTreeNode inboundNode = new DefaultMutableTreeNode(pRequest);
+//				inboundNode.setAllowsChildren(false);
+//				inboundPartnershipsNode.add(inboundNode);
+//			}
+//		}
+
+		final DefaultMutableTreeNode archivedPartiesNode = new DefaultMutableTreeNode(ARCHIVED_PARTIES);
 		((DefaultMutableTreeNode) root).add(archivedPartiesNode);
 		for(BusinessParty archived : archivedParties)
 		{
-			DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(archived);
+			final DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(archived);
 			archivedNode.setAllowsChildren(false);
 			archivedPartiesNode.add(archivedNode);
 		}
 
-		DefaultMutableTreeNode deregisteredPartiesNode = new DefaultMutableTreeNode(DEREGISTERED_PARTIES);
+		final DefaultMutableTreeNode deregisteredPartiesNode = new DefaultMutableTreeNode(DEREGISTERED_PARTIES);
 		((DefaultMutableTreeNode) root).add(deregisteredPartiesNode);
 		for(BusinessParty deregistered : deregisteredParties)
 		{
-			DefaultMutableTreeNode deregisteredNode = new DefaultMutableTreeNode(deregistered);
+			final DefaultMutableTreeNode deregisteredNode = new DefaultMutableTreeNode(deregistered);
 			deregisteredNode.setAllowsChildren(false);
 			deregisteredPartiesNode.add(deregisteredNode);
 		}
@@ -140,20 +172,24 @@ public class PartyTreeModel extends RutaTreeModel
 	@Override
 	protected void addNode(Object userObject)
 	{
-		final BusinessParty userParty = (BusinessParty) userObject;
-		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(userParty);
-		node.setAllowsChildren(false);
-		if(userParty.isPartner())
-			insertNodeInto(node, searchNode(BUSINESS_PARTNERS), getIndex(userParty, businessPartners));
-		else if(userParty.isFollowing())
-			insertNodeInto(node, searchNode(OTHER_PARTIES), getIndex(userParty, otherParties));
-		else if(userParty.isDeregistered())
-			insertNodeInto(node, searchNode(DEREGISTERED_PARTIES), getIndex(userParty, deregisteredParties));
-		else if(userParty.isArchived())
-			insertNodeInto(node, searchNode(ARCHIVED_PARTIES), getIndex(userParty, archivedParties));
-		else
-			insertNodeInto(node, searchNode(MY_PARTY), 0);
-		nodeChanged(node); //necessary when new display name is longer than the old one which is replaced
+		if(userObject.getClass() == BusinessParty.class)
+		{
+			final BusinessParty userParty = (BusinessParty) userObject;
+			final DefaultMutableTreeNode node = new DefaultMutableTreeNode(userParty);
+			node.setAllowsChildren(false);
+			if(userParty.isPartner())
+				insertNodeInto(node, searchNode(BUSINESS_PARTNERS), getIndex(userParty, businessPartners));
+			else if(userParty.isFollowing())
+				insertNodeInto(node, searchNode(OTHER_PARTIES), getIndex(userParty, otherParties));
+			else if(userParty.isDeregistered())
+				insertNodeInto(node, searchNode(DEREGISTERED_PARTIES), getIndex(userParty, deregisteredParties));
+			else if(userParty.isArchived())
+				insertNodeInto(node, searchNode(ARCHIVED_PARTIES), getIndex(userParty, archivedParties));
+			else
+				insertNodeInto(node, searchNode(MY_PARTY), 0);
+			nodeChanged(node); //necessary when new display name is longer than the old one which is replaced
+		}
+
 	}
 
 	@Override
@@ -187,8 +223,8 @@ public class PartyTreeModel extends RutaTreeModel
 				businessPartners.remove(sourceParty);
 				deleteNode(sourceParty);
 				//add to archived parties
-				archivedParties.add(sourceParty);
-				addNode(sourceParty);
+//				archivedParties.add(sourceParty);
+//				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.OTHER_PARTY_ADDED.equals(command))
 			{
@@ -211,8 +247,8 @@ public class PartyTreeModel extends RutaTreeModel
 				otherParties.remove(sourceParty);
 				deleteNode(sourceParty);
 				//add to archived parties
-				archivedParties.add(sourceParty);
-				addNode(sourceParty);
+//				archivedParties.add(sourceParty);
+//				addNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_ADDED.equals(command))
 			{
@@ -227,7 +263,7 @@ public class PartyTreeModel extends RutaTreeModel
 				deleteNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.DEREGISTERED_PARTY_ADDED.equals(command))
-			{
+			{	//MMM check is it necessary to remove form the lists
 				//delete from a list if it is contained in any
 				businessPartners.remove(sourceParty);
 				otherParties.remove(sourceParty);

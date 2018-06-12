@@ -94,20 +94,26 @@
 	</bindings>
  	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
 		if-exists="true">
-		<bindings scd="~tns:BusinessPartnershipRequest">
-			<class ref="rs.ruta.common.BusinessPartnershipRequest" />
+		<bindings scd="~tns:PartnershipBreakup">
+			<class ref="rs.ruta.common.PartnershipBreakup" />
 		</bindings>
 	</bindings>
 	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
 		if-exists="true">
-		<bindings scd="~tns:BusinessPartnershipResponse">
-			<class ref="rs.ruta.common.BusinessPartnershipResponse" />
+		<bindings scd="~tns:PartnershipRequest">
+			<class ref="rs.ruta.common.PartnershipRequest" />
 		</bindings>
 	</bindings>
-<!--  	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
+	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
 		if-exists="true">
-		<bindings scd="~tns:RutaException">
-			<class ref="rs.ruta.common.datamapper.RutaException" />
+		<bindings scd="~tns:PartnershipResponse">
+			<class ref="rs.ruta.common.PartnershipResponse" />
 		</bindings>
-	</bindings> -->
+	</bindings>
+	<bindings scd="x-schema::tns" xmlns:tns="http://www.ruta.rs/ns/common"
+		if-exists="true">
+		<bindings scd="~tns:PartnershipResolution">
+			<class ref="rs.ruta.common.PartnershipResolution" />
+		</bindings>
+	</bindings>
 </bindings>

@@ -61,6 +61,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Cus
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.MonetaryTotalType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
@@ -78,12 +79,20 @@ import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.StateActivityException;
 import rs.ruta.client.datamapper.ClientMapperRegistry;
+import rs.ruta.client.gui.BusinessPartyEvent;
+import rs.ruta.client.gui.CorrespondenceEvent;
+import rs.ruta.client.gui.PartnershipEvent;
 import rs.ruta.client.gui.RutaClientFrame;
+import rs.ruta.client.gui.RutaClientFrameEvent;
+import rs.ruta.client.gui.SearchEvent;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResolution;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.CatalogueSearchCriterion;
@@ -104,11 +113,13 @@ import rs.ruta.services.FindCatalogueResponse;
 import rs.ruta.services.FindDocBoxDocumentResponse;
 import rs.ruta.services.FollowPartyResponse;
 import rs.ruta.services.RegisterUserResponse;
+import rs.ruta.services.RequestBusinessPartnershipResponse;
 import rs.ruta.services.SearchCatalogueResponse;
 import rs.ruta.services.SearchPartyResponse;
 import rs.ruta.services.Server;
 import rs.ruta.services.UpdateCatalogueWithAppResponseResponse;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.PartySearchCriterion;
 
 public class RutaClient implements RutaNode
@@ -221,7 +232,7 @@ public class RutaClient implements RutaNode
 			myParty.addCatalogueCorrespondence(CatalogueCorrespondence.newInstance(this));
 		final Party coreParty = myParty.getCoreParty();
 		if(!myParty.hasCoreParty() || coreParty.verifyParty() != null)
-			myParty.setCoreParty(frame.showPartyDialog(coreParty, "My Party", true)); //displaying My Party Data dialog
+			myParty.setCoreParty(frame.showPartyDialog(coreParty, "My Party", true, true)); //displaying My Party Data dialog
 		frame.updateTitle(myParty.getCoreParty().getPartySimpleName());
 		if(initialUsername == null && !myParty.isRegisteredWithLocalDatastore())
 		{
@@ -235,6 +246,7 @@ public class RutaClient implements RutaNode
 		myParty.addActionListener(frame, SearchEvent.class);
 		myParty.addActionListener(frame, CorrespondenceEvent.class);
 		myParty.addActionListener(frame, BusinessPartyEvent.class);
+		myParty.addActionListener(frame, PartnershipEvent.class);
 	}
 
 	/**
@@ -541,7 +553,7 @@ public class RutaClient implements RutaNode
 							frame.appendToConsole(new StringBuilder("My Party has been successfully registered with the CDR service."),
 									Color.GREEN);
 							frame.appendToConsole(new StringBuilder("My Party has been added to the Following parties."), Color.BLACK);
-							frame.appendToConsole(new StringBuilder("Please upload My Catalogue on the CDR service for everyone").
+							frame.appendToConsole(new StringBuilder("Please upload My Catalogue on the CDR service for Ruta users").
 									append(" to be able to see your products."), Color.BLACK);
 						}
 						catch(Exception e)
@@ -1262,11 +1274,10 @@ public class RutaClient implements RutaNode
 	 * Sends a follow request to the CDR service.
 	 * @param followingName name of the party to follow
 	 * @param followingID ID of the party to follow
-	 * @param partner true when party to be followed is set to be a business partner
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation
 	 */
-	public Future<?> cdrFollowParty(String followingName, String followingID, boolean partner)
+	public Future<?> cdrFollowParty(String followingName, String followingID)
 	{
 		Future<?> ret = null;
 		try
@@ -1280,24 +1291,17 @@ public class RutaClient implements RutaNode
 				{
 					FollowPartyResponse response = future.get();
 					PartyType party = response.getReturn();
-
 					if(party != null)
 					{
-						//						BusinessParty newFollowing = myParty.addFollowingParty(party, partner);
-
 						BusinessParty newFollowing = new BusinessParty();
 						newFollowing.setCoreParty(party);
-						newFollowing.setPartner(partner);
+						newFollowing.setPartner(false);
 						newFollowing.setRecentlyUpdated(true);
 						newFollowing.setTimestamp(InstanceFactory.getDate());
 						myParty.followParty(newFollowing);
 
 						StringBuilder msg = new StringBuilder("Party ").append(followingName).
-								append(" has been successfully added to the following parties");
-						if(partner)
-							msg.append(" as a business partner.");
-						else
-							msg.append(".");
+								append(" has been successfully added to the following parties.");
 						frame.appendToConsole(msg, Color.GREEN);
 					}
 					else
@@ -1343,6 +1347,7 @@ public class RutaClient implements RutaNode
 				try
 				{
 					future.get();
+//					myParty.unfollowPartyOLD(followingParty);
 					myParty.unfollowParty(followingParty);
 					StringBuilder msg = new StringBuilder("Party " + followingName + " has been moved to the archived parties.");
 					frame.appendToConsole(msg, Color.GREEN);
@@ -1438,7 +1443,7 @@ public class RutaClient implements RutaNode
 									if(e.getMessage() != null && e.getMessage().contains("has been already received and processed"))
 									{
 										try
-										{	//MMM continue from here
+										{
 											port.distributeDocumentAsync(DocumentReceipt.newInstance(document));
 										}
 										catch (DetailException e1)
@@ -1485,7 +1490,7 @@ public class RutaClient implements RutaNode
 				catch(Exception e)
 				{
 					frame.processExceptionAndAppendToConsole(e,
-							new StringBuilder("Download request of new documents has not been successcully processed!"));
+							new StringBuilder("Download request for new documents has not been successcully processed!"));
 				}
 				finally
 				{
@@ -1493,7 +1498,7 @@ public class RutaClient implements RutaNode
 					frame.enableGetDocumentsMenuItem();
 				}
 			});
-			frame.appendToConsole(new StringBuilder("Download request of new documents has been sent to the CDR service.").
+			frame.appendToConsole(new StringBuilder("Download request for new documents has been sent to the CDR service.").
 					append(" Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
@@ -1523,6 +1528,29 @@ public class RutaClient implements RutaNode
 		DocumentReceipt documentReceipt = null;
 		final Class<?> documentClazz = document.getClass();
 		boolean createDocumentReceipt = true; // true for documents for which DocumentReceipt should be returned back
+		if(documentClazz == DocumentReceipt.class)
+		{
+			createDocumentReceipt = false;
+			frame.appendToConsole(new StringBuilder("Document Receipt ").
+					append(((DocumentReceipt) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxDocumentReceipt((DocumentReceipt) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((DocumentReceipt) document).getSenderParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Document Receipt " + ((DocumentReceipt) document).getIDValue() +
+							" has been updated its document status."),
+					Color.BLACK);
+		}
 		if(documentClazz == CatalogueType.class)
 		{
 			createDocumentReceipt = false;
@@ -1750,18 +1778,18 @@ public class RutaClient implements RutaNode
 							" has been appended to its correspondence."),
 					Color.BLACK);
 		}
-		else if(documentClazz == DocumentReceipt.class)
+		else if(documentClazz == PartnershipRequest.class)
 		{
 			createDocumentReceipt = false;
-			frame.appendToConsole(new StringBuilder("Document Receipt ").
-					append(((DocumentReceipt) document).getIDValue()).
+			frame.appendToConsole(new StringBuilder("Business Partnership Request ").
+					append(((PartnershipRequest) document).getIDValue()).
 					append(" has been successfully retrieved."), Color.GREEN);
-			myParty.processDocBoxDocumentReceipt((DocumentReceipt) document);
+			myParty.processDocBoxPartnershipRequest((PartnershipRequest) document);
 			String partyName;
 			try
 			{
 				partyName = InstanceFactory.getPropertyOrNull(
-						((DocumentReceipt) document).getSenderParty().getPartyName().get(0),
+						((PartnershipRequest) document).getRequesterParty().getPartyName().get(0),
 						PartyNameType::getNameValue);
 			}
 			catch(Exception e)
@@ -1769,15 +1797,61 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Document Receipt " + ((DocumentReceipt) document).getIDValue() +
-							" has been updated its document status."),
+					append("'s Business Partnership Request " + ((PartnershipRequest) document).getIDValue() +
+							" has been received and set in the data model."),
+					Color.BLACK);
+		}
+		else if(documentClazz == PartnershipResolution.class)
+		{
+			createDocumentReceipt = false;
+			frame.appendToConsole(new StringBuilder("Business Partnership Resolution ").
+					append(((PartnershipResolution) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxPartnershipResolution((PartnershipResolution) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((PartnershipResolution) document).getRequesterParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
+					append("'s Business Partnership Resolution " + ((PartnershipResolution) document).getIDValue() +
+							" has been received and set in the data model."),
+					Color.BLACK);
+		}
+		else if(documentClazz == PartnershipBreakup.class)
+		{
+			createDocumentReceipt = false;
+			frame.appendToConsole(new StringBuilder("Business Partnership Breakup ").
+					append(((PartnershipBreakup) document).getIDValue()).
+					append(" has been successfully retrieved."), Color.GREEN);
+			myParty.processDocBoxPartnershipBreakup((PartnershipBreakup) document);
+			String partyName;
+			try
+			{
+				partyName = InstanceFactory.getPropertyOrNull(
+						((PartnershipBreakup) document).getRequesterParty().getPartyName().get(0),
+						PartyNameType::getNameValue);
+			}
+			catch(Exception e)
+			{
+				partyName = "";
+			}
+			frame.appendToConsole(new StringBuilder("Business Partnership Breakup with Party ").append(partyName).
+					append(((PartnershipBreakup) document).getIDValue() + " has been received and set in the data model."),
 					Color.BLACK);
 		}
 		else
 		{
 			createDocumentReceipt = false;
 			frame.appendToConsole(new StringBuilder("Document ").append(docID).
-					append(" of an unkwown type has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
+					append(" of an unexpected type: " + document.getClass().getSimpleName() +
+							" has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
 					Color.BLACK);
 		}
 		if(createDocumentReceipt)
@@ -2699,12 +2773,11 @@ public class RutaClient implements RutaNode
 	 * {@code Business Parter}, otherwise a regular following {@code Party}.
 	 * @param followingName name of the party to follow
 	 * @param followingID ID of the party to follow
-	 * @param partner whether following party should be set as a {@code Business Parter}
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation
-	 * @throws DetailException due to issues with the data store
+	 * @throws DetailException due to the issues with the data store
 	 */
-	public Future<?> followParty(final String followingName, final String followingID, final boolean partner) throws DetailException
+	public Future<?> followParty(final String followingName, final String followingID) throws DetailException
 	{
 		Future<?> ret = null;
 		if(followingID.equals(myParty.getPartyID()))
@@ -2713,20 +2786,245 @@ public class RutaClient implements RutaNode
 		{
 			final BusinessParty following = myParty.getFollowingParty(followingID);
 			if(following == null)
-				ret = cdrFollowParty(followingName, followingID, partner);
-			else if(partner && !following.isPartner())
-			{
-				following.setPartner(true);
-				myParty.followParty(following);
+				ret = cdrFollowParty(followingName, followingID);
+			else if(following.isPartner())
 				frame.appendToConsole(new StringBuilder("Party ").append(followingName).
-						append(" is already in the following list. But from now on it is marked as a business partner."),
-						Color.GREEN);
-			}
+						append(" is already in the business partner list."), Color.BLACK);
 			else
 				frame.appendToConsole(new StringBuilder("Party ").append(followingName).
 						append(" is already in the following list."), Color.BLACK);
 		}
 		return ret;
+	}
+
+	/**
+	 * Sends business partnership request to the CDR if the party to be followed is not My Party,is not among the
+	 * following parties nor the request has already been sent for that party.
+	 * @param requestedParty party that request should be sent to
+	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
+	 * or {@code null} if no CDR request has been made during method invocation
+	 */
+	public void requestPartnership(final PartyType requestedParty)
+	{
+		final String requestedName = InstanceFactory.
+				getPropertyOrNull(requestedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+		final String requestedID = InstanceFactory.
+				getPropertyOrNull(requestedParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
+		if(requestedID.equals(myParty.getPartyID()))
+			frame.appendToConsole(new StringBuilder("My Party is already in the following list."), Color.BLACK);
+		else
+		{
+			final PartnershipRequest outboundRequest = myParty.getOutboundPartnershipRequest(requestedParty);
+			if(outboundRequest != null &&
+					(!outboundRequest.isResolved() || (outboundRequest.isResolved() && outboundRequest.isAccepted())))
+				frame.appendToConsole(new StringBuilder("Business Partnership Request had been already sent to the ").
+						append(requestedName).append(" party. Because of the state of the current request another one is not alowed."),
+						Color.BLACK);
+			else
+			{
+				final PartnershipRequest inboundRequest = myParty.getInboundPartnershipRequest(requestedParty);
+				if(inboundRequest != null &&
+						(!inboundRequest.isResolved() || (inboundRequest.isResolved() && inboundRequest.isAccepted())))
+					frame.appendToConsole(new StringBuilder("Business Partnership Request had been already received ").
+							append("from the ").append(requestedName).
+							append(" party. Because of the state of the current request another one is not alowed."),
+							Color.BLACK);
+				else
+				{
+					BusinessParty following = myParty.getFollowingParty(requestedID);
+					if(following == null || !following.isPartner())
+					{
+						final PartnershipRequest businessRequest = new PartnershipRequest();
+						businessRequest.setID(UUID.randomUUID().toString());
+						businessRequest.setIssueTime(InstanceFactory.getDate());
+						businessRequest.setInbound(false);
+						businessRequest.setRequesterParty(myParty.getCoreParty());
+						businessRequest.setRequestedParty(requestedParty);
+						cdrRequestPartnership(businessRequest);
+					}
+					else if(following.isPartner())
+						frame.appendToConsole(new StringBuilder("Party ").append(requestedName).
+								append(" is already in the business partner list."), Color.BLACK);
+//				else
+//					frame.appendToConsole(new StringBuilder("Party ").append(requestedName).
+//							append(" is already in the following list."), Color.BLACK);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sends a {@link PartnershipRequest Business Partnership Request} to the CDR service.
+	 * @param businessRequest request to sent
+	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
+	 * or {@code null} if no CDR request has been made during method invocation
+	 */
+	public void cdrRequestPartnership(PartnershipRequest businessRequest)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.requestBusinessPartnershipAsync(businessRequest, future ->
+			{
+				String requestedName = businessRequest.getRequestedPartyName();
+				try
+				{
+					future.get();
+					myParty.excludePartnershipRequest(businessRequest.getRequestedParty());
+					myParty.includeOutboundPartnershipRequest(businessRequest);
+					frame.appendToConsole( new StringBuilder("Business Partnership Request for the Party ").
+							append(requestedName).append(" has been successfully deposited to the CDR service. Party ").
+							append(requestedName).append(" should respond to it before any further actions on your behalf."),
+							Color.GREEN);
+				}
+				catch(DetailException e)
+				{
+					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership request").
+							append(" for the Party ").append(requestedName).
+							append(" could not be successfully inserted to the local data store!"));
+				}
+				catch(Exception e)
+				{
+					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Request").
+							append(" for the Party ").append(requestedName).
+							append(" could not be successfully deposited to the CDR service!"));
+				}
+			});
+
+			frame.appendToConsole(new StringBuilder("Business Partnership Request has been sent to the CDR service. Waiting for a response..."),
+							Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole(new StringBuilder("Business partnership request has not been sent to the CDR service!").
+					append(" Server is not accessible. Please try again later."), Color.RED);
+		}
+	}
+
+	/**
+	 * Sends a {@link PartnershipResponse Partnership Response} to the CDR service.
+	 * @param businessResponse resposne to sent
+	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
+	 * or {@code null} if no CDR request has been made during method invocation
+	 */
+	public void cdrResponsePartnership(PartnershipResponse businessResponse)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.responseBusinessPartnershipAsync(businessResponse, future ->
+			{
+				String requestedName = businessResponse.getRequestedPartyName();
+				try
+				{
+					future.get();
+//					myParty.includeBusinessPartnershipResponse(businessResponse);
+					frame.appendToConsole( new StringBuilder("Business Partnership Response for the Party ").
+							append(requestedName).append(" has been successfully deposited to the CDR service. ").
+							append("Get New Documents from the CDR to get a Business Partnership Resolution."),
+							Color.GREEN);
+				}
+//				catch(DetailException e)
+//				{
+//					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Response ").
+//							append(" for the Party ").append(requestedName).
+//							append(" could not be successfully inserted to the local data store!"));
+//				}
+				catch(Exception e)
+				{
+					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Response").
+							append(" for the Party ").append(requestedName).
+							append(" could not be successfully deposited to the CDR service!"));
+				}
+			});
+
+			frame.appendToConsole(new StringBuilder("Business Partnership Response has been sent to the CDR service. Waiting for a response..."),
+							Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole(new StringBuilder("Business partnership Resposne has not been sent to the CDR service!").
+					append(" Server is not accessible. Please try again later."), Color.RED);
+		}
+	}
+
+	/** //MMM amend the comment
+	 * Sends Business Partnership Breakup request to the CDR if the party to be followed is not My Party,is not among the
+	 * following parties nor the request has already been sent for that party.
+	 * @param requestedParty party that request should be sent to
+	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
+	 * or {@code null} if no CDR request has been made during method invocation
+	 */
+	public void breakupPartnership(final PartyType requestedParty)
+	{
+		final String requestedName = InstanceFactory.
+				getPropertyOrNull(requestedParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
+		final String requestedID = InstanceFactory.
+				getPropertyOrNull(requestedParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
+		if(myParty.getPartnershipBreakup(requestedParty) != null)
+			frame.appendToConsole(new StringBuilder("Business Partnership Breakup had been already sent ").
+					append("to the CDR service."), Color.BLACK);
+		else
+		{
+			BusinessParty breakupParty = myParty.getFollowingParty(requestedID);
+			if(breakupParty != null)
+			{
+				final PartnershipBreakup breakup = new PartnershipBreakup();
+				breakup.setID(UUID.randomUUID().toString());
+				breakup.setIssueTime(InstanceFactory.getDate());
+				breakup.setRequesterParty(myParty.getCoreParty());
+				breakup.setRequestedParty(requestedParty);
+				cdrBreakupPartnership(breakup);
+			}
+			else
+				frame.appendToConsole(new StringBuilder("Party ").append(requestedName).
+						append(" is not a Business Partner."), Color.BLACK);
+		}
+	}
+
+	/**
+	 * Sends a {@link PartnershipBreakup Partnership Breakup} to the CDR service.
+	 * @param breakup breakup request to sent
+	 */
+	public void cdrBreakupPartnership(PartnershipBreakup breakup)
+	{
+		try
+		{
+			Server port = getCDRPort();
+			port.breakupBusinessPartnershipAsync(breakup, future ->
+			{
+				String requestedName = breakup.getRequestedPartyName();
+				try
+				{
+					future.get();
+					myParty.includePartnershipBreakup(breakup);
+					frame.appendToConsole( new StringBuilder("Business Partnership Breakup with Party ").
+							append(requestedName).append(" has been successfully processed by the CDR service. ").
+							append("Get New Documents from the CDR to get a response document to it."),
+							Color.GREEN);
+				}
+				catch(DetailException e)
+				{
+					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Breakup").
+							append(" with Party ").append(requestedName).
+							append(" could not be successfully inserted in local data store!"));
+				}
+				catch(Exception e)
+				{
+					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Breakup").
+							append(" with Party ").append(requestedName).
+							append(" could not be successfully processed by the CDR service!"));
+				}
+			});
+
+			frame.appendToConsole(new StringBuilder("Business Partnership Breakup has been sent to the CDR service. Waiting for a response..."),
+							Color.BLACK);
+		}
+		catch(WebServiceException e)
+		{
+			frame.appendToConsole(new StringBuilder("Business Partnership Breakup has not been sent to the CDR service!").
+					append(" Server is not accessible. Please try again later."), Color.RED);
+		}
 	}
 
 }

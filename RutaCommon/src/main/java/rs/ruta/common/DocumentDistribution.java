@@ -78,8 +78,10 @@ public class DocumentDistribution
 				documentClazz == ApplicationResponseType.class ||
 				documentClazz == InvoiceType.class ||
 				documentClazz == DocumentReceipt.class ||
-				documentClazz == BusinessPartnershipRequest.class ||
-				documentClazz == BusinessPartnershipResponse.class)
+				documentClazz == PartnershipRequest.class ||
+				documentClazz == PartnershipResponse.class ||
+				documentClazz == PartnershipResolution.class ||
+				documentClazz == PartnershipBreakup.class)
 			//MMM other document types
 			valid = true;
 		return valid;

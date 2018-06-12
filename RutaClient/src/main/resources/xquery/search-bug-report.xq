@@ -1,6 +1,6 @@
 xquery version "3.1";
 
-declare namespace ns3 = 'urn:rs:ruta:common';
+declare namespace ns3 = 'http://www.ruta.rs/ns/common';
 
 declare variable $path external := ();
 

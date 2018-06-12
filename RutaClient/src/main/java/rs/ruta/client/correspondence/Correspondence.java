@@ -28,10 +28,10 @@ import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancel
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
-import rs.ruta.client.CorrespondenceEvent;
-import rs.ruta.client.RutaClientFrameEvent;
-import rs.ruta.common.BusinessPartnershipRequest;
-import rs.ruta.common.BusinessPartnershipResponse;
+import rs.ruta.client.gui.CorrespondenceEvent;
+import rs.ruta.client.gui.RutaClientFrameEvent;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.DetailException;
@@ -949,11 +949,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					MapperRegistry.getInstance().getMapper(ApplicationResponseType.class).insert(null, (ApplicationResponseType) document);
 				else if(documentClazz == InvoiceType.class)
 					MapperRegistry.getInstance().getMapper(InvoiceType.class).insert(null, (InvoiceType) document);
-				else if(documentClazz == BusinessPartnershipRequest.class)
-					MapperRegistry.getInstance().getMapper(BusinessPartnershipRequest.class).insert(null, (BusinessPartnershipRequest) document);
-				else if(documentClazz == BusinessPartnershipResponse.class)
-					MapperRegistry.getInstance().getMapper(BusinessPartnershipResponse.class).insert(null, (BusinessPartnershipResponse) document);
-				//MMM other document types
+
+
 				else
 					throw new StateActivityException("Document could not be stored to the database because of its unexpected type.");
 			}

@@ -25,13 +25,14 @@ import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseTy
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
-import rs.ruta.common.BusinessPartnershipRequest;
-import rs.ruta.common.BusinessPartnershipResponse;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocBoxAllIDsSearchCriterion;
 import rs.ruta.common.DocBoxDocumentSearchCriterion;
 import rs.ruta.common.DocumentReceipt;
+import rs.ruta.common.PartnershipBreakup;
+import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.PartnershipResponse;
 import rs.ruta.common.PartySearchCriterion;
 import rs.ruta.common.ReportAttachment;
 import rs.ruta.common.ReportComment;
@@ -211,6 +212,49 @@ public interface Server {
      * 
      * @param arg0
      * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.RequestBusinessPartnershipResponse>
+     */
+    @WebMethod(operationName = "RequestBusinessPartnership")
+    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
+    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
+    public Response<RequestBusinessPartnershipResponse> requestBusinessPartnershipAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartnershipRequest arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "RequestBusinessPartnership")
+    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
+    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
+    public Future<?> requestBusinessPartnershipAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartnershipRequest arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<RequestBusinessPartnershipResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "RequestBusinessPartnership")
+    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
+    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
+    public void requestBusinessPartnership(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartnershipRequest arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.SearchCatalogueResponse>
      */
     @WebMethod(operationName = "SearchCatalogue")
@@ -250,49 +294,6 @@ public interface Server {
     public List<CatalogueType> searchCatalogue(
         @WebParam(name = "arg0", targetNamespace = "")
         CatalogueSearchCriterion arg0)
-        throws RutaException
-    ;
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns javax.xml.ws.Response<rs.ruta.services.RequestBusinessPartnershipResponse>
-     */
-    @WebMethod(operationName = "RequestBusinessPartnership")
-    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
-    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
-    public Response<RequestBusinessPartnershipResponse> requestBusinessPartnershipAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipRequest arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @param asyncHandler
-     * @return
-     *     returns java.util.concurrent.Future<? extends java.lang.Object>
-     */
-    @WebMethod(operationName = "RequestBusinessPartnership")
-    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
-    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
-    public Future<?> requestBusinessPartnershipAsync(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipRequest arg0,
-        @WebParam(name = "asyncHandler", targetNamespace = "")
-        AsyncHandler<RequestBusinessPartnershipResponse> asyncHandler);
-
-    /**
-     * 
-     * @param arg0
-     * @throws RutaException
-     */
-    @WebMethod(operationName = "RequestBusinessPartnership")
-    @RequestWrapper(localName = "RequestBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnership")
-    @ResponseWrapper(localName = "RequestBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.RequestBusinessPartnershipResponse")
-    public void requestBusinessPartnership(
-        @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipRequest arg0)
         throws RutaException
     ;
 
@@ -1007,6 +1008,49 @@ public interface Server {
      * 
      * @param arg0
      * @return
+     *     returns javax.xml.ws.Response<rs.ruta.services.BreakupBusinessPartnershipResponse>
+     */
+    @WebMethod(operationName = "BreakupBusinessPartnership")
+    @RequestWrapper(localName = "BreakupBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.BreakupBusinessPartnership")
+    @ResponseWrapper(localName = "BreakupBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.BreakupBusinessPartnershipResponse")
+    public Response<BreakupBusinessPartnershipResponse> breakupBusinessPartnershipAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartnershipBreakup arg0);
+
+    /**
+     * 
+     * @param arg0
+     * @param asyncHandler
+     * @return
+     *     returns java.util.concurrent.Future<? extends java.lang.Object>
+     */
+    @WebMethod(operationName = "BreakupBusinessPartnership")
+    @RequestWrapper(localName = "BreakupBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.BreakupBusinessPartnership")
+    @ResponseWrapper(localName = "BreakupBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.BreakupBusinessPartnershipResponse")
+    public Future<?> breakupBusinessPartnershipAsync(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartnershipBreakup arg0,
+        @WebParam(name = "asyncHandler", targetNamespace = "")
+        AsyncHandler<BreakupBusinessPartnershipResponse> asyncHandler);
+
+    /**
+     * 
+     * @param arg0
+     * @throws RutaException
+     */
+    @WebMethod(operationName = "BreakupBusinessPartnership")
+    @RequestWrapper(localName = "BreakupBusinessPartnership", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.BreakupBusinessPartnership")
+    @ResponseWrapper(localName = "BreakupBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.BreakupBusinessPartnershipResponse")
+    public void breakupBusinessPartnership(
+        @WebParam(name = "arg0", targetNamespace = "")
+        PartnershipBreakup arg0)
+        throws RutaException
+    ;
+
+    /**
+     * 
+     * @param arg0
+     * @return
      *     returns javax.xml.ws.Response<rs.ruta.services.NotifyUpdateResponse>
      */
     @WebMethod(operationName = "NotifyUpdate")
@@ -1703,7 +1747,7 @@ public interface Server {
     @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
     public Response<ResponseBusinessPartnershipResponse> responseBusinessPartnershipAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipResponse arg0);
+        PartnershipResponse arg0);
 
     /**
      * 
@@ -1717,7 +1761,7 @@ public interface Server {
     @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
     public Future<?> responseBusinessPartnershipAsync(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipResponse arg0,
+        PartnershipResponse arg0,
         @WebParam(name = "asyncHandler", targetNamespace = "")
         AsyncHandler<ResponseBusinessPartnershipResponse> asyncHandler);
 
@@ -1731,7 +1775,7 @@ public interface Server {
     @ResponseWrapper(localName = "ResponseBusinessPartnershipResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ResponseBusinessPartnershipResponse")
     public void responseBusinessPartnership(
         @WebParam(name = "arg0", targetNamespace = "")
-        BusinessPartnershipResponse arg0)
+        PartnershipResponse arg0)
         throws RutaException
     ;
 

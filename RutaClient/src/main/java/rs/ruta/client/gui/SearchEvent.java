@@ -1,6 +1,8 @@
-package rs.ruta.client;
+package rs.ruta.client.gui;
 
 import java.awt.event.ActionEvent;
+
+import rs.ruta.client.Party;
 
 public class SearchEvent extends ActionEvent
 {
