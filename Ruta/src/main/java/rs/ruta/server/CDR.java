@@ -140,6 +140,7 @@ public class CDR implements Server
 
 	@Override
 	@WebMethod
+	@Deprecated //MMM used updateCatalogueWithAppResponse instead
 	public void insertCatalogue(String username, CatalogueType catalogue) throws RutaException
 	{
 		try
@@ -168,6 +169,7 @@ public class CDR implements Server
 
 	@Override
 	@WebMethod
+	@Deprecated
 	public void updateCatalogue(String username, CatalogueType catalogue) throws RutaException
 	{
 		try
@@ -202,15 +204,16 @@ public class CDR implements Server
 		try
 		{
 			init();
+			logger.info("***Catalogue update started");
 			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
-
+			logger.info("***Catalogue update finished");
 			final PartyType senderParty = catalogue.getReceiverParty();
 			final PartyType receiverParty = catalogue.getProviderParty();
 			final String docUUID = catalogue.getUUIDValue();
 			final String docID = catalogue.getIDValue();
 			appResponse = InstanceFactory.
 					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE, null);
-
+			logger.info("***Application Response ready for distribution.");
 			docBoxPool.submit(() ->
 			{
 				try
@@ -218,6 +221,7 @@ public class CDR implements Server
 					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+					logger.info("***Application Response distributed to id: " + id);
 				}
 				catch(DetailException e)
 				{
@@ -251,6 +255,7 @@ public class CDR implements Server
 
 	@Override
 	@WebMethod
+	@Deprecated
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException
 	{
 		try
@@ -285,7 +290,20 @@ public class CDR implements Server
 		try
 		{
 			init();
-			final String id = mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catalogueDeletion);
+			String objID  = null;
+			try
+			{
+				logger.info("***Catalogue deletion started");
+				objID = mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catalogueDeletion);
+				logger.info("***Catalogue deleted");
+			}
+			catch (Exception e1)
+			{
+				if(e1.getMessage() != null && e1.getMessage().contains("Document does not exist!"))
+					; // it's OK because the Catalogue is already deleted, so proceed with the method
+				else
+					throw e1;
+			}
 
 			final PartyType senderParty = catalogueDeletion.getReceiverParty();
 			final PartyType receiverParty = catalogueDeletion.getProviderParty();
@@ -293,14 +311,21 @@ public class CDR implements Server
 			final String docID = catalogueDeletion.getIDValue();
 			appResponse = InstanceFactory.
 					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE, null);
-
+			String id = objID;
+			logger.info("***Application Response ready for distribution.");
 			docBoxPool.submit(() ->
 			{
 				try
 				{
-					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
+					Associates followers;
+					if(id != null)
+						followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
+					else
+						followers = mapperRegistry.getMapper(Associates.class).
+						findByUserId(receiverParty.getPartyIdentificationAtIndex(0).getIDValue());
 					final DocumentDistribution delDistribution = new DocumentDistribution(catalogueDeletion, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, delDistribution);
+					logger.info("***Application Response distributed to id: " + id);
 				}
 				catch(DetailException e)
 				{
@@ -664,7 +689,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			processException(e, "My Party could not be added as a follower of the requested party!");
+			processException(e, "Party " + partyID + " could not be added as a follower of the requested party " + followID + "!");
 		}
 		return party;
 	}
@@ -1009,52 +1034,55 @@ public class CDR implements Server
 			resolution.setRequestedParty(response.getRequestedParty());
 			resolution.setAccepted(response.isAccepted());
 
-			DocumentDistribution documentDistribution = new DocumentDistribution(resolution, recepient);
-			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
+			DocumentDistribution resolutionDistribution = new DocumentDistribution(resolution, recepient);
+			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, resolutionDistribution);
 			final Associates recepient2 = new Associates();
 			recepient2.setPartyID(receiverID);
 			recepient2.addAssociate(senderID);
-			documentDistribution = new DocumentDistribution(resolution, recepient2);
-			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
+			resolutionDistribution = new DocumentDistribution(resolution, recepient2);
+			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, resolutionDistribution);
 
 			for(PartnershipRequest request : requests)
 				mapperRegistry.getMapper(PartnershipRequest.class).delete(null, request.getIDValue());
 
 			if(response.isAccepted())
 			{
-				docBoxPool.submit(() ->
-				{
-					try
-					{
-						final CatalogueType cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(senderID);
-						if(cat != null)
-						{
-							final DocumentDistribution catDistribution = new DocumentDistribution(cat, recepient);
-							mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
-						}
-					}
-					catch (DetailException e)
-					{
-						logger.error("Unable to distribute catalogue for the user with ID: " + senderID + ". Exception is ", e);
-					}
-				});
+				followParty(senderID, receiverID);
+				followParty(receiverID, senderID);
 
-				docBoxPool.submit(() ->
-				{
-					try
-					{
-						final CatalogueType cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(receiverID);
-						if(cat != null)
-						{
-							final DocumentDistribution catDistribution = new DocumentDistribution(cat, recepient2);
-							mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
-						}
-					}
-					catch (DetailException e)
-					{
-						logger.error("Unable to distribute catalogue for the user with ID: " + receiverID + ". Exception is ", e);
-					}
-				});
+//				docBoxPool.submit(() ->
+//				{
+//					try
+//					{
+//						final CatalogueType cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(senderID);
+//						if(cat != null)
+//						{
+//							final DocumentDistribution catDistribution = new DocumentDistribution(cat, recepient);
+//							mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+//						}
+//					}
+//					catch (DetailException e)
+//					{
+//						logger.error("Unable to distribute catalogue for the user with ID: " + senderID + ". Exception is ", e);
+//					}
+//				});
+//
+//				docBoxPool.submit(() ->
+//				{
+//					try
+//					{
+//						final CatalogueType cat = mapperRegistry.getMapper(CatalogueType.class).findByUserId(receiverID);
+//						if(cat != null)
+//						{
+//							final DocumentDistribution catDistribution = new DocumentDistribution(cat, recepient2);
+//							mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
+//						}
+//					}
+//					catch (DetailException e)
+//					{
+//						logger.error("Unable to distribute catalogue for the user with ID: " + receiverID + ". Exception is ", e);
+//					}
+//				});
 
 			}
 		}

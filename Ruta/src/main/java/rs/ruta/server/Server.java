@@ -56,6 +56,7 @@ public interface Server
 	 * @throws RutaException if the catalogue object could not be updated in the database
 	 */
 	@WebMethod(operationName = "UpdateCatalogue")
+	@Deprecated
 	public void updateCatalogue(String username, CatalogueType catalogue) throws RutaException;
 
 	/**
@@ -86,6 +87,7 @@ public interface Server
 	 * object could not be inserted in the database
 	 */
 	@WebMethod(operationName = "DeleteCatalogue")
+	@Deprecated
 	public void deleteCatalogue(String username, CatalogueDeletionType catDeletion) throws RutaException;
 
 	/**

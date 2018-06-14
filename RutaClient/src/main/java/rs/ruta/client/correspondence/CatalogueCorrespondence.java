@@ -84,8 +84,6 @@ public class CatalogueCorrespondence extends Correspondence
 		}
 		catch(Exception e)
 		{
-			/*			EventQueue.invokeLater(() ->
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error messsage", JOptionPane.ERROR_MESSAGE));*/
 			getClient().getClientFrame().
 			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence ").
 					append(getIdValue()).append(" has been deactivated!"));

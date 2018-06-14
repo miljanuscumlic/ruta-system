@@ -21,19 +21,29 @@ import rs.ruta.client.RutaClient;
 public class CDRSettingsDialog extends JDialog
 {
 	private static final long serialVersionUID = -1973674445580159781L;
-	private JTextField serviceField;
 	private String serviceLocation;
+	private JTextField serviceField;
+	private String connectTimeout;
+	private JTextField connectTimeoutField;
+	private String requestTimeout;
+	private JTextField requestTimeoutField;
 	private boolean applyPressed; //wheather Apply button is pressed
 
 	public CDRSettingsDialog(RutaClientFrame owner)
 	{
 		super(owner, true);
 		setResizable(false);
-		setSize(450, 150);
+		setSize(500, 200);
 		setLocationRelativeTo(owner);
 		serviceLocation = RutaClient.getCDREndPoint();
 		serviceField = new JTextField(30);
 		serviceField.setText(serviceLocation);
+		connectTimeout = String.valueOf(RutaClient.getConnectTimeout() / 1000);
+		connectTimeoutField = new JTextField(30);
+		connectTimeoutField.setText(connectTimeout);
+		requestTimeout = String.valueOf(RutaClient.getRequestTimeout() / 1000);
+		requestTimeoutField = new JTextField(30);
+		requestTimeoutField.setText(requestTimeout);
 		applyPressed = false;
 		JPanel cdrPanel = new JPanel();
 		cdrPanel.setLayout(new BorderLayout());
@@ -42,32 +52,71 @@ public class CDRSettingsDialog extends JDialog
 		add(createButtonPanel(), BorderLayout.CENTER);
 	}
 
-	public boolean isApplyPressed() { return applyPressed; }
+	public boolean isApplyPressed()
+	{
+		return applyPressed;
+	}
 
-	public void setApplyPressed(boolean apply) { this.applyPressed = apply; }
+	public void setApplyPressed(boolean apply)
+	{
+		this.applyPressed = apply;
+		}
 
-	public String getServiceLocation() { return serviceLocation; }
+	public String getServiceLocation()
+	{
+		return serviceLocation;
+		}
 
-	public void setServiceLocation(String server) { this.serviceLocation = server; }
+	public void setServiceLocation(String server)
+	{
+		this.serviceLocation = server;
+		}
+
+	public String getConnectTimeout()
+	{
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(String connectTimeout)
+	{
+		this.connectTimeout = connectTimeout;
+	}
+
+	public String getRequestTimeout()
+	{
+		return requestTimeout;
+	}
+
+	public void setRequestTimeout(String requestTimeout)
+	{
+		this.requestTimeout = requestTimeout;
+	}
 
 	private JPanel createSettingsPanel()
 	{
-		JPanel settingsPanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
+		final JPanel settingsPanel = new JPanel();
+		final GridBagLayout grid = new GridBagLayout();
 		settingsPanel.setLayout(grid);
-		JButton reset = new JButton("Restore defaults");
-		reset.setToolTipText("Revert to default service location setting.");
+		final JButton resetButton = new JButton("Restore defaults");
+		resetButton.setToolTipText("Revert to default service location setting.");
 
-		reset.addActionListener(event ->
+		resetButton.addActionListener(event ->
 		{
 			serviceLocation = RutaClient.getDefaultEndPoint();
 			serviceField.setText(serviceLocation);
+			connectTimeout = requestTimeout = "0";
+			connectTimeoutField.setText("0");
+			requestTimeoutField.setText("0");
 		});
 
-		Insets insets = new Insets(5, 0, 0, 0);
+		final Insets insets = new Insets(5, 0, 0, 0);
 		putGridCell(settingsPanel, 0, 0, 1, 1, insets, new JLabel("Service location: ", SwingConstants.LEFT));
 		putGridCell(settingsPanel, 0, 1, 1, 1, insets, serviceField);
-		putGridCell(settingsPanel, 1, 1, 1, 1, new Insets(5, 0, 5, 0), reset);
+		putGridCell(settingsPanel, 1, 0, 1, 1, insets, new JLabel("Connect timeout (s): ", SwingConstants.LEFT));
+		putGridCell(settingsPanel, 1, 1, 1, 1, insets, connectTimeoutField);
+		putGridCell(settingsPanel, 2, 0, 1, 1, insets, new JLabel("Request timeout (s): ", SwingConstants.LEFT));
+		putGridCell(settingsPanel, 2, 1, 1, 1, insets, requestTimeoutField);
+		putGridCell(settingsPanel, 3, 1, 1, 1, new Insets(5, 0, 5, 0), resetButton);
 		settingsPanel.setBorder(new TitledBorder("Service settings"));
 
 		return settingsPanel;
@@ -75,14 +124,16 @@ public class CDRSettingsDialog extends JDialog
 
 	private JPanel createButtonPanel()
 	{
-		JPanel buttonPanel = new JPanel();
-		JButton apply = new JButton("Apply and close");
-		JButton cancel = new JButton("Cancel");
-		getRootPane().setDefaultButton(apply);
-		apply.requestFocusInWindow();
-		apply.addActionListener(event ->
+		final JPanel buttonPanel = new JPanel();
+		final JButton applyButton = new JButton("Apply and close");
+		final JButton cancelButton = new JButton("Cancel");
+		getRootPane().setDefaultButton(applyButton);
+		applyButton.requestFocusInWindow();
+		applyButton.addActionListener(event ->
 		{
 			String serviceString = serviceField.getText();
+			connectTimeout = connectTimeoutField.getText();
+			requestTimeout = requestTimeoutField.getText();
 			//MMM: here should be some better validation of the input string
 			if("".equals(serviceString))
 				JOptionPane.showMessageDialog(this, "Service location field can not be empty!", "Invalid input", JOptionPane.ERROR_MESSAGE);
@@ -94,13 +145,13 @@ public class CDRSettingsDialog extends JDialog
 			}
 		});
 
-		cancel.addActionListener(event ->
+		cancelButton.addActionListener(event ->
 		{
 			setVisible(false);
 		});
 		Insets insets = new Insets(15, 0, 0, 0);
-		putGridCell(buttonPanel, 0, 0, 1, 1, insets, apply);
-		putGridCell(buttonPanel, 0, 1, 1, 1, insets, cancel);
+		putGridCell(buttonPanel, 0, 0, 1, 1, insets, applyButton);
+		putGridCell(buttonPanel, 0, 1, 1, 1, insets, cancelButton);
 
 		return buttonPanel;
 	}

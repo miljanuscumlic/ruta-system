@@ -633,6 +633,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			if(settingsDialog.isApplyPressed())
 			{
 				RutaClient.setCDREndPoint(settingsDialog.getServiceLocation());
+				RutaClient.setConnectTimeout(Integer.valueOf(settingsDialog.getConnectTimeout()) * 1000);
+				RutaClient.setRequestTimeout(Integer.valueOf(settingsDialog.getRequestTimeout()) * 1000);
 				settingsDialog.setApplyPressed(false);
 			}
 		});

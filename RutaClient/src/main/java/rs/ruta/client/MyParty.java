@@ -3342,7 +3342,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Gets the boolean value that tells whether the Catalogue should be inserted in or updated with the CDR service.
+	 * Gets the boolean value that tells whether the Catalogue should be inserted or updated in the CDR.
 	 * @return true if Catalogue should be deposited in the CDR service for the first time i.e inserted,
 	 * false otherwise i.e. updated.
 	 */
@@ -3352,7 +3352,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Sets the value of the field that tells whether the Catalogue should be inserted in or updated with the CDR service.
+	 * Sets the value of the field that tells whether the Catalogue should be inserted or updated in the CDR.
 	 * @param insertMyCatalogue true if Catalogue should be deposited in the CDR service for the first time i.e. inserted,
 	 * false otherwise i.e. updated.
 	 */

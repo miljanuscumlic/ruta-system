@@ -133,7 +133,7 @@ public class RutaClient implements RutaNode
 	final private static String defaultEndPoint = "http://ruta.sytes.net:9009/ruta-server-0.2.0-SNAPSHOT/CDR";
 	private static String cdrEndPoint = defaultEndPoint;
 	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.2.0-SNAPSHOT/CDR";
-	private static int CONNECT_TIMEOUT = 10000;
+	private static int CONNECT_TIMEOUT = 0;
 	private static int REQUEST_TIMEOUT = 0;
 	private MyParty myParty;
 	//	private MyPartyXMLFileMapper<MyParty> myPartyDataMapper; //former store to myparty.xml
@@ -171,24 +171,7 @@ public class RutaClient implements RutaNode
 			if(!force)
 				throw e;
 		}
-
 		MapperRegistry.initialize(new ClientMapperRegistryFactory());
-
-
-		//myPartyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
-		//		ExistConnector connector = new LocalExistConnector();
-
-		//		MapperRegistry.initialize(mapperRegistry);
-		//myPartyDataMapper = new RutaMyPartyExistMapper(this, connector);
-
-
-
-//		mapperRegistry = new ClientMapperRegistry();
-//		myPartyDataMapper = mapperRegistry.getMapper(MyParty.class);
-
-
-
-
 		initialUsername = null;
 		checkInstallation();
 		myParty = new MyParty();
@@ -411,11 +394,14 @@ public class RutaClient implements RutaNode
 		}
 		catch (IOException | NullPointerException e)
 		{
-			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
+			JOptionPane.showMessageDialog(null, "Properties could not be read from the ruta.properties file!\n" +
+					"Reverting to default settings.",
 					"Information", JOptionPane.INFORMATION_MESSAGE);
-			logger.warn("Properties could not be read from the file! " + e.getMessage());
+			logger.warn("Properties could not be read from the ruta.properties file! " + e.getMessage());
 		}
 		RutaClient.cdrEndPoint = properties.getProperty("cdrEndPoint", RutaClient.defaultEndPoint);
+		RutaClient.CONNECT_TIMEOUT = Integer.valueOf(properties.getProperty("connectTimeout", "0"));
+		RutaClient.REQUEST_TIMEOUT = Integer.valueOf(properties.getProperty("requestTimeout", "0"));
 	}
 
 	/**
@@ -434,9 +420,9 @@ public class RutaClient implements RutaNode
 		}
 		catch (IOException | NullPointerException e)
 		{
-			JOptionPane.showMessageDialog(null, "Properties could not be read from the file!\nReverting to default settings.",
-					"Warning", JOptionPane.WARNING_MESSAGE);
-			logger.warn("Properties could not be read from the file!\nReverting to default settings.");
+			JOptionPane.showMessageDialog(null, "Properties could not be stored to the ruta.properties file!",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			logger.warn("Properties could not be stored to the ruta.properties file!");
 		}
 	}
 
@@ -446,6 +432,8 @@ public class RutaClient implements RutaNode
 	private void saveProperties()
 	{
 		properties.put("cdrEndPoint", RutaClient.cdrEndPoint);
+		properties.put("connectTimeout", String.valueOf(RutaClient.CONNECT_TIMEOUT));
+		properties.put("requestTimeout", String.valueOf(RutaClient.REQUEST_TIMEOUT));
 		properties.put("started", "false");
 	}
 
@@ -1057,6 +1045,9 @@ public class RutaClient implements RutaNode
 			{
 				frame.appendToConsole(new StringBuilder("My Catalogue has been successfully deleted from the CDR service."), Color.GREEN);
 				positiveResponse = Boolean.TRUE;
+				myParty.setDirtyCatalogue(true);
+				myParty.setInsertMyCatalogue(true);
+				myParty.removeCatalogueIssueDate();
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 			{
@@ -1287,6 +1278,7 @@ public class RutaClient implements RutaNode
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation
 	 */
+	@Deprecated
 	public Future<?> cdrDeleteMyCatalogueOLD()
 	{
 		Future<?> ret = null;
@@ -1885,9 +1877,9 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			frame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Business Partnership Resolution " + ((PartnershipResolution) document).getIDValue() +
-							" has been received and set in the data model."),
+			frame.appendToConsole(new StringBuilder("Business Partnership Resolution " +
+					((PartnershipResolution) document).getIDValue() +
+					" has been received and set in the data model."),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipBreakup.class)
@@ -2014,10 +2006,25 @@ public class RutaClient implements RutaNode
 		((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, cdrEndPoint);
 	}
 
-	/*	public OLDDataMapper getPartyDataMapper()
+	public static int getConnectTimeout()
 	{
-		return myPartyDataMapper;
-	}*/
+		return CONNECT_TIMEOUT;
+	}
+
+	public static void setConnectTimeout(int timeout)
+	{
+		CONNECT_TIMEOUT = timeout;
+	}
+
+	public static int getRequestTimeout()
+	{
+		return REQUEST_TIMEOUT;
+	}
+
+	public static void setRequestTimeout(int timeout)
+	{
+		REQUEST_TIMEOUT = timeout;
+	}
 
 	private void importXMLDocument() // MMM: to be finished later for use of XML documents import
 	{
