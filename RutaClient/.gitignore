@@ -9,5 +9,7 @@
 /data/
 /logs/
 /conf.xml
+/request.xml
+/response.xml
 /ruta.properties
 *.properties

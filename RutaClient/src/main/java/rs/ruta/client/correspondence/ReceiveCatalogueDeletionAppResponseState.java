@@ -22,9 +22,9 @@ public class ReceiveCatalogueDeletionAppResponseState extends DeleteCataloguePro
 		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final Future<?> future = process.getFuture();
 		final DocumentReference documentReference = correspondence.getLastDocumentReference();
-		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueDeletionAppResponse(future, documentReference, correspondence);
-		if(accepted != null)
+		try
 		{
+			final Boolean accepted = process.getClient().cdrReceiveMyCatalogueDeletionAppResponse(future, documentReference, correspondence);
 			RutaProcessState newState = null;
 			if(accepted.equals(Boolean.TRUE))
 				newState = CancelCatalogueState.getInstance();
@@ -32,8 +32,10 @@ public class ReceiveCatalogueDeletionAppResponseState extends DeleteCataloguePro
 				newState = ReviewDeletionOfCatalogueState.getInstance();
 			process.changeState(newState);
 		}
-		else
-			throw new StateActivityException("Invalid Application Response code!");
+		catch(Exception e)
+		{
+			throw new StateActivityException("My Catalogue has not been updated in the CDR service!", e);
+		}
 	}
 
 }

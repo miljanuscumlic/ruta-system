@@ -18,7 +18,6 @@ import rs.ruta.client.RutaClient;
 @XmlAccessorType(XmlAccessType.NONE)
 public class DeleteCatalogueProcess extends CatalogueProcess
 {
-
 	/**
 	 * Constructs new instance of a {@link DeleteCatalogueProcess} and sets its state to
 	 * default value and uuid to a random value.
@@ -44,9 +43,11 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 			{
 				state.doActivity(correspondence);
 			}
+			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
 		}
 		catch (Exception e)
 		{
+			correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
 			try
 			{
 				correspondence.stop();
@@ -59,10 +60,10 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 		}
 		finally
 		{
-			if(correspondence.isActive() && !correspondence.isStopped())
-			{
-				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
-			}
+//			if(correspondence.isActive() && !correspondence.isStopped())
+//			{
+//				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+//			}
 		}
 	}
 }

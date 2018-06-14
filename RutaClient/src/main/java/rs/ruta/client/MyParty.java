@@ -4193,7 +4193,7 @@ public class MyParty extends BusinessParty
 			catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
 			notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 		}
-		catalogueCorrespondence.setCreateCatalogueProcess(true);
+		catalogueCorrespondence.setCreateCatalogue(true);
 		if(!catalogueCorrespondence.isAlive())
 			catalogueCorrespondence.start();
 		catalogueCorrespondence.waitThreadBlocked();
@@ -4211,7 +4211,7 @@ public class MyParty extends BusinessParty
 			catalogueCorrespondence = CatalogueCorrespondence.newInstance(client);
 			notifyListeners(new CorrespondenceEvent(catalogueCorrespondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 		}
-		catalogueCorrespondence.setCreateCatalogueProcess(false);
+		catalogueCorrespondence.setCreateCatalogue(false);
 		if(!catalogueCorrespondence.isAlive())
 			catalogueCorrespondence.start();
 		catalogueCorrespondence.waitThreadBlocked();

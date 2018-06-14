@@ -22,17 +22,20 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 		final CreateCatalogueProcess process = (CreateCatalogueProcess) correspondence.getState();
 		final Future<?> future = process.getFuture();
 		final DocumentReference documentReference = correspondence.getLastDocumentReference();
-		final Boolean accepted = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future, documentReference, correspondence);
-		if(accepted != null)
+		try
 		{
+			final Boolean accepted = process.getClient().cdrReceiveMyCatalogueUpdateAppResponse(future, documentReference, correspondence);
 			RutaProcessState newState;
 			if(accepted.equals(Boolean.TRUE))
 				newState = ClosingState.getInstance();
 			else
 				newState = DecideOnActionState.getInstance();
 			changeState(process, newState);
+
 		}
-		else
-			throw new StateActivityException("Invalid Application Response code!");
+		catch(Exception e)
+		{
+			throw new StateActivityException("My Catalogue has not been updated in the CDR service!", e);
+		}
 	}
 }

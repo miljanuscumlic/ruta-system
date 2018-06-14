@@ -3,7 +3,6 @@ package rs.ruta.client.datamapper;
 import javax.xml.bind.JAXBElement;
 
 import rs.ruta.client.correspondence.CreateCatalogueProcess;
-import rs.ruta.client.correspondence.RutaProcess;
 import rs.ruta.client.correspondence.ObjectFactory;
 import rs.ruta.common.datamapper.DSTransaction;
 import rs.ruta.common.datamapper.DatastoreConnector;

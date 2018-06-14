@@ -13,9 +13,9 @@ public class PartyTableModel extends DefaultTableModel
 
 	private static String[] rowNames =
 		{
-				"Party name", "Registration name", "Company ID", "Registration date", "Registration address",
-				" - Street name", " - Building number", " - Floor", " - Room", " - Building name", " - City subdivision",
-				" - City name", " - Postal zone", " - Country subentity", " - Country", "Classification code",
+				"Party name*", "Registration name*", "Company ID*", "Registration date", "Registration address",
+				" - Street name*", " - Building number*", " - Floor", " - Room", " - Building name", " - City subdivision",
+				" - City name*", " - Postal zone", " - Country subentity", " - Country*", "Classification code",
 				"Postal address", " - Street name", " - Building number", " - Floor", " - Room", " - Building name",
 				" - City subdivision", " - City name", " - Postal zone", " - Country subentity", " - Country",
 				"Contact", " - Name", " - Telephone", " - Telefax", " - Email", " - Note", "Website",

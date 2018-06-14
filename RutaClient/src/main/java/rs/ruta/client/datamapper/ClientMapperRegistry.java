@@ -54,22 +54,6 @@ import rs.ruta.common.datamapper.DatabaseTransaction;
 
 public class ClientMapperRegistry extends MapperRegistry
 {
-	/**
-	 * Constructs {@link MapperRegistry} object setting this concrete instance of {@code ClientMapperRegistry}
-	 * as a global registry of data mappers for application. Also, initializes {@link ExistConnector} object
-	 * with {@link LocalExistConnector} instance.
-	 */
-	public ClientMapperRegistry()
-	{
-		setRegistry(this);
-		/*DatabaseAdmin.newInstance("admin", null);
-		ExistConnector connector = new ExistConnector();
-		connector.setLocalAPI();
-		setConnector(connector);*/
-
-		setConnector(new LocalExistConnector());
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S> DataMapper<S, String> getMapper(Class<S> clazz) throws DetailException

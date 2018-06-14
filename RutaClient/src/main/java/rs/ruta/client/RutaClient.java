@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -79,6 +82,7 @@ import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.StateActivityException;
 import rs.ruta.client.datamapper.ClientMapperRegistry;
+import rs.ruta.client.datamapper.ClientMapperRegistryFactory;
 import rs.ruta.client.gui.BusinessPartyEvent;
 import rs.ruta.client.gui.CorrespondenceEvent;
 import rs.ruta.client.gui.PartnershipEvent;
@@ -107,6 +111,7 @@ import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.MapperRegistry;
 import rs.ruta.services.RutaException;
 import rs.ruta.services.CDRService;
+import rs.ruta.services.ClearCacheResponse;
 import rs.ruta.services.DeleteCatalogueWithAppResponseResponse;
 import rs.ruta.services.FindAllDocBoxDocumentIDsResponse;
 import rs.ruta.services.FindCatalogueResponse;
@@ -128,15 +133,16 @@ public class RutaClient implements RutaNode
 	final private static String defaultEndPoint = "http://ruta.sytes.net:9009/ruta-server-0.2.0-SNAPSHOT/CDR";
 	private static String cdrEndPoint = defaultEndPoint;
 	final private static String eclipseMonitorEndPoint = "http://localhost:7709/ruta-server-0.2.0-SNAPSHOT/CDR";
+	private static int CONNECT_TIMEOUT = 10000;
+	private static int REQUEST_TIMEOUT = 0;
 	private MyParty myParty;
 	//	private MyPartyXMLFileMapper<MyParty> myPartyDataMapper; //former store to myparty.xml
-	private DataMapper<MyParty, String> myPartyDataMapper;
+//	private DataMapper<MyParty, String> myPartyDataMapper;
 	private Party CDRParty;
-	//	private CDRPartyTypeXMLFileMapper<Party> CDRPartyDataMapper; //MMM: not used anymore
 	private RutaClientFrame frame;
 	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);
 	private Properties properties;
-	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
+//	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 	private List<BugReport> bugReports;
 	public static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private String initialUsername;
@@ -166,12 +172,23 @@ public class RutaClient implements RutaNode
 				throw e;
 		}
 
+		MapperRegistry.initialize(new ClientMapperRegistryFactory());
+
+
 		//myPartyDataMapper = new MyPartyXMLFileMapper<MyParty>(Client.this, "myparty.xml");
 		//		ExistConnector connector = new LocalExistConnector();
-		mapperRegistry = new ClientMapperRegistry();
+
 		//		MapperRegistry.initialize(mapperRegistry);
 		//myPartyDataMapper = new RutaMyPartyExistMapper(this, connector);
-		myPartyDataMapper = mapperRegistry.getMapper(MyParty.class);
+
+
+
+//		mapperRegistry = new ClientMapperRegistry();
+//		myPartyDataMapper = mapperRegistry.getMapper(MyParty.class);
+
+
+
+
 		initialUsername = null;
 		checkInstallation();
 		myParty = new MyParty();
@@ -202,7 +219,7 @@ public class RutaClient implements RutaNode
 		{
 			if(isUserRegistrated())
 			{
-				MyParty retrievedParty = myPartyDataMapper.findByUsername(initialUsername);
+				MyParty retrievedParty = MapperRegistry.getInstance().getMapper(MyParty.class).findByUsername(initialUsername);
 				if(retrievedParty != null)
 				{
 					myParty = retrievedParty;
@@ -247,6 +264,44 @@ public class RutaClient implements RutaNode
 		myParty.addActionListener(frame, CorrespondenceEvent.class);
 		myParty.addActionListener(frame, BusinessPartyEvent.class);
 		myParty.addActionListener(frame, PartnershipEvent.class);
+	}
+
+	public static void main(String... args)
+	{
+		try
+		{
+			final JAXBContext jaxbContext = JAXBContext.newInstance("rs.ruta.client.correspondence");
+			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			String xml = "<ns0:CatalogueCorrespondence xmlns:ns6=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\" xmlns:ns7=\"http://www.ruta.rs/ns/common\" xmlns:ns0=\"http://www.ruta.rs/ns/client\" xmlns:ns1=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">\r\n" +
+					"    <ns0:CreateCatalogueProcess>\r\n" +
+					"        <ns0:DistributeCatalogueState/>\r\n" +
+					"        <ns0:UUID>4dc1adbc-834c-410e-b818-7dd23566468e</ns0:UUID>\r\n" +
+					"        <ns0:Active>true</ns0:Active>\r\n" +
+					"    </ns0:CreateCatalogueProcess>\r\n" +
+					"    <ns0:UUID>fc7e4074-a65c-492b-a8a8-96b6a1086419</ns0:UUID>\r\n" +
+					"    <ns0:Active>true</ns0:Active>\r\n" +
+					"    <ns0:RecentlyUpdated>true</ns0:RecentlyUpdated>\r\n" +
+					"    <ns0:CorrespondentParty>\r\n" +
+					"        <ns6:PartyIdentification>\r\n" +
+					"            <ns1:ID>CDR1234567890</ns1:ID>\r\n" +
+					"        </ns6:PartyIdentification>\r\n" +
+					"        <ns6:PartyName>\r\n" +
+					"            <ns1:Name>CDR</ns1:Name>\r\n" +
+					"        </ns6:PartyName>\r\n" +
+					"    </ns0:CorrespondentParty>\r\n" +
+					"    <ns0:CorrespondenceName>fc7e4074-a65c-492b-a8a8-96b6a1086419</ns0:CorrespondenceName>\r\n" +
+					"    <ns0:CreationTime>2018-06-13T13:34:17.046+02:00</ns0:CreationTime>\r\n" +
+					"    <ns0:LastActivityTime>2018-06-13T13:37:45.781+02:00</ns0:LastActivityTime>\r\n" +
+					"    <ns0:CreateCatalogueProcess>true</ns0:CreateCatalogueProcess>\r\n" +
+					"</ns0:CatalogueCorrespondence>";
+			Object object = unmarshaller.unmarshal(new StringReader(xml));
+			int i = 1;
+		}
+		catch (JAXBException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -305,7 +360,7 @@ public class RutaClient implements RutaNode
 		{
 			try
 			{
-				mapperRegistry.getMapper(RutaUser.class).checkDatastoreSetup();
+				MapperRegistry.getInstance().getMapper(RutaUser.class).checkDatastoreSetup();
 				properties.setProperty("installed", "true");
 			}
 			catch(DetailException e)
@@ -886,11 +941,11 @@ public class RutaClient implements RutaNode
 	 * @param future {@link Future} on which is waited for a CDR response
 	 * @param documentReference {@link DocumentReference} to the catalogue
 	 * @param correspondence {@link Correspondence} which this response is part of
-	 * @return true when CDR accepts sent Catalogue, false otherwise and {@code null} if exception
-	 * is thrown during calling the service
+	 * @return true when CDR accepts sent Catalogue, false otherwise
+	 * @throws Exception if something goes wrong during geting the response
 	 */
 	public Boolean cdrReceiveMyCatalogueUpdateAppResponse(Future<?> future, DocumentReference documentReference,
-			Correspondence correspondence)
+			Correspondence correspondence) throws Exception
 	{
 		Boolean positiveResponse = null;
 		try
@@ -918,12 +973,17 @@ public class RutaClient implements RutaNode
 		{
 			if(e instanceof InterruptedException)
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			else if(e.getCause() instanceof RutaException || e.getCause() instanceof ServerSOAPFaultException)
-				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 			else
-				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			frame.processExceptionAndAppendToConsole(e,
-					new StringBuilder("My Catalogue has not been updated in the CDR service! "));
+			{
+				final Throwable cause = e.getCause();
+				final String message = e.getMessage();
+				if(( cause != null && (cause instanceof RutaException || cause instanceof ServerSOAPFaultException))
+						|| (message != null && message.contains("Read timed out")))
+					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+				else
+					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+			}
+			throw e;
 		}
 		finally
 		{
@@ -981,9 +1041,10 @@ public class RutaClient implements RutaNode
 	 * @param correspondence {@link Correspondence} which this response is part of
 	 * @return true when CDR accepts sent Catalogue Deletion, false otherwise and {@code null} if exception
 	 * is thrown during calling the service
+	 * @throws Exception
 	 */
 	public Boolean cdrReceiveMyCatalogueDeletionAppResponse(Future<?> future,
-			DocumentReference documentReference, Correspondence correspondence)
+			DocumentReference documentReference, Correspondence correspondence) throws Exception
 	{
 		Boolean positiveResponse = null;
 		try
@@ -1008,12 +1069,17 @@ public class RutaClient implements RutaNode
 		{
 			if(e instanceof InterruptedException)
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			else if(e.getCause() instanceof RutaException || e.getCause() instanceof ServerSOAPFaultException)
-				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 			else
-				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			frame.processExceptionAndAppendToConsole(e,
-					new StringBuilder("My Catalogue has not been deleted from the CDR service! "));
+			{
+				final Throwable cause = e.getCause();
+				final String message = e.getMessage();
+				if(( cause != null && (cause instanceof RutaException || cause instanceof ServerSOAPFaultException))
+						|| (message != null && message.contains("Read timed out")))
+					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+				else
+					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+			}
+			throw e;
 		}
 		finally
 		{
@@ -2035,18 +2101,27 @@ public class RutaClient implements RutaNode
 		try
 		{
 			//getting webservice port
-			CDRService service = new CDRService();
+			final CDRService service = new CDRService();
 			service.setHandlerResolver(new ClientHandlerResolver(myParty));
-			Server port = service.getCDRPort();
+			final Server port = service.getCDRPort();
 			//temporary setting for TCP/IP Monitor in Eclipse
 			//bindEclipseEndPoint(port);
 			if(!defaultEndPoint.equals(cdrEndPoint))
 				bindCDREndPoint(port);
 
+			final BindingProvider bindingProvider = (BindingProvider) port;
+//			System.out.println(System.getProperty(com.sun.xml.ws.client.BindingProviderProperties.CONNECT_TIMEOUT));
+//			System.out.println(System.getProperty(com.sun.xml.ws.client.BindingProviderProperties.REQUEST_TIMEOUT));
 
-			BindingProvider bp = (BindingProvider) port;
-			SOAPBinding binding = (SOAPBinding) bp.getBinding();
+			//Set timeout until a connection is established
+			bindingProvider.getRequestContext().put(com.sun.xml.ws.client.BindingProviderProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+
+			//Set timeout until the response is received
+			bindingProvider.getRequestContext().put(com.sun.xml.ws.client.BindingProviderProperties.REQUEST_TIMEOUT, REQUEST_TIMEOUT);
+
+			final SOAPBinding binding = (SOAPBinding) bindingProvider.getBinding();
 			binding.setMTOMEnabled(true);
+
 			return port;
 		}
 		catch(Exception e)
@@ -2307,7 +2382,6 @@ public class RutaClient implements RutaNode
 				try
 				{
 					future.get();
-					frame.appendToConsole(new StringBuilder("CDR service successfully cleared its cache."), Color.GREEN);
 				}
 				catch (Exception e)
 				{
@@ -2717,7 +2791,8 @@ public class RutaClient implements RutaNode
 				frame.appendToConsole(new StringBuilder("Request for the registration of My Party with the local data store has been sent."),
 						Color.BLACK);
 				myParty.setPartyID();
-				secretKey = (String) mapperRegistry.getMapper(RutaUser.class).registerUser(username, password, myParty.getCoreParty());
+				secretKey = (String) MapperRegistry.getInstance().getMapper(RutaUser.class).
+						registerUser(username, password, myParty.getCoreParty());
 				myParty.setLocalUser(new RutaUser(username, password, secretKey));
 				/*myParty.setLocalUsername(username);
 			myParty.setLocalPassword(password);
@@ -2752,7 +2827,7 @@ public class RutaClient implements RutaNode
 		try
 		{
 			localDeleteData();
-			mapperRegistry.getMapper(RutaUser.class).deleteUser(myParty.getLocalUsername());
+			MapperRegistry.getInstance().getMapper(RutaUser.class).deleteUser(myParty.getLocalUsername());
 			properties.remove("username");
 			storeProperties(false);
 			myParty.setLocalUser(null); //MMM check this!!!

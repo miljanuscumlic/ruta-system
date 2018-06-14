@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -28,8 +27,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.OutputKeys;
-
 import org.exist.xmldb.CollectionImpl;
 import org.exist.xmldb.EXistResource;
 import org.exist.xmldb.XQueryService;
@@ -38,26 +35,18 @@ import org.slf4j.LoggerFactory;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.CompiledExpression;
-import org.xmldb.api.base.Database;
 import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.BinaryResource;
 import org.xmldb.api.modules.XMLResource;
-import org.xmldb.api.modules.XPathQueryService;
-
-import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
-import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import rs.ruta.common.PartyID;
-import rs.ruta.common.RutaVersion;
 import rs.ruta.common.SearchCriterion;
-import rs.ruta.common.BugReport;
 import rs.ruta.common.CatalogueSearchCriterion;
 import rs.ruta.common.DocBox;
 import rs.ruta.common.DocumentDistribution;
-import rs.ruta.common.Associates;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.DataMapper;
 
@@ -73,10 +62,13 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 {
 	protected final static Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 	private final DSTransactionFactory transactionFactory;
-	/** True when database transaction has failed.*/
+	/**
+	 *  True when database transaction has failed.
+	 */
 	private volatile static boolean transactionFailure = true;
 	private ExistConnector connector;
-	/**Registry of all data mappers translating objects to xml documents.
+	/**
+	 * Registry of all data mappers translating objects to XML documents.
 	 */
 	protected MapperRegistry mapperRegistry;
 
@@ -149,7 +141,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return ExistConnector.getRootCollection(username, password);
 	}
 
-	/**Checks whether there was a transaction failure in previous database opeeration and rolls back
+	/**
+	 * Checks whether there was a transaction failure in previous database opeeration and rolls back
 	 * all outstanding transactions if there are any. Creates new transaction for the operation in hand.
 	 * @throws DetailException if outstanding transactions could not be rolled back or new transaction could not be opened
 	 */
@@ -169,7 +162,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return transaction;
 	}
 
-	/**Closes transaction by deleting transaction journal and logs the error if transaction could not be closed.
+	/**
+	 * Closes transaction by deleting transaction journal and logs the error if transaction could not be closed.
 	 * @param transaction transaction to be closed
 	 * @throws DetailException if transaction could not be closed
 	 */
@@ -192,7 +186,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Closes {@link Collection} and logs the error if collection for some reason could not be closed.
+	/**
+	 * Closes {@link Collection} and logs the error if collection for some reason could not be closed.
 	 * @param collection {@code Collection} to be closed
 	 */
 	protected void closeCollection(Collection collection)
@@ -208,7 +203,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Checks whether transaction is closed and if not then it rolls back that transaction.
+	/**
+	 * Checks whether transaction is closed and if not then it rolls back that transaction.
 	 * @param transaction transaction to be checked
 	 */
 	protected void rollbackTransaction(DSTransaction transaction)
@@ -227,7 +223,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Rolls back all outstanding transactions saved in the journals if there are any.
+	/**
+	 * Rolls back all outstanding transactions saved in the journals if there are any.
 	 * @throws DetailException if could not connect to the database or could not roll back the transactions
 	 */
 	private static synchronized void rollbackTransactions() throws DetailException
@@ -321,7 +318,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return id != null ? find(id) : null;
 	}
 
-	/**Loads resource in proper object if a resource is a complete xml document. At the beggining
+	/**
+	 * Loads resource in proper object if a resource is a complete xml document. At the beggining
 	 * it checks whether the object is already in the memory. At the end puts the object in the memory.
 	 * @param resource resource which contents are to be loaded in the object
 	 * @return object or {@code null} if resource is a result of a query and not a complete document
@@ -332,11 +330,11 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	{
 		String id = resource.getDocumentId(); //id of the resource's parent document
 
-		//MMM: this boolean testing is implementation specific, and it might be changed. So this is not
-		//MMM: so good way of testing whether the resource is a complete document or not.
-		//MMM: The problem is that resource.getId() should return null if the resource is a result of a query,
-		//MMM: and not a whole document, but it returns exactly what returns resource.getDocumentId()
-		//MMM: and that is ID without ".xml" at the end
+		//MMM this boolean testing is implementation specific, and it might be changed. So this is not
+		//MMM so good way of testing whether the resource is a complete document or not.
+		//MMM The problem is that resource.getId() should return null if the resource is a result of a query,
+		//MMM and not a whole document, but it returns exactly what returns resource.getDocumentId()
+		//MMM and that is ID without ".xml" at the end
 		if(id.contains(".xml")) //resource is a whole xml document
 		{
 			id = id.replace(".xml", "");
@@ -678,7 +676,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Populates query string with search keywords from the {@link CatalogueSearchCriterion} object. Query to be
+	/**
+	 * Populates query string with search keywords from the {@link CatalogueSearchCriterion} object. Query to be
 	 * populated is defined in the subclass of {@code XmlMapper}.
 	 * @param criterion defines the search criterion
 	 * @return query as {@code String} ready for execution by xQuery processor or {@code null} if
@@ -914,7 +913,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return id;
 	}
 
-	/**Inserts object in the arbritary collection. Path of that collection is passed as {@code String}
+	/**
+	 * Inserts object in the arbritary collection. Path of that collection is passed as {@code String}
 	 * argument.
 	 * @param collectionPath collection path of the object to be stored
 	 * @param object object to be stored
@@ -988,7 +988,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	@Deprecated //MMM: check whether this method should be deleted
+	@Deprecated //MMM: check whether this method should be deleted - Maybe not if transactions should e created in the CDR???
 	public void insert(T object, String id, DSTransaction transaction) throws DetailException
 	{
 		Collection collection = null;
@@ -1111,7 +1111,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Inserts binary object in the collection.
+	/**
+	 * Inserts binary object in the collection.
 	 * @param collection collection in which the object is to be stored
 	 * @param object file to be stored
 	 * @param transaction transaction object
@@ -1131,7 +1132,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			documentName = object.getName();
 			logger.info("Started storing of the document " + documentName + " to the location " + colPath);
 			resource = collection.getResource(documentName);
-			//MMM: commented code in regard with the transaction should be removed and the code prilagodjen to the binary files
+			//MMM: commented code in regard with the transaction should be removed and the code acustomed to the binary files
 			/*			if(transaction != null && transaction.isEnabled() && resource != null) // it's update so copy resource to /deleted collection
 				copyResourceToDeleted(resource, transaction, "UPDATE");
 			else //first time insert
@@ -1169,7 +1170,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Inserts image as binary object in the collection.
+	/**
+	 * Inserts image as binary object in the collection.
 	 * @param collection collection in which the object is to be stored
 	 * @param object image to be stored
 	 * @param transaction transaction object
@@ -1227,7 +1229,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**If id has a dot character in itself this method deletes the dot and all characters after it.
+	/**
+	 * If id has a dot character in itself this method deletes the dot and all characters after it.
 	 * @param id id that is the subject of trimming
 	 * @return trimmed id
 	 */
@@ -1289,7 +1292,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		//				DatabaseAdmin.getInstance().getUsername(), DatabaseAdmin.getInstance().getPassword());
 	}
 
-	/**Gets the base collection where are placed deleted documents as a database admin.
+	/**
+	 * Gets the base collection where are placed deleted documents as a database admin.
 	 * Retrieved base collection is defined in the subclasses of the {@code XmlMapper}.
 	 * @return a {@code Collection} instance for the base deleted collection or {@code null} if the collection could not be found
 	 * @throws XMLDBException if there was an database connectivity issue
@@ -1300,7 +1304,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 				DatabaseAdmin.getInstance().getUsername(), DatabaseAdmin.getInstance().getPassword());
 	}
 
-	/**Gets the collection from the database as a database admin. If collection does not exist, method creates it.
+	/**
+	 * Gets the collection from the database as a database admin. If collection does not exist, method creates it.
 	 * @param collectionPath relative path to the collection
 	 * @return a {@code Collection} instance for the requested collection path
 	 * @throws XMLDBException if collection could not be retrieved or created
@@ -1340,7 +1345,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Deletes object with passed id from the database.
+	/**
+	 * Deletes object with passed id from the database.
 	 * @param id id of the object that should be deleted
 	 * @param transaction database transaction which deletion is part of. Might be {@code null}.
 	 * @throws DetailException if object cannot be deleted
@@ -1409,7 +1415,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 
 	}
 
-	/**Copies resource representing original xml document to the pertinent subcollection of /deleted collection.
+	/**
+	 * Copies resource representing original xml document to the pertinent subcollection of /deleted collection.
 	 * @param resource resource representing the original document to be copied
 	 * @param transaction transaction inside which this copying is happening
 	 * @param operation {@code String} representing the operation beacause of which this copying is happening
@@ -1527,7 +1534,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Saves xml document with specified document name to the specified collection. Document is passed to the method as
+	/**
+	 * Saves xml document with specified document name to the specified collection. Document is passed to the method as
 	 * a {@code String}. If document does not exist it will be created. If exists its contents will be replaced.
 	 * <p>Method does not use transactions.
 	 * @param collectionPath path of the collection
@@ -1573,7 +1581,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Moves xml document from one collection to the other.
+	/**
+	 * Moves xml document from one collection to the other.
 	 * <p>Method does not use transactions.
 	 * @param destinationCollectionPath path of the destionation collection relative to the main collection of the Ruta application
 	 * @param destinationDocumentName name of the destionation document
@@ -1588,7 +1597,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		deleteXmlDocument(sourceCollectionPath, sourceDocumentName);
 	}
 
-	/**Copies xml document from one collection to the other.
+	/**
+	 * Copies xml document from one collection to the other.
 	 * <p>Method does not use transactions.
 	 * @param destinationCollectionPath path of the destionation collection relative to the main collection of the Ruta application
 	 * @param destinationDocumentName name of the destionation document
@@ -1657,7 +1667,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Deletes xml document from the collection which relative path is passed as an argument. Method succeeds
+	/**
+	 * Deletes xml document from the collection which relative path is passed as an argument. Method succeeds
 	 * if the document can be deleted, or the document did not exist prior to the method invocation.
 	 * <p>Method does not use transactions.
 	 * @param collectionPath path of the document's collection relative to the main collection of the Ruta application
@@ -1711,7 +1722,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		mapperRegistry.getMapper(DocBox.class).deleteDocBoxDocument(username, id);
 	}
 
-	/**Generates unique ID for objects.
+	/**
+	 * Generates unique ID for objects.
 	 * @return unique ID
 	 */
 	@Override
@@ -1720,7 +1732,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return UUID.randomUUID().toString();
 	}
 
-	/**Generates unique ID for objects in the scope of the collection that {@code XmlMapper}'s subclass
+	/**
+	 * Generates unique ID for objects in the scope of the collection that {@code XmlMapper}'s subclass
 	 * is manipulating with.
 	 * @return unique ID
 	 * @throws XMLDBException trown if id cannot be created due to database connectivity issues
@@ -1742,7 +1755,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
+	/**
+	 * Generates unique ID for objects in the scope of the passed collection. Generated ID cannot
 	 * be the same as one of previously used but deleted IDs what is checked in this method.
 	 * @param collection collection in which scope unique ID is created
 	 * @return unique ID
@@ -1759,7 +1773,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return id;
 	}
 
-	/**Checks if the id was used before by some of deleted objects. It checks if there is a subcolection in "deleted"
+	/**
+	 * Checks if the id was used before by some of deleted objects. It checks if there is a subcolection in "deleted"
 	 * collection. "Deleted" collection is consisting of deleted objects. Deleted objects of the same type and
 	 * with the same ID are placed in the subcollection that has a name as the object's ID.
 	 * @param id document's name that represents id in check
@@ -1782,7 +1797,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return present;
 	}
 
-	/**Checks if the ID has been used before by some of deleted objects. It checks if there is a subcollection
+	/**
+	 * Checks if the ID has been used before by some of deleted objects. It checks if there is a subcollection
 	 * in "deleted" collection named the same as the ID. "Deleted" collection is consisting of deleted objects.
 	 * Deleted objects of the same type and with the same ID are placed in the subcollection that has the same
 	 * name as the object's ID.
@@ -1914,7 +1930,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 	 */
 	protected String getDeletedCollectionPath(){ return getDeletedCollectionPath(getCollectionPath()); }
 
-	/**Returns relative path (to the root application collection) of the base collection in which are placed
+	/**
+	 * Returns relative path (to the root application collection) of the base collection in which are placed
 	 * deleted documents from the collection which relative path is passed as argument. The path to the
 	 * {@code /deleted} collection is defined the {@code ExistConnector} class.
 	 * @return {@code String} that represents relative path of the deleted collection
@@ -1927,7 +1944,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		return del.toString();
 	}
 
-	/**Returns relative path of the subcollection of the base collection in which are placed deleted documents.
+	/**
+	 * Returns relative path of the subcollection of the base collection in which are placed deleted documents.
 	 * @param subPath part of the collection path that defines the subcollection of the base collection
 	 * It starts with the <code>"/"</code> character.
 	 * @return {@code String} that represent relative path of the deleted collection
@@ -2100,17 +2118,19 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Gets the name of the query document with the {@code .xq} extension for particular {@code XMLMapper} subclass.
+	/**
+	 * Gets the name of the query document with the {@code .xq} extension for particular {@code XMLMapper} subclass.
 	 * @return filename of the query document or {@code null} if it is not defined for a subclass
 	 */
 	protected String getSearchQueryName() { return null; };
 
-	/**Appends the content of a text file to the String Builder.
+	/**
+	 * Appends the content of a text file to the String Builder.
 	 * @param f The file to read the contents of
 	 * @param builder The <code>StringBuilder</code> to append the file contents to
 	 */
 	private static void fileContents(final File f, final StringBuilder builder)
-	{//MM: should be implemented with the Scanner
+	{//MMM should be implemented with the Scanner
 		Reader reader = null;
 		try
 		{
@@ -2140,7 +2160,8 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 		}
 	}
 
-	/**Gets the list of all document in the subclass's collection.
+	/**
+	 * Gets the list of all document in the subclass's collection.
 	 * @return list as array of {@code String}s
 	 * @throws DetailException if collection or resources' list could not be retrieved
 	 */

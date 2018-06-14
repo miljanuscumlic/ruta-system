@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -594,7 +595,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				if(myParty.isCatalogueInCDR())
 				{
 					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-							"By deleting your catalogue from the CDR all your followers will be\nnotified about the catalogue deletion. Do you want to proceed?",
+							"By deleting your catalogue from the CDR all your business partners and followers\n"
+							+ "will be notified about the catalogue deletion. Do you want to proceed?",
 							"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)
 					{
@@ -630,8 +632,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			settingsDialog.setVisible(true);
 			if(settingsDialog.isApplyPressed())
 			{
-				String endPoint = settingsDialog.getServiceLocation();
-				RutaClient.setCDREndPoint(endPoint);
+				RutaClient.setCDREndPoint(settingsDialog.getServiceLocation());
 				settingsDialog.setApplyPressed(false);
 			}
 		});
@@ -714,7 +715,30 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		{
 			new Thread(()->
 			{
-				client.cdrClearCache();
+				Future<?> future = null;
+				long time1 = System.currentTimeMillis();
+				try
+				{
+					future = client.cdrClearCache();
+//					future.get(1, TimeUnit.SECONDS);
+					future.get();
+					long time2 = System.currentTimeMillis();
+					appendToConsole(new StringBuilder("No exception. time elapsed: " + (time2-time1) / 1000), Color.BLACK);
+				}
+				catch (InterruptedException | ExecutionException e1)
+				{
+					future.cancel(true);
+					long time2 = System.currentTimeMillis();
+					appendToConsole(new StringBuilder(e1.getClass().getSimpleName() +  ". time elapsed: " + (time2-time1) / 1000), Color.BLACK);
+					e1.printStackTrace();
+				}
+//				catch(TimeoutException e)
+//				{
+//					future.cancel(true);
+//					long time2 = System.currentTimeMillis();
+//					appendToConsole(new StringBuilder("TimeoutException. time elapsed: " + (time2-time1) / 1000), Color.BLACK);
+//				}
+
 			}).start();
 		});
 
@@ -1411,7 +1435,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		msgBuilder = msgBuilder.append(" ");
 		final Throwable cause = e.getCause();
 		final String errorMessage = e.getMessage();
-		if(errorMessage != null && cause.getClass() != RutaException.class)
+		if(errorMessage != null && (cause == null || (cause != null && cause.getClass() != RutaException.class)))
 			if(e instanceof RutaException)
 				msgBuilder.append(" Caused by: ").append(errorMessage).append(" ").
 				append(((RutaException) e).getFaultInfo().getDetail());

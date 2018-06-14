@@ -28,8 +28,8 @@ public class CatalogueCorrespondence extends Correspondence
 	 * True when Create Catalogue Process should be invoked. False when Delete CAtalogue Pprocess
 	 * is next to execute.
 	 */
-	@XmlElement(name = "CreateCatalogueProcess")
-	private boolean createCatalogueProcess;
+	@XmlElement(name = "CreateCatalogue")
+	private boolean createCatalogue;
 
 	/**
 	 * Constructs new instance of a {@link CatalogueCorrespondence} and sets its state to
@@ -39,7 +39,7 @@ public class CatalogueCorrespondence extends Correspondence
 	 */
 	public static CatalogueCorrespondence newInstance(RutaClient client)
 	{
-		CatalogueCorrespondence corr = new CatalogueCorrespondence();
+		final CatalogueCorrespondence corr = new CatalogueCorrespondence();
 		corr.setId(UUID.randomUUID().toString());
 		corr.setState(ResolveNextCatalogueProcess.newInstance(client));
 		corr.setClient(client);
@@ -50,7 +50,7 @@ public class CatalogueCorrespondence extends Correspondence
 		corr.setLastActivityTime(currentDateTime);
 		corr.setActive(true);
 		corr.setStopped(false);
-		corr.createCatalogueProcess = true;
+		corr.createCatalogue = true;
 		corr.setRecentlyUpdated(true);
 		return corr;
 	}
@@ -59,18 +59,18 @@ public class CatalogueCorrespondence extends Correspondence
 	 * Tests whether Create Catalogue Process should be invoked.
 	 * @return true if Create Catalogue process should be invoked
 	 */
-	public boolean isCreateCatalogueProcess()
+	public boolean isCreateCatalogue()
 	{
-		return createCatalogueProcess;
+		return createCatalogue;
 	}
 
 	/**
 	 * Sets boolean field telling whether Create Catalogue Process or Delete Catalogue Process should be invoked.
-	 * @param createCatalogueProcess true for Create Catalogue Process, false for Deletes Catalogue Process
+	 * @param createCatalogue true for Create Catalogue Process, false for Deletes Catalogue Process
 	 */
-	public void setCreateCatalogueProcess(boolean createCatalogueProcess)
+	public void setCreateCatalogue(boolean createCatalogue)
 	{
-		this.createCatalogueProcess = createCatalogueProcess;
+		this.createCatalogue = createCatalogue;
 	}
 
 	@Override

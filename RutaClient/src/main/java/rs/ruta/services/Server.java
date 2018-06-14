@@ -1231,12 +1231,15 @@ public interface Server {
 
     /**
      * 
+     * @return
+     *     returns boolean
      * @throws RutaException
      */
     @WebMethod(operationName = "ClearCache")
+    @WebResult(targetNamespace = "")
     @RequestWrapper(localName = "ClearCache", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCache")
     @ResponseWrapper(localName = "ClearCacheResponse", targetNamespace = "http://ruta.rs/ns/services", className = "rs.ruta.services.ClearCacheResponse")
-    public void clearCache()
+    public boolean clearCache()
         throws RutaException
     ;
 

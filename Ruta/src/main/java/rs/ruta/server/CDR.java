@@ -60,6 +60,7 @@ import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.*;
 import rs.ruta.server.datamapper.ServiceMapperRegistry;
+import rs.ruta.server.datamapper.ServiceMapperRegistryFactory;
 
 //handlers.xml should be inside ResourceRoot directory /WEB-INF/classes because WildFly is searching for it on that path
 //ResourceRoot [root=\"/C:/Program Files/wildfly-10.1.0.Final/bin/content/Ruta-SNAPSHOT-0.0.1.war/WEB-INF/classes\"]
@@ -92,28 +93,13 @@ public class CDR implements Server
 
 	public CDR()
 	{
-		mapperRegistry = MapperRegistry.getInstance();
-		checkDataStore();
-		createThreadPool();
-	}
-
-	private void checkDataStore()
-	{
-		new ServiceMapperRegistry(); //initialize the registry
-		if(! MapperRegistry.isDatastoreAccessible())
+		mapperRegistry = MapperRegistry.initialize(new ServiceMapperRegistryFactory());
+		if(!MapperRegistry.isDatastoreAccessible())
 		{
-			//logger.error("Exception is ", e);
 			logger.warn("Cound not connect to the database! The database is not accessible.");
 			logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable"
 					+ " and all future SOAP requests will be rejected.");
 		}
-	}
-
-	/**
-	 * Creates Thread docBoxPool managing threads responsible for distribution of documents between Parties.
-	 */
-	private void createThreadPool()
-	{
 		docBoxPool = Executors.newCachedThreadPool();
 	}
 
@@ -137,6 +123,12 @@ public class CDR implements Server
 		docBoxPool.shutdown();
 	}
 
+	/**
+	 * Logs the exception and wrapps it in {@link RutaException} that is packed in SOAP response.
+	 * @param e exception to process
+	 * @param exceptionMsg exception message
+	 * @throws RutaException always thrown newly created {@code RutaException}
+	 */
 	private void processException(Exception e, String exceptionMsg) throws RutaException
 	{
 		logger.error("Exception is ", e);
@@ -880,14 +872,18 @@ public class CDR implements Server
 	}
 
 	@Override
-	public void clearCache() throws RutaException
+	public boolean clearCache() throws RutaException
 	{
+		boolean success = false;
 		String exceptionMsg = "CDR service cache could not be cleared!";
 		try
 		{
 			init();
+			Thread.sleep(10000);
 			mapperRegistry.clearCachedObjects();
-//			((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
+			success = true;
+			logger.info("Service thread has finished in entirety");
+			return success;
 		}
 		catch(Exception e)
 		{

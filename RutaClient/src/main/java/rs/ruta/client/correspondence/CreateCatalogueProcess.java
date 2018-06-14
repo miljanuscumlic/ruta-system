@@ -43,9 +43,13 @@ public class CreateCatalogueProcess extends CatalogueProcess
 			{
 				state.doActivity(correspondence);
 			}
+//			if(!correspondence.isStopped())
+				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
 		}
 		catch (Exception e)
 		{
+//			if(e.getCause() != null && e.getCause().getMessage().contains("Read timed out"))
+				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
 			try
 			{
 				correspondence.stop();
@@ -58,10 +62,10 @@ public class CreateCatalogueProcess extends CatalogueProcess
 		}
 		finally
 		{
-			if(correspondence.isActive() && !correspondence.isStopped())
-			{
-				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
-			}
+//			if(correspondence.isActive() && !correspondence.isStopped())
+//			{
+//				correspondence.changeState(ResolveNextCatalogueProcess.newInstance(correspondence.getClient()));
+//			}
 		}
 	}
 

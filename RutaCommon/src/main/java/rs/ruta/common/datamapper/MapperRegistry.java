@@ -37,6 +37,18 @@ public abstract class MapperRegistry
 	}
 
 	/**
+	 * Initializes {@code MapperRegistry}.
+	 * @param factory factory class that intantiates proper mapper object
+	 * @return initialized {@code MapperRegistry}
+	 */
+	public static MapperRegistry initialize(AbstractMapperRegistryFactory factory)
+	{
+		setInstance(factory.createMapperRegistry());
+		setConnector(factory.createExistConnector());
+		return getInstance();
+	}
+
+	/**
 	 * Gets the singleton mapper registry object.
 	 * @return mapper registry object
 	 */
@@ -48,16 +60,24 @@ public abstract class MapperRegistry
 	/**
 	 * Sets a passed concrete instance object of {@link MapperRegistry} subclass as a singleton registry object.
 	 */
-	public static void setRegistry(MapperRegistry aRegistry)
+	public static void setInstance(MapperRegistry registry)
 	{
-		registry = aRegistry;
+		MapperRegistry.registry = registry;
 	}
 
+	/**
+	 * Gets the {@link DatastoreConnector connector} object to the datastore.
+	 * @return
+	 */
 	public static DatastoreConnector getConnector()
 	{
 		return connector;
 	}
 
+	/**
+	 * Sets the {@link ExistConnector connector} object to the datastore.
+	 * @param connector connector to set
+	 */
 	protected static void setConnector(ExistConnector connector)
 	{
 		MapperRegistry.connector = connector;
@@ -70,11 +90,6 @@ public abstract class MapperRegistry
 	public ConcurrentMap<Class<?>, DataMapper<?, String>> getMapRegistry()
 	{
 		return mapRegistry;
-	}
-
-	public void setMapRegistry(ConcurrentMap<Class<?>, DataMapper<?, String>> mapRegistry)
-	{
-		this.mapRegistry = mapRegistry;
 	}
 
 	/**

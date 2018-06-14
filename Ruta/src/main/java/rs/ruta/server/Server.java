@@ -311,7 +311,7 @@ public interface Server
 	 * @throws RutaException
 	 */
 	@WebMethod(operationName = "ClearCache")
-	public void clearCache() throws RutaException;
+	public boolean clearCache() throws RutaException;
 
 	/**
 	 * Retrieves the list of {@link BugReport}s from the datastore. List could be partial containg some maximum

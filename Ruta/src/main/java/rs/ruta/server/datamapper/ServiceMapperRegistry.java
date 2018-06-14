@@ -66,16 +66,6 @@ import rs.ruta.common.datamapper.UserXmlMapper;
 public class ServiceMapperRegistry extends MapperRegistry
 {
 	/**
-	 * Constructs {@link MapperRegistry} object setting this concrete instace of
-	 * {@code ServiceMapperRegistry} as a registry. Also, it sets {@link ExistConnector} object.
-	 */
-	public ServiceMapperRegistry()
-	{
-		setRegistry(this);
-		setConnector(new RemoteExistConnector());
-	}
-
-	/**
 	 * Gets the {@link DataMapper} for connection to the data store based on the <code>Class</code> paramater.
 	 * If mapper for a particular class is not in the registry, it will be added to it prior to its retrieval.
 	 * @param clazz <code>Class</code> object of the class which mapper should be returned
