@@ -3469,14 +3469,6 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * @param search
-	 */
-	/*	private void addPartySearch(final PartySearch search)
-		{
-			getPartySearches().add(0, search);
-		}*/
-
-	/**
 	 * Adds {@link PartySearch} to a party search list and inserts it to the data store.
 	 * <p>Notifies listeners registered for this type of the {@link SearchEvent event}.</p>
 	 * @param search search to add
@@ -3790,6 +3782,10 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
+			final Correspondence existingCorr = findCorrespondence(correspondentID, invoice.getUUIDValue());
+			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
+				throw new DetailException("Invoice " + invoice.getIDValue() +
+						" has been already received and processed.");
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof CustomerBillingProcess &&
 					process.getState() instanceof CustomerReceiveInvoiceState)
@@ -3806,8 +3802,6 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
-			else if(corr.getId().equals(findCorrespondence(correspondentID, invoice.getUUIDValue()).getId()))
-				throw new DetailException("Invoice " + invoice.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Invoice " + invoice.getIDValue() +
 						" does not belong to the current state of the correspondence.");
@@ -3834,7 +3828,8 @@ public class MyParty extends BusinessParty
 		final BusinessParty correspondentParty = getBusinessPartner(correspondentID);
 		if(correspondentParty == null)
 			throw new DetailException("Failed to find the correspondent Party!");
-		if(findActiveCorrespondence(correspondentID, order.getUUIDValue()) != null)
+		final Correspondence existingCorr = findActiveCorrespondence(correspondentID, order.getUUIDValue());
+		if(existingCorr != null)
 			throw new DetailException("Order " + order.getIDValue() + " has been already received and processed.");
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, false);
 		addBuyingCorrespondence(newCorr);
@@ -3867,6 +3862,9 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
+			final Correspondence existingCorr = findCorrespondence(correspondentID, orderResponse.getUUIDValue());
+			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
+				throw new DetailException("Order Response " + orderResponse.getIDValue() + " has been already received and processed.");
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof BuyerOrderingProcess &&
 					process.getState() instanceof BuyerReceiveOrderResponseState)
@@ -3883,8 +3881,6 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
-			else if(corr.getId().equals(findCorrespondence(correspondentID, orderResponse.getUUIDValue()).getId()))
-				throw new DetailException("Invoice " + orderResponse.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Response " + orderResponse.getIDValue() +
 						" does not belong to the current state of the correspondence.");
@@ -3907,6 +3903,11 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
+			//correspondence that Order Response Simple belongs to if already had been received
+			final Correspondence existingCorr = findCorrespondence(correspondentID, orderResponseSimple.getUUIDValue());
+			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
+				throw new DetailException("Order Response Simple " + orderResponseSimple.getIDValue() +
+						" has been already received and processed.");
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof BuyerOrderingProcess &&
 					process.getState() instanceof BuyerReceiveOrderResponseState)
@@ -3923,8 +3924,6 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
-			else if(corr.getId().equals(findCorrespondence(correspondentID, orderResponseSimple.getUUIDValue()).getId()))
-				throw new DetailException("Invoice " + orderResponseSimple.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Response Simple " + orderResponseSimple.getIDValue()
 				+ " does not belong to the current state of the correspondence.");
@@ -3947,6 +3946,9 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
+			final Correspondence existingCorr = findCorrespondence(correspondentID, orderChange.getUUIDValue());
+			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
+				throw new DetailException("Order Change " + orderChange.getIDValue() + " has been already received and processed.");
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
 					process.getState() instanceof SellerReceiveOrderChangeCancellationState)
@@ -3963,8 +3965,6 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
-			else if(corr.getId().equals(findCorrespondence(correspondentID, orderChange.getUUIDValue()).getId()))
-				throw new DetailException("Invoice " + orderChange.getIDValue() + " has been already received and processed.");
 			else
 				throw new DetailException("Order Change " + orderChange.getIDValue()
 				+ " does not belong to the current state of the correspondence.");
@@ -3987,6 +3987,9 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
+			final Correspondence existingCorr = findCorrespondence(correspondentID, orderCancellation.getUUIDValue());
+			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
+				throw new DetailException("Order Cancellation " + orderCancellation.getIDValue() + " has been already received and processed.");
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
 					process.getState() instanceof SellerReceiveOrderChangeCancellationState)
@@ -4003,10 +4006,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
-			else if(corr.getId().equals(findCorrespondence(correspondentID, orderCancellation.getUUIDValue()).getId()))
-				throw new DetailException("Invoice " + orderCancellation.getIDValue() + " has been already received and processed.");
 			else
-				throw new DetailException("Order Cancellation" + orderCancellation.getIDValue() +
+				throw new DetailException("Order Cancellation " + orderCancellation.getIDValue() +
 						" does not belong to the current state of the correspondence.");
 		}
 	}
@@ -4027,6 +4028,9 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Matching correspondence is closed or could not be found.");
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
+			final Correspondence existingCorr = findCorrespondence(correspondentID, applicationResponse.getUUIDValue());
+			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
+				throw new DetailException("Application Response " + applicationResponse.getIDValue() + " has been already received and processed.");
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
 					process.getState() instanceof SellerReceiveOrderChangeCancellationState)
@@ -4058,10 +4062,8 @@ public class MyParty extends BusinessParty
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
 			}
-			else if(corr.getId().equals(findCorrespondence(correspondentID, applicationResponse.getUUIDValue()).getId()))
-				throw new DetailException("Invoice " + applicationResponse.getIDValue() + " has been already received and processed.");
 			else
-				throw new DetailException("Application Response" + applicationResponse.getIDValue() +
+				throw new DetailException("Application Response " + applicationResponse.getIDValue() +
 						" does not belong to the current state of the correspondence.");
 		}
 	}
@@ -4079,7 +4081,7 @@ public class MyParty extends BusinessParty
 		final Correspondence corr = findCorrespondence(correspondentID, docUUID);
 		if(corr == null)
 			throw new DetailException("Matching correspondence could not be found.");
-		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
+		synchronized(corr)
 		{
 			final String documentUUID = documentReceipt.getDocumentReference().getUUIDValue();
 			final DocumentReference documentReference = corr.getDocumentReference(documentUUID);
@@ -4170,15 +4172,11 @@ public class MyParty extends BusinessParty
 		}
 		final BusinessParty partnerBreaker = getBusinessPartner(correspondentID);
 		if(partnerBreaker != null)
-//			unfollowPartyOLD(partnerBreaker);
 			unfollowBusinessPartner(partnerBreaker);
 		else
 			throw new DetailException("Party witd ID " + correspondentID + " is not a Business Partner of MyParty.");
 		excludePartnershipBreakup(getPartnershipBreakup(correspondentParty));
 		excludePartnershipRequest(correspondentParty);
-
-//		if(!removeInboundPartnershipRequest(getInboundPartnershipRequest(correspondentParty)))
-//			removeOutboundPartnershipRequest(getOutboundPartnershipRequest(correspondentParty));
 	}
 
 

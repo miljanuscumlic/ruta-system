@@ -1609,7 +1609,7 @@ public class RutaClient implements RutaNode
 							" has been updated its document status."),
 					Color.BLACK);
 		}
-		if(documentClazz == CatalogueType.class)
+		else if(documentClazz == CatalogueType.class)
 		{
 			createDocumentReceipt = false;
 			frame.appendToConsole(new StringBuilder("Catalogue document ").append(docID).
