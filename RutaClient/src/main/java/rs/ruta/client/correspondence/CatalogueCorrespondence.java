@@ -86,7 +86,7 @@ public class CatalogueCorrespondence extends Correspondence
 		{
 			getClient().getClientFrame().
 			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence ").
-					append(getIdValue()).append(" has been deactivated!"));
+					append(getIdValue()).append(" has been stopped!"));
 		}
 		finally
 		{

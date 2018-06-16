@@ -44,7 +44,7 @@ public class BuyerSendOrderCancellationState extends BuyerOrderingProcessState
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Cancellation has failed!"));
-				changeState(process, BuyerSendOrderCancellationState.getInstance());
+//				changeState(process, BuyerSendOrderCancellationState.getInstance());
 			}
 		}
 		else

@@ -51,7 +51,7 @@ public class BuyerProcessOrderResponseSimpleState extends BuyerOrderingProcessSt
 						}
 					}
 					else
-						throw new StateActivityException("Order Response Simple has no Accepted Indicator defined!");
+						throw new StateActivityException("Order Response Simple has no Accepted Indicator defined.");
 				}
 				else
 					throw new StateActivityException("Order Response Simple could not be found in the correspondence.");

@@ -1,8 +1,11 @@
 package rs.ruta.client.correspondence;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import rs.ruta.common.DocumentReference;
 
+@XmlRootElement(name = "BuyerSendOrderState")
 public class BuyerSendOrderState extends BuyerOrderingProcessState
 {
 	private static BuyerOrderingProcessState INSTANCE = new BuyerSendOrderState();
@@ -41,7 +44,7 @@ public class BuyerSendOrderState extends BuyerOrderingProcessState
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order has failed!"));
-				changeState(process, BuyerSendOrderState.getInstance());
+//				changeState(process, BuyerSendOrderState.getInstance());
 			}
 		}
 		else

@@ -11,6 +11,7 @@ import rs.ruta.client.RutaClient;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.datamapper.DetailException;
+
 @XmlRootElement(name = "BuyerAcceptOrderState")
 public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 {

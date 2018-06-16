@@ -45,7 +45,7 @@ public class BuyerSendOrderChangeState extends BuyerOrderingProcessState
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Change has failed!"));
-				changeState(process, BuyerSendOrderChangeState.getInstance());
+//				changeState(process, BuyerSendOrderChangeState.getInstance());
 			}
 		}
 		else

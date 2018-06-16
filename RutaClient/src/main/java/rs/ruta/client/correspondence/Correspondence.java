@@ -79,6 +79,11 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	@XmlElement(name = "RecentlyUpdated")
 	private boolean recentlyUpdated;
 	/**
+	 * True when this and appropriate correspondence of the other correspondent party are out of sync.
+	 */
+	@XmlElement(name = "OutOfSync")
+	private boolean outOfSync;
+	/**
 	 * True when the user has given up of started correspondence so it can be closed.
 	 */
 	protected boolean discarded;
@@ -239,6 +244,26 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	public void setRecentlyUpdated(boolean recentlyUpdated)
 	{
 		this.recentlyUpdated = recentlyUpdated;
+	}
+
+	/**
+	 * Tests whether this and appropriate correspondence of the other correspondent party
+	 * are out of sync.
+	 * @return true when out of sync
+	 */
+	public boolean isOutOfSync()
+	{
+		return outOfSync;
+	}
+
+	/**
+	 * Sets the flag denoting whether this and appropriate correspondence of the other correspondent party
+	 * are out of sync.
+	 * @param outOfSync true when out of sync
+	 */
+	public void setOutOfSync(boolean outOfSync)
+	{
+		this.outOfSync = outOfSync;
 	}
 
 	/**
@@ -474,6 +499,17 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 	public void updateDocumentStatus(DocumentReference docReference, DocumentReference.Status status)
 	{
 		docReference.setStatus(status);
+		client.getMyParty().notifyListeners(new CorrespondenceEvent(this, CorrespondenceEvent.CORRESPONDENCE_UPDATED));
+	}
+
+	/**
+	 * Updates {@link #outOfSync} field.
+	 * <p>Notifies listeners registered for this type of the {@link CorrespondenceEvent event}.</p>
+	 * @param outOfSync true when is correspondence out of synch
+	 */
+	public void updateOutOfSyncStatus(boolean outOfSync)
+	{
+		setOutOfSync(outOfSync);
 		client.getMyParty().notifyListeners(new CorrespondenceEvent(this, CorrespondenceEvent.CORRESPONDENCE_UPDATED));
 	}
 
@@ -1028,5 +1064,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 		else
 			throw new StateActivityException("Order has a null value. Order could not be saved to the database!");
 	}
+
+
 
 }

@@ -47,7 +47,7 @@ public class SupplierSendInvoiceState extends SupplierBillingProcessState
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Invoice has failed!"));
-				changeState(process, SupplierSendInvoiceState.getInstance());
+//				changeState(process, SupplierSendInvoiceState.getInstance());
 			}
 		}
 		else

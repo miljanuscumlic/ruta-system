@@ -79,7 +79,7 @@ public class BuyingCorrespondence extends Correspondence
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error messsage", JOptionPane.ERROR_MESSAGE));*/
 			getClient().getClientFrame().
 			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence ").
-					append(getIdValue()).append(" has been deactivated!"));
+					append(getIdValue()).append(" has been stopped!"));
 		}
 		finally
 		{

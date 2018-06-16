@@ -51,7 +51,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order has failed!"));
-				changeState(process, CustomerSendApplicationResponseState.getInstance());
+//				changeState(process, CustomerSendApplicationResponseState.getInstance());
 			}
 		}
 		else

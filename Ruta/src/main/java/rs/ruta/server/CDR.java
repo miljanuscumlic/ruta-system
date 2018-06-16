@@ -163,7 +163,7 @@ public class CDR implements Server
 		}
 		catch(Exception e)
 		{
-			processException(e, "Catalogue could not be deposited to the CDR service!");
+			processException(e, "Catalogue could not be deposited into the CDR service!");
 		}
 	}
 
@@ -822,7 +822,7 @@ public class CDR implements Server
 	@Override
 	public void insertImage(@XmlMimeType("application/octet-stream") Image image) throws RutaException
 	{
-		String exceptionMsg = "File could not be deposited to the CDR service!";
+		String exceptionMsg = "File could not be deposited into the CDR service!";
 		DSTransaction transaction = null;
 		try
 		{
@@ -844,7 +844,7 @@ public class CDR implements Server
 	@Override
 	public void insertFile(@XmlMimeType("application/octet-stream") DataHandler dataHandler, String filename) throws RutaException
 	{
-		String exceptionMsg = "File could not be deposited to the CDR service!";
+		String exceptionMsg = "File could not be deposited into the CDR service!";
 		DSTransaction transaction = null;
 		try
 		{
@@ -877,7 +877,7 @@ public class CDR implements Server
 	@Override
 	public void insertAttachment(ReportAttachment attachment, String filename) throws RutaException
 	{
-		String exceptionMsg = "Attachment could not be deposited to the CDR service!";
+		String exceptionMsg = "Attachment could not be deposited into the CDR service!";
 		DSTransaction transaction = null;
 		try
 		{

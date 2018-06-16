@@ -67,7 +67,7 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response Simple has failed!"));
-				changeState(process, SellerSendOrderResponseSimpleState.getInstance());
+//				changeState(process, SellerSendOrderResponseSimpleState.getInstance());
 			}
 		}
 		else

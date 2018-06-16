@@ -48,7 +48,7 @@ public class SellerSendOrderResponseState extends SellerOrderingProcessState
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response has failed!"));
-				changeState(process, SellerSendOrderResponseState.getInstance());
+//				changeState(process, SellerSendOrderResponseState.getInstance());
 			}
 		}
 		else

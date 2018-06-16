@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,7 +147,10 @@ public class RutaClient implements RutaNode
 	private List<BugReport> bugReports;
 	public static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private String initialUsername;
-	private Exception exception = null;
+	/**
+	 * Exception to be wrapped in StateActivityException and throw to the state machine.
+	 */
+	private Exception exceptionRethrown = null;
 	//MMM maybe JAXBContext should be private class field, if it is used from multiple class methods
 
 	/**
@@ -777,14 +781,14 @@ public class RutaClient implements RutaNode
 						try
 						{
 							future.get();
-							frame.appendToConsole(new StringBuilder("My Catalogue has been successfully deposited to the CDR service."),
+							frame.appendToConsole(new StringBuilder("My Catalogue has been successfully deposited into the CDR service."),
 									Color.GREEN);
 							myParty.setDirtyCatalogue(false);
 							myParty.setInsertMyCatalogue(false);
 						}
 						catch(Exception e)
 						{
-							frame.processExceptionAndAppendToConsole(e, new StringBuilder("My Catalogue has not been deposited to the CDR service! "));
+							frame.processExceptionAndAppendToConsole(e, new StringBuilder("My Catalogue has not been deposited into the CDR service! "));
 						}
 						finally
 						{
@@ -804,7 +808,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			frame.appendToConsole(new StringBuilder("My Catalogue has not been deposited to the CDR service!").
+			frame.appendToConsole(new StringBuilder("My Catalogue has not been deposited into the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 			frame.enableCatalogueMenuItems();
 		}
@@ -966,7 +970,7 @@ public class RutaClient implements RutaNode
 				final Throwable cause = e.getCause();
 				final String message = e.getMessage();
 				if(( cause != null && (cause instanceof RutaException || cause instanceof ServerSOAPFaultException))
-						|| (message != null && message.contains("Read timed out")))
+						|| (message != null && message.contains("SocketTimeoutException")))
 					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 				else
 					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
@@ -1065,7 +1069,7 @@ public class RutaClient implements RutaNode
 				final Throwable cause = e.getCause();
 				final String message = e.getMessage();
 				if(( cause != null && (cause instanceof RutaException || cause instanceof ServerSOAPFaultException))
-						|| (message != null && message.contains("Read timed out")))
+						|| (message != null && message.contains("SocketTimeoutException")))
 					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 				else
 					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
@@ -1080,12 +1084,13 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Sets excepction thrown in JAX-WS thread.
+	 * Sets exception thrown in JAX-WS thread, so it can later be wrapped to {@link
+	 * StateActivityException} and rethrown to the state machine.
 	 * @param exception
 	 */
-	private void setException(Exception e)
+	private void setExceptionRethrown(Exception exception)
 	{
-		this.exception = e;
+		this.exceptionRethrown = exception;
 	}
 
 	/**
@@ -1110,20 +1115,24 @@ public class RutaClient implements RutaNode
 				{
 					future.get();
 					frame.appendToConsole(new StringBuilder(documentName + " " + documentID +
-							" has been successfully deposited to the CDR."), Color.GREEN);
+							" has been successfully deposited into the CDR."), Color.GREEN);
 					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
 				}
 				catch (Exception e)
 				{
 					if(e instanceof InterruptedException)
 						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-					else if(e.getCause() instanceof RutaException || e.getCause() instanceof ServerSOAPFaultException)
-						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 					else
-						correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-					setException(e);
-//					frame.processExceptionAndAppendToConsole(exception,
-//							new StringBuilder(documentName + " has not been deposited to the CDR! "));
+					{
+						final Throwable cause = e.getCause();
+						final String message = e.getMessage();
+						if((cause != null && (cause instanceof RutaException || cause instanceof ServerSOAPFaultException))
+								|| (message != null && message.contains("SocketTimeoutException")))
+							correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
+						else
+							correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
+					}
+					setExceptionRethrown(e);
 				}
 				finally
 				{
@@ -1139,10 +1148,10 @@ public class RutaClient implements RutaNode
 				if(documentReference.getStatus() == DocumentReference.Status.CLIENT_FAILED ||
 						documentReference.getStatus() == DocumentReference.Status.CDR_FAILED)
 				{
-					final Exception copy = exception;
-					exception = null;
-					throw new StateActivityException(documentName + " " + documentID + " has not been deposited to the CDR!",
-							copy);
+					final Exception exceptionCopy = exceptionRethrown;
+					exceptionRethrown = null;
+					throw new StateActivityException(documentName + " " + documentID +
+							" might not be deposited into the CDR due to this failure! Please try resending it.", exceptionCopy);
 				}
 			}
 			catch (InterruptedException e)
@@ -1167,9 +1176,6 @@ public class RutaClient implements RutaNode
 		{
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_FAILED);
 			throw e;
-/*			logger.error("Exception is ", exception);
-			frame.appendToConsole(new StringBuilder(documentName + " has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED); */
 		}
 	}
 
@@ -1237,7 +1243,8 @@ public class RutaClient implements RutaNode
 					final BusinessParty myFollowingParty = myParty.getMyFollowingParty();
 					if(catalogue != null)
 					{
-						frame.appendToConsole(new StringBuilder("Catalogue has been successfully retrieved from the CDR service."), Color.GREEN);
+						frame.appendToConsole(new StringBuilder("Catalogue has been successfully retrieved from the CDR service."),
+								Color.GREEN);
 						myFollowingParty.setCatalogue(catalogue);
 					}
 					else
@@ -1253,12 +1260,11 @@ public class RutaClient implements RutaNode
 				}
 				catch(Exception e)
 				{
-					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Catalogue could not be retrieved from the CDR service! Server responds:"));
+					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Catalogue could not be retrieved from the CDR service!"));
 				}
 				finally
 				{
 					frame.enableCatalogueMenuItems();
-//					frame.repaint();
 				}
 			});
 			frame.appendToConsole(new StringBuilder("Request for catalogue has been sent to the CDR service. Waiting for a response..."),
@@ -1498,14 +1504,29 @@ public class RutaClient implements RutaNode
 								catch (Exception e)
 								{
 									oneAtATime.release();
-									if(e.getMessage() != null && e.getMessage().contains("has been already received and processed"))
+									final String exceptionMessage = e.getMessage();
+									if(exceptionMessage != null)
 									{
-										try
+										if(exceptionMessage.contains("has been already received and processed"))
 										{
-											port.distributeDocumentAsync(DocumentReceipt.newInstance(document));
+											try
+											{
+												port.distributeDocumentAsync(DocumentReceipt.newInstance(document));
+											}
+											catch (DetailException e1)
+											{
+											}
 										}
-										catch (DetailException e1)
+										else if(exceptionMessage.contains("does not belong to the current state of the correspondence"))
 										{
+											try
+											{
+												port.distributeDocumentAsync(DocumentReceipt.newInstance(document,
+														DocumentReference.Status.CORR_FAILED));
+											}
+											catch (DetailException e1)
+											{
+											}
 										}
 									}
 									frame.processExceptionAndAppendToConsole(e, new StringBuilder("Document ").
@@ -2419,7 +2440,7 @@ public class RutaClient implements RutaNode
 				try
 				{
 					futureResult.get();
-					frame.appendToConsole(new StringBuilder("Bug report has been successfully deposited to the CDR service."),
+					frame.appendToConsole(new StringBuilder("Bug report has been successfully deposited into the CDR service."),
 							Color.GREEN);
 				}
 				catch(Exception e)
@@ -2591,7 +2612,7 @@ public class RutaClient implements RutaNode
 				try
 				{
 					futureResult.get();
-					frame.appendToConsole(new StringBuilder("File has been successfully deposited to the CDR service."), Color.GREEN);
+					frame.appendToConsole(new StringBuilder("File has been successfully deposited into the CDR service."), Color.GREEN);
 				}
 				catch(Exception e)
 				{
@@ -2603,12 +2624,12 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			frame.appendToConsole(new StringBuilder("File not be deposited to the CDR service! Server is not accessible.").
+			frame.appendToConsole(new StringBuilder("File not be deposited into the CDR service! Server is not accessible.").
 					append(" Please try again later."), Color.RED);
 		}
 		catch(Exception e)
 		{
-			frame.appendToConsole(new StringBuilder("File could not be deposited to the CDR service! Error is on the client's side."),
+			frame.appendToConsole(new StringBuilder("File could not be deposited into the CDR service! Error is on the client's side."),
 					Color.RED);
 		}
 		return ret;
@@ -2639,7 +2660,7 @@ public class RutaClient implements RutaNode
 				try
 				{
 					futureResult.get();
-					frame.appendToConsole(new StringBuilder("File has been successfully deposited to the CDR service."), Color.GREEN);
+					frame.appendToConsole(new StringBuilder("File has been successfully deposited into the CDR service."), Color.GREEN);
 				}
 				catch(Exception e)
 				{
@@ -2650,12 +2671,12 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			frame.appendToConsole(new StringBuilder("File not be deposited to the CDR service! Server is not accessible.").
+			frame.appendToConsole(new StringBuilder("File not be deposited into the CDR service! Server is not accessible.").
 					append(" Please try again later."), Color.RED);
 		}
 		catch(Exception e)
 		{
-			frame.appendToConsole(new StringBuilder("File could not be deposited to the CDR service! Error is on the client's side."),
+			frame.appendToConsole(new StringBuilder("File could not be deposited into the CDR service! Error is on the client's side."),
 					Color.RED);
 		}
 		return ret;
@@ -2955,7 +2976,7 @@ public class RutaClient implements RutaNode
 					myParty.excludePartnershipRequest(businessRequest.getRequestedParty());
 					myParty.includeOutboundPartnershipRequest(businessRequest);
 					frame.appendToConsole( new StringBuilder("Business Partnership Request for the Party ").
-							append(requestedName).append(" has been successfully deposited to the CDR service. Party ").
+							append(requestedName).append(" has been successfully deposited into the CDR service. Party ").
 							append(requestedName).append(" should respond to it before any further actions on your behalf."),
 							Color.GREEN);
 				}
@@ -2969,7 +2990,7 @@ public class RutaClient implements RutaNode
 				{
 					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Request").
 							append(" for the Party ").append(requestedName).
-							append(" could not be successfully deposited to the CDR service!"));
+							append(" could not be successfully deposited into the CDR service!"));
 				}
 			});
 
@@ -3002,7 +3023,7 @@ public class RutaClient implements RutaNode
 					future.get();
 //					myParty.includeBusinessPartnershipResponse(businessResponse);
 					frame.appendToConsole( new StringBuilder("Business Partnership Response for the Party ").
-							append(requestedName).append(" has been successfully deposited to the CDR service. ").
+							append(requestedName).append(" has been successfully deposited into the CDR service. ").
 							append("Get New Documents from the CDR to get a Business Partnership Resolution."),
 							Color.GREEN);
 				}
@@ -3016,7 +3037,7 @@ public class RutaClient implements RutaNode
 				{
 					frame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Response").
 							append(" for the Party ").append(requestedName).
-							append(" could not be successfully deposited to the CDR service!"));
+							append(" could not be successfully deposited into the CDR service!"));
 				}
 			});
 

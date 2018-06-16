@@ -55,8 +55,8 @@ public class SellerProcessOrderState extends SellerOrderingProcessState
 					changeState(process, SellerRejectOrderState.getInstance());
 				else if(process.isOrderModified())
 					changeState(process, SellerAddDetailState.getInstance());
-				else // user decided to postpone the decision
-					changeState(process, SellerProcessOrderState.getInstance());
+//				else // user decided to postpone the decision
+//					changeState(process, SellerProcessOrderState.getInstance());
 			}
 			else
 			{

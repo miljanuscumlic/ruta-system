@@ -10,8 +10,8 @@ import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import rs.ruta.client.RutaClient;
 
 /**
- * Encapsulating {@code UBL document process} for creation, validation and distribution
- * of the {@link CatalogueType} document, called {@code Create Catalogue Process}.
+ * Encapsulating {@code UBL document process} called {@code Create Catalogue Process}
+ * for creation, validation and distribution of the {@link CatalogueType} document.
  */
 @XmlRootElement(name = "CreateCatalogueProcess")
 @XmlType(name = "CreateCatalogueProcess")

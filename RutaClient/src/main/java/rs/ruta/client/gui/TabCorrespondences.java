@@ -320,6 +320,10 @@ public class TabCorrespondences extends TabComponent
 		return table;
 	}
 
+	/**
+	 * @param tableModel
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private JTable createCorrespondenceTable(DefaultTableModel tableModel)
 	{
@@ -432,7 +436,8 @@ public class TabCorrespondences extends TabComponent
 
 		resendApplicationResponseItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Application Response");
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Application Response", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -463,7 +468,8 @@ public class TabCorrespondences extends TabComponent
 
 		resendInvoiceItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Invoice");
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Invoice", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -494,7 +500,9 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Order");
+//			setPage((Integer)((JButton)e.getSource()).getClientProperty( "page" ));
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Order", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -525,7 +533,8 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderResponseItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Order Response");
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Order Response", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -556,7 +565,8 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderResponseSimpleItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Order Response Simple");
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Order Response Simple", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -586,7 +596,8 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderChangeItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Order Change");
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Order Change", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -615,7 +626,8 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderCancellationItem.addActionListener(event ->
 		{
-			final int option = showConfirmDialog("Order Cancellation");
+			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			final int option = showConfirmDialog("Order Cancellation", cdr);
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -898,20 +910,29 @@ public class TabCorrespondences extends TabComponent
 								if(process.getClass() == BuyerOrderingProcess.class  ||
 										process.getClass() == CustomerBillingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
-										correspondencePopupMenu.add(viewApplicationResponseItem);
-									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewApplicationResponseItem);
+										resendApplicationResponseItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewApplicationResponseItem);
+										resendApplicationResponseItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewApplicationResponseItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendApplicationResponseItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewApplicationResponseItem);
 								}
 								else if(process.getClass() == SupplierBillingProcess.class &&
 										(process.getState().getClass() == SupplierRaiseInvoiceState.class ||
@@ -921,10 +942,14 @@ public class TabCorrespondences extends TabComponent
 									correspondencePopupMenu.add(processDocumentItem);
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewApplicationResponseItem);
+								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewApplicationResponseItem);
+							}
 						}
 						else if(InvoiceType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
@@ -932,30 +957,43 @@ public class TabCorrespondences extends TabComponent
 							{
 								if(process.getClass() == SupplierBillingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
-										correspondencePopupMenu.add(viewInvoiceItem);
-									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewInvoiceItem);
+										resendInvoiceItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewInvoiceItem);
+										resendInvoiceItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewInvoiceItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendInvoiceItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewInvoiceItem);
 								}
 								else if(process.getClass() == CustomerBillingProcess.class &&
 										process.getState().getClass() == CustomerReconcileChargesState.class)
 								{
 									if(corr.getLastDocument() != null) // after the document has been inserted in the database
+									{
 										correspondencePopupMenu.add(processDocumentItem);
+									}
 									correspondencePopupMenu.add(viewInvoiceItem);
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewInvoiceItem);
+								}
 							}
 							else
 								correspondencePopupMenu.add(viewInvoiceItem);
@@ -966,20 +1004,29 @@ public class TabCorrespondences extends TabComponent
 							{
 								if(process.getClass() == BuyerOrderingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
-										correspondencePopupMenu.add(viewOrderItem);
-									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderItem);
+										resendOrderItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendOrderItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderItem);
+										resendOrderItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewOrderItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendOrderItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewOrderItem);
 								}
 								else if(process instanceof SellerOrderingProcess &&
 										process.getState() instanceof SellerProcessOrderState)
@@ -994,26 +1041,35 @@ public class TabCorrespondences extends TabComponent
 							else
 								correspondencePopupMenu.add(viewOrderItem);
 						}
-						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue())) //MMM to finish
+						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
 							if(documentReference == corr.getLastDocumentReference())
 							{
 								if(process.getClass() == SellerOrderingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
-										correspondencePopupMenu.add(viewOrderResponseItem);
-									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseItem);
+										resendOrderResponseItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseItem);
+										resendOrderResponseItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewOrderResponseItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendOrderResponseItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewOrderResponseItem);
 								}
 								else if(process.getClass() == BuyerOrderingProcess.class &&
 										process.getState().getClass() == BuyerProcessOrderResponseState.class)
@@ -1034,27 +1090,38 @@ public class TabCorrespondences extends TabComponent
 							{
 								if(process.getClass() == SellerOrderingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										resendOrderResponseSimpleItem.putClientProperty("CDR", true);
+										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
+									}
 									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										resendOrderResponseSimpleItem.putClientProperty("CDR", false);
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendOrderResponseSimpleItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 								}
 								else if(process.getClass() == BuyerOrderingProcess.class &&
 										process.getState().getClass() == BuyerProcessOrderResponseSimpleState.class)
 								{
 									if(corr.getLastDocument() != null)// && // after the document has been inserted in the database
+									{
 											//((BuyerOrderingProcess) process).getOrderResponseSimple(corr).isAcceptedIndicatorValue(false)) //MMM does this work???
 										correspondencePopupMenu.add(processDocumentItem);
+									}
 									correspondencePopupMenu.add(viewOrderResponseSimpleItem);
 								}
 								else if(process.getClass() == SupplierBillingProcess.class)
@@ -1062,10 +1129,26 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										resendOrderResponseSimpleItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
-									else
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										resendOrderResponseSimpleItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+									}
+									else
+									{
+										correspondencePopupMenu.add(viewResendOrderResponseSimpleItem); //in state machine
+										correspondencePopupMenu.add(resendDocumentItem); //in state machine
+									}
 								}
 								else
 									correspondencePopupMenu.add(viewOrderResponseSimpleItem);
@@ -1079,20 +1162,29 @@ public class TabCorrespondences extends TabComponent
 							{
 								if(process.getClass() == BuyerOrderingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
-										correspondencePopupMenu.add(viewOrderChangeItem);
-									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderChangeItem);
+										resendOrderChangeItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderChangeItem);
+										resendOrderChangeItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewOrderChangeItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendOrderChangeItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewOrderChangeItem);
 								}
 								else if(process.getClass() == SellerOrderingProcess.class &&
 										process.getState() instanceof SellerProcessOrderState)
@@ -1113,28 +1205,30 @@ public class TabCorrespondences extends TabComponent
 							{
 								if(process.getClass() == BuyerOrderingProcess.class)
 								{
-									if(documentStatus.compareTo(DocumentReference.Status.CDR_DOWN) < 0)
-										correspondencePopupMenu.add(viewOrderCancellationItem);
-									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
+									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderCancellationItem);
+										resendOrderCancellationItem.putClientProperty("CDR", true);
 										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
 									}
-									else if(!documentStatus.equals(DocumentReference.Status.CORR_RECEIVED))
+									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
+									{
+										correspondencePopupMenu.add(viewOrderCancellationItem);
+										resendOrderCancellationItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
+											documentStatus == DocumentReference.Status.UBL_VALID ||
+											documentStatus == DocumentReference.Status.CLIENT_SENT)
+									{
+										correspondencePopupMenu.add(viewOrderCancellationItem);
+									}
+									else
 									{
 										correspondencePopupMenu.add(viewResendOrderCancellationItem); //in state machine
 										correspondencePopupMenu.add(resendDocumentItem); //in state machine
 									}
-									else // CORR_RECEIVED
-										correspondencePopupMenu.add(viewOrderCancellationItem);
 								}
-								//								else if(process.getClass() == SellerOrderingProcess.class &&
-								//										process.getState() instanceof SellerProcessOrderState)
-								//								{
-								//									if(corr.getLastDocument() != null) // after the document has been inserted in the database
-								//										correspondencePopupMenu.add(processDocumentItem);
-								//									correspondencePopupMenu.add(viewOrderCancellationItem);
-								//								}
 								else
 									correspondencePopupMenu.add(viewOrderCancellationItem);
 							}
@@ -1153,13 +1247,15 @@ public class TabCorrespondences extends TabComponent
 	/**
 	 * Shows the dialog requesting confirmation for resending the document to the CDR.
 	 * @param documentName name of the document e.g. "Order"
+	 * @param cdr TODO
 	 * @return integer representing chosen option
 	 */
-	private int showConfirmDialog(String documentName)
+	private int showConfirmDialog(String documentName, boolean cdr)
 	{
 		return JOptionPane.showConfirmDialog(myParty.getClient().getClientFrame(),
-				documentName + " has been successfully received by the CDR.\n Do you still want to resend it?",
-				"Confirm Resend", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				documentName + " has been successfully received by the " + (cdr ? CDR : "correspondent party")  +
+						".\n Do you still want to resend it?",
+						"Confirm Resend", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 	}
 
 	/**

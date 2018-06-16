@@ -395,13 +395,13 @@ public class BugExploreDialog extends JDialog
 						{
 							future.get();
 							EventQueue.invokeLater(() -> waitingDialog.setVisible(false));
-							parent.appendToConsole(new StringBuilder("Bug report comment has been successfully deposited to the CDR service."),
+							parent.appendToConsole(new StringBuilder("Bug report comment has been successfully deposited into the CDR service."),
 									Color.GREEN);
 							commentArea.setText(null);
 
 							EventQueue.invokeLater( () ->
 							JOptionPane.showMessageDialog(BugExploreDialog.this,
-									"Bug report comment has been successfully deposited to the CDR service.\n" +
+									"Bug report comment has been successfully deposited into the CDR service.\n" +
 											"You can reload the bug report to see your comment among the others.",
 											"Information", JOptionPane.INFORMATION_MESSAGE));
 						}
@@ -414,7 +414,7 @@ public class BugExploreDialog extends JDialog
 										"There has been an error during the sending of the bug comment.\n Please try again later.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 							});
-							parent.appendToConsole(new StringBuilder("There has been an error. Bug report comment has not been deposited to the CDR service."),
+							parent.appendToConsole(new StringBuilder("There has been an error. Bug report comment has not been deposited into the CDR service."),
 									Color.RED);
 						}
 					}).start();

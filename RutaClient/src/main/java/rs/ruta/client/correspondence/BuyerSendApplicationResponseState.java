@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
 import rs.ruta.common.DocumentReference;
+
 @XmlRootElement(name = "BuyerSendApplicationResponseState")
 public class BuyerSendApplicationResponseState extends BuyerOrderingProcessState
 {
@@ -43,7 +44,7 @@ public class BuyerSendApplicationResponseState extends BuyerOrderingProcessState
 			{
 				process.getClient().getClientFrame().
 				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Application Response has failed!"));
-				changeState(process, BuyerSendApplicationResponseState.getInstance());
+//				changeState(process, BuyerSendApplicationResponseState.getInstance());
 			}
 		}
 		else

@@ -87,8 +87,6 @@ public class ClientMapperRegistry extends MapperRegistry
 				dataMapper = (DataMapper<S, String>) new PartySearchXmlMapper(getConnector());
 			else if(clazz == CatalogueSearch.class)
 				dataMapper = (DataMapper<S, String>) new CatalogueSearchXmlMapper(getConnector());
-			else if(clazz == CreateCatalogueProcess.class)
-				dataMapper = (DataMapper<S, String>) new CreateCatalogueProcessXmlMapper(getConnector());
 			else if(clazz == CatalogueCorrespondence.class)
 				dataMapper = (DataMapper<S, String>) new CatalogueCorrespondenceXmlMapper(getConnector());
 			else if(clazz == BuyingCorrespondence.class)
