@@ -32,6 +32,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -113,8 +114,6 @@ public abstract class TabComponent extends Container
 		table.setFillsViewportHeight(true);
 		table.setAutoCreateRowSorter(true);
 
-//		table.getRowSorter().setModelRowCount();
-		table.getRowSorter().getModelRowCount();
 		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);
 
 		table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());

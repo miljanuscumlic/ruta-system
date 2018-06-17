@@ -41,19 +41,6 @@ public class ProductTableModel extends DefaultTableModel
 		this.editable = editable;
 	}
 
-	/**
-	 * Creates new model for the product table. Party should be set with the subsequent call to
-	 * {@link #setParty(MyParty)}.
-	 * @param editable if true, table cells are editable
-	 * @see ProductTableModel#setMyParty
-	 */
-	public ProductTableModel(boolean editable)
-	{
-		super();
-		this.myParty = null;
-		this.editable = editable;
-	}
-
 	public MyParty getParty()
 	{
 		return myParty;

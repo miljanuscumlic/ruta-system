@@ -123,6 +123,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private JMenuItem importDataItem = new JMenuItem("Import");
 	private JMenuItem localRegisterPartyItem = new JMenuItem("Register My Party");
 	private JMenuItem localDeregisterPartyItem = new JMenuItem("Deregister My Party");
+	private JMenuItem exitItem = new JMenuItem("Exit");
 
 	private JMenuItem cdrGetDocumentsItem = new JMenuItem("Get New Documents");
 	private JMenuItem cdrSearchItem = new JMenuItem("Search");
@@ -184,17 +185,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				dispatchFalseMouseEvent();
 			}
-
-			/**
-			 * Dispatches false {@link MouseEvent mouse event} to trigger {@code focusTracker}
-			 * event listener which will save the data of a last edited cell of the table
-			 * in current view if it is still in editing state.
-			 */
-			private void dispatchFalseMouseEvent()
-			{
-				tabbedPane.getComponent(tabbedPane.getSelectedIndex()).dispatchEvent(
-						new MouseEvent(RutaClientFrame.this, MouseEvent.MOUSE_CLICKED, 1, 0, 0, 0, 1, false));
-			}
 		});
 
 		//setting tabs
@@ -238,6 +228,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		localDataMenu.addSeparator();
 		localDataMenu.add(localRegisterPartyItem);
 		localDataMenu.add(localDeregisterPartyItem);
+		localDataMenu.addSeparator();
+		localDataMenu.add(exitItem);
 
 		myPartyItem.addActionListener(event ->
 		{
@@ -407,6 +399,12 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			else
 				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the local datastore.").
 						append(" My Party is not registered with the local datastore!"), Color.RED);
+		});
+
+		exitItem.addActionListener(event ->
+		{
+			dispatchFalseMouseEvent();
+			System.exit(0);
 		});
 
 		cdrMenu.add(cdrGetDocumentsItem);
@@ -754,6 +752,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public static Logger getLogger()
 	{
 		return logger;
+	}
+
+	/**
+	 * Dispatches false {@link MouseEvent mouse event} to trigger {@code focusTracker}
+	 * event listener which will save the data of a last edited cell of the table
+	 * in current view if it is still in editing state.
+	 */
+	private void dispatchFalseMouseEvent()
+	{
+		tabbedPane.getComponent(tabbedPane.getSelectedIndex()).dispatchEvent(
+				new MouseEvent(RutaClientFrame.this, MouseEvent.MOUSE_CLICKED, 1, 0, 0, 0, 1, false));
 	}
 
 	/**
