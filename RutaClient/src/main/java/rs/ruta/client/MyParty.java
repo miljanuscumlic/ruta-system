@@ -770,7 +770,8 @@ public class MyParty extends BusinessParty
 	{
 		try
 		{
-			return !products.stream().anyMatch(item -> id.equals(item.getSellersItemIdentification().getIDValue()));
+			return !products.subList(0, getProductCount() - 1).stream().
+					anyMatch(item -> id.equals(item.getSellersItemIdentification().getIDValue()));
 		}
 		catch(Exception e) // if for some reason ID could not be accessed e.g. when it is not set - should not happen
 		{

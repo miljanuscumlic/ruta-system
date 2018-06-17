@@ -7,6 +7,9 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import rs.ruta.client.MyParty;
 import rs.ruta.client.ProductException;
 import rs.ruta.common.datamapper.DetailException;
@@ -17,6 +20,7 @@ import rs.ruta.common.datamapper.DetailException;
 public class ProductTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private static String[] columnNames =
 		{
 			"No.", "Name", "Description", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Tax", "Keywords"
@@ -120,6 +124,7 @@ public class ProductTableModel extends DefaultTableModel
 				}
 				catch (DetailException e)
 				{
+					logger.error("Could not insert new product in the database! Exception is: ", e);
 					EventQueue.invokeLater(() ->
 						JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
 								"Database Error", JOptionPane.ERROR_MESSAGE)
