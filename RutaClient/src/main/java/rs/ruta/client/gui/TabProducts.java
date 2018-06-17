@@ -45,7 +45,7 @@ public class TabProducts extends TabComponent
 		//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		TableColumn tableColumn = table.getColumnModel().getColumn(8);
+		final TableColumn tableColumn = table.getColumnModel().getColumn(8);
 		setUpComboBoxColumn(table, tableColumn);
 
 		final JPopupMenu cataloguePopupMenu = new JPopupMenu();
@@ -57,10 +57,10 @@ public class TabProducts extends TabComponent
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					final int rowIndex = table.rowAtPoint(event.getPoint());
-					if(rowIndex > -1 && rowIndex < table.getRowCount() - 1) //except the last row
+					final int viewRowIndex = table.rowAtPoint(event.getPoint());
+					if(viewRowIndex > -1 && viewRowIndex < table.getRowCount() - 1) //except the last row
 					{
-						table.setRowSelectionInterval(rowIndex, rowIndex);
+						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 						cataloguePopupMenu.show(table, event.getX(), event.getY());
 					}
 				}
@@ -72,10 +72,10 @@ public class TabProducts extends TabComponent
 
 		deleteItem.addActionListener( event ->
 		{
-			final int row = table.getSelectedRow();
 			try
 			{
-				myParty.removeProduct(row);
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				myParty.removeProduct(modelRowIndex);
 				repaint();
 			}
 			catch (Exception e)
@@ -100,7 +100,7 @@ public class TabProducts extends TabComponent
 		comboBox.setRenderer(new ComBoxCellRenderer());
 		comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN));
 		tableColumn.setCellEditor(new DefaultCellEditor(comboBox));
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		final DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setToolTipText("Click for combo box");
 		tableColumn.setCellRenderer(renderer);
 	}

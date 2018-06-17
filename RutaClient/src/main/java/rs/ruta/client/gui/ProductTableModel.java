@@ -142,7 +142,9 @@ public class ProductTableModel extends DefaultTableModel
 				myParty.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
 				break;
 			case 4:
-				myParty.setProductID(rowIndex, obj.toString());
+				final String newID = obj.toString();
+				if(!newID.equals(myParty.getProductIDAsString(rowIndex)))
+					myParty.setProductID(rowIndex, newID);
 				break;
 			case 5:
 				myParty.setProductBarcode(rowIndex, obj.toString());

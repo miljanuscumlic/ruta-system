@@ -565,7 +565,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Sets product's ID which is unique in the scope of MyParty.
+	 * Sets product's ID that is unique in the scope of MyParty.
 	 * @param index product's index in the list of all products
 	 * @param value ID's value to set
 	 * @throws ProductException if product's ID is not unique or is equal to an empty string
@@ -574,7 +574,7 @@ public class MyParty extends BusinessParty
 	{
 		value = value.trim();
 		if("".equals(value))
-			throw new ProductException("Product ID must be a non-empty string value.\nChange you made have not been accepted.");
+			throw new ProductException("Product ID must be a non-empty string value.\nChanges you have made have not been accepted.");
 		if(!isUniqueProductID(value))
 			throw new ProductException("Product ID is not unique.");
 		final Item item = products.get(index);
@@ -749,8 +749,9 @@ public class MyParty extends BusinessParty
 	 * Gets the next eligable ID for the {@link Item product}.
 	 * <p> Method is not optimized.
 	 * @return product's ID
+	 * @throws ProductException if uniqueness of ID could not be checked
 	 */
-	private String getNextProductID()
+	private String getNextProductID() throws ProductException
 	{
 		String nextID = String.valueOf(++itemID);
 		while(!isUniqueProductID(nextID))
@@ -759,19 +760,21 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Tests whether the ID is unique in the list of all {@code Item product}s.
+	 * Checks whether the ID is unique in the list of all {@code Item product}s.
 	 * @param uuid ID to test
 	 * @return true if it is unique, false otherwise
+	 * @throws ProductException if uniqueness of ID could not be checked because some product
+	 * in the collection is missing its own ID
 	 */
-	private boolean isUniqueProductID(String id)
+	private boolean isUniqueProductID(String id) throws ProductException
 	{
 		try
 		{
 			return !products.stream().anyMatch(item -> id.equals(item.getSellersItemIdentification().getIDValue()));
 		}
-		catch(Exception e) // if for some reason ID could not be accessed e.g. when it is not set - should not happen but still
+		catch(Exception e) // if for some reason ID could not be accessed e.g. when it is not set - should not happen
 		{
-			return true;
+			throw new ProductException("Could not check uniqueness of ID.");
 		}
 	}
 
@@ -3444,6 +3447,7 @@ public class MyParty extends BusinessParty
 		catch (ProductException e) //should not happen
 		{
 			logger.error("Product ID si not eligable", e);
+			throw new DetailException("ID uniqueness could not be afirmed.");
 		}
 	}
 

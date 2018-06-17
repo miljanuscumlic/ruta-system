@@ -106,6 +106,10 @@ public final class InstanceFactory
 		taxCategories = Collections.unmodifiableMap(tempMap);
 	}
 
+	/**
+	 * Gets all defined tax categories.
+	 * @return array of strings representing tex catagories
+	 */
 	public static String[] getTaxCategories()
 	{
 		return new String[] {TAX_CATEGORY_0, TAX_CATEGORY_10, TAX_CATEGORY_20};
