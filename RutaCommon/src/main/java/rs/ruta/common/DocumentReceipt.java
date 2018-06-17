@@ -50,8 +50,8 @@ public class DocumentReceipt
 	{
 		DocumentReceipt documentReceipt = new DocumentReceipt();
 		documentReceipt.setID(UUID.randomUUID().toString());
-		documentReceipt.setSenderParty(InstanceFactory.getDocumentSenderParty(document));
-		documentReceipt.setReceiverParty(InstanceFactory.getDocumentReceiverParty(document));
+		documentReceipt.setSenderParty(InstanceFactory.getDocumentReceiverParty(document));
+		documentReceipt.setReceiverParty(InstanceFactory.getDocumentSenderParty(document));
 		final DocumentReference docReference = DocumentReference.newInstance(document, status);
 		documentReceipt.setDocumentReference(docReference);
 		return documentReceipt;

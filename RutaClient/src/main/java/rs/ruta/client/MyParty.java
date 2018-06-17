@@ -96,6 +96,7 @@ import rs.ruta.common.BusinessPartySearchCriterion;
 import rs.ruta.common.DeregistrationNotice;
 import rs.ruta.common.DocumentReceipt;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.DocumentReference.Status;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.RutaUser;
@@ -2452,7 +2453,7 @@ public class MyParty extends BusinessParty
 			orderLineItem.setItem(catalogueline.getItem().clone());
 			orderLine.setLineItem(orderLineItem);
 			orderLineItem.setPrice(catalogueline.getRequiredItemLocationQuantityAtIndex(0).getPrice());
-			//		orderLineItem.getItem().setClassifiedTaxCategory(catalogueline.getItem().getClassifiedTaxCategory());
+//		orderLineItem.getItem().setClassifiedTaxCategory(catalogueline.getItem().getClassifiedTaxCategory()); //MMM enable TAX data
 			orderLines.add(orderLine);
 		}
 		return order;
@@ -3785,14 +3786,6 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, invoice.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				String lastDocumentPartyName = null;
-				try
-				{
-					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-				}
-				catch(Exception e) {}
-				if(getPartySimpleName().equals(lastDocumentPartyName))
-					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Invoice " + invoice.getIDValue() + " has been already received and processed." +
 						" Try resending your most recently created document if it is the last document of the correspondence.");
 			}
@@ -3842,14 +3835,14 @@ public class MyParty extends BusinessParty
 		final Correspondence existingCorr = findActiveCorrespondence(correspondentID, order.getUUIDValue());
 		if(existingCorr != null)
 		{
-			String lastDocumentPartyName = null;
-			try
-			{
-				lastDocumentPartyName = existingCorr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-			}
-			catch(Exception e) {}
-			if(getPartySimpleName().equals(lastDocumentPartyName))
-				existingCorr.updateOutOfSyncStatus(true);
+//			String lastDocumentPartyName = null;
+//			try
+//			{
+//				lastDocumentPartyName = existingCorr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
+//			}
+//			catch(Exception e) {}
+//			if(getPartySimpleName().equals(lastDocumentPartyName))
+//				existingCorr.updateOutOfSyncStatus(true);
 			throw new DetailException("Order " + order.getIDValue() + " has been already received and processed.");
 		}
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, false);
@@ -3886,14 +3879,6 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderResponse.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				String lastDocumentPartyName = null;
-				try
-				{
-					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-				}
-				catch(Exception e) {}
-				if(getPartySimpleName().equals(lastDocumentPartyName))
-					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Order Response " + orderResponse.getIDValue() + " has been already received and processed." +
 						" Try resending your most recently created document if it is the last document of the correspondence.");
 			}
@@ -3940,14 +3925,14 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderResponseSimple.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				String lastDocumentPartyName = null;
-				try
-				{
-					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-				}
-				catch(Exception e) {}
-				if(getPartySimpleName().equals(lastDocumentPartyName))
-					corr.updateOutOfSyncStatus(true);
+//				String lastDocumentPartyName = null;
+//				try
+//				{
+//					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
+//				}
+//				catch(Exception e) {}
+//				if(getPartySimpleName().equals(lastDocumentPartyName))
+//					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Order Response Simple " + orderResponseSimple.getIDValue() +
 						" has been already received and processed." + " Try resending your most recently created document if it is the last document of the correspondence.");
 			}
@@ -3993,14 +3978,6 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderChange.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				String lastDocumentPartyName = null;
-				try
-				{
-					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-				}
-				catch(Exception e) {}
-				if(getPartySimpleName().equals(lastDocumentPartyName))
-					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Order Change " + orderChange.getIDValue() + " has been already received and processed." +
 						" Try resending your most recently created document if it is the last document of the correspondence.");
 			}
@@ -4046,14 +4023,6 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderCancellation.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				String lastDocumentPartyName = null;
-				try
-				{
-					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-				}
-				catch(Exception e) {}
-				if(getPartySimpleName().equals(lastDocumentPartyName))
-					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Order Cancellation " + orderCancellation.getIDValue() +
 						" has been already received and processed." +
 						" Try resending your most recently created document if it is the last document of the correspondence.");
@@ -4100,14 +4069,6 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, applicationResponse.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				String lastDocumentPartyName = null;
-				try
-				{
-					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-				}
-				catch(Exception e) {}
-				if(getPartySimpleName().equals(lastDocumentPartyName))
-					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Application Response " + applicationResponse.getIDValue() +
 						" has been already received and processed." +
 						" Try resending your most recently created document if it is the last document of the correspondence.");
@@ -4169,8 +4130,12 @@ public class MyParty extends BusinessParty
 			final DocumentReference documentReference = corr.getDocumentReference(documentUUID);
 			if(DocumentReference.Status.CDR_RECEIVED.equals(documentReference.getStatus()))
 			{
-				corr.updateOutOfSyncStatus(false);
-				corr.updateDocumentStatus(documentReference, DocumentReference.Status.CORR_RECEIVED);
+				final DocumentReference.Status documentStatus = documentReceipt.getDocumentReference().getStatus();
+				if (documentStatus == DocumentReference.Status.CORR_FAILED)
+					corr.updateOutOfSyncStatus(true);
+				else
+					corr.updateOutOfSyncStatus(false);
+				corr.updateDocumentStatus(documentReference, documentStatus);
 			}
 			else
 			{

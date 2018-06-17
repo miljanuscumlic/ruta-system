@@ -33,8 +33,8 @@ public class SupplierValidateResponseState extends SupplierBillingProcessState
 				process.setInvoiceRejected(false);
 				changeState(process, SupplierRaiseInvoiceState.getInstance());
 			}
-			else // user decided to postpone the decision
-				changeState(process, SupplierValidateResponseState.getInstance());
+//			else // user decided to postpone the decision
+//				changeState(process, SupplierValidateResponseState.getInstance());
 		}
 		catch(InterruptedException e)
 		{

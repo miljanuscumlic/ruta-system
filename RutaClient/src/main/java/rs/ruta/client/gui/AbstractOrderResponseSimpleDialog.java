@@ -30,7 +30,7 @@ public abstract class AbstractOrderResponseSimpleDialog extends JDialog
 	{
 		super(owner, true);
 		this.orderResponseSimple = orderResponseSimple;
-		setSize(700, 180);
+		setSize(720, 180);
 		setLocationRelativeTo(owner);
 		final JPanel responsePanel = new JPanel(new BorderLayout());
 		final OrderResponseSimpleModel responseModel = new OrderResponseSimpleModel(orderResponseSimple, editable,
@@ -66,7 +66,7 @@ public abstract class AbstractOrderResponseSimpleDialog extends JDialog
 		table.setFillsViewportHeight(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(0).setPreferredWidth(180);
+		columnModel.getColumn(0).setPreferredWidth(160);
 		columnModel.getColumn(1).setPreferredWidth(520);
 		return table;
 	}

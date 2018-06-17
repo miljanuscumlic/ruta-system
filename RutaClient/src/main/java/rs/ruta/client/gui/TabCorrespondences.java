@@ -3,16 +3,12 @@ package rs.ruta.client.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultRowSorter;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -24,9 +20,7 @@ import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -34,7 +28,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
@@ -49,15 +42,14 @@ import rs.ruta.client.correspondence.BuyerProcessOrderResponseSimpleState;
 import rs.ruta.client.correspondence.BuyerProcessOrderResponseState;
 import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
+import rs.ruta.client.correspondence.ClosingProcess;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.CustomerBillingProcess;
 import rs.ruta.client.correspondence.CustomerReconcileChargesState;
 import rs.ruta.client.correspondence.RutaProcess;
-import rs.ruta.client.correspondence.RutaProcessState;
 import rs.ruta.client.correspondence.SellerOrderingProcess;
 import rs.ruta.client.correspondence.SellerProcessOrderState;
 import rs.ruta.client.correspondence.SupplierBillingProcess;
-import rs.ruta.client.correspondence.SupplierBillingProcessState;
 import rs.ruta.client.correspondence.SupplierRaiseInvoiceState;
 import rs.ruta.client.correspondence.SupplierValidateResponseState;
 import rs.ruta.common.DocumentReference;
@@ -97,7 +89,7 @@ public class TabCorrespondences extends TabComponent
 	{
 		super(clientFrame);
 		final RutaClient client = clientFrame.getClient();
-		/*final MyParty */myParty = client.getMyParty();
+		myParty = client.getMyParty();
 		final BusinessParty cdrParty = new BusinessParty();
 		cdrParty.setCoreParty(client.getCDRParty());
 		final DefaultTreeModel correspondenceTreeModel =
@@ -209,7 +201,6 @@ public class TabCorrespondences extends TabComponent
 			new Thread(() ->
 			{
 				final String correspondentID = selectedParty.getPartyID();
-				//				final PartyType correspondentParty = selectedParty.getCoreParty();
 				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, selectedParty, true);
 				try
 				{
@@ -316,7 +307,6 @@ public class TabCorrespondences extends TabComponent
 				}
 			}
 		});
-
 		return table;
 	}
 
@@ -436,8 +426,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendApplicationResponseItem.addActionListener(event ->
 		{
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Application Response", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Application Response", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -468,8 +464,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendInvoiceItem.addActionListener(event ->
 		{
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Invoice", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Invoice", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -500,9 +502,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderItem.addActionListener(event ->
 		{
-//			setPage((Integer)((JButton)e.getSource()).getClientProperty( "page" ));
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Order", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Order", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -533,8 +540,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderResponseItem.addActionListener(event ->
 		{
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Order Response", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Order Response", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -565,8 +578,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderResponseSimpleItem.addActionListener(event ->
 		{
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Order Response Simple", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Order Response Simple", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -596,8 +615,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderChangeItem.addActionListener(event ->
 		{
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Order Change", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Order Change", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -626,8 +651,14 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderCancellationItem.addActionListener(event ->
 		{
-			final boolean cdr = (boolean) ((JMenuItem) event.getSource()).getClientProperty("CDR");
-			final int option = showConfirmDialog("Order Cancellation", cdr);
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty("CDR");
+			boolean cdr;
+			int option = JOptionPane.YES_OPTION;
+			if(clientProperty != null)
+			{
+				cdr = (boolean) clientProperty;
+				option = showConfirmDialog("Order Cancellation", cdr);
+			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
 				{
@@ -908,7 +939,8 @@ public class TabCorrespondences extends TabComponent
 							if(documentReference == corr.getLastDocumentReference())
 							{
 								if(process.getClass() == BuyerOrderingProcess.class  ||
-										process.getClass() == CustomerBillingProcess.class)
+										process.getClass() == CustomerBillingProcess.class ||
+										process.getClass() == ClosingProcess.class) // in a case prevoius state was SupplierValidateResponseState
 								{
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
@@ -920,6 +952,11 @@ public class TabCorrespondences extends TabComponent
 									{
 										correspondencePopupMenu.add(viewApplicationResponseItem);
 										resendApplicationResponseItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewApplicationResponseItem);
 										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
@@ -969,6 +1006,11 @@ public class TabCorrespondences extends TabComponent
 										resendInvoiceItem.putClientProperty("CDR", false);
 										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
 									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewInvoiceItem);
+										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
+									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
 											documentStatus == DocumentReference.Status.UBL_VALID ||
 											documentStatus == DocumentReference.Status.CLIENT_SENT)
@@ -1016,6 +1058,11 @@ public class TabCorrespondences extends TabComponent
 										resendOrderItem.putClientProperty("CDR", false);
 										correspondencePopupMenu.add(resendOrderItem); //out of state machine
 									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewOrderItem);
+										correspondencePopupMenu.add(resendOrderItem); //out of state machine
+									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
 											documentStatus == DocumentReference.Status.UBL_VALID ||
 											documentStatus == DocumentReference.Status.CLIENT_SENT)
@@ -1057,6 +1104,11 @@ public class TabCorrespondences extends TabComponent
 									{
 										correspondencePopupMenu.add(viewOrderResponseItem);
 										resendOrderResponseItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseItem);
 										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
@@ -1102,6 +1154,11 @@ public class TabCorrespondences extends TabComponent
 										resendOrderResponseSimpleItem.putClientProperty("CDR", false);
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
+									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
 											documentStatus == DocumentReference.Status.UBL_VALID ||
 											documentStatus == DocumentReference.Status.CLIENT_SENT)
@@ -1138,6 +1195,11 @@ public class TabCorrespondences extends TabComponent
 										resendOrderResponseSimpleItem.putClientProperty("CDR", false);
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
+									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
 											documentStatus == DocumentReference.Status.UBL_VALID ||
 											documentStatus == DocumentReference.Status.CLIENT_SENT)
@@ -1172,6 +1234,11 @@ public class TabCorrespondences extends TabComponent
 									{
 										correspondencePopupMenu.add(viewOrderChangeItem);
 										resendOrderChangeItem.putClientProperty("CDR", false);
+										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
+									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewOrderChangeItem);
 										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
@@ -1217,6 +1284,11 @@ public class TabCorrespondences extends TabComponent
 										resendOrderCancellationItem.putClientProperty("CDR", false);
 										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
 									}
+									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
+									{
+										correspondencePopupMenu.add(viewOrderCancellationItem);
+										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
+									}
 									else if(documentStatus == DocumentReference.Status.UBL_INVALID ||
 											documentStatus == DocumentReference.Status.UBL_VALID ||
 											documentStatus == DocumentReference.Status.CLIENT_SENT)
@@ -1247,7 +1319,8 @@ public class TabCorrespondences extends TabComponent
 	/**
 	 * Shows the dialog requesting confirmation for resending the document to the CDR.
 	 * @param documentName name of the document e.g. "Order"
-	 * @param cdr TODO
+	 * @param cdr true when CDR has been previously successfully received the document, false
+	 * when correspondent party has been previously successfully received the document
 	 * @return integer representing chosen option
 	 */
 	private int showConfirmDialog(String documentName, boolean cdr)
@@ -1266,180 +1339,18 @@ public class TabCorrespondences extends TabComponent
 	private JTable createPartyListTable(DefaultTableModel tableModel)
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
-		final JPopupMenu partyTablePopupMenu = new JPopupMenu();
-		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
-		final JMenuItem addPartnerItem = new JMenuItem("Add to Business Partners");
-		final JMenuItem removePartnerItem = new JMenuItem("Remove from Business Partners");
-		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
-		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
-		final JMenuItem followPartnerItem = new JMenuItem("Follow as Business Partner");
-		final JMenuItem followPartyItem = new JMenuItem("Follow as Party");
-
-		final MyParty myParty = clientFrame.getClient().getMyParty();
-
-		followPartnerItem.addActionListener(event ->
-		{
-			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(modelRowIndex);
-			final Party coreParty = selectedParty.getCoreParty();
-			final String followingName = InstanceFactory.
-					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0),
-					PartyIdentificationType::getIDValue);
-			new Thread(()->
-			{
-				try
-				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, true);
-					if(ret != null)
-					{
-						ret.get();
-						partiesTableModel.fireTableDataChanged();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getBusinessPartner(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, followedParty));
-					}
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
-				}
-			}).start();*/
-		});
-
-		followPartyItem.addActionListener(event ->
-		{
-			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getParty(modelRowIndex);
-			final Party coreParty = selectedParty.getCoreParty();
-			final String followingName = InstanceFactory.
-					getPropertyOrNull(coreParty.getPartyNameAtIndex(0), PartyNameType::getNameValue);
-			final String followingID = InstanceFactory.getPropertyOrNull(coreParty.getPartyIdentificationAtIndex(0),
-					PartyIdentificationType::getIDValue);
-			new Thread(()->
-			{
-				try
-				{
-					Future<?> ret = clientFrame.getClient().followParty(followingName, followingID, false);
-					if(ret != null)
-					{
-						ret.get();
-						partiesTableModel.fireTableDataChanged();
-						final BusinessParty followedParty = clientFrame.getClient().getMyParty().getOtherParty(followingID);
-						EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, followedParty));
-					}
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
-				}
-			}).start();*/
-		});
-
-		unfollowPartyItem.addActionListener(event ->
-		{
-			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(modelRowIndex);
-			new Thread(()->
-			{
-				try
-				{
-					Future<?> ret = clientFrame.getClient().cdrUnfollowParty(selectedParty);
-					if(ret != null)
-					{
-						ret.get();
-						partiesTableModel.fireTableDataChanged();
-						EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, selectedParty));
-					}
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
-				}
-			}).start();*/
-		});
-
-		addPartnerItem.addActionListener(event ->
-		{
-			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(modelRowIndex);
-			new Thread(() ->
-			{
-				selectedParty.setPartner(true);
-				try
-				{
-					myParty.followParty(selectedParty);
-					partiesTableModel.fireTableDataChanged();
-					EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, selectedParty));
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
-							append(" has been moved from Other Parties to Business Partners.").
-							append(" Party is still followed by My Party."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
-				}
-			}).start();*/
-		});
-
-		removePartnerItem.addActionListener(event ->
-		{
-			/*			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-
-			final BusinessParty selectedParty = ((PartyListTableModel) table.getModel()).getParty(modelRowIndex);
-			{
-				selectedParty.setPartner(false);
-				try
-				{
-					myParty.followParty(selectedParty);
-					partiesTableModel.fireTableDataChanged();
-					EventQueue.invokeLater(() -> makeVisibleNode(correspondenceTree, selectedParty));
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(selectedParty.getPartySimpleName()).
-							append(" has been moved from Business Partners to Other Parties.").
-							append(" Party is still followed by My Party."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(selectedParty.getPartySimpleName()).append(" could not be removed from the following parties!"));
-				}
-			}*/
-		});
-		//MMM change this
 		table.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
-				final int rowIndex = table.rowAtPoint(event.getPoint());
-				if(rowIndex != -1)
+				final int viewRowIndex = table.rowAtPoint(event.getPoint());
+				if(viewRowIndex != -1)
 				{
-					final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
+					final int modelRowIndex = table.convertRowIndexToModel(viewRowIndex);
 					if(SwingUtilities.isRightMouseButton(event))
 					{
-						table.setRowSelectionInterval(rowIndex, rowIndex);
-
-						final Object selectedParty = getSelectedUserObject(correspondenceTree);
-						if(selectedParty == null) return;
-						if(selectedParty instanceof String)
-						{
-							final String nodeTitle = (String) selectedParty;
-							if(BUSINESS_PARTNERS.equals(nodeTitle))
-							{
-								partyTablePopupMenu.removeAll();
-								partyTablePopupMenu.add(removePartnerItem);
-								partyTablePopupMenu.add(unfollowPartyItem);
-							}
-							else
-								partyTablePopupMenu.removeAll();
-							partyTablePopupMenu.show(table, event.getX(), event.getY());
-						}
+						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 					}
 					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
