@@ -225,10 +225,18 @@ public class TabCDRData extends TabComponent
 		{
 			final Object selectedParty = getSelectedUserObject(partyTree);
 			if(selectedParty == null) return;
-			new Thread(() ->
+			int option = JOptionPane.showConfirmDialog(clientFrame,
+					"By breaking up the Partnership with " + ((BusinessParty) selectedParty).getPartySimpleName() +
+					" party, you will not be able to do the business\n through the Ruta System with it." +
+					" Do you want to proceed?",
+							"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(option == JOptionPane.YES_OPTION)
 			{
-				clientFrame.getClient().breakupPartnership(((BusinessParty) selectedParty).getCoreParty());
-			}).start();
+				new Thread(() ->
+				{
+					clientFrame.getClient().breakupPartnership(((BusinessParty) selectedParty).getCoreParty());
+				}).start();
+			}
 		});
 
 		followPartyItem.addActionListener(event ->
@@ -1188,7 +1196,7 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-//				selectNode(partyTree, party);
+				//				selectNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
