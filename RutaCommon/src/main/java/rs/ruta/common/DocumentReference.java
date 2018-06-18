@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
+import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
@@ -45,6 +46,16 @@ public class DocumentReference extends DocumentReferenceType
 	{
 		super();
 		docReference.cloneTo(this);
+	}
+
+	private DocumentReference(CatalogueType catalogue)
+	{
+		setIssuerParty(catalogue.getReceiverParty());
+		setUUID(catalogue.getUUIDValue());
+		setID(catalogue.getID());
+		setIssueDate(catalogue.getIssueDate());
+		setIssueTime(catalogue.getIssueTimeValue());
+		setDocumentType(catalogue.getClass().getName());
 	}
 
 	private DocumentReference(OrderType order)
@@ -154,6 +165,8 @@ public class DocumentReference extends DocumentReferenceType
 			docReference = new DocumentReference((InvoiceType) document);
 		else if(documentClazz == PartnershipRequest.class)
 			docReference = new DocumentReference((PartnershipRequest) document);
+		else if(documentClazz == CatalogueType.class)
+			docReference = new DocumentReference((CatalogueType) document);
 		else
 			throw new DetailException("Document of an unexpected type has been passed for creation of the Document Reference.");
 

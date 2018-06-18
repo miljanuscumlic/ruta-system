@@ -86,6 +86,7 @@ import rs.ruta.client.datamapper.ClientMapperRegistry;
 import rs.ruta.client.datamapper.ClientMapperRegistryFactory;
 import rs.ruta.client.gui.BusinessPartyEvent;
 import rs.ruta.client.gui.CorrespondenceEvent;
+import rs.ruta.client.gui.ItemEvent;
 import rs.ruta.client.gui.PartnershipEvent;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.client.gui.RutaClientFrameEvent;
@@ -251,6 +252,7 @@ public class RutaClient implements RutaNode
 		myParty.addActionListener(frame, CorrespondenceEvent.class);
 		myParty.addActionListener(frame, BusinessPartyEvent.class);
 		myParty.addActionListener(frame, PartnershipEvent.class);
+		myParty.addActionListener(frame, ItemEvent.class);
 	}
 
 	public static void main(String... args)

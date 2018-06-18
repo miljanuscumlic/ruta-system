@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -28,67 +29,125 @@ import javax.swing.table.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import rs.ruta.client.Item;
 import rs.ruta.client.MyParty;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
 
 public class TabProducts extends TabComponent
 {
 	private static final long serialVersionUID = 7435742718848842547L;
+	private JTable productListTable;
+	private DefaultTableModel productListTableModel;
+	private List<Item> products;
 	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 
 	public TabProducts(final RutaClientFrame clientFrame)
 	{
 		super(clientFrame);
 		final MyParty myParty = clientFrame.getClient().getMyParty();
-		final DefaultTableModel tableModel = new ProductTableModel(myParty, true);
-		final JTable table = createCatalogueTable(tableModel);
+		products = myParty.getProducts();
+		productListTableModel = new ProductListTableModel(myParty, true);
+		productListTable = createCatalogueTable(productListTableModel);
 		//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		productListTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		final TableColumn tableColumn = table.getColumnModel().getColumn(8);
-		setUpComboBoxColumn(table, tableColumn);
+		final TableColumn tableColumn = productListTable.getColumnModel().getColumn(8);
+		setUpComboBoxColumn(productListTable, tableColumn);
 
 		final JPopupMenu cataloguePopupMenu = new JPopupMenu();
 
-		table.addMouseListener(new MouseAdapter()
+		productListTable.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					final int viewRowIndex = table.rowAtPoint(event.getPoint());
-					if(viewRowIndex > -1 && viewRowIndex < table.getRowCount() - 1) //except the last row
+					final int viewRowIndex = productListTable.rowAtPoint(event.getPoint());
+					if(viewRowIndex > -1 && viewRowIndex < productListTable.getRowCount())
 					{
-						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
-						cataloguePopupMenu.show(table, event.getX(), event.getY());
+						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+						cataloguePopupMenu.show(productListTable, event.getX(), event.getY());
 					}
 				}
 			}
 		});
 
-		final JMenuItem deleteItem = new JMenuItem("Delete item");
+		final JMenuItem deleteItem = new JMenuItem("Delete");
+		final JMenuItem newItem = new JMenuItem("Add New");
+		final JMenuItem editItem = new JMenuItem("Edit");
+		cataloguePopupMenu.add(newItem);
+		cataloguePopupMenu.addSeparator();
+		cataloguePopupMenu.add(editItem);
 		cataloguePopupMenu.add(deleteItem);
+
+		newItem.addActionListener(event ->
+		{
+			Item newProduct =
+					clientFrame.showProductDialog(myParty.createEmptyProduct(), "Add New Product or Service", true);
+			if (newProduct != null)
+			{
+				try
+				{
+					myParty.addProduct(newProduct);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Could not insert new product in the database! Exception is: ", e);
+					EventQueue.invokeLater(() ->
+					JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
+							"Database Error", JOptionPane.ERROR_MESSAGE)
+							);
+				}
+			}
+			else
+			{
+				myParty.decreaseProductID();
+			}
+		});
+
+		editItem.addActionListener(event ->
+		{
+			final int modelRowIndex = productListTable.convertRowIndexToModel(productListTable.getSelectedRow());
+			Item editedProduct =
+					clientFrame.showProductDialog(myParty.getProducts().get(modelRowIndex), "Edit Product or Service", true);
+			if(editedProduct != null)
+			{
+				try
+				{
+					myParty.updateProduct(editedProduct, modelRowIndex);
+				}
+				catch (DetailException e)
+				{
+					EventQueue.invokeLater(() ->
+					JOptionPane.showMessageDialog(clientFrame, "Could not update the product in the database.",
+							"Database Error", JOptionPane.ERROR_MESSAGE)
+							);
+					logger.error("Could not update the product in the database.", e);
+				}
+			}
+		});
 
 		deleteItem.addActionListener( event ->
 		{
 			try
 			{
-				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final int modelRowIndex = productListTable.convertRowIndexToModel(productListTable.getSelectedRow());
 				myParty.removeProduct(modelRowIndex);
-				repaint();
+				//				repaint();
 			}
 			catch (Exception e)
 			{
 				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(clientFrame, "Could not remove the product from the list.",
+				JOptionPane.showMessageDialog(clientFrame, "Could not remove the product from products list.",
 						"Database Error", JOptionPane.ERROR_MESSAGE)
 						);
 				logger.error("Could not remove the product from the list.", e);
 			}
 		});
 
-		leftPane = new JScrollPane(table);
+		leftPane = new JScrollPane(productListTable);
 		rightPane = null;
 		arrangeTab();
 	}
@@ -132,7 +191,37 @@ public class TabProducts extends TabComponent
 	@Override
 	protected void doDispatchEvent(ActionEvent event)
 	{
-		//nothing to do
+		Object source = event.getSource();
+		String command = event.getActionCommand();
+		if(source instanceof Item)
+		{
+			final Item item = (Item) source;
+			if(ItemEvent.ITEM_ADDED.equals(command))
+			{
+//				int viewRowIndex = productListTable.getSelectedRow();
+				productListTableModel.fireTableDataChanged();
+//				if(viewRowIndex >= 0 && viewRowIndex <= products.size())
+//					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				int viewRowIndex = productListTable.convertRowIndexToView(products.indexOf(item));
+				productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+			}
+			else if(ItemEvent.ITEM_UPDATED.equals(command))
+				{
+					int viewRowIndex = productListTable.getSelectedRow();
+					productListTableModel.fireTableDataChanged();
+					if(viewRowIndex >= 0 && viewRowIndex <= products.size())
+						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				}
+			else if(ItemEvent.ITEM_REMOVED.equals(command))
+			{
+				int viewRowIndex = productListTable.getSelectedRow();
+				if(viewRowIndex >= products.size())
+					viewRowIndex--;
+				productListTableModel.fireTableDataChanged();
+				if(viewRowIndex >= 0 && viewRowIndex <= products.size())
+					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+			}
+		}
 	}
 
 }

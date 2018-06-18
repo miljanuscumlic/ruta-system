@@ -112,10 +112,9 @@ public abstract class TabComponent extends Container
 		};
 
 		table.setFillsViewportHeight(true);
-		table.setAutoCreateRowSorter(true);
-
-		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);
-
+//		table.setAutoCreateRowSorter(true);
+//		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);
+		table.setRowSorter(createTableRowSorter(tableModel));
 		table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());
 
 		TableColumnModel colModel = table.getColumnModel();

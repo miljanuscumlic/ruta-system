@@ -86,6 +86,7 @@ import rs.ruta.client.correspondence.SupplierBillingProcess;
 import rs.ruta.client.correspondence.SupplierReceiveApplicationResponseState;
 import rs.ruta.client.gui.BusinessPartyEvent;
 import rs.ruta.client.gui.CorrespondenceEvent;
+import rs.ruta.client.gui.ItemEvent;
 import rs.ruta.client.gui.PartnershipEvent;
 import rs.ruta.client.gui.RutaClientFrameEvent;
 import rs.ruta.client.gui.SearchEvent;
@@ -454,6 +455,7 @@ public class MyParty extends BusinessParty
 		actionListeners.put(RutaClientFrameEvent.class, new ArrayList<>());
 		actionListeners.put(CorrespondenceEvent.class, new ArrayList<>());
 		actionListeners.put(PartnershipEvent.class, new ArrayList<>());
+		actionListeners.put(ItemEvent.class, new ArrayList<>());
 	}
 
 	public Map<Class<? extends ActionEvent>, List<ActionListener>> getActionListeners()
@@ -653,7 +655,7 @@ public class MyParty extends BusinessParty
 		if(commodities.get(0).getCommodityCode() == null)
 			commodities.get(0).setCommodityCode(new CommodityCodeType());
 		if(hasCellValueChanged(commodities.get(0).getCommodityCodeValue(), value))
-			commodities.get(0).setCommodityCode(value);;
+			commodities.get(0).setCommodityCode(value);
 	}
 
 	public BigDecimal getProductPrice(final int index)
@@ -671,15 +673,18 @@ public class MyParty extends BusinessParty
 		final Item item = products.get(index);
 		if(item.getPrice() == null)
 			item.setPrice(new PriceType());
-		if(item.getPrice().getPriceAmount() == null)
-		{
-			// to conform to the UBL, currencyID is mandatory
-			PriceAmountType priceAmount = new PriceAmountType(value);
-			priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications
-			item.getPrice().setPriceAmount(priceAmount);
-		}
 		if(hasCellValueChanged(item.getPrice().getPriceAmountValue(), value))
-			item.getPrice().setPriceAmount(value);
+		{
+			if(item.getPrice().getPriceAmount() == null)
+			{
+				// to conform to the UBL, currencyID is mandatory
+				PriceAmountType priceAmount = new PriceAmountType(value);
+				priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications
+				item.getPrice().setPriceAmount(priceAmount);
+			}
+			else
+				item.getPrice().setPriceAmount(value);
+		}
 	}
 
 	public String getProductTaxPrecentAsString(final int index)
@@ -747,16 +752,17 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets the next eligable ID for the {@link Item product}.
-	 * <p> Method is not optimized.
 	 * @return product's ID
-	 * @throws ProductException if uniqueness of ID could not be checked
 	 */
-	private String getNextProductID() throws ProductException
+	public String nextProductID()
 	{
-		String nextID = String.valueOf(++itemID);
-		while(!isUniqueProductID(nextID))
-			nextID = String.valueOf(++itemID);
-		return nextID;
+		return String.valueOf(++itemID);
+	}
+
+	public void decreaseProductID()
+	{
+		if(itemID > 0)
+			itemID--;
 	}
 
 	/**
@@ -2297,7 +2303,7 @@ public class MyParty extends BusinessParty
 		CatalogueType catalogue = null;
 		int lineCnt = 0;
 		final List<Item> myProducts = getProducts();
-		if(checkProductNames(myProducts) && !myProducts.isEmpty())
+		if(checkProductMandatoryProperties(myProducts) && !myProducts.isEmpty())
 		{
 			//populating Catalogue document
 			catalogue = new CatalogueType();
@@ -3208,17 +3214,28 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Checks whether all {@link Item items} in the list have a name that differs from an empty string.
+	 * Checks whether all {@link Item items} in the list have their mandatory properties set.
+	 * Mandatory properties are: name, price and tax precent property.
 	 * @param myProducts list of items
-	 * @return true if all items have a proper name, false otherwise
+	 * @return true if all items have mandatory properties set, false otherwise
 	 */
-	private boolean checkProductNames(List<Item> myProducts)
+	private boolean checkProductMandatoryProperties(List<Item> myProducts)
 	{
 		boolean ok = true;
-		for(Item prod : myProducts)
+		for(Item item : myProducts)
 		{
-			String productName = prod.getNameValue();
+			final String productName = item.getNameValue();
 			if (productName == null || productName.equals(""))
+			{
+				ok = false;
+				break;
+			}
+			try
+			{
+				item.getPrice().getPriceAmountValue();
+				item.getClassifiedTaxCategoryAtIndex(0).getPercentValue();
+			}
+			catch(Exception e)
 			{
 				ok = false;
 				break;
@@ -3407,26 +3424,47 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Removes {@link Item} from the product list and from the database.
+	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
 	 * @param row product's index
 	 * @throws Exception if {@code Item} could not be deleted from the database
 	 */
 	public void removeProduct(final int row) throws Exception
 	{
-		final String id = products.get(row).getID().getValue();
+		final Item item = products.get(row);
+		final String id = item.getID().getValue();
 		MapperRegistry.getInstance().getMapper(Item.class).delete(null, id);
 		products.remove(row);
+		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_REMOVED));
 		dirtyCatalogue = true;
 	}
 
 	/**
 	 * Adds passed {@link Item} to the product list and inserts it in the database.
+	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
 	 * @param item {@link Item} to be added
-	 * @throws DetailException if {@code Item item} could not be inserted in the database
+	 * @throws DetailException if {@code Item} could not be inserted in the database
 	 */
 	public void addProduct(final Item item) throws DetailException
 	{
 		MapperRegistry.getInstance().getMapper(Item.class).insert(null, item);
 		products.add(item);
+		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_ADDED));
+		dirtyCatalogue = true;
+	}
+
+	/**
+	 * Updates passed {@link Item} in the products list and in the database.
+	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
+	 * @param item {@link Item} to be updated
+	 * @param index index of the product in the list of all products
+	 * @throws DetailException if {@code Item} could not be updated in the database
+	 */
+	public void updateProduct(final Item item, int index) throws DetailException
+	{
+		MapperRegistry.getInstance().getMapper(Item.class).update(null, item);
+		products.remove(index);
+		products.add(item);
+		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_UPDATED));
 		dirtyCatalogue = true;
 	}
 
@@ -3443,13 +3481,27 @@ public class MyParty extends BusinessParty
 		addProduct(item);
 		try
 		{
-			setProductID(index, getNextProductID());
+			setProductID(index, nextProductID());
 		}
 		catch (ProductException e) //should not happen
 		{
 			logger.error("Product ID si not eligable", e);
 			throw new DetailException("ID uniqueness could not be afirmed.");
 		}
+	}
+
+	/**
+	 * Creates new {@link Item product} with initialized ID and ProductID only.
+	 * @return newly created product
+	 */
+	public Item createEmptyProduct()
+	{
+			Item item = new Item();
+			item.setID(UUID.randomUUID().toString());
+			final ItemIdentificationType id = new ItemIdentificationType();
+			id.setID(nextProductID());
+			item.setSellersItemIdentification(id);
+			return item;
 	}
 
 	//MMM invoke other delete methods if necessary
@@ -3668,6 +3720,17 @@ public class MyParty extends BusinessParty
 			myFollowingParty.setRecentlyUpdated(true);
 			notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
 			success = true;
+
+			synchronized(catalogueCorrespondence)
+			{
+				if(InstanceFactory.validateUBLDocument(catalogue, doc -> UBL21Validator.catalogue().validate(catalogue)))
+				{
+					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_VALID);
+					catalogueCorrespondence.setRecentlyUpdated(true);
+				}
+				else
+					throw new DetailException("Received Catalogue does not conform to the UBL standard.");
+			}
 		}
 		else
 		{

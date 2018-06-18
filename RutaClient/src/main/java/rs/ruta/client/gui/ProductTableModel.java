@@ -2,159 +2,191 @@ package rs.ruta.client.gui;
 
 import java.awt.EventQueue;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CommodityClassificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PriceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.BarcodeSymbologyIDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.CommodityCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.DescriptionType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.KeywordType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.PriceAmountType;
+import rs.ruta.client.Item;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.ProductException;
-import rs.ruta.common.datamapper.DetailException;
+import rs.ruta.common.InstanceFactory;
 
 /**
- *Table model containing data from MyParty.products.
+ * Table model containing data of one product or service represented by an {@link Item} object.
  */
 public class ProductTableModel extends DefaultTableModel
 {
-	private static final long serialVersionUID = 3505493863019815517L;
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
-	private static String[] columnNames =
+	private static final long serialVersionUID = -9067667667701887210L;
+	private static String[] rowNames =
 		{
-			"No.", "Name", "Description", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Tax", "Keywords"
+				"Name*", "Description", "Pack Size", "ID*", "Barcode", "Commodity Code", "Price*", "Tax percent*", "Keywords"
 		};
 
-	private MyParty myParty;
 	private boolean editable;
+	private Item item;
+	private boolean changed;
+	private MyParty myParty;
 
 	/**
-	 * Creates new model for the product table.
-	 * @param myParty myParty which products are modeled and shown
+	 * Creates new model for the {@link Item product} table.
+	 * @param myParty MyParty object
+	 * @param item {@link Item item} to show
 	 * @param editable if true, table cells are editable
 	 */
-	public ProductTableModel(MyParty myParty, boolean editable)
+	public ProductTableModel(MyParty myParty, Item item, boolean editable)
 	{
 		super();
-		this.myParty = myParty;
+		this.item = item;
 		this.editable = editable;
-	}
-
-	public MyParty getParty()
-	{
-		return myParty;
+		this.myParty = myParty;
+		changed = false;
 	}
 
 	@Override
 	public int getRowCount()
 	{
-		return myParty != null ? (editable ? myParty.getProducts().size() + 1 : myParty.getProducts().size()) : 0;
+		return item != null ? rowNames.length : 0;
 	}
 
 	@Override
 	public int getColumnCount()
 	{
-		return columnNames.length;
+		return 2;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		/*if(myParty == null)
-			return null;*/
-		if(rowIndex < myParty.getProducts().size())
+		if(item == null)
+			return null;
+		if(columnIndex == 0)
+			return rowNames[rowIndex];
+		try
 		{
-			switch(columnIndex)
+			switch(rowIndex)
 			{
 			case 0:
-				return rowIndex + 1;
+				return item.getNameValue();
 			case 1:
-				return myParty.getProductNameAsString(rowIndex);
+				return item.getDescriptionAtIndex(0).getValue();
 			case 2:
-				return myParty.getProductDescriptionAsString(rowIndex);
+				return item.getPackSizeNumericValue().toString();
 			case 3:
-				return myParty.getProductPackSize(rowIndex);
+				return item.getSellersItemIdentification().getIDValue();
 			case 4:
-				return myParty.getProductIDAsString(rowIndex);
+				return item.getSellersItemIdentification().getBarcodeSymbologyIDValue();
 			case 5:
-				return myParty.getProductBarcodeAsString(rowIndex);
+				return item.getCommodityClassification().get(0).getCommodityCodeValue();
 			case 6:
-				return myParty.getProductCommodityCodeAsString(rowIndex);
+				return item.getPrice().getPriceAmountValue().toString();
 			case 7:
-				return myParty.getProductPrice(rowIndex);
+				return item.getClassifiedTaxCategoryAtIndex(0).getPercentValue().toString();
 			case 8:
-				return myParty.getProductTaxPrecentAsString(rowIndex);
-			case 9:
-				return myParty.getProductKeywordsAsString(rowIndex);
+				return item.getKeywordCount() == 0 ? null :
+					item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", "));
 			default:
 				return null;
 			}
 		}
-		else
+		catch(Exception e)
+		{
 			return null;
+		}
 	}
 
 	@Override
 	public void setValueAt(Object obj, int rowIndex, int columnIndex)
 	{
 		//add new product to the list if the cell value is not empty
-		if(myParty.getProductCount() == rowIndex)
-			if(("").equals(((String) obj).trim())) // do nothing
-				return;
-			else
-			{
-				try
-				{
-					myParty.addNewEmptyProduct(rowIndex);
-					fireTableRowsInserted(rowIndex + 1, rowIndex + 1);
-				}
-				catch (DetailException e)
-				{
-					logger.error("Could not insert new product in the database! Exception is: ", e);
-					EventQueue.invokeLater(() ->
-						JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
-								"Database Error", JOptionPane.ERROR_MESSAGE)
-					);
-				}
-			}
+		if(item == null)
+		{
+			item = new Item();
+			item.setID(UUID.randomUUID().toString());
+			final ItemIdentificationType id = new ItemIdentificationType();
+			id.setID(myParty.nextProductID());
+			item.setSellersItemIdentification(id);
+		}
+		final Object oldValue = getValueAt(rowIndex, columnIndex);
 		try
 		{
-			switch(columnIndex)
+			final String value = ((String) obj).trim();
+			switch(rowIndex)
 			{
 			case 0:
+				item.setName(value);
 				break;
 			case 1:
-				myParty.setProductName(rowIndex, (String) obj);
+				item.getDescription().clear();
+				item.addDescription(new DescriptionType(value));
 				break;
 			case 2:
-				myParty.setProductDescription(rowIndex, (String) obj);
+				item.setPackSizeNumeric(BigDecimal.valueOf(Integer.valueOf(value)));
 				break;
 			case 3:
-				myParty.setProductPackSizeNumeric(rowIndex, (BigDecimal) obj);
+				//				final String newIDValue = (String )obj;
+				//				final ItemIdentificationType oldID = item.getSellersItemIdentification();
+				//				if(oldID == null || !newIDValue.equals(oldID.getIDValue()))
+				//				{
+				//					final ItemIdentificationType newID = new ItemIdentificationType();
+				//					newID.setID(newIDValue);
+				//					item.setSellersItemIdentification(newID);
+				//				}
 				break;
 			case 4:
-				final String newID = obj.toString();
-				if(!newID.equals(myParty.getProductIDAsString(rowIndex)))
-					myParty.setProductID(rowIndex, newID);
+				if(item.getSellersItemIdentification() == null)
+					throw new ProductException("Product ID is mandatory, and it must be entered first!");
+				if(item.getSellersItemIdentification().getBarcodeSymbologyID() == null)
+					item.getSellersItemIdentification().setBarcodeSymbologyID(new BarcodeSymbologyIDType());
+				item.getSellersItemIdentification().setBarcodeSymbologyID(value);
 				break;
 			case 5:
-				myParty.setProductBarcode(rowIndex, obj.toString());
+				List<CommodityClassificationType> commodities = item.getCommodityClassification();
+				if(commodities.isEmpty())
+					commodities.add(new CommodityClassificationType());
+				if(commodities.get(0).getCommodityCode() == null)
+					commodities.get(0).setCommodityCode(new CommodityCodeType());
+				commodities.get(0).setCommodityCode(value);
 				break;
 			case 6:
-				myParty.setProductCommodityCode(rowIndex, obj.toString());
+				if(item.getPrice() == null)
+					item.setPrice(new PriceType());
+				if(item.getPrice().getPriceAmount() == null)
+					item.getPrice().setPriceAmount(new PriceAmountType());
+				// to conform to the UBL, currencyID is mandatory
+				final PriceAmountType priceAmount = item.getPrice().getPriceAmount();
+				priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications
+				priceAmount.setValue(BigDecimal.valueOf(Double.valueOf(value)));
+				item.getPrice().setPriceAmount(priceAmount);
 				break;
 			case 7:
-				myParty.setProductPrice(rowIndex, (BigDecimal) obj);
+				final List<TaxCategoryType> taxCategoryList = item.getClassifiedTaxCategory();
+				final TaxCategoryType newCategory = InstanceFactory.getTaxCategory(value);
+				taxCategoryList.clear();
+				taxCategoryList.add(newCategory);
 				break;
 			case 8:
-				myParty.setProductTaxPrecent(rowIndex, obj.toString());
-				break;
-			case 9:
-				myParty.setProductKeywords(rowIndex, obj.toString());
+				final List<KeywordType> keywords =
+				Stream.of(value.trim().split("( )*[,;]+")).
+				map(keyword -> new KeywordType(keyword)).
+				collect(Collectors.toList());
+				item.setKeyword(keywords);
 			default:
 				break;
 			}
+			setChanged(oldValue, getValueAt(rowIndex, columnIndex));
 		}
 		catch(ProductException e)
 		{
@@ -168,28 +200,45 @@ public class ProductTableModel extends DefaultTableModel
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
 	{
-		//return getValueAt(0, columnIndex).getClass(); //MMM: check this
-		switch(columnIndex)
-		{
-		case 3:
-		case 7:
-			return BigDecimal.class;
-		case 8:
-			return JComboBox.class; //getValueAt(0, columnIndex).getClass();
-		default:
-			return String.class;
-		}
+		return String.class;
 	}
 
 	@Override
 	public String getColumnName(int columnIndex)
 	{
-		return columnNames[columnIndex];
+		return columnIndex == 0 ? "Property" : "Value";
 	}
 
 	@Override
 	public boolean isCellEditable(int row, int column)
 	{
-		return editable ? (column != 0 ? true : false) : false;
+		return editable ? (column != 0 && row != 3 ? true : false) : false;
 	}
+
+	/**
+	 * Sets flag denoting whether the cell value has been changed. The value is considered not being changed
+	 * if a new value is equal to an empty string and old value is a {@code null}.
+	 * @param oldOne old value of the cell
+	 * @param newOne new value of the cell
+	 * @return true if values differs, false otherwise
+	 */
+	private <T> void setChanged(T oldOne, T newOne)
+	{
+		if(newOne != null)
+		{
+			if(newOne instanceof String && newOne.toString().equals("") && oldOne == null)
+				changed = changed || false;
+			changed = changed || !newOne.equals(oldOne);
+		}
+	}
+
+	/**
+	 * Tests whether the {@link Item} data has changed.
+	 * @return
+	 */
+	public boolean isChanged()
+	{
+		return changed;
+	}
+
 }

@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -59,6 +61,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
@@ -77,6 +80,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseTy
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.BusinessParty;
 import rs.ruta.client.Catalogue;
+import rs.ruta.client.Item;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
 import rs.ruta.client.RutaClient;
@@ -87,6 +91,7 @@ import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
 import rs.ruta.services.RutaException;
@@ -108,6 +113,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private AboutDialog aboutDialog;
 	private UpdateDialog updateDialog;
 	private PartyDialog partyDialog;
+	private ProductDialog productDialog;
 	private RegisterDialog registerDialog;
 	private SearchDialog searchDialog;
 	private CDRSettingsDialog settingsDialog;
@@ -118,6 +124,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 	private JMenuItem myPartyItem = new JMenuItem("My Party");
 	private JMenuItem myCatalogueItem = new JMenuItem("My Products & Services");
+	private JMenuItem newProductItem = new JMenuItem("New Product or Service");
 	private JMenuItem saveDataItem = new JMenuItem("Save");
 	private JMenuItem exportDataItem = new JMenuItem("Export");
 	private JMenuItem importDataItem = new JMenuItem("Import");
@@ -137,7 +144,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private JMenuItem cdrSettingsItem = new JMenuItem("Settings");
 
 	private TabComponent tabCDR;
-	private TabComponent tabMyProducts;
+	private TabComponent tabProducts;
 	private TabComponent tabCorrespondences;
 
 	public RutaClientFrame(RutaClient client)
@@ -189,8 +196,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		//setting tabs
 		tabbedPane = new JTabbedPane();
-		tabMyProducts = new TabProducts(this);
-		tabbedPane.addTab("Products & Services", tabMyProducts);
+		tabProducts = new TabProducts(this);
+		tabbedPane.addTab("Products & Services", tabProducts);
 		tabCorrespondences = new TabCorrespondences(this);
 		tabbedPane.addTab("Correspondences", tabCorrespondences);
 		tabCDR = new TabCDRData(this);
@@ -221,6 +228,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		localDataMenu.add(myPartyItem);
 		localDataMenu.add(myCatalogueItem);
+		localDataMenu.add(newProductItem);
 		localDataMenu.addSeparator();
 		localDataMenu.add(saveDataItem);
 		localDataMenu.add(exportDataItem);
@@ -239,6 +247,30 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		myCatalogueItem.addActionListener(event ->
 		{
 			tabbedPane.setSelectedIndex(TAB_PRODUCTS);
+		});
+
+		newProductItem.addActionListener(event ->
+		{
+			Item product = showProductDialog(client.getMyParty().createEmptyProduct(), "Add New Product or Service", true);
+			if (product != null)
+			{
+				try
+				{
+					client.getMyParty().addProduct(product);
+					tabbedPane.setSelectedIndex(TAB_PRODUCTS);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Could not insert new product in the database! Exception is: ", e);
+					EventQueue.invokeLater(() ->
+					JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
+							"Database Error", JOptionPane.ERROR_MESSAGE));
+				}
+			}
+			else
+			{
+				client.getMyParty().decreaseProductID();
+			}
 		});
 
 		saveDataItem.addActionListener(event ->
@@ -952,7 +984,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			component = tabCDR;
 			break;
 		case TAB_PRODUCTS:
-			component = tabMyProducts;
+			component = tabProducts;
 			break;
 		case TAB_CORRESPONDENSCES:
 			component = tabCorrespondences;
@@ -988,7 +1020,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}
 			});
 		}
-		//setting clone not original object as a dialog's party field because the changes to the party will be rejected
+		//setting clone and not original object as a dialog's party field because the changes to the party will be rejected
 		//if they are not accepted by pressing the dialog's OK button. If original object is set instead, changes remain
 		//no matter what button was pressed
 		partyDialog.setParty(party.clone());
@@ -1003,6 +1035,32 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			partyDialog.setChanged(false);
 		}
 		return party;
+	}
+
+	/**
+	 * Shows dialog with {@link Item}'s.
+	 * @param product {@code Item product} which data are to be shown/amended
+	 * @param title title of the dialog
+	 * @param editable whether the data are editable
+	 * @return {@code Item product} with potentially changed data or {@code null} if data are not changed
+	 */
+	public Item showProductDialog(@NotNull Item product, String title, boolean editable)
+	{
+		productDialog = new ProductDialog(RutaClientFrame.this, client.getMyParty(),
+				product.clone(), editable);
+		productDialog.setTitle(title);
+		//setting clone and not original object as a dialog's party field because the changes to the party will be rejected
+		//if they are not accepted by pressing the dialog's OK button. If original object is set instead, changes remain
+		//no matter what button was pressed
+		productDialog.setVisible(true);
+		if(productDialog.isChanged())
+		{
+			product = productDialog.getProduct();
+			productDialog.setChanged(false);
+			return product;
+		}
+		else
+			return null;
 	}
 
 	/**
@@ -1402,6 +1460,12 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		{
 			tabCDR.dispatchEvent(event);
 			repaint(TAB_CDR_DATA);
+		}
+		else if(source instanceof Item)
+		{
+			tabProducts.dispatchEvent(event);
+			if(tabbedPane.getSelectedIndex() == TAB_PRODUCTS)
+				repaint();
 		}
 	}
 

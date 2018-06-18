@@ -4,9 +4,9 @@ import java.util.*;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class PartyTableCellEditor extends DefaultCellEditor
 {
+	private static final long serialVersionUID = -300615440639687513L;
 	protected String startString;
 	protected String endString;
 
@@ -37,7 +37,7 @@ public class PartyTableCellEditor extends DefaultCellEditor
 	}
 
 	/**
-	 * Checks if the table cell content has been changed.
+	 * Checks whether the table cell content has been changed.
 	 * @return true if the cell content has been changed
 	 */
 	public boolean hasChanged()

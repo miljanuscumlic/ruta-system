@@ -38,6 +38,10 @@ public class PartyTable extends JTable
 			return stringEditor; //super.getCellEditor(row, column);
 	}
 
+	/**
+	 * Checks whether the table content has been changed.
+	 * @return true if content has been changed
+	 */
 	public boolean hasChanged()
 	{
 		return dateEditor.hasChanged() || stringEditor.hasChanged();

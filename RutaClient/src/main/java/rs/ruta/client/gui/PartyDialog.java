@@ -52,7 +52,6 @@ public class PartyDialog extends JDialog
 		tableColumn.setMinWidth(160);
 		tableColumn.setPreferredWidth(160);
 		tableColumn.setMaxWidth(180);
-		tableColumn = tableColumnModel.getColumn(1);
 
 		MouseAdapter tableLostFocus = new MouseAdapter()
 		{
@@ -126,8 +125,7 @@ public class PartyDialog extends JDialog
 	}
 
 	/**
-	 * Gets the {@code change} field of the Party dialog that tells whether there has been a change in the data model
-	 * of the {@link Party}.
+	 * Tests whether there has been a change in the data model of the {@link Party}.
 	 * @return true if there was an alternation of the data in the dialog, false otherwise
 	 */
 	public boolean isChanged()
@@ -136,8 +134,9 @@ public class PartyDialog extends JDialog
 	}
 
 	/**
-	 * Sets the {@code change} field of the Party dialog. {@code change} field is true when the alternation
-	 * of the data in the dialog has been made.
+	 * Sets the {@code change} field of the Party dialog denoting whether there has been a change
+	 * in the data model of the {@link Party}.
+	 * @param changed true when the alternation of the data in the dialog has been made
 	 */
 	public void setChanged(boolean changed)
 	{

@@ -18,7 +18,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import rs.ruta.common.InstanceFactory;
 
 /**
- *Wrapper class for {@link PartyType} with additional convinient methods.
+ *Wrapper class for {@link PartyType} with some additional convinient methods.
  */
 @XmlType(name = "Party")
 @XmlAccessorType(XmlAccessType.NONE)
