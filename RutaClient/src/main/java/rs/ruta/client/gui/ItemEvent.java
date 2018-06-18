@@ -14,6 +14,7 @@ public class ItemEvent extends ActionEvent
 	public static final String ITEM_ADDED = "Item added";
 	public static final String ITEM_REMOVED = "Item removed";
 	public static final String ITEM_UPDATED = "Item updated";
+	public static final String ALL_ITEMS_REMOVED = "All items removed";
 
 	public ItemEvent(Object source, String command)
 	{

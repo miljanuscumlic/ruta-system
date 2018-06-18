@@ -513,8 +513,8 @@ public class MyParty extends BusinessParty
 	public void clearProducts() throws DetailException
 	{
 		MapperRegistry.getInstance().getMapper(Item.class).deleteAll();
-		//MMM:	TODO	notifyListeners(new BusinessPartyEvent(products, ItemEvent.ALL_PRODUCTS_REMOVED));
-		this.products = null;
+		products.clear();
+		notifyListeners(new ItemEvent(new Item(), ItemEvent.ALL_ITEMS_REMOVED));
 	}
 
 	public String getProductNameAsString(final int index)

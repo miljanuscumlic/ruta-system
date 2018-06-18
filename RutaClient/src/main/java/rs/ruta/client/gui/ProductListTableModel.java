@@ -44,7 +44,7 @@ public class ProductListTableModel extends DefaultTableModel
 	@Override
 	public int getRowCount()
 	{
-		return myParty != null ? myParty.getProducts().size() : 0;
+		return myParty != null && myParty.getProducts() != null ? myParty.getProducts().size() : 0;
 	}
 
 	@Override

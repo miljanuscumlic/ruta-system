@@ -221,6 +221,10 @@ public class TabProducts extends TabComponent
 				if(viewRowIndex >= 0 && viewRowIndex <= products.size())
 					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 			}
+			else if(ItemEvent.ALL_ITEMS_REMOVED.equals(command))
+			{
+				productListTableModel.fireTableDataChanged();
+			}
 		}
 	}
 
