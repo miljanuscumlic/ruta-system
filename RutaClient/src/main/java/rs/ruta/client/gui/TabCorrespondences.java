@@ -196,12 +196,27 @@ public class TabCorrespondences extends TabComponent
 
 		newOrderItem.addActionListener(event ->
 		{
-			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(correspondenceTree);
-			if(selectedParty == null) return;
+			final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+			if(selectedUserObject == null) return;
 			new Thread(() ->
 			{
-				final String correspondentID = selectedParty.getPartyID();
-				final BuyingCorrespondence corr = BuyingCorrespondence.newInstance(client, selectedParty, true);
+				String correspondentID = null;
+				BuyingCorrespondence corr = null;;
+				if(selectedUserObject instanceof BusinessParty)
+				{
+					correspondentID = ((BusinessParty) selectedUserObject).getPartyID();
+					corr = BuyingCorrespondence.newInstance(client, (BusinessParty) selectedUserObject, true);
+				}
+				else if(selectedUserObject instanceof Correspondence)
+				{
+					final Object parentUserObject =
+							((DefaultMutableTreeNode) getSelectedNode(correspondenceTree).getParent()).getUserObject();
+					if(parentUserObject != null && parentUserObject instanceof BusinessParty)
+					{
+						correspondentID = ((BusinessParty) parentUserObject).getPartyID();
+						corr = BuyingCorrespondence.newInstance(client, (BusinessParty) parentUserObject, true);
+					}
+				}
 				try
 				{
 					myParty.addBuyingCorrespondence(corr);
@@ -223,10 +238,11 @@ public class TabCorrespondences extends TabComponent
 				if(SwingUtilities.isRightMouseButton(event))
 				{
 					TreePath path = correspondenceTree.getPathForLocation(event.getX(), event.getY());
-					Object selectedParty = getSelectedUserObject(path);
-					if(selectedParty == null) return;
+					Object selectedUserObject = getSelectedUserObject(path);
+					if(selectedUserObject == null) return;
 					correspondenceTree.setSelectionPath(path);
-					if(selectedParty instanceof BusinessParty)
+					if(selectedUserObject instanceof BusinessParty ||
+							selectedUserObject instanceof Correspondence)
 					{
 						partyTreePopupMenu.removeAll();
 						partyTreePopupMenu.add(newOrderItem);
