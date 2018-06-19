@@ -1448,5 +1448,12 @@ public class TabCorrespondences extends TabComponent
 				}
 			}
 		}
+		else if(source.getClass() == ArrayList.class)
+		{
+			if(CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED.equals(command))
+			{
+				selectNode(correspondenceTree, CORRESPONDECES);
+			}
+		}
 	}
 }

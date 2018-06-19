@@ -1442,26 +1442,27 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		final Object source = event.getSource();
-		if(source.getClass() == BusinessParty.class ||
-				source.getClass() == PartnershipRequest.class)
+		final Class<? extends ActionEvent> eventClazz = event.getClass();
+		if(eventClazz == BusinessPartyEvent.class ||
+				eventClazz == PartnershipEvent.class)
 		{
-
 			tabCDR.dispatchEvent(event);
 			if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)
 				repaint();
 		}
-		else if(source instanceof Correspondence)
+		else if(eventClazz == CorrespondenceEvent.class)
 		{
 			tabCorrespondences.dispatchEvent(event);
 			if(tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
 				repaint();
 		}
-		else if(source instanceof Search)
+		else if(eventClazz == SearchEvent.class)
 		{
 			tabCDR.dispatchEvent(event);
-			repaint(TAB_CDR_DATA);
+			if(source instanceof Search) // do not show TAB_CDR_DATA when whole list is deleted
+				repaint(TAB_CDR_DATA);
 		}
-		else if(source instanceof Item)
+		else if(eventClazz == ItemEvent.class)
 		{
 			tabProducts.dispatchEvent(event);
 			if(tabbedPane.getSelectedIndex() == TAB_PRODUCTS)

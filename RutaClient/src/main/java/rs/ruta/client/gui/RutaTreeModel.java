@@ -92,10 +92,11 @@ public abstract class RutaTreeModel extends DefaultTreeModel  implements ActionL
 	}
 
 	/**
-	 * Deletes all childer nodes from the parent.
+	 * Deletes all children nodes of the parent.
 	 * @param parentNodeName name of the parent node
 	 */
-	protected void deleteChildrenNodes(String parentNodeName)
+//	protected void deleteChildrenNodes(String parentNodeName)
+	protected void deleteChildrenNodes(Object parentNodeName)
 	{
 		DefaultMutableTreeNode node = searchNode(parentNodeName);
 		node.removeAllChildren();

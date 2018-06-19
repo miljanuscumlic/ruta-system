@@ -11,6 +11,7 @@ public class CorrespondenceEvent extends ActionEvent
 	public static final String CORRESPONDENCE_ADDED = "Correspondence added";
 	public static final String CORRESPONDENCE_REMOVED = "Correspondence removed";
 	public static final String CORRESPONDENCE_UPDATED = "Correspondence updated";
+	public static final String ALL_CORRESPONDENCES_REMOVED = "All correspondences removed";
 
 	public CorrespondenceEvent(Object source, String command)
 	{

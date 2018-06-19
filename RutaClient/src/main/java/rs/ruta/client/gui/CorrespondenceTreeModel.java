@@ -157,14 +157,6 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 				updateNode(sourceParty);
 			}
 		}
-		else if(source.getClass() == ArrayList.class)
-		{
-			if(BusinessPartyEvent.ALL_PARTIES_REMOVED.equals(command))
-			{
-				businessPartners.clear();
-				deleteChildrenNodes(BUSINESS_PARTNERS);
-			}
-		}
 		else if(source.getClass() == BuyingCorrespondence.class)
 		{
 			final Correspondence corr = (Correspondence) source;
@@ -185,6 +177,20 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			if(CorrespondenceEvent.CORRESPONDENCE_ADDED.equals(command))
 			{
 				addNode(corr, cdrParty);
+			}
+		}
+		else if(source.getClass() == ArrayList.class)
+		{
+			if(BusinessPartyEvent.ALL_PARTIES_REMOVED.equals(command))
+			{
+				businessPartners.clear();
+				deleteChildrenNodes(BUSINESS_PARTNERS);
+			}
+			else if(CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED.equals(command))
+			{
+				deleteChildrenNodes(BUSINESS_PARTNERS);
+				deleteChildrenNodes(cdrParty);
+				correspondences.clear();
 			}
 		}
 	}
@@ -213,7 +219,7 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 
 	/**
 	 * Adds node as a child to a parent node.
-	 * @param userObject object contained in adding node
+	 * @param userObject object contained in node to add
 	 * @param parentObject object contained in parent node
 	 */
 	private void addNode(Object userObject, Object parentObject)

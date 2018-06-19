@@ -266,13 +266,7 @@ public class MyParty extends BusinessParty
 			setInboundPartnershipRequests(inRequests);
 		}
 
-		//			logger.info("*****Start loading catalogue correspondence");
-
 		final List<CatalogueCorrespondence> corrs = mapperRegistry.getMapper(CatalogueCorrespondence.class).findAll();
-		//			logger.info("*****End loading catalogue correspondence");
-
-		//				logger.info("*****Start starting catalogue correspondence thread");
-
 		CatalogueCorrespondence corr = null;
 		if(corrs == null || corrs.isEmpty())
 		{
@@ -283,29 +277,22 @@ public class MyParty extends BusinessParty
 			corr = corrs.get(0);
 			corr.setClient(client);
 			final RutaProcess process = (RutaProcess) corr.getState();
-			//			if(process != null) // should not be null
 			process.setClient(client);
 			setCatalogueCorrespondence(corr);
 		}
 
-		//			logger.info("*****End starting catalogue correspondence thread");
-
-		//			logger.info("*****Start loading buying correspondence");
 		buyingCorrespondences = mapperRegistry.getMapper(BuyingCorrespondence.class).findAll();
-		//			logger.info("*****End loading buying correspondence");
-		//			logger.info("*****Start loop for buying correspondence thread");
 		if(buyingCorrespondences != null)
+		{
 			for(BuyingCorrespondence bCorr : buyingCorrespondences)
 			{
 				if(bCorr.isActive())
 				{
-					//						logger.info("*****Start starting buying correspondence thread");
 					bCorr.setClient(client);
 					((RutaProcess) bCorr.getState()).setClient(client);
-					//						logger.info("*****End starting buying correspondence thread");
 				}
 			}
-		//			logger.info("*****End loop for buying correspondence thread");
+		}
 	}
 
 	/**
@@ -369,53 +356,6 @@ public class MyParty extends BusinessParty
 
 	}
 
-	/**
-	 * Stores only My Party data to a local data store that have not be stored after start of the application.
-	 * Some data that are stored immediately after they had be changed, should not be stored in this method again.
-	 * <p>This method should be refined.</p>
-	 * @throws Exception if data could not be stored to a data store
-	 */
-	public void storeDirtyData() throws Exception
-	{
-		setSearchNumber(Search.getSearchNum());
-		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
-		mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
-		mapperRegistry.getMapper(Item.class).insertAll(null, getProducts());
-
-		/*		if(followingParties != null && !followingParties.isEmpty())
-				mapperRegistry.getMapper(BusinessParty.class).insertAll(null, getFollowingParties());*/
-
-		/*		if(businessPartners != null && !businessPartners.isEmpty())
-				mapperRegistry.getMapper(BusinessParty.class).insertAll(null, businessPartners);
-			if(otherParties != null && !otherParties.isEmpty())
-				mapperRegistry.getMapper(BusinessParty.class).insertAll(null, otherParties);
-			if(archivedParties != null && !archivedParties.isEmpty())
-				mapperRegistry.getMapper(BusinessParty.class).insertAll(null, archivedParties);
-			if(deregisteredParties != null && !deregisteredParties.isEmpty())
-				mapperRegistry.getMapper(BusinessParty.class).insertAll(null, deregisteredParties);
-			if(myFollowingParty != null)
-				mapperRegistry.getMapper(BusinessParty.class).insert(null, myFollowingParty);*/
-
-		if(partySearches != null && !partySearches.isEmpty())
-		{
-			List<PartySearch> newList = Search.fromLisfOfGenerics(getPartySearches());
-			mapperRegistry.getMapper(PartySearch.class).insertAll(null, newList);
-		}
-		if(catalogueSearches != null && !catalogueSearches.isEmpty())
-		{
-			List<CatalogueSearch> newList = Search.fromLisfOfGenerics(getCatalogueSearches());
-			mapperRegistry.getMapper(CatalogueSearch.class).insertAll(null, newList);
-		}
-		if(catalogueCorrespondence != null)
-		{
-			mapperRegistry.getMapper(CatalogueCorrespondence.class).insert(null, catalogueCorrespondence);
-		}
-
-		if(buyingCorrespondences != null && !buyingCorrespondences.isEmpty())
-		{
-			mapperRegistry.getMapper(BuyingCorrespondence.class).insertAll(null, buyingCorrespondences);
-		}
-	}
 
 	/**
 	 * Deletes all the objects from the data model and all the data from the data store.
@@ -431,6 +371,7 @@ public class MyParty extends BusinessParty
 		clearSearches();
 		clearProducts();
 		clearCorrespondences();
+		setCoreParty(null);
 	}
 
 	public RutaClient getClient()
@@ -456,11 +397,6 @@ public class MyParty extends BusinessParty
 		actionListeners.put(CorrespondenceEvent.class, new ArrayList<>());
 		actionListeners.put(PartnershipEvent.class, new ArrayList<>());
 		actionListeners.put(ItemEvent.class, new ArrayList<>());
-	}
-
-	public Map<Class<? extends ActionEvent>, List<ActionListener>> getActionListeners()
-	{
-		return actionListeners;
 	}
 
 	/**
@@ -971,10 +907,11 @@ public class MyParty extends BusinessParty
 	 */
 	public void clearSearches() throws DetailException
 	{
-		//MMM:		TODO notifyListeners(new BusinessPartyEvent(partySearches, SearchEvent.ALL_PARTY_SEARCHES_REMOVED));
 		MapperRegistry.getInstance().getMapper(PartySearch.class).deleteAll();
+		notifyListeners(new SearchEvent(new ArrayList<>(), SearchEvent.ALL_PARTY_SEARCHES_REMOVED));
 		setPartySearches(null);
 		MapperRegistry.getInstance().getMapper(CatalogueSearch.class).deleteAll();
+		notifyListeners(new SearchEvent(new ArrayList<>(), SearchEvent.ALL_CATALOGUE_SEARCHES_REMOVED));
 		setCatalogueSearches(null);
 	}
 
@@ -989,7 +926,20 @@ public class MyParty extends BusinessParty
 		setCatalogueCorrespondence(null);
 		MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).deleteAll();
 		setBuyingCorrespondences(null);
-		//MMM:	TODO	notifyListeners(new BusinessPartyEvent(products, CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED));
+		notifyListeners(new CorrespondenceEvent(new ArrayList<>(), CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED));
+	}
+
+	/**
+	 * Removes all correspondences from the data model and data store.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
+	 * @throws DetailException if data could not be deleted from the database
+	 */
+	public void clearPartnershipRequests() throws DetailException
+	{
+		MapperRegistry.getInstance().getMapper(PartnershipRequest.class).deleteAll();
+		setInboundPartnershipRequests(null);
+		setOutboundPartnershipRequests(null);
+//		notifyListeners(new BusinessPartyEvent(products, CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED)); //MMM do notifying
 	}
 
 	/**
@@ -3510,7 +3460,7 @@ public class MyParty extends BusinessParty
 	 * during deregistration from the CDR service.
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
-	public void clearCDRRelatedData() throws DetailException
+	public void deleteCDRRelatedData() throws DetailException
 	{
 		setDirtyMyParty(true);
 		setDirtyCatalogue(true);
@@ -3524,6 +3474,9 @@ public class MyParty extends BusinessParty
 		removeCatalogueIssueDate();
 		unfollowMyself();
 		clearParties();
+		clearSearches();
+		clearCorrespondences();
+		clearPartnershipRequests();
 	}
 
 	/**

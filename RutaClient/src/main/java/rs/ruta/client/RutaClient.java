@@ -698,7 +698,7 @@ public class RutaClient implements RutaNode
 				try
 				{
 					future.get();
-					myParty.clearCDRRelatedData();
+					myParty.deleteCDRRelatedData();
 					frame.appendToConsole(new StringBuilder("My Party has been successfully deregistered from the CDR service."),
 							Color.GREEN);
 					frame.appendToConsole(new StringBuilder("All CDR related data in regard with parties has been deleted from").
