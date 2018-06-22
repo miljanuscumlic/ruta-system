@@ -1334,5 +1334,16 @@ public class TabCDRData extends TabComponent
 				selectNextNode(searchTree, source);
 			}
 		}
+		else if(source.getClass() == ArrayList.class)
+		{
+			if(SearchEvent.ALL_CATALOGUE_SEARCHES_REMOVED.equals(command))
+			{
+				selectNode(partyTree, FOLLOWINGS);
+			}
+			else if(BusinessPartyEvent.ALL_PARTIES_REMOVED.equals(command))
+			{
+				selectNode(partyTree, FOLLOWINGS);
+			}
+		}
 	}
 }

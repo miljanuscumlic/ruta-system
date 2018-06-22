@@ -136,14 +136,6 @@ public class ProductTableModel extends DefaultTableModel
 				item.setPackSizeNumeric(BigDecimal.valueOf(Integer.valueOf(value)));
 				break;
 			case 3:
-				//				final String newIDValue = (String )obj;
-				//				final ItemIdentificationType oldID = item.getSellersItemIdentification();
-				//				if(oldID == null || !newIDValue.equals(oldID.getIDValue()))
-				//				{
-				//					final ItemIdentificationType newID = new ItemIdentificationType();
-				//					newID.setID(newIDValue);
-				//					item.setSellersItemIdentification(newID);
-				//				}
 				break;
 			case 4:
 				if(item.getSellersItemIdentification() == null)
@@ -193,6 +185,14 @@ public class ProductTableModel extends DefaultTableModel
 			EventQueue.invokeLater(() ->
 			{
 				JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			});
+		}
+		catch(Exception e)
+		{
+			EventQueue.invokeLater(() ->
+			{
+				JOptionPane.showMessageDialog(null, "Invalid field format. " + e.getMessage() + "\n Reverting to previous value.",
+						"Error", JOptionPane.ERROR_MESSAGE);
 			});
 		}
 	}

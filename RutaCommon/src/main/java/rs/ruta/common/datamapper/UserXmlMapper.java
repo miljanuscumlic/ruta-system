@@ -260,10 +260,8 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 				rollbackTransaction(transaction);
 				throw new UserException("RutaUser has insufficient data in the database, or data could not be retrieved.");
 			}
-			catch(/*DetailException*/ Exception e)
+			catch(Exception e)
 			{
-//				logger.error("Exception is ", e);
-
 				rollbackTransaction(transaction);
 				throw e;
 			}

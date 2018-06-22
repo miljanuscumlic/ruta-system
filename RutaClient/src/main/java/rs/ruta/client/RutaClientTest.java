@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JDialog;
@@ -35,60 +36,14 @@ public class RutaClientTest
 		final String EXIST_HOME = System.getProperty("user.dir");
 		System.setProperty("exist.home", EXIST_HOME);
 
-		/*		//TEST START - write to eXist embedded database
-		//initialise the database driver
-		@SuppressWarnings("unchecked")
-		final Class<Database> dbClass = (Class<Database>) Class.forName("org.exist.xmldb.DatabaseImpl");
-		final Database database = dbClass.newInstance();
-		database.setProperty("create-database", "true");
-		DatabaseManager.registerDatabase(database);
-
-		Collection coll = null;
-		try
-		{
-			//get the collection
-			final String path = "/db/test";
-			final String uri = "xmldb:exist://" + path;
-			final String username = "admin";
-			final String password = null;
-			coll = DatabaseManager.getCollection(uri, username, password);
-
-			if(coll == null) {
-				//if the collection does not exist, create it!
-				//logger.warn("Collection {} does not exist! Creating collection...", path);
-				coll = createCollection(uri, username, password);
-				//logger.info("Created Collection {}", path);
-			}
-
-			final File source = new File("test.jpg");
-			//store the document(s) into the collection
-			storeDocuments(coll, source);
-		}
-		finally
-		{
-			//close the collection
-			if(coll != null)
-			{
-				final DatabaseInstanceManager manager = (DatabaseInstanceManager)coll.getService("DatabaseInstanceManager", "1.0");
-				try
-				{
-					coll.close();
-				}
-				finally
-				{
-					//shutdown the database
-					manager.shutdown();
-				}
-			}
-		}
-		//TEST END
-		 */
+		final RutaClientFrame frame = new RutaClientFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		RutaClient client = null;
 		boolean secondTry = false;
-		CountDownLatch latch = new CountDownLatch(1);
-
-		final JOptionPane awhilePane = new JOptionPane("Opening Ruta Client application.        \nThis could take a while. Please wait...",
+		final Semaphore edtSync = new Semaphore(0);
+		final JOptionPane awhilePane = new JOptionPane("Opening Ruta Client application.        \n" +
+				"This could take a while. Please wait...",
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
 		final JDialog awhileDialog = awhilePane.createDialog(null, "Ruta Client");
 		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -98,70 +53,91 @@ public class RutaClientTest
 			AtomicBoolean again = new AtomicBoolean();
 			try
 			{
-				client = new RutaClient(false);
+				client = new RutaClient(frame, false);
+				frame.setClient(client);
+				client.initialize();
+				frame.initialize();
 			}
 			catch(Exception e)
 			{
-				secondTry = true;
-				EventQueue.invokeLater(() ->
+				if(e.getMessage() != null && e.getMessage().contains("Ruta Client application has been already started."))
 				{
-					int option = JOptionPane.showConfirmDialog(null, "It seems there already has been started one instance of Ruta Client "
-							+ "application,\nor the previous instance of the appliation was not closed properly.\n"
-							+ "It might not succeed, but do you still want to try to open a new one?",
-							"Ruta Client - Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-					if(option == JOptionPane.YES_OPTION)
-						again.set(true);
-					else
-						again.set(false);
-					latch.countDown();
-				});
-			}
-
-			if(secondTry)
-			{
-				latch.await();
-				if(again.get() == true)
-				{
-					EventQueue.invokeLater(() -> awhileDialog.setVisible(true));
-					client = new RutaClient(true);
-					EventQueue.invokeLater(() -> awhileDialog.setVisible(false));
+					secondTry = true;
+					EventQueue.invokeLater(() ->
+					{
+						int option = JOptionPane.showConfirmDialog(null, "It seems there already has been started one instance of" +
+								" Ruta Client application,\nor the previous instance of the appliation was not closed properly.\n"
+								+ "It might not succeed, but do you still want to try to open a new one?",
+								"Ruta Client - Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+						if(option == JOptionPane.YES_OPTION)
+							again.set(true);
+						else
+							again.set(false);
+						edtSync.release();
+					});
 				}
 				else
 				{
-					logger.error("Unable to open Ruta Client application.");
-					System.exit(0);
-				}
-			}
-
-			Locale myLocale = Locale.forLanguageTag("sr-RS");
-			Locale.setDefault(myLocale);
-
-			//			logger.info("Starting client.preInitialize()");
-			client.preInitialize();
-			//			logger.info("Ending client.preInitialize()");
-			RutaClient aClient = client;
-			EventQueue.invokeLater(() ->
-			{
-				//				logger.info("//////Starting Ruta Client Frame initialization.\\\\\\");
-				JFrame frame = new RutaClientFrame(aClient);
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setVisible(true);
-				try
-				{
-					aClient.initialize();
-				}
-				catch (DetailException e)
-				{
 					logger.error("Fatal error! Data could not be read from the database. Exception is ", e);
-					EventQueue.invokeLater( () ->
+					EventQueue.invokeLater(() ->
 					{
 						JOptionPane.showMessageDialog(null, "Unable to read data from the database.\n" + e.getMessage(),
 								"Ruta Client - Critical error", JOptionPane.ERROR_MESSAGE);
 						System.exit(1);
 					});
 				}
-				//				logger.info("//////Ending Ruta Client Frame initialization.\\\\\\");
-			});
+			}
+
+			if(secondTry)
+			{
+				edtSync.acquire();
+				if(again.get() == true)
+				{
+					EventQueue.invokeLater(() -> awhileDialog.setVisible(true));
+
+					client = new RutaClient(frame, true);
+					frame.setClient(client);
+					client.initialize();
+					frame.initialize();
+
+					EventQueue.invokeLater(() -> awhileDialog.setVisible(false));
+				}
+				else
+				{
+					logger.error("Unable to open Ruta Client application.");
+					System.exit(1);
+				}
+			}
+
+			final Locale myLocale = Locale.forLanguageTag("sr-RS");
+			Locale.setDefault(myLocale);
+
+//			RutaClient aClient = client;
+
+//			EventQueue.invokeLater(() ->
+//			{
+////				JFrame frame = new RutaClientFrame(aClient);
+//				JFrame frame = new RutaClientFrame();
+//				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+////				frame.setVisible(true);
+//				edtSync.release();
+//			});
+
+//			try
+//			{
+//				edtSync.acquire();
+////				aClient.initialize();
+//			}
+//			catch (DetailException e)
+//			{
+//				logger.error("Fatal error! Data could not be read from the database. Exception is ", e);
+//				EventQueue.invokeLater( () ->
+//				{
+//					JOptionPane.showMessageDialog(null, "Unable to read data from the database.\n" + e.getMessage(),
+//							"Ruta Client - Critical error", JOptionPane.ERROR_MESSAGE);
+//					System.exit(1);
+//				});
+//			}
 		}
 		catch(Exception e)
 		{

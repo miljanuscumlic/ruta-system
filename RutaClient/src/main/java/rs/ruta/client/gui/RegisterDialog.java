@@ -1,90 +1,106 @@
 package rs.ruta.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.*;
 
+/**
+ * Dialog for database registration and login.
+ */
 public class RegisterDialog extends JDialog
 {
 	private static final long serialVersionUID = 7700950953345766469L;
 	private String username;
 	private String password; //MMM: not secure, should be changed
-	private boolean registerPressed; // true if the sign up button were pressed
+	private boolean okPressed; // true if the sign up button were pressed
+	private boolean rememberMe;
 
-	public RegisterDialog(RutaClientFrame owner)
+	/**
+	 * Creates dialog for database registration or login.
+	 * @param owner parent frame
+	 * @param login true when log-in procedure is in place, not a registration
+	 * @param rememberCredentials true when {@code Remeber me} checkbox should be displayed
+	 * @param mayExit true if dialog can be exited without entering credentials
+	 */
+	public RegisterDialog(RutaClientFrame owner, boolean login, boolean rememberCredentials, boolean mayExit)
 	{
 		super(owner, true);
-		registerPressed = false;
+		okPressed = rememberMe = false;
 		username = password = null;
-		setSize(500, 130);
+		setSize(500, 180);
 		setLocationRelativeTo(owner);
 
-		JPanel credentialsPanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
-		credentialsPanel.setLayout(grid);
-		GridBagConstraints cons1 = new GridBagConstraints();
-		cons1.weightx = 100;
-		cons1.weighty = 100;
-		cons1.gridx = 0;
-		cons1.gridy = 0;
-		cons1.gridwidth = 1;
-		cons1.gridheight = 1;
-		JPanel userPanel = new JPanel();
-		JLabel usernameLabel = new JLabel("Username: ", SwingConstants.LEFT);
-		userPanel.add(usernameLabel);
-		JTextField usernameField = new JTextField(30);
-		usernameField.setInputVerifier(new UsernameVerifier());
-		userPanel.add(usernameField);
-		credentialsPanel.add(userPanel, cons1);
-		GridBagConstraints cons2 = new GridBagConstraints();
-		cons2.weightx = 100;
-		cons2.weighty = 100;
-		cons2.gridx = 0;
-		cons2.gridy = 1;
-		cons2.gridwidth = 1;
-		cons2.gridheight = 1;
-		JPanel passPanel = new JPanel();
-		JLabel passwordLabel = new JLabel("Password: ",  SwingConstants.LEFT);
-		passPanel.add(passwordLabel);
-		JTextField passwordField = new JPasswordField(30);
-		passwordField.setInputVerifier(new PasswordVerifier());
-		passPanel.add(passwordField);
-		credentialsPanel.add(passPanel, cons2);
-/*		JLabel partyLabel = new JLabel("Party data: ");
-		GridBagConstraints cons3 = new GridBagConstraints();
-		cons3.weightx = 100;
-		cons3.weighty = 100;
-		cons3.gridx = 0;
-		cons3.gridy = 2;
-		cons3.gridwidth = 1;
-		cons3.gridheight = 1;
-		credentialsPanel.add(partyLabel, cons3);*/
-		add(credentialsPanel, BorderLayout.NORTH);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		JPanel buttonPanel = new JPanel();
-
-		JButton registerButton = new JButton("Register");
-		buttonPanel.add(registerButton);
-		registerButton.addActionListener(event ->
+		addWindowListener(new WindowAdapter()
 		{
-			username = usernameField.getText();
-			password = passwordField.getText();
-			registerPressed = true;
-			setVisible(false);
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				exit(owner, login, mayExit);
+			}
 		});
 
-		getRootPane().setDefaultButton(registerButton);
-		registerButton.requestFocusInWindow();
-		JButton cancelButton = new JButton("Cancel");
+		final JPanel credentialsPanel = new JPanel();
+		credentialsPanel.setLayout(new GridBagLayout());
+		final JLabel usernameLabel = new JLabel("Username: ", SwingConstants.LEFT);
+		final JTextField usernameField = new JTextField(30);
+		final UsernameVerifier usernameVerifier = new UsernameVerifier();
+		usernameField.setInputVerifier(usernameVerifier);
+		final JLabel passwordLabel = new JLabel("Password: ",  SwingConstants.LEFT);
+		final JTextField passwordField = new JPasswordField(30);
+		final PasswordVerifier passwordVerifier = new PasswordVerifier();
+		passwordField.setInputVerifier(passwordVerifier);
+
+		final JCheckBox rememberMeBox = new JCheckBox("Remember me");
+		final Insets insets = new Insets(15, 0, 0, 0);
+		putGridCell(credentialsPanel, 0, 0, 1, 1, insets, usernameLabel);
+		putGridCell(credentialsPanel, 0, 1, 1, 1, insets, usernameField);
+		putGridCell(credentialsPanel, 1, 0, 1, 1, insets, passwordLabel);
+		putGridCell(credentialsPanel, 1, 1, 1, 1, insets, passwordField);
+		if(rememberCredentials)
+			putGridCell(credentialsPanel, 2, 0, 1, 1, insets, rememberMeBox);
+
+		add(credentialsPanel, BorderLayout.NORTH);
+
+		final JPanel buttonPanel = new JPanel();
+		final JButton okButton = new JButton();
+		if(login)
+			okButton.setText("Log in");
+		else
+			okButton.setText("Register");
+		buttonPanel.add(okButton);
+		okButton.addActionListener(event ->
+		{
+			if(usernameVerifier.shouldYieldFocus(usernameField) &&
+					passwordVerifier.shouldYieldFocus(passwordField))
+			{
+				rememberMe = rememberMeBox.isSelected();
+				username = usernameField.getText();
+				password = passwordField.getText();
+				okPressed = true;
+				setVisible(false);
+			}
+		});
+
+		getRootPane().setDefaultButton(okButton);
+		okButton.requestFocusInWindow();
+		final JButton cancelButton = new JButton("Cancel");
 		cancelButton.setVerifyInputWhenFocusTarget(false);
 		buttonPanel.add(cancelButton);
 		cancelButton.addActionListener(event ->
 		{
 			passwordField.setText("");
 			usernameField.setText("");
-			setVisible(false);
+			exit(owner, login, mayExit);
 		});
 
 		add(buttonPanel, BorderLayout.SOUTH);
@@ -95,32 +111,75 @@ public class RegisterDialog extends JDialog
 		return username;
 	}
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
-
 	public String getPassword()
 	{
 		return password;
 	}
 
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
-
-	/**Checks if the Register button is pressed
-	 * @return true if the Register button is pressed
+	/**
+	 * Checks wheter the OK button was pressed.
+	 * @return true if the OK button was pressed
 	 */
-	public boolean isRegisterPressed()
+	public boolean isOKPressed()
 	{
-		return registerPressed;
+		return okPressed;
 	}
 
-	public void setRegisterPressed(boolean registerPressed)
+	public void setOKPressed(boolean okPressed)
 	{
-		this.registerPressed = registerPressed;
+		this.okPressed = okPressed;
+	}
+
+	/**
+	 * Tests whether the user checked {@code Remember me} chechbox.
+	 * @return true if the checkbox is checked
+	 */
+	public boolean isRememberMe()
+	{
+		return rememberMe;
+	}
+
+	public void setRememberMe(boolean rememberMe)
+	{
+		this.rememberMe = rememberMe;
+	}
+
+	//MMM: this method should be part of some common package and be static, because it is used in many different dialogs
+	private void putGridCell(JPanel panel, int row, int column, int width, int height, Insets insets, Component comp)
+	{
+		GridBagConstraints con = new GridBagConstraints();
+		con.weightx = 0;
+		con.weighty = 0;
+		con.gridx = column;
+		con.gridy = row;
+		con.gridwidth = width;
+		con.gridheight = height;
+		if(insets != null)
+			con.insets = insets;
+		con.anchor = GridBagConstraints.EAST;
+		con.fill = GridBagConstraints.BOTH;
+		panel.add(comp, con);
+	}
+
+	private void exit(RutaClientFrame owner, boolean login, boolean mayExit)
+	{
+		if(!mayExit)
+		{
+			String procedure = null;
+			if(login)
+				procedure = "log-in";
+			else
+				procedure = "registration";
+			int option = JOptionPane.showConfirmDialog(owner, "Entering your credentials is mandatory during " + procedure +
+					".\nNot entering them will close the application. Do you want to proceed?",
+					"Warning", JOptionPane.YES_NO_OPTION);
+			if(option == JOptionPane.NO_OPTION)
+				System.exit(0);
+		}
+		else
+		{
+			setVisible(false);
+		}
 	}
 
 	private class UsernameVerifier extends InputVerifier
@@ -128,7 +187,7 @@ public class RegisterDialog extends JDialog
 		@Override
 		public boolean verify(JComponent input)
 		{
-			String text = ((JTextField)input).getText();
+			String text = ((JTextField) input).getText();
 			if(text.length() < 3)
 				return false;
 			else
@@ -170,4 +229,5 @@ public class RegisterDialog extends JDialog
 			return valid;
 		}
 	}
+
 }

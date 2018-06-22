@@ -20,8 +20,10 @@ import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.XmlMapper;
 
-/**Temporary {@link XmlMapper} class until I develop complete solution for the local database collection organisation.
+/**
+ * Temporary {@link XmlMapper} class until I develop complete solution for the local database collection organisation.
  */
+@Deprecated
 public class MyPartyExistMapper extends XmlMapper<MyParty>
 {
 	private RutaClient client;

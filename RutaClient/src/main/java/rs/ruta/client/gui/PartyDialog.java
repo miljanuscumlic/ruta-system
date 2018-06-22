@@ -3,6 +3,10 @@ package rs.ruta.client.gui;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -64,6 +68,28 @@ public class PartyDialog extends JDialog
 		partyTable.getTableHeader().addMouseListener(tableLostFocus);
 		addMouseListener(tableLostFocus);
 
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); //disables all predefined window listeners
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent event)
+			{
+				if(registration)
+				{
+					int option = JOptionPane.showConfirmDialog(owner, "Entering My Party data is mandatory step during application setup." +
+							"\nNot entering data will close the application. Do you want to proceed?",
+							"Warning", JOptionPane.YES_NO_OPTION);
+					if (option == JOptionPane.NO_OPTION)
+					{
+			            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+						System.exit(0);
+					}
+				}
+				else
+					 setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			}
+		});
+
 //		TableCellRenderer renderer = new PartyTableCellRenderer();
 //		table.setDefaultRenderer(Object.class, renderer);
 
@@ -94,9 +120,13 @@ public class PartyDialog extends JDialog
 		cancelButton.addActionListener(event ->
 		{
 			if(registration)
-				EventQueue.invokeLater( () ->
-				JOptionPane.showMessageDialog(this,
-						"Entering My Party data is mandatory step during application setup."));
+			{
+				int option = JOptionPane.showConfirmDialog(owner, "Entering My Party data is mandatory step during application setup." +
+						"\nNot entering data will close the application. Do you want to proceed?",
+						"Warning", JOptionPane.YES_NO_OPTION);
+				if(option == JOptionPane.NO_OPTION)
+					System.exit(0);
+			}
 			else
 				setVisible(false);
 		});

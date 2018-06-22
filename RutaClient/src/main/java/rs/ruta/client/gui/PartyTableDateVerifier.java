@@ -15,9 +15,12 @@ public class PartyTableDateVerifier extends InputVerifier
 
 		try //check the validity of the input string of a date
 		{
-			DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
-		    format.setLenient(false);
-		    format.parse(text);
+			if(!"".equals(text.trim())) //empty string is OK
+			{
+				final DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
+				format.setLenient(false);
+				format.parse(text);
+			}
 		}
 		catch (ParseException e)
 		{
@@ -31,7 +34,8 @@ public class PartyTableDateVerifier extends InputVerifier
 	{
 		boolean valid = verify(input);
 		if (!valid)
-			EventQueue.invokeLater(() -> JOptionPane.showMessageDialog(null, "Invalid Date. Date should be in the form: dd.mm.yyyy."));
+			EventQueue.invokeLater(() ->
+			JOptionPane.showMessageDialog(null, "Invalid Date. Date should be in the form: dd.mm.yyyy."));
 		return valid;
 	}
 }

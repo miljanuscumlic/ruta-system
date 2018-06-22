@@ -161,7 +161,6 @@ public class MyParty extends BusinessParty
 	private List<BuyingCorrespondence> buyingCorrespondences;
 	private List<PartnershipRequest> outboundPartnershipRequests;
 	private List<PartnershipRequest> inboundPartnershipRequests;
-	private List<PartnershipRequest> businessResponses;
 	private List<PartnershipBreakup> partnershipBreakups;
 
 	@XmlElement(name = "LocalUser")
@@ -304,7 +303,8 @@ public class MyParty extends BusinessParty
 		stopCorrespondencies();
 		setSearchNumber(Search.getSearchNum());
 		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
-		mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
+		if(localUser != null)
+			mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
 		mapperRegistry.getMapper(Item.class).insertAll(null, getProducts());
 		if(businessPartners != null && !businessPartners.isEmpty())
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, businessPartners);
@@ -356,15 +356,16 @@ public class MyParty extends BusinessParty
 
 	}
 
-
 	/**
 	 * Deletes all the objects from the data model and all the data from the data store.
 	 * @throws DetailException if data could not be deleted
 	 */
 	public void deleteData() throws DetailException
 	{
+		localUser = cdrUser = null;
 		dirtyCatalogue = dirtyMyParty = insertMyCatalogue = true;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
+		orderID = invoiceID = 0;
 		catalogueIssueDate = null;
 		Search.resetSearchNumber();
 		clearParties();
@@ -372,6 +373,7 @@ public class MyParty extends BusinessParty
 		clearProducts();
 		clearCorrespondences();
 		setCoreParty(null);
+		MapperRegistry.getInstance().getMapper(MyParty.class).deleteAll();//(getLocalUsername(), getPartyID());
 	}
 
 	public RutaClient getClient()
@@ -962,7 +964,7 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Gets the {@code List} of all parties that are bussines partners of MyParty.
-	 * @return list of business partners
+	 * @return list of business partners that might be empty
 	 */
 	public List<BusinessParty> getBusinessPartners()
 	{
@@ -1145,6 +1147,10 @@ public class MyParty extends BusinessParty
 		}
 	}
 
+	/**
+	 * Gets the {@code List} of all archived parties.
+	 * @return list of all archived parties that might be empty
+	 */
 	public List<BusinessParty> getArchivedParties()
 	{
 		if(archivedParties == null)
@@ -1283,6 +1289,10 @@ public class MyParty extends BusinessParty
 		}
 	}
 
+	/**
+	 * Gets the {@code List} of all deregistered parties.
+	 * @return list of all deregistered parties that might be empty
+	 */
 	public List<BusinessParty> getDeregisteredParties()
 	{
 		if(deregisteredParties == null)
@@ -1679,18 +1689,6 @@ public class MyParty extends BusinessParty
 		this.catalogueSearches = catalogueSearches;
 	}
 
-	/*	public List<CreateCatalogueProcess> getCatalogueProcesses()
-		{
-			if(catalogueProcesses == null)
-				catalogueProcesses = new ArrayList<CreateCatalogueProcess>();
-			return catalogueProcesses;
-		}
-
-		public void setCatalogueProcesses(List<CreateCatalogueProcess> catalogueProcesses)
-		{
-			this.catalogueProcesses = catalogueProcesses;
-		}*/
-
 	/**
 	 * Gets {@link CatalogueCorrespondence}. If it has a {@code null} value new one is instantiated.
 	 * @return {@code CatalogueCorrespondence} or {@code null} if it is not set yet
@@ -1718,6 +1716,10 @@ public class MyParty extends BusinessParty
 		notifyListeners(new CorrespondenceEvent(correspondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
 	}
 
+	/**
+	 * Gets the {@code List} of all buying correspondencies.
+	 * @return list of all buying correspondencies that might be empty
+	 */
 	public List<BuyingCorrespondence> getBuyingCorrespondences()
 	{
 		if(buyingCorrespondences == null)
@@ -1767,8 +1769,8 @@ public class MyParty extends BusinessParty
 	 */
 	public void stopCorrespondencies() throws InterruptedException
 	{
-		if(getCatalogueCorrespondence().isAlive())
-			getCatalogueCorrespondence().stop();
+		if(catalogueCorrespondence != null && catalogueCorrespondence.isAlive())
+			catalogueCorrespondence.stop();
 		for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
 			if(bCorr.isAlive())
 				bCorr.stop();
@@ -1780,8 +1782,8 @@ public class MyParty extends BusinessParty
 	 */
 	public void waitCorrespondencesToStop() throws InterruptedException
 	{
-		if(getCatalogueCorrespondence().isAlive())
-			getCatalogueCorrespondence().waitThreadStopped();
+		if(catalogueCorrespondence != null && catalogueCorrespondence.isAlive())
+			catalogueCorrespondence.waitThreadStopped();
 		for(BuyingCorrespondence bCorr: getBuyingCorrespondences())
 			if(bCorr.isAlive() || bCorr.isStopped())//if(bCorr.isAlive())
 				bCorr.waitThreadStopped();
@@ -1793,7 +1795,6 @@ public class MyParty extends BusinessParty
 	 */
 	public boolean isRegisteredWithCDR()
 	{
-		//return getCoreParty().getPartyID() == null ? false : true;
 		return hasCDRSecretKey();
 	}
 
@@ -1841,6 +1842,18 @@ public class MyParty extends BusinessParty
 		this.localUser = localUser;
 	}
 
+	/**
+	 * Checks local user's credentials.
+	 * @param username
+	 * @param password
+	 * @return true if credentials are equal to passed arguments
+	 */
+	public boolean checkLocalUser(String username, String password)
+	{
+		return username != null && password != null &&
+				username == localUser.getUsername() && password.equals(localUser.getPassword());
+	}
+
 	public RutaUser getCDRUser()
 	{
 		return cdrUser;
@@ -1851,6 +1864,10 @@ public class MyParty extends BusinessParty
 		this.cdrUser = cdrUser;
 	}
 
+	/**
+	 * Gets the {@code List} of all sent business partnership requests.
+	 * @return list of sent business partnership requests that might be empty
+	 */
 	public List<PartnershipRequest> getOutboundPartnershipRequests()
 	{
 		if(outboundPartnershipRequests == null)
@@ -1969,6 +1986,10 @@ public class MyParty extends BusinessParty
 			notifyListeners(new PartnershipEvent(request, PartnershipEvent.OUTBOUND_PARTNERSHIP_REQUEST_REMOVED));
 	}
 
+	/**
+	 * Gets the {@code List} of all received business partnership requests.
+	 * @return list of received business partnership requests that might be empty
+	 */
 	public List<PartnershipRequest> getInboundPartnershipRequests()
 	{
 		if(inboundPartnershipRequests == null)
@@ -2121,23 +2142,15 @@ public class MyParty extends BusinessParty
 			notifyListeners(new PartnershipEvent(request, PartnershipEvent.INBOUND_PARTNERSHIP_REQUEST_REMOVED));
 	}
 
-	public List<PartnershipRequest> getBusinessResponses()
-	{
-		if(businessResponses == null)
-			businessResponses = new ArrayList<>();
-		return businessResponses;
-	}
-
-	public void setBusinessResponses(List<PartnershipRequest> businessResponses)
-	{
-		this.businessResponses = businessResponses;
-	}
-
 	public void setPartnershipBreakups(List<PartnershipBreakup> partnershipBreakups)
 	{
 		this.partnershipBreakups = partnershipBreakups;
 	}
 
+	/**
+	 * Gets the {@code List} of all business partnership breakups.
+	 * @return list of business partnership breakups that might be empty
+	 */
 	public List<PartnershipBreakup> getPartnershipBreakups()
 	{
 		if(partnershipBreakups == null)
@@ -3474,9 +3487,9 @@ public class MyParty extends BusinessParty
 		removeCatalogueIssueDate();
 		unfollowMyself();
 		clearParties();
-		clearSearches();
 		clearCorrespondences();
 		clearPartnershipRequests();
+		clearSearches();
 	}
 
 	/**

@@ -36,12 +36,11 @@ public class ProductDialog extends JDialog
 		final JPanel productPanel = new JPanel();
 
 		productTableModel = new ProductTableModel(myParty, item, editable);
-		productTable = new JTable(productTableModel);
+		productTable = new ProductTable(productTableModel);
 		productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		productTable.setFillsViewportHeight(true);
 		productTable.setColumnSelectionAllowed(false);
 		productTable.getTableHeader().setReorderingAllowed(false);
-		productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		productPanel.add(new JScrollPane(productTable));
 		add(productPanel, BorderLayout.CENTER);
@@ -125,6 +124,5 @@ public class ProductDialog extends JDialog
 	{
 		return item;
 	}
-
 
 }

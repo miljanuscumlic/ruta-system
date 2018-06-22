@@ -91,6 +91,7 @@ import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.Associates;
 import rs.ruta.common.InstanceFactory;
@@ -147,10 +148,16 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private TabComponent tabProducts;
 	private TabComponent tabCorrespondences;
 
-	public RutaClientFrame(RutaClient client)
+	public RutaClientFrame() {}
+
+	public void setClient(RutaClient client)
 	{
 		this.client = client;
-		this.client.setFrame(this);
+	}
+
+	public void initialize()
+	{
+		final MyParty myParty = client.getMyParty();
 
 		//get frame related properties
 		final Properties properties = client.getProperties();
@@ -159,8 +166,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
 		final int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
 		setBounds(left, top, width, height);
-		final String title = properties.getProperty("mainFrame.title", "Ruta Client");
-		setTitle(title);
+		setTitle("Ruta Client - " + client.getMyParty().getPartySimpleName());
 
 		chooser = new JFileChooser();
 		final FileFilter filter = new FileNameExtensionFilter("XML files", "xml");
@@ -215,6 +221,14 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabbedPane, new JScrollPane(consolePane));
 		add(splitPane, BorderLayout.CENTER);
+
+		//setting view listeners after model listeners of tabbedPane
+		myParty.addActionListener(this, RutaClientFrameEvent.class);
+		myParty.addActionListener(this, SearchEvent.class);
+		myParty.addActionListener(this, CorrespondenceEvent.class);
+		myParty.addActionListener(this, BusinessPartyEvent.class);
+		myParty.addActionListener(this, PartnershipEvent.class);
+		myParty.addActionListener(this, ItemEvent.class);
 
 		//setting the menu
 		JMenuBar menuBar = new JMenuBar();
@@ -317,17 +331,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						final MyPartyXMLFileMapper<MyParty> partyDataMapper =
 								new MyPartyXMLFileMapper<MyParty>(client.getMyParty(), filePath);
 						final ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
-						MyParty myParty;
+//						MyParty myParty;
 						if(parties.size() != 0)
 						{
 							//temporary code for importing core Party only
-							myParty = client.getMyParty();
+//							myParty = client.getMyParty();
 							String oldPartyID = myParty.getPartyID();
 							myParty.setCoreParty(parties.get(0).getCoreParty());
 							myParty.setPartyID(oldPartyID);
 							updateTitle(myParty.getPartySimpleName());
 
-							/*							//MMM:old code for importing data - should be improved for the release version
+							/*							//MMM old code for importing data - should be improved for the release version
 							myParty = parties.get(0);
 							client.setMyParty(myParty);
 							updateTitle(myParty.getPartySimpleName());
@@ -387,7 +401,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		localRegisterPartyItem.addActionListener(event ->
 		{
-			final MyParty myParty = client.getMyParty();
+//			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithLocalDatastore())
 				appendToConsole(new StringBuilder("My Party is already registered with the local datastore!"), Color.BLUE);
 			else
@@ -395,15 +409,23 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				disablePartyMenuItems();
 				new Thread(() ->
 				{
-					if(!myParty.isRegisteredWithLocalDatastore())
-						client.setInitialUsername(showLocalSignUpDialog("Local database registration"));
+						try
+						{
+							if(!myParty.isRegisteredWithLocalDatastore())
+								client.setInitialUsername(showLocalSignUpDialog("Local database registration", true));
+						}
+						catch (DetailException e1)
+						{
+							processExceptionAndAppendToConsole(e1,
+									new StringBuilder("My Party is could not be registered with the local datastore!"));
+						}
 				}).start();
 			}
 		});
 
 		localDeregisterPartyItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the local datastore.").
 						append(" If you want to deregister My Party locally you have to deregister it from the CDR service first!")
@@ -425,6 +447,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						appendToConsole(new StringBuilder("My Party has been successfully deregistered from the local datastore."),
 								Color.GREEN);
 						repaint();
+						EventQueue.invokeLater(() ->
+						{
+							JOptionPane.showMessageDialog(RutaClientFrame.this, "All data are deleted. Ruta Client Application will be closed!");
+							System.exit(0);
+						});
 					}).start();
 				}
 			}
@@ -483,7 +510,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrRegisterPartyItem.addActionListener(event ->
 		{
-			final MyParty myParty = client.getMyParty();
+//			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 				appendToConsole(new StringBuilder("My Party is already registered with the CDR service!"), Color.BLUE);
 			else
@@ -496,11 +523,19 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					{
 						JOptionPane.showMessageDialog(RutaClientFrame.this, "My Party is not registered with local database.\n"
 								+ "That will be the first step.", "Information", JOptionPane.INFORMATION_MESSAGE);
-						final String username = showLocalSignUpDialog("Local database registration");
-						if(username == null)
-							cdrRegistration = false;
-						else
-							client.setInitialUsername(username);
+						try
+						{
+							final String username = showLocalSignUpDialog("Local database registration", true);
+							if(username != null)
+								client.setInitialUsername(username);
+							else
+								cdrRegistration = false;
+						}
+						catch (DetailException e)
+						{
+							processExceptionAndAppendToConsole(e,
+									new StringBuilder("My Party could not be registered with the local datastore!"));
+						}
 					}
 					if(cdrRegistration)
 						showCDRSignUpDialog("CDR registration");
@@ -510,7 +545,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrDeregisterPartyItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(!myParty.getBusinessPartners().isEmpty())
@@ -542,7 +577,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrUpdatePartyItem.addActionListener(event ->
 		{
-			final MyParty myParty = client.getMyParty();
+//			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isDirtyMyParty())
@@ -565,7 +600,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrUpdateCatalogueItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isDirtyCatalogue())
@@ -597,7 +632,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrPullCatalogueItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.getMyFollowingParty() != null)
@@ -619,7 +654,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrDeleteCatalogueItem.addActionListener(event ->
 		{
-			MyParty myParty = client.getMyParty();
+//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isCatalogueInCDR())
@@ -775,6 +810,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		});
 
 		tabbedPane.setSelectedIndex(TAB_PRODUCTS);
+		setVisible(true);
 	}
 
 	/**
@@ -784,6 +820,27 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public static Logger getLogger()
 	{
 		return logger;
+	}
+
+
+	/**
+	 * Initialize tabbed pane
+	 */
+	public void initializeTabbedPane()
+	{
+		//setting tabs
+		tabbedPane = new JTabbedPane();
+		tabProducts = new TabProducts(this);
+		tabbedPane.addTab("Products & Services", tabProducts);
+		tabCorrespondences = new TabCorrespondences(this);
+		tabbedPane.addTab("Correspondences", tabCorrespondences);
+		tabCDR = new TabCDRData(this);
+		tabbedPane.addTab("CDR Data", tabCDR);
+
+		tabbedPane.addChangeListener(event ->
+		{
+			loadTab(tabbedPane.getSelectedIndex());
+		});
 	}
 
 	/**
@@ -966,7 +1023,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		properties.put("mainFrame.top", String.valueOf(getY()));
 		properties.put("mainFrame.width", String.valueOf(getWidth()));
 		properties.put("mainFrame.height", String.valueOf(getHeight()));
-		properties.put("mainFrame.title", "Ruta Client - " + getTitle());
 
 		//MMM: add column sizes for all the tabs
 	}
@@ -998,7 +1054,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * object they are saved within this method.
 	 * @param party {@code Party} object which data are to be shown
 	 * @param title title of the dialog
-	 * @param editable TODO
+	 * @param editable whether Party dialog's dadat are editable
 	 * @param registration whether the dialog is shown during local database registration
 	 * @return {@code Party} with potentially changed data
 	 */
@@ -1006,20 +1062,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		partyDialog = new PartyDialog(RutaClientFrame.this, editable, registration);
 		partyDialog.setTitle(title);
-		if(registration)
-		{
-			partyDialog.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-			partyDialog.addWindowListener(new WindowAdapter()
-			{
-				@Override
-				public void windowClosing(WindowEvent e)
-				{
-					EventQueue.invokeLater( () ->
-					JOptionPane.showMessageDialog(RutaClientFrame.this,
-							"Entering My Party data is mandatory step during application setup."));
-				}
-			});
-		}
+
 		//setting clone and not original object as a dialog's party field because the changes to the party will be rejected
 		//if they are not accepted by pressing the dialog's OK button. If original object is set instead, changes remain
 		//no matter what button was pressed
@@ -1070,11 +1113,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void showCDRSignUpDialog(String title)
 	{
 		boolean registerPressed = false;
-		registerDialog = new RegisterDialog(RutaClientFrame.this);
+		registerDialog = new RegisterDialog(RutaClientFrame.this, false, false, true);
 		registerDialog.setTitle(title);
 		registerDialog.setVisible(true);
-		registerPressed = registerDialog.isRegisterPressed();
-		registerDialog.setRegisterPressed(false);
+		registerPressed = registerDialog.isOKPressed();
+		registerDialog.setOKPressed(false);
 		if(registerPressed)
 		{
 			final String username = registerDialog.getUsername();
@@ -1086,28 +1129,73 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Shows dialog for the sign up/log in request with the local database.
+	 * Shows dialog for the sign up request with the local database.
 	 * @param title title of the dialog
+	 * @param mayExit true when dialog can be discarded
 	 * @return username
+	 * @throws DetailException if Party could not be registered
 	 */
-	public String showLocalSignUpDialog(String title)
+//	public String showLocalSignUpDialog(String title, RutaClient client)
+	public String showLocalSignUpDialog(String title, boolean mayExit) throws DetailException
 	{
 		String username = null;
-		boolean registerPressed = false;
-		registerDialog = new RegisterDialog(RutaClientFrame.this);
+		registerDialog = new RegisterDialog(RutaClientFrame.this, false, true, mayExit);
 		registerDialog.setTitle(title);
 		registerDialog.setVisible(true);
-		registerPressed = registerDialog.isRegisterPressed();
-		registerDialog.setRegisterPressed(false);
-		if(registerPressed)
+		if(registerDialog.isOKPressed())
 		{
+			registerDialog.setOKPressed(false);
 			username = registerDialog.getUsername();
-			client.getProperties().setProperty("username", username);
 			final String password = registerDialog.getPassword();
 			client.localRegisterMyParty(username, password);
+			final Properties properties = client.getProperties();
+			if(registerDialog.isRememberMe())
+			{
+				properties.setProperty("username", username);
+				properties.setProperty("password", password);
+			}
+			else
+			{
+				properties.remove("username");
+				properties.remove("password");
+			}
 		}
 		enablePartyMenuItems();
 		return username;
+	}
+
+	/**
+	 * Shows dialog for the log in request with the local database.
+	 * @param title title of the dialog
+	 * @param client TODO
+	 * @return true if log in was successful
+	 * @throws DatabaseException due to database connectivity issues
+	 */
+//	public boolean showLocalLogInDialog(String title, RutaClient client) throws DatabaseException
+	public boolean showLocalLogInDialog(String title) throws DatabaseException
+	{
+		boolean success = false;
+		registerDialog = new RegisterDialog(RutaClientFrame.this, true, true, false);
+		registerDialog.setTitle(title);
+		registerDialog.setVisible(true);
+		if(registerDialog.isOKPressed())
+		{
+			registerDialog.setOKPressed(false);
+			registerDialog.setVisible(false);
+			final String username = registerDialog.getUsername();
+			final String password = registerDialog.getPassword();
+			final Properties properties = client.getProperties();
+			properties.setProperty("username", username);
+			properties.setProperty("password", password);
+			success = client.isLocalUserRegistеred();
+
+			if(!registerDialog.isRememberMe())
+			{
+				properties.remove("username");
+				properties.remove("password");
+			}
+		}
+		return success;
 	}
 
 	/**
@@ -1459,7 +1547,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		else if(eventClazz == SearchEvent.class)
 		{
 			tabCDR.dispatchEvent(event);
-			if(source instanceof Search) // do not show TAB_CDR_DATA when whole list is deleted
+			if(source instanceof Search) // do not show TAB_CDR_DATA only when whole list is deleted
 				repaint(TAB_CDR_DATA);
 		}
 		else if(eventClazz == ItemEvent.class)
@@ -1478,25 +1566,26 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	public void appendToConsole(StringBuilder textBuilder, Color color)
 	{
-		EventQueue.invokeLater(()->
-		{
-			StyleContext sc = StyleContext.getDefaultStyleContext();
-			AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.BLACK);
+		if(consolePane != null) // do not append to console anything before it is instantiated
+			EventQueue.invokeLater(()->
+			{
+				StyleContext sc = StyleContext.getDefaultStyleContext();
+				AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.BLACK);
 
-			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.MEDIUM);
-			StyledDocument doc = consolePane.getStyledDocument();
-			try
-			{
-				doc.insertString(doc.getLength(), formatter.format(LocalDateTime.now()) + ": ", aset);
-				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
-				doc.insertString(doc.getLength(), textBuilder.append("\n").toString(), aset);
-			}
-			catch (BadLocationException e)
-			{
-				getLogger().error("Exception is ", e);
-			}
-			consolePane.setCaretPosition(consolePane.getDocument().getLength());
-		});
+				DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.MEDIUM);
+				StyledDocument doc = consolePane.getStyledDocument();
+				try
+				{
+					doc.insertString(doc.getLength(), formatter.format(LocalDateTime.now()) + ": ", aset);
+					aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
+					doc.insertString(doc.getLength(), textBuilder.append("\n").toString(), aset);
+				}
+				catch (BadLocationException e)
+				{
+					getLogger().error("Exception is ", e);
+				}
+				consolePane.setCaretPosition(consolePane.getDocument().getLength());
+			});
 	}
 
 	/**

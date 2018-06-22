@@ -49,7 +49,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 					Node node = header.getFirstChild();
 					NodeList nodeList = node.getChildNodes();
 					if(nodeList.getLength() < 3)
-						generateFault("To few header nodes!");
+						generateFault("Too few header nodes!");
 					String username = nodeList.item(0).getFirstChild().getNodeValue();
 					String timestamp = nodeList.item(1).getFirstChild().getNodeValue();
 					String signature = nodeList.item(2).getFirstChild().getNodeValue();

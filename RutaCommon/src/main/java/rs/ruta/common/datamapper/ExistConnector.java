@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Database;
+import org.xmldb.api.base.ErrorCodes;
 import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
@@ -51,7 +52,7 @@ public class ExistConnector implements DatastoreConnector
 	/**
 	 * Constructs eXist database instance and registers it at the {@link DatabaseManager}, enabling
 	 * the application to communicate with it.
-	 * @throws DatabaseException if failed be connected to the database
+	 * @throws DatabaseException if fails to connect to the database
 	 */
 	@Override
 	public void connectToDatabase() throws DatabaseException
@@ -358,6 +359,23 @@ public class ExistConnector implements DatastoreConnector
 	public static Collection getRootCollection(String username, String password) throws XMLDBException
 	{
 		return DatabaseManager.getCollection(baseUri + rutaCollectionPath, username, password);
+	}
+
+	@Override
+	public boolean checkUser(String username, String password) throws DatabaseException
+	{
+		try
+		{
+			getRootCollection(username, password);
+			return true;
+		}
+		catch(XMLDBException e)
+		{
+			if(e.errorCode == ErrorCodes.PERMISSION_DENIED)
+				return false;
+			else
+				throw new DatabaseException("Could not connect to the database", e);
+		}
 	}
 
 	/**
