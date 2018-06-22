@@ -48,6 +48,11 @@ public class RutaClientTest
 		final JDialog awhileDialog = awhilePane.createDialog(null, "Ruta Client");
 		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
+		final JOptionPane splashPane = new JOptionPane("Initializing Ruta Client application.        \nPlease wait...",
+				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
+		final JDialog splashScreen = splashPane.createDialog(frame, "Ruta Client");
+		splashScreen.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
 		try
 		{
 			AtomicBoolean again = new AtomicBoolean();
@@ -55,8 +60,16 @@ public class RutaClientTest
 			{
 				client = new RutaClient(frame, false);
 				frame.setClient(client);
+				client.authorizeUserAccess();
+				EventQueue.invokeLater(() -> splashScreen.setVisible(true));
 				client.initialize();
-				frame.initialize();
+				EventQueue.invokeLater(() ->
+				{
+					frame.initialize();
+					splashScreen.setVisible(false);
+					frame.setVisible(true);
+				});
+
 			}
 			catch(Exception e)
 			{
@@ -97,10 +110,16 @@ public class RutaClientTest
 
 					client = new RutaClient(frame, true);
 					frame.setClient(client);
+					client.authorizeUserAccess();
+					EventQueue.invokeLater(() -> splashScreen.setVisible(true));
 					client.initialize();
-					frame.initialize();
+					EventQueue.invokeLater(() ->
+					{
+						frame.initialize();
+						splashScreen.setVisible(false);
+						frame.setVisible(true);
+					});
 
-					EventQueue.invokeLater(() -> awhileDialog.setVisible(false));
 				}
 				else
 				{

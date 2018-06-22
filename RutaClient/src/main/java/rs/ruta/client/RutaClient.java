@@ -235,7 +235,7 @@ public class RutaClient implements RutaNode
 	 */
 	public void initialize() throws DetailException
 	{
-		authorizeUserAccess();
+//		authorizeUserAccess();
 		initializeMyParty();
 	}
 
@@ -257,7 +257,7 @@ public class RutaClient implements RutaNode
 			myParty.addCatalogueCorrespondence(CatalogueCorrespondence.newInstance(this));
 	}
 
-	private void authorizeUserAccess() throws DetailException
+	public void authorizeUserAccess() throws DetailException
 	{
 //		if(isLocalUserRegistеred())
 //		{

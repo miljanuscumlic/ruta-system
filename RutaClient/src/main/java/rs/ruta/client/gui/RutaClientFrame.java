@@ -1114,7 +1114,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		boolean registerPressed = false;
 		registerDialog = new RegisterDialog(RutaClientFrame.this, false, false, true);
-		registerDialog.setTitle(title);
+		registerDialog.setTitle("Ruta Client - " + title);
 		registerDialog.setVisible(true);
 		registerPressed = registerDialog.isOKPressed();
 		registerDialog.setOKPressed(false);
@@ -1135,12 +1135,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * @return username
 	 * @throws DetailException if Party could not be registered
 	 */
-//	public String showLocalSignUpDialog(String title, RutaClient client)
 	public String showLocalSignUpDialog(String title, boolean mayExit) throws DetailException
 	{
 		String username = null;
 		registerDialog = new RegisterDialog(RutaClientFrame.this, false, true, mayExit);
-		registerDialog.setTitle(title);
+		registerDialog.setTitle("Ruta Client - " + title);
 		registerDialog.setVisible(true);
 		if(registerDialog.isOKPressed())
 		{
@@ -1160,23 +1159,21 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				properties.remove("password");
 			}
 		}
-		enablePartyMenuItems();
+		EventQueue.invokeLater(() -> enablePartyMenuItems());
 		return username;
 	}
 
 	/**
 	 * Shows dialog for the log in request with the local database.
 	 * @param title title of the dialog
-	 * @param client TODO
 	 * @return true if log in was successful
 	 * @throws DatabaseException due to database connectivity issues
 	 */
-//	public boolean showLocalLogInDialog(String title, RutaClient client) throws DatabaseException
 	public boolean showLocalLogInDialog(String title) throws DatabaseException
 	{
 		boolean success = false;
 		registerDialog = new RegisterDialog(RutaClientFrame.this, true, true, false);
-		registerDialog.setTitle(title);
+		registerDialog.setTitle("Ruta Client - " + title);
 		registerDialog.setVisible(true);
 		if(registerDialog.isOKPressed())
 		{
