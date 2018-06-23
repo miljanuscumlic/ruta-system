@@ -2,11 +2,14 @@ package rs.ruta.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -41,9 +44,11 @@ public class CDRSettingsDialog extends JDialog
 		connectTimeout = String.valueOf(RutaClient.getConnectTimeout() / 1000);
 		connectTimeoutField = new JTextField(30);
 		connectTimeoutField.setText(connectTimeout);
+		connectTimeoutField.setInputVerifier(new NonnegativeNumberVerifier());
 		requestTimeout = String.valueOf(RutaClient.getRequestTimeout() / 1000);
 		requestTimeoutField = new JTextField(30);
 		requestTimeoutField.setText(requestTimeout);
+		requestTimeoutField.setInputVerifier(new NonnegativeNumberVerifier());
 		applyPressed = false;
 		JPanel cdrPanel = new JPanel();
 		cdrPanel.setLayout(new BorderLayout());
@@ -134,7 +139,7 @@ public class CDRSettingsDialog extends JDialog
 			String serviceString = serviceField.getText();
 			connectTimeout = connectTimeoutField.getText();
 			requestTimeout = requestTimeoutField.getText();
-			//MMM: here should be some better validation of the input string
+			//MMM here should be some better validation of the input string
 			if("".equals(serviceString))
 				JOptionPane.showMessageDialog(this, "Service location field can not be empty!", "Invalid input", JOptionPane.ERROR_MESSAGE);
 			else
@@ -145,6 +150,7 @@ public class CDRSettingsDialog extends JDialog
 			}
 		});
 
+		cancelButton.setVerifyInputWhenFocusTarget(false);
 		cancelButton.addActionListener(event ->
 		{
 			setVisible(false);
@@ -156,7 +162,7 @@ public class CDRSettingsDialog extends JDialog
 		return buttonPanel;
 	}
 
-	//MMM: this method should be part of some common package and be static, because it is used in many different dialogs
+	//MMM this method should be part of some common package and be static, because it is used in many different dialogs
 	private void putGridCell(JPanel panel, int row, int column, int width, int height, Insets insets, Component comp)
 	{
 		GridBagConstraints con = new GridBagConstraints();
@@ -171,6 +177,39 @@ public class CDRSettingsDialog extends JDialog
 		con.anchor = GridBagConstraints.EAST;
 //		con.fill = GridBagConstraints.BOTH;
 		panel.add(comp, con);
+	}
+
+	private class NonnegativeNumberVerifier extends InputVerifier
+	{
+		@Override
+		public boolean verify(JComponent input)
+		{
+			final String text = ((JTextField) input).getText();
+			try
+			{
+				final Integer value = Integer.valueOf(text);
+				if(value >= 0)
+					return true;
+				else
+					return false;
+			}
+			catch(NumberFormatException e)
+			{
+				return false;
+			}
+		}
+
+		@Override
+		public boolean shouldYieldFocus(JComponent input)
+		{
+			final boolean valid = verify(input);
+			if(!valid)
+			{
+				EventQueue.invokeLater(() -> JOptionPane.showMessageDialog(CDRSettingsDialog.this,
+						"Input value is not a nonnegative integer number.", "Error", JOptionPane.ERROR_MESSAGE));
+			}
+			return valid;
+		}
 	}
 
 }
