@@ -1528,8 +1528,15 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		final Object source = event.getSource();
 		final Class<? extends ActionEvent> eventClazz = event.getClass();
-		if(eventClazz == BusinessPartyEvent.class ||
-				eventClazz == PartnershipEvent.class)
+		if(eventClazz == BusinessPartyEvent.class)
+		{
+			tabCDR.dispatchEvent(event);
+			tabCorrespondences.dispatchEvent(event);
+			if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA ||
+					tabbedPane.getSelectedIndex() == TAB_CORRESPONDENSCES)
+				repaint();
+		}
+		else if(eventClazz == PartnershipEvent.class)
 		{
 			tabCDR.dispatchEvent(event);
 			if(tabbedPane.getSelectedIndex() == TAB_CDR_DATA)

@@ -237,12 +237,14 @@ public class TabCorrespondences extends TabComponent
 			{
 				if(SwingUtilities.isRightMouseButton(event))
 				{
-					TreePath path = correspondenceTree.getPathForLocation(event.getX(), event.getY());
-					Object selectedUserObject = getSelectedUserObject(path);
+					final TreePath path = correspondenceTree.getPathForLocation(event.getX(), event.getY());
+					final Object selectedUserObject = getSelectedUserObject(path);
 					if(selectedUserObject == null) return;
 					correspondenceTree.setSelectionPath(path);
-					if(selectedUserObject instanceof BusinessParty ||
-							selectedUserObject instanceof Correspondence)
+					if((selectedUserObject instanceof BusinessParty &&
+							((BusinessParty) selectedUserObject).isPartner()) ||
+							(selectedUserObject instanceof Correspondence &&
+									((BusinessParty) ((DefaultMutableTreeNode) getSelectedNode(correspondenceTree).getParent()).getUserObject()).isPartner()))
 					{
 						partyTreePopupMenu.removeAll();
 						partyTreePopupMenu.add(newOrderItem);
@@ -306,10 +308,10 @@ public class TabCorrespondences extends TabComponent
 			@Override
 			public void mouseClicked(MouseEvent event)
 			{
-				final int rowIndex = table.rowAtPoint(event.getPoint());
-				if(rowIndex != -1)
+				final int viewRowIndex = table.rowAtPoint(event.getPoint());
+				if(viewRowIndex != -1)
 				{
-					final int modelRowIndex = table.convertRowIndexToModel(rowIndex);
+					final int modelRowIndex = table.convertRowIndexToModel(viewRowIndex);
 					if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
 						//					final Correspondence corr = ((CorrespondenceListTableModel) tableModel).getCorrespondenceAtIndex(modelRowIndex);
@@ -319,6 +321,10 @@ public class TabCorrespondences extends TabComponent
 						rightScrollPane.setViewportView(partnerCorrespondenceTable);
 						selectNode(correspondenceTree, corr);
 						repaint();
+					}
+					else if(SwingUtilities.isRightMouseButton(event))
+					{
+						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 					}
 				}
 			}
@@ -1364,11 +1370,7 @@ public class TabCorrespondences extends TabComponent
 				if(viewRowIndex != -1)
 				{
 					final int modelRowIndex = table.convertRowIndexToModel(viewRowIndex);
-					if(SwingUtilities.isRightMouseButton(event))
-					{
-						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
-					}
-					else if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
+					if(SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2)
 					{
 						//					final BusinessParty party = ((PartyListTableModel) tableModel).getPartyAtIndex(modelRowIndex);
 						final BusinessParty party = ((PartyListTableModel) table.getModel()).getPartyAtIndex(modelRowIndex);
@@ -1378,6 +1380,10 @@ public class TabCorrespondences extends TabComponent
 						rightScrollPane.setViewportView(partnerCorrespondenceListTable);
 						selectNode(correspondenceTree, party);
 						repaint();
+					}
+					else if(SwingUtilities.isRightMouseButton(event))
+					{
+						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 					}
 				}
 			}
@@ -1446,6 +1452,45 @@ public class TabCorrespondences extends TabComponent
 						}
 					}
 				}
+			}
+		}
+		else if(source.getClass() == BusinessParty.class)
+		{
+			BusinessParty party = (BusinessParty) source;
+			if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
+			{
+				makeVisibleNode(correspondenceTree, party);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
+			{
+				makeVisibleNode(correspondenceTree, party);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_REMOVED.equals(command))
+			{
+				makeVisibleNode(correspondenceTree, party);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_ADDED.equals(command))
+			{
+				makeVisibleNode(correspondenceTree, party);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
+			}
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
+			{
+				makeVisibleNode(correspondenceTree, party);
+				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
 			}
 		}
 		else if(source.getClass() == ArrayList.class)

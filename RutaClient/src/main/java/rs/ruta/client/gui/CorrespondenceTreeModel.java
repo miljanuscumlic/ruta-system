@@ -37,6 +37,7 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 	//using sets for keeping sorted collection of parties and because they are faster than lists
 	//when it comes to the sorting; sets should be maintained and representing current view of the data model
 	private Set<BusinessParty> businessPartners;
+	private Set<BusinessParty> archivedPartners;
 	private Map<BusinessParty, List<Correspondence>> correspondences;
 	private BusinessParty cdrParty;
 
@@ -82,6 +83,19 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 		correspondences = new HashMap<>();
 		for(BusinessParty bParty: businessPartners)
 			correspondences.put(bParty, myParty.findAllCorrespondences(bParty.getPartyID()));
+
+		archivedPartners = new TreeSet<BusinessParty>(partyNameComparator);
+//		List<BusinessParty> allArchivedParties = myParty.getArchivedParties();
+//		for(BusinessParty archived: allArchivedParties)
+//		{
+//			final List<Correspondence> allCorrs = myParty.findAllCorrespondences(archived.getPartyID());
+//			if (allCorrs != null)
+//				archivedPartners.add(archived);
+//		}
+		archivedPartners.addAll(myParty.getArchivedParties());
+		for(BusinessParty aParty : archivedPartners)
+			correspondences.put(aParty, myParty.findAllCorrespondences(aParty.getPartyID()));
+
 	}
 
 	/**
@@ -127,11 +141,11 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			addNode(bParty);
 		}
 
-/*		MMM TODO
- * 		final DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(ARCHIVED_PARTNERS);
+  		final DefaultMutableTreeNode archivedNode = new DefaultMutableTreeNode(ARCHIVED_PARTNERS);
 		((DefaultMutableTreeNode) root).add(archivedNode);
-		//MMM add all archived business parties
-*/
+		for(BusinessParty aParty : archivedPartners)
+			addNode(aParty);
+
 
 		return root;
 	}
@@ -147,9 +161,32 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			final BusinessParty sourceParty = (BusinessParty) source;
 			if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
 			{
-				//add to business partners
 				businessPartners.add(sourceParty);
 				addNode(sourceParty);
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
+			{
+				businessPartners.add(sourceParty);
+				addNode(sourceParty);
+			}
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_REMOVED.equals(command))
+			{
+				businessPartners.remove(sourceParty);
+				//adding to archived parties here instead of ARCHIVED_PARTY_ADDED event is received
+				//because every business partner goes to archived, and to archived go unfollowed parties
+				//and business partners, and we don't need unfollowed parties in this archived list
+				archivedPartners.add(sourceParty);
+				deleteNode(sourceParty);
+			}
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_ADDED.equals(command))
+			{
+				//add to business partners
+				addNode(sourceParty);
+			}
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
+			{
+				archivedPartners.remove(sourceParty);
+				deleteNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.PARTY_UPDATED.equals(command))
 			{
@@ -185,10 +222,13 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 			{
 				businessPartners.clear();
 				deleteChildrenNodes(BUSINESS_PARTNERS);
+				archivedPartners.clear();
+				deleteChildrenNodes(ARCHIVED_PARTNERS);
 			}
 			else if(CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED.equals(command))
 			{
 				deleteChildrenNodes(BUSINESS_PARTNERS);
+				deleteChildrenNodes(ARCHIVED_PARTNERS);
 				deleteChildrenNodes(cdrParty);
 				correspondences.clear();
 			}
@@ -203,6 +243,8 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 		partyNode.setAllowsChildren(true);
 		if(party.isPartner())
 			insertNodeInto(partyNode, searchNode(BUSINESS_PARTNERS), getIndex(party, businessPartners));
+		else if(party.isArchived())
+			insertNodeInto(partyNode, searchNode(ARCHIVED_PARTNERS), getIndex(party, archivedPartners));
 
 		final List<Correspondence> partyCorrespondences = myParty.findAllCorrespondences(party.getPartyID());
 		if(partyCorrespondences != null)

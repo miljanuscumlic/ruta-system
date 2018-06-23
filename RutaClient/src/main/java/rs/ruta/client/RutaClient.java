@@ -1868,8 +1868,8 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response Simple " + ((OrderChangeType) document).getIDValue() +
-							" has been appended to its correspondence."),
+					append("'s Order Response Simple ").append(((OrderChangeType) document).getIDValue()).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderCancellationType.class)
@@ -1890,8 +1890,8 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response Simple " + ((OrderCancellationType) document).getIDValue() +
-							" has been appended to its correspondence."),
+					append("'s Order Response Simple ").append(((OrderCancellationType) document).getIDValue()).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == ApplicationResponseType.class)
@@ -1912,8 +1912,8 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Application Response " + ((ApplicationResponseType) document).getIDValue() +
-							" has been appended to its correspondence."),
+					append("'s Application Response ").append(((ApplicationResponseType) document).getIDValue()).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == InvoiceType.class)
@@ -1934,8 +1934,8 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Invoice " + ((InvoiceType) document).getIDValue() +
-							" has been appended to its correspondence."),
+					append("'s Invoice ").append(((InvoiceType) document).getIDValue()).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipRequest.class)
@@ -1957,8 +1957,8 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Business Partnership Request " + ((PartnershipRequest) document).getIDValue() +
-							" has been received and set in the data model."),
+					append("'s Business Partnership Request ").append(((PartnershipRequest) document).getIDValue()).
+					append(" has been received and set in the data model."),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipResolution.class)
@@ -1979,9 +1979,9 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Business Partnership Resolution " +
-					((PartnershipResolution) document).getIDValue() +
-					" has been received and set in the data model."),
+			clientFrame.appendToConsole(new StringBuilder("Business Partnership Resolution ").
+					append(((PartnershipResolution) document).getIDValue()).
+					append(" has been received and set in the data model."),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipBreakup.class)
@@ -2003,15 +2003,16 @@ public class RutaClient implements RutaNode
 				partyName = "";
 			}
 			clientFrame.appendToConsole(new StringBuilder("Business Partnership Breakup with Party ").append(partyName).
-					append(((PartnershipBreakup) document).getIDValue() + " has been received and set in the data model."),
+					append(" ").append(((PartnershipBreakup) document).getIDValue()).
+					append(" has been received and set in the data model."),
 					Color.BLACK);
 		}
 		else
 		{
 			createDocumentReceipt = false;
 			clientFrame.appendToConsole(new StringBuilder("Document ").append(docID).
-					append(" of an unexpected type: " + document.getClass().getSimpleName() +
-							" has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
+					append(" of an unexpected type: ").append(document.getClass().getSimpleName()).
+					append(" has been successfully retrieved. Don't know what to do with it. Moving it to the trash."),
 					Color.BLACK);
 		}
 		if(createDocumentReceipt)

@@ -1239,6 +1239,9 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_ADDED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
+				final Object selectedUserObject = getSelectedUserObject(partyTree);
+				if(selectedUserObject instanceof String)
+					partiesTableModel.fireTableDataChanged();
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
 			{
