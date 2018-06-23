@@ -87,6 +87,7 @@ public class CatalogueCorrespondence extends Correspondence
 			getClient().getClientFrame().
 			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence ").
 					append(getIdValue()).append(" has been stopped!"));
+			getClient().getClientFrame().enableCatalogueMenuItems();
 		}
 		finally
 		{
