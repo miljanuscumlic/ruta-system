@@ -418,15 +418,16 @@ public class CDR implements Server
 	}
 
 	@Override
-	@WebMethod //MMM: should be renamed to deregisterParty
+	@WebMethod
 	public void deregisterUser(String username, DeregistrationNotice notice) throws RutaException
 	{
 		try
 		{
 			init();
-			//MMM: temporary clearing of cache
-			//((PartyXmlMapper) mapperRegistry.getMapper(PartyType.class)).clearAllCachedObjects();
+			//MMM temporary clearing of cache
+			clearCache();
 			final Associates followers = mapperRegistry.getMapper(Associates.class).findByUsername(username).clone();
+			followers.removeAssociate(followers.getPartyID());
 			mapperRegistry.getMapper(RutaUser.class).deleteUser(username);
 			docBoxPool.submit(() ->
 			{
@@ -904,7 +905,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			Thread.sleep(10000);
+//			Thread.sleep(10000);
 			mapperRegistry.clearCachedObjects();
 			success = true;
 			logger.info("Service thread has finished in entirety");

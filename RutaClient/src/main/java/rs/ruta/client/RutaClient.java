@@ -1782,7 +1782,7 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).append(" has been deregistered."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).append(" has been archived."), Color.BLACK);
 		}
 		else if(documentClazz == OrderType.class)
 		{
