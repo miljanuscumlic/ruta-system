@@ -1410,36 +1410,34 @@ public class MyParty extends BusinessParty
 	{
 		if(party != null)
 		{
-			party.setFollowing(false);
-			if(party.isPartner())
-			{
-				if(removeBusinessPartner(party))
-					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
-			}
-			else
-			{
-				if(removeOtherParty(party))
-					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
-			}
+			unfollowParty(party);
 
-			//			boolean partner = party.isPartner();
-			//			if(removeFollowingParty(party))
-			//			{
-			//				if(partner)
-			//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
-			//				else
-			//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
-			//			}
 
-			addDeregisteredParty(party);
-			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
+/*			party.setFollowing(false);
+			if(removeOtherParty(party))
+				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
 
-			if(checkArchivedParty(party)) //MMM superfluos??? removeArchivedParty down below will succeed or not
-			{	//This way it is removed the object with the same Party ID, not just
-				//the same object like in this call: getArchivedParties().remove(party)
-				if(removeArchivedParty(party))
-					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
-			}
+			addArchivedParty(party);
+			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_ADDED));*/
+
+
+
+//			if(party.isPartner())
+//			{
+//				if(removeBusinessPartner(party))
+//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
+//			}
+//			else
+
+//			addDeregisteredParty(party);
+//			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
+
+//			if(checkArchivedParty(party)) //MMM superfluos??? removeArchivedParty down below will succeed or not
+//			{	//This way it is removed the object with the same Party ID, not just
+//				//the same object like in this call: getArchivedParties().remove(party)
+//				if(removeArchivedParty(party))
+//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+//			}
 
 		}
 	}
@@ -1638,7 +1636,8 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Unfollows party by removing it from the list of other parties and adding it to the archived list.
+	 * Unfollows party by removing it from the list of other parties and adding it to the archived list
+	 * if that party was sometime earlier business partner of My Party.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party to unfollow
 	 * @throws DetailException if party could not be deleted from the data store
@@ -1647,8 +1646,11 @@ public class MyParty extends BusinessParty
 	{
 		party.setFollowing(false);
 		if(removeOtherParty(party))
+		{
 			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
-		archiveParty(party);
+			if(findAllCorrespondences(party.getPartyID()) != null)
+				archiveParty(party);
+		}
 	}
 
 	/**
@@ -3793,7 +3795,7 @@ public class MyParty extends BusinessParty
 			if(BusinessParty.sameParties(bParty, party))
 			{
 				//				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.SELECT_NEXT));
-				deregisterParty(bParty);
+				deregisterParty(bParty); //MMM should unfollowParty(bParty)
 				bParty.setRecentlyUpdated(true);
 				notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_MOVED)); //MMM should be RutaClientFrameEvent.MAKE_VISIBLE ???
 				break;

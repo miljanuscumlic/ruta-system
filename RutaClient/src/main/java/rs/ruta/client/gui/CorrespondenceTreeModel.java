@@ -164,7 +164,7 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 				businessPartners.add(sourceParty);
 				addNode(sourceParty);
 			}
-			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command))
+			else if(BusinessPartyEvent.BUSINESS_PARTNER_TRANSFERED.equals(command)) //MMM check is this TRANSEFER obsolete
 			{
 				businessPartners.add(sourceParty);
 				addNode(sourceParty);
@@ -175,18 +175,24 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 				//adding to archived parties here instead of ARCHIVED_PARTY_ADDED event is received
 				//because every business partner goes to archived, and to archived go unfollowed parties
 				//and business partners, and we don't need unfollowed parties in this archived list
-				archivedPartners.add(sourceParty);
+//				archivedPartners.add(sourceParty);
 				deleteNode(sourceParty);
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_ADDED.equals(command))
 			{
-				//add to business partners
-				addNode(sourceParty);
+				if(!archivedPartners.contains(sourceParty))
+				{
+					archivedPartners.add(sourceParty);
+					addNode(sourceParty);
+				}
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
 			{
-				archivedPartners.remove(sourceParty);
-				deleteNode(sourceParty);
+				if(myParty.findAllCorrespondences(sourceParty.getPartyID()) == null)
+				{
+					archivedPartners.remove(sourceParty);
+					deleteNode(sourceParty);
+				}
 			}
 			else if(BusinessPartyEvent.PARTY_UPDATED.equals(command))
 			{

@@ -1492,9 +1492,8 @@ public class RutaClient implements RutaNode
 				try
 				{
 					future.get();
-					//					myParty.unfollowPartyOLD(followingParty);
 					myParty.unfollowParty(followingParty);
-					StringBuilder msg = new StringBuilder("Party " + followingName + " has been moved to the archived parties.");
+					StringBuilder msg = new StringBuilder("Party " + followingName + " has been unfollowed.");
 					clientFrame.appendToConsole(msg, Color.GREEN);
 				}
 				catch(Exception e)
