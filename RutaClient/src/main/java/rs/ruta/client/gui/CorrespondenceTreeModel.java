@@ -29,7 +29,7 @@ import rs.ruta.client.correspondence.Correspondence;
 public class CorrespondenceTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = -841281945123956954L;
-	private static final String ARCHIVED_PARTNERS = "Archived";
+	private static final String ARCHIVED_PARTNERS = "Archived Partners";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
 	private static final String CDR = "CDR";
 	private static final String MY_PARTY = "My Party";

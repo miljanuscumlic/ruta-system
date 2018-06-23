@@ -60,7 +60,6 @@ public class TabCDRData extends TabComponent
 	private static final String MY_PARTY = "My Party";
 	private static final String SEARCHES = "Searches";
 	private static final String FOLLOWINGS = "Followings";
-	private static final String DEREGISTERED_PARTIES = "Deregistered Parties";
 	private static final String ARCHIVED_PARTIES = "Archived Parties";
 	private static final String OTHER_PARTIES = "Other Parties";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
@@ -176,8 +175,6 @@ public class TabCDRData extends TabComponent
 					partyList = myParty.getOtherParties();
 				else if(ARCHIVED_PARTIES.equals(collectionNode))
 					partyList = myParty.getArchivedParties();
-				else if(DEREGISTERED_PARTIES.equals(collectionNode))
-					partyList = myParty.getDeregisteredParties();
 				else if(SENT.equals(collectionNode))
 					requestList = myParty.getOutboundPartnershipRequests();
 				else if(RECEIVED.equals(collectionNode))
@@ -208,8 +205,7 @@ public class TabCDRData extends TabComponent
 		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow Party");
 		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
 		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
-//		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
-		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
+		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
 
 		requestPartnershipItem.addActionListener(event ->
 		{
@@ -282,7 +278,7 @@ public class TabCDRData extends TabComponent
 			}).start();
 		});
 
-		/*deleteArchivedItem.addActionListener(event ->
+		deleteArchivedItem.addActionListener(event ->
 		{
 			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(partyTree);
 			if(selectedParty == null) return;
@@ -297,33 +293,14 @@ public class TabCDRData extends TabComponent
 				}
 				catch (DetailException e)
 				{
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Archived Parties."), Color.GREEN);
-					logger.error(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Archived Parties.").toString(), e);
-				}
-			}).start();
-		});*/
-
-		deleteDeregisteredItem.addActionListener(event ->
-		{
-			final BusinessParty selectedParty = (BusinessParty) getSelectedUserObject(partyTree);
-			if(selectedParty == null) return;
-			new Thread(() ->
-			{
-				final String partyName = selectedParty.getPartySimpleName();
-				try
-				{
-					myParty.purgeParty(selectedParty);
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" has been deleted from Deregistered Parties."), Color.GREEN);
-				}
-				catch (DetailException e)
-				{
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Deregistered Parties."), Color.GREEN);
-					logger.error(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Deregistered Parties.").toString(), e);
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(partyName).
+							append(" could not be deleted from Archived Parties."));
+					if(e.getMessage() != null && e.getMessage().contains("Party is a former"))
+						logger.info(new StringBuilder("Party ").append(partyName).
+								append(" could not be deleted from Archived Parties.").toString());
+					else
+						logger.error(new StringBuilder("Party ").append(partyName).
+								append(" could not be deleted from Archived Parties.").toString(), e);
 				}
 			}).start();
 		});
@@ -352,12 +329,7 @@ public class TabCDRData extends TabComponent
 							partyTreePopupMenu.add(requestPartnershipItem);
 							partyTreePopupMenu.add(followPartyItem);
 							partyTreePopupMenu.addSeparator();
-//							partyTreePopupMenu.add(deleteArchivedItem);
-						}
-						else if(((BusinessParty) selectedParty).isDeregistered())
-						{
-							partyTreePopupMenu.removeAll();
-							partyTreePopupMenu.add(deleteDeregisteredItem);
+							partyTreePopupMenu.add(deleteArchivedItem);
 						}
 						else //Other Parties
 						{
@@ -532,8 +504,7 @@ public class TabCDRData extends TabComponent
 		final JTable table = newEmptyPartyListTable(tableModel);
 		final JPopupMenu partyTablePopupMenu = new JPopupMenu();
 		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
-//		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
-		final JMenuItem deleteDeregisteredItem = new JMenuItem("Delete from Deregistered Parties");
+		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
 		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
 		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
 		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
@@ -614,7 +585,7 @@ public class TabCDRData extends TabComponent
 			}).start();
 		});
 
-		/*deleteArchivedItem.addActionListener(event ->
+		deleteArchivedItem.addActionListener(event ->
 		{
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
@@ -633,29 +604,6 @@ public class TabCDRData extends TabComponent
 							append(" could not be deleted from Archived Parties."), Color.GREEN);
 					logger.error(new StringBuilder("Party ").append(partyName).
 							append(" could not be deleted from Archived Parties.").toString(), e);
-				}
-			}).start();
-		});*/
-
-		deleteDeregisteredItem.addActionListener(event ->
-		{
-			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
-			new Thread(() ->
-			{
-				final String partyName = selectedParty.getPartySimpleName();
-				try
-				{
-					myParty.purgeParty(selectedParty);
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" has been deleted from Deregistered Parties."), Color.GREEN);
-				}
-				catch (DetailException e)
-				{
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Deregistered Parties."), Color.GREEN);
-					logger.error(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Deregistered Parties.").toString(), e);
 				}
 			}).start();
 		});
@@ -698,12 +646,7 @@ public class TabCDRData extends TabComponent
 									partyTablePopupMenu.add(requestPartnershipItem);
 									partyTablePopupMenu.add(followPartyItem);
 									partyTablePopupMenu.addSeparator();
-//									partyTablePopupMenu.add(deleteArchivedItem);
-								}
-								else if(DEREGISTERED_PARTIES.equals(nodeTitle))
-								{
-									partyTablePopupMenu.add(viewPartyItem);
-									partyTablePopupMenu.add(deleteDeregisteredItem);
+									partyTablePopupMenu.add(deleteArchivedItem);
 								}
 								partyTablePopupMenu.show(table, event.getX(), event.getY());
 							}
@@ -1244,13 +1187,6 @@ public class TabCDRData extends TabComponent
 					partiesTableModel.fireTableDataChanged();
 			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
-			{
-				makeVisibleNode(partyTree, party);
-				final Object selectedUserObject = getSelectedUserObject(partyTree);
-				if(selectedUserObject instanceof String)
-					partiesTableModel.fireTableDataChanged();
-			}
-			else if(BusinessPartyEvent.DEREGISTERED_PARTY_REMOVED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);

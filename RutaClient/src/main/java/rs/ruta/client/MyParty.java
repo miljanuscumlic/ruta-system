@@ -153,7 +153,7 @@ public class MyParty extends BusinessParty
 	 * Should always be accessed with {@link #getArchivedParties()} method call unless prior to access is checked for {@code null}.
 	 */
 	@Nullable
-	private List<BusinessParty> deregisteredParties;
+//	private List<BusinessParty> deregisteredParties;
 	private List<Search<PartyType>> partySearches;
 	private List<Search<CatalogueType>> catalogueSearches;
 	private Map<Class<? extends ActionEvent>, List<ActionListener>> actionListeners;
@@ -201,7 +201,7 @@ public class MyParty extends BusinessParty
 		//		username = password = secretKey = null;
 		localUser = new RutaUser();
 		cdrUser = new RutaUser();
-		followingParties = businessPartners = otherParties = archivedParties = deregisteredParties = null;
+		followingParties = businessPartners = otherParties = archivedParties = null; //deregisteredParties = null;
 		outboundPartnershipRequests = inboundPartnershipRequests = null;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		catalogueIssueDate = null;
@@ -246,7 +246,7 @@ public class MyParty extends BusinessParty
 		setArchivedParties(businessPartyMapper.findMany(criterion));
 		criterion = new BusinessPartySearchCriterion();
 		criterion.setDeregistered(true);
-		setDeregisteredParties(businessPartyMapper.findMany(criterion));
+//		setDeregisteredParties(businessPartyMapper.findMany(criterion));
 		setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
 		setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
 
@@ -312,8 +312,8 @@ public class MyParty extends BusinessParty
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, otherParties);
 		if(archivedParties != null && !archivedParties.isEmpty())
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, archivedParties);
-		if(deregisteredParties != null && !deregisteredParties.isEmpty())
-			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, deregisteredParties);
+/*		if(deregisteredParties != null && !deregisteredParties.isEmpty())
+			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, deregisteredParties);*/
 		if(myFollowingParty != null)
 			mapperRegistry.getMapper(BusinessParty.class).insert(null, myFollowingParty);
 		if(partySearches != null && !partySearches.isEmpty())
@@ -898,7 +898,7 @@ public class MyParty extends BusinessParty
 		notifyListeners(new BusinessPartyEvent(new ArrayList<>(), BusinessPartyEvent.ALL_PARTIES_REMOVED));
 		setArchivedParties(null);
 		setBusinessPartners(null);
-		setDeregisteredParties(null);
+//		setDeregisteredParties(null);
 		setOtherParties(null);
 	}
 
@@ -1265,8 +1265,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Deletes party from archived or deregistered list depending on which one it belongs to and
-	 * deletes it from the data store.
+	 * Deletes party from archived list and deletes it from the data store.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @param party party be deleted
 	 * @throws DetailException if party could not be deleted from the data store
@@ -1276,16 +1275,13 @@ public class MyParty extends BusinessParty
 		if(party != null)
 		{
 			//			notifyListeners(new RutaClientFrameEvent(party, RutaClientFrameEvent.SELECT_NEXT));
-			if(party.isArchived())
+			if(party.isArchived() && findAllCorrespondences(party.getPartyID()) == null)
 			{
 				removeArchivedParty(party);
 				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			}
-			else if(party.isDeregistered())
-			{
-				removeDeregisteredParty(party);
-				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_REMOVED));
-			}
+			else
+				throw new DetailException("Party is a former business partner that My Party have correspondences with.");
 		}
 	}
 
@@ -1293,19 +1289,19 @@ public class MyParty extends BusinessParty
 	 * Gets the {@code List} of all deregistered parties.
 	 * @return list of all deregistered parties that might be empty
 	 */
-	public List<BusinessParty> getDeregisteredParties()
+/*	public List<BusinessParty> getDeregisteredParties()
 	{
 		if(deregisteredParties == null)
 			deregisteredParties = new ArrayList<>();
 		return deregisteredParties;
-	}
+	}*/
 
 	/**
 	 * Removes all parties from the deregistered parties list.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
-	public void clearDeregisteredParties() throws DetailException
+/*	public void clearDeregisteredParties() throws DetailException
 	{
 		for(BusinessParty party : getDeregisteredParties())
 			MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
@@ -1316,7 +1312,7 @@ public class MyParty extends BusinessParty
 	public void setDeregisteredParties(List<BusinessParty> deregisteredParties)
 	{
 		this.deregisteredParties = deregisteredParties;
-	}
+	}*/
 
 	/**
 	 * Gets the deregistered party with passed Party ID.
@@ -1324,7 +1320,7 @@ public class MyParty extends BusinessParty
 	 * @return Deregistered party or {@code null} if there is no party with specified ID in the list of
 	 * Deregistered parties
 	 */
-	public BusinessParty getDeregisteredParty(String id)
+/*	public BusinessParty getDeregisteredParty(String id)
 	{
 		try
 		{
@@ -1334,7 +1330,7 @@ public class MyParty extends BusinessParty
 		{
 			return null;
 		}
-	}
+	}*/
 
 	/**
 	 * Checks if the Party is Deregistered. Check is based on the Party ID only extracted from passed Party argument.
@@ -1342,11 +1338,11 @@ public class MyParty extends BusinessParty
 	 * @param party party in check
 	 * @return true if Party is Deregistered, false otherwise
 	 */
-	private boolean checkDeregisteredParty(BusinessParty party)
-	{
-		String partyID = party.getPartyID();
-		return getDeregisteredParty(partyID) != null ? true : false;
-	}
+//	private boolean checkDeregisteredParty(BusinessParty party)
+//	{
+//		String partyID = party.getPartyID();
+//		return getDeregisteredParty(partyID) != null ? true : false;
+//	}
 
 	/**
 	 * Adds to deregisterd party list and removes it from archived list if it is in it. Also, it
@@ -1355,7 +1351,7 @@ public class MyParty extends BusinessParty
 	 * @param party party to add
 	 * @throws DetailException if party could not be updated in the data store
 	 */
-	private void addDeregisteredParty(BusinessParty party) throws DetailException
+/*	private void addDeregisteredParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
@@ -1371,7 +1367,7 @@ public class MyParty extends BusinessParty
 			//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			//			}
 		}
-	}
+	}*/
 
 	/**
 	 * Removes party from the list of Deregistered parties.
@@ -1379,7 +1375,7 @@ public class MyParty extends BusinessParty
 	 * @return true if party was contained in list of deregistered parties and removed from it
 	 * @throws DetailException if party could not be deleted from the data store
 	 */
-	private boolean removeDeregisteredParty(BusinessParty party) throws DetailException
+/*	private boolean removeDeregisteredParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
@@ -1398,7 +1394,7 @@ public class MyParty extends BusinessParty
 			}
 		}
 		return success;
-	}
+	}*/
 
 	/**
 	 * Adds party to the deregistered list and removes it from the lists it is contained in.
@@ -3795,7 +3791,8 @@ public class MyParty extends BusinessParty
 			if(BusinessParty.sameParties(bParty, party))
 			{
 				//				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.SELECT_NEXT));
-				deregisterParty(bParty); //MMM should unfollowParty(bParty)
+//				deregisterParty(bParty);
+				unfollowParty(bParty);
 				bParty.setRecentlyUpdated(true);
 				notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_MOVED)); //MMM should be RutaClientFrameEvent.MAKE_VISIBLE ???
 				break;
