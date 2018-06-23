@@ -227,7 +227,7 @@ public class TabCDRData extends TabComponent
 			if(selectedParty == null) return;
 			int option = JOptionPane.showConfirmDialog(clientFrame,
 					"By breaking up the Partnership with " + ((BusinessParty) selectedParty).getPartySimpleName() +
-					" party, you will not be able to do the business\n through the Ruta System with it." +
+					" party, you will not be able to do the business\nthrough the Ruta System with it." +
 					" Do you want to proceed?",
 							"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(option == JOptionPane.YES_OPTION)

@@ -1997,6 +1997,10 @@ public class RutaClient implements RutaNode
 				partyName = InstanceFactory.getPropertyOrNull(
 						((PartnershipBreakup) document).getRequesterParty().getPartyName().get(0),
 						PartyNameType::getNameValue);
+				if(myParty.getPartySimpleName().equals(partyName))
+					partyName = InstanceFactory.getPropertyOrNull(
+							((PartnershipBreakup) document).getRequestedParty().getPartyName().get(0),
+							PartyNameType::getNameValue);
 			}
 			catch(Exception e)
 			{
