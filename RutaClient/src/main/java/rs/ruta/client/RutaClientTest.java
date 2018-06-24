@@ -111,7 +111,11 @@ public class RutaClientTest
 					client = new RutaClient(frame, true);
 					frame.setClient(client);
 					client.authorizeUserAccess();
-					EventQueue.invokeLater(() -> splashScreen.setVisible(true));
+					EventQueue.invokeLater(() ->
+					{
+						awhileDialog.setVisible(false);
+						splashScreen.setVisible(true);
+					});
 					client.initialize();
 					EventQueue.invokeLater(() ->
 					{

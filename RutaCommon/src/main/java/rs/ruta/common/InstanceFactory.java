@@ -33,6 +33,7 @@ import com.helger.commons.error.list.IErrorList;
 import com.helger.ubl21.UBL21Validator;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
+import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDeletionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentResponseType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderReferenceType;
@@ -289,14 +290,14 @@ public final class InstanceFactory
 			{
 				logger.error(errors.toString());
 				//MMM Printing for a test
-				if(document instanceof InvoiceType)
+				if(document instanceof CatalogueDeletionType)
 				try
 				{
-					JAXBContext jc = JAXBContext.newInstance(InvoiceType.class);
+					JAXBContext jc = JAXBContext.newInstance(CatalogueDeletionType.class);
 					Marshaller m = jc.createMarshaller();
 					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-					m.marshal(new JAXBElement<InvoiceType>(new QName("", "InvoiceType"),
-							InvoiceType.class, null, (InvoiceType) document), System.out);
+					m.marshal(new JAXBElement<CatalogueDeletionType>(new QName("", "CatalogueDeletionType"),
+							CatalogueDeletionType.class, null, (CatalogueDeletionType) document), System.out);
 				}
 				catch (JAXBException e)
 				{

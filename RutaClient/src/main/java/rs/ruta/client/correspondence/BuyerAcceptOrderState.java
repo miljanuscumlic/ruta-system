@@ -95,9 +95,6 @@ public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 	{
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		((BuyerOrderingProcess) process).setApplicationResponse(appResponse);
-		//		correspondence.addDocumentReference(appResponse.getSenderParty(),
-		//				appResponse.getUUIDValue(), appResponse.getIDValue(), appResponse.getIssueDateValue(),
-		//				appResponse.getIssueTimeValue(), appResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
 		try
 		{
 			correspondence.addDocumentReference(appResponse, DocumentReference.Status.UBL_VALID);

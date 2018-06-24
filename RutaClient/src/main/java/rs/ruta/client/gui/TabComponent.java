@@ -76,7 +76,6 @@ public abstract class TabComponent extends Container
 	 * @param tableModel model containing catalogue data
 	 * @return constructed table object
 	 */
-	@SuppressWarnings("unchecked")
 	protected JTable createCatalogueTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel)
@@ -98,11 +97,13 @@ public abstract class TabComponent extends Container
 						switch(realIndex)
 						{
 						case 3:
-							return "Integer numbers; 0 for field deletion";
-						case 4:
-							return "ID field is mandatory and must be unique";
+							return "integer numbers; 0 for field deletion";
+						case 7:
+							return "floating point numbers";
+						case 8:
+							return "precent value";
 						case 9:
-							return "Comma separated values";
+							return "comma separated values";
 						default:
 							return null;
 						}
@@ -112,8 +113,7 @@ public abstract class TabComponent extends Container
 		};
 
 		table.setFillsViewportHeight(true);
-//		table.setAutoCreateRowSorter(true);
-//		((DefaultRowSorter<DefaultTableModel, Integer>) table.getRowSorter()).setSortable(0, false);
+		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setRowSorter(createTableRowSorter(tableModel));
 		table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());
 
@@ -131,8 +131,9 @@ public abstract class TabComponent extends Container
 			{
 				if(SwingUtilities.isRightMouseButton(e))
 				{
-					final int modelRowIndex = table.convertRowIndexToModel(table.rowAtPoint(e.getPoint()));
-					table.setRowSelectionInterval(modelRowIndex, modelRowIndex);
+					final int viewRowIndex = table.rowAtPoint(e.getPoint());
+					if(viewRowIndex > -1)
+						table.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 				}
 			}
 		});

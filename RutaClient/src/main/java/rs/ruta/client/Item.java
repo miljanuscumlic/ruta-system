@@ -29,6 +29,8 @@ public class Item extends ItemType
 	private IDType id;
 	@XmlElement(name = "Price")
 	private PriceType price;
+	@XmlElement(name = "InStock")
+	private boolean inStock;
 
 	public Item()
 	{
@@ -55,6 +57,7 @@ public class Item extends ItemType
 			item.id = id.clone();
 		if(price != null)
 			item.price = price.clone();
+		item.inStock = inStock;
 	}
 
 	public PriceType getPrice()
@@ -75,6 +78,16 @@ public class Item extends ItemType
 	public void setID(IDType id)
 	{
 		this.id = id;
+	}
+
+	public boolean isInStock()
+	{
+		return inStock;
+	}
+
+	public void setInStock(boolean inStock)
+	{
+		this.inStock = inStock;
 	}
 
 	/**

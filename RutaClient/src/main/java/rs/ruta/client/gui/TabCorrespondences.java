@@ -93,11 +93,12 @@ public class TabCorrespondences extends TabComponent
 		final BusinessParty cdrParty = new BusinessParty();
 		cdrParty.setCoreParty(client.getCDRParty());
 		final DefaultTreeModel correspondenceTreeModel =
-				new CorrespondenceTreeModel(new DefaultMutableTreeNode("Correspondences"), myParty, cdrParty);
+				new CorrespondenceTreeModel(new DefaultMutableTreeNode(CORRESPONDECES), myParty, cdrParty);
 		correspondenceTree = new JTree(correspondenceTreeModel);
 		correspondenceTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		final CorrespondenceTreeCellRenderer correspondenceTreeCellRenderer = new CorrespondenceTreeCellRenderer();
 		correspondenceTree.setCellRenderer(correspondenceTreeCellRenderer);
+		selectNode(correspondenceTree, CORRESPONDECES);
 		final JPanel treePanel = new JPanel(new BorderLayout());
 		treePanel.add(correspondenceTree, BorderLayout.CENTER);
 

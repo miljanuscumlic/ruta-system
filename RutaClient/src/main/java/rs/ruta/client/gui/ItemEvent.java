@@ -14,7 +14,11 @@ public class ItemEvent extends ActionEvent
 	public static final String ITEM_ADDED = "Item added";
 	public static final String ITEM_REMOVED = "Item removed";
 	public static final String ITEM_UPDATED = "Item updated";
-	public static final String ALL_ITEMS_REMOVED = "All items removed";
+	public static final String ITEMS_REMOVED = "All active items removed";
+	public static final String ARCHIVED_ITEMS_REMOVED = "Alll archived items removed";
+	public static final String ARCHIVED_ITEM_ADDED = "Archived item added";
+	public static final String ARCHIVED_ITEM_REMOVED = "Archived item removed";
+	public static final String ARCHIVED_ITEM_UPDATED = "Archived item updated";
 
 	public ItemEvent(Object source, String command)
 	{

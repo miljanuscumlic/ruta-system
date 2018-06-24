@@ -1,5 +1,6 @@
 package rs.ruta.client.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -16,15 +17,20 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,118 +43,41 @@ import rs.ruta.common.datamapper.DetailException;
 public class TabProducts extends TabComponent
 {
 	private static final long serialVersionUID = 7435742718848842547L;
+	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
+	private static final String ACTIVE = "In Stock";
+	private static final String ARCHIVED = "Out of Stock";
+	private static final Object PRODUCTS_AND_SERVICES = "Products & Services";
 	private JTable productListTable;
 	private DefaultTableModel productListTableModel;
 	private List<Item> products;
-	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
+	private List<Item> archivedProducts;
+	private JTree productTree;
+	private MyParty myParty;
 
 	public TabProducts(final RutaClientFrame clientFrame)
 	{
 		super(clientFrame);
-		final MyParty myParty = clientFrame.getClient().getMyParty();
+		rightScrollPane = new JScrollPane();
+		myParty = clientFrame.getClient().getMyParty();
 		products = myParty.getProducts();
-		productListTableModel = new ProductListTableModel(myParty, true);
-		productListTable = createCatalogueTable(productListTableModel);
-		//			table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-		productListTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		archivedProducts = myParty.getArchivedProducts();
+		productListTableModel = new ActiveProductListTableModel(myParty, true);
+		productListTableModel = new ProductListTableModel(products, myParty, true);
+		productListTable = createProductListTable(productListTableModel);
 
-		final TableColumn tableColumn = productListTable.getColumnModel().getColumn(8);
-		setUpComboBoxColumn(productListTable, tableColumn);
+		final DefaultTreeModel productTreeModel = new ProductTreeModel(new DefaultMutableTreeNode(PRODUCTS_AND_SERVICES), myParty);
+		productTree = createProductTree(productTreeModel);
+		selectNode(productTree, PRODUCTS_AND_SERVICES);
 
-		final JPopupMenu cataloguePopupMenu = new JPopupMenu();
+		final JPanel productPanel = new JPanel(new BorderLayout());
+		productPanel.add(productTree, BorderLayout.CENTER);
 
-		productListTable.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseClicked(MouseEvent event)
-			{
-				if(SwingUtilities.isRightMouseButton(event))
-				{
-					final int viewRowIndex = productListTable.rowAtPoint(event.getPoint());
-					if(viewRowIndex > -1 && viewRowIndex < productListTable.getRowCount())
-					{
-						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
-						cataloguePopupMenu.show(productListTable, event.getX(), event.getY());
-					}
-				}
-			}
-		});
+		leftPane = new JScrollPane(productPanel);
+		leftPane.setPreferredSize(new Dimension(325, 500));
 
-		final JMenuItem deleteItem = new JMenuItem("Delete");
-		final JMenuItem newItem = new JMenuItem("Add New");
-		final JMenuItem editItem = new JMenuItem("Edit");
-		cataloguePopupMenu.add(newItem);
-		cataloguePopupMenu.addSeparator();
-		cataloguePopupMenu.add(editItem);
-		cataloguePopupMenu.add(deleteItem);
+		rightPane = new JPanel(new BorderLayout());
+		rightPane.add(rightScrollPane);
 
-		newItem.addActionListener(event ->
-		{
-			Item newProduct =
-					clientFrame.showProductDialog(myParty.createEmptyProduct(), "Add New Product or Service", true);
-			if (newProduct != null)
-			{
-				try
-				{
-					myParty.addProduct(newProduct);
-				}
-				catch (DetailException e)
-				{
-					logger.error("Could not insert new product in the database! Exception is: ", e);
-					EventQueue.invokeLater(() ->
-					JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
-							"Database Error", JOptionPane.ERROR_MESSAGE)
-							);
-				}
-			}
-			else
-			{
-				myParty.decreaseProductID();
-			}
-		});
-
-		editItem.addActionListener(event ->
-		{
-			final int modelRowIndex = productListTable.convertRowIndexToModel(productListTable.getSelectedRow());
-			Item editedProduct =
-					clientFrame.showProductDialog(myParty.getProducts().get(modelRowIndex), "Edit Product or Service", true);
-			if(editedProduct != null)
-			{
-				try
-				{
-					myParty.updateProduct(editedProduct, modelRowIndex);
-				}
-				catch (DetailException e)
-				{
-					EventQueue.invokeLater(() ->
-					JOptionPane.showMessageDialog(clientFrame, "Could not update the product in the database.",
-							"Database Error", JOptionPane.ERROR_MESSAGE)
-							);
-					logger.error("Could not update the product in the database.", e);
-				}
-			}
-		});
-
-		deleteItem.addActionListener( event ->
-		{
-			try
-			{
-				final int modelRowIndex = productListTable.convertRowIndexToModel(productListTable.getSelectedRow());
-				myParty.removeProduct(modelRowIndex);
-				//				repaint();
-			}
-			catch (Exception e)
-			{
-				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(clientFrame, "Could not remove the product from products list.",
-						"Database Error", JOptionPane.ERROR_MESSAGE)
-						);
-				logger.error("Could not remove the product from the list.", e);
-			}
-		});
-
-		leftPane = new JScrollPane(productListTable);
-		rightPane = null;
 		arrangeTab();
 	}
 
@@ -193,39 +122,299 @@ public class TabProducts extends TabComponent
 	{
 		Object source = event.getSource();
 		String command = event.getActionCommand();
+		Object selectedObject = getSelectedUserObject(productTree);
+		if(selectedObject == null) return;
+		boolean archived = false;
+		if(selectedObject.getClass() == String.class)
+		{
+			String nodeTitle = (String) selectedObject;
+			if(ARCHIVED.equals(nodeTitle))
+				archived = true;
+			else if(ACTIVE.equals(nodeTitle))
+				archived = false;
+		}
 		if(source instanceof Item)
 		{
 			final Item item = (Item) source;
-			if(ItemEvent.ITEM_ADDED.equals(command))
+			if(!archived)
 			{
-//				int viewRowIndex = productListTable.getSelectedRow();
-				productListTableModel.fireTableDataChanged();
-//				if(viewRowIndex >= 0 && viewRowIndex <= products.size())
-//					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
-				int viewRowIndex = productListTable.convertRowIndexToView(products.indexOf(item));
-				productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
-			}
-			else if(ItemEvent.ITEM_UPDATED.equals(command))
+				if(ItemEvent.ITEM_ADDED.equals(command))
+				{
+					productListTableModel.fireTableDataChanged();
+					int viewRowIndex = productListTable.convertRowIndexToView(products.indexOf(item));
+					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				}
+				else if(ItemEvent.ITEM_UPDATED.equals(command))
 				{
 					int viewRowIndex = productListTable.getSelectedRow();
 					productListTableModel.fireTableDataChanged();
 					if(viewRowIndex >= 0 && viewRowIndex <= products.size())
 						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
 				}
-			else if(ItemEvent.ITEM_REMOVED.equals(command))
-			{
-				int viewRowIndex = productListTable.getSelectedRow();
-				if(viewRowIndex >= products.size())
-					viewRowIndex--;
-				productListTableModel.fireTableDataChanged();
-				if(viewRowIndex >= 0 && viewRowIndex <= products.size())
-					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				else if(ItemEvent.ITEM_REMOVED.equals(command))
+				{
+					int viewRowIndex = productListTable.getSelectedRow();
+					if(viewRowIndex >= products.size())
+						viewRowIndex--;
+					productListTableModel.fireTableDataChanged();
+					if(viewRowIndex >= 0 && viewRowIndex <= products.size())
+						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				}
 			}
-			else if(ItemEvent.ALL_ITEMS_REMOVED.equals(command))
+			else
+			{
+				if(ItemEvent.ARCHIVED_ITEM_ADDED.equals(command))
+				{
+					productListTableModel.fireTableDataChanged();
+					int viewRowIndex = productListTable.convertRowIndexToView(archivedProducts.indexOf(item));
+					productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				}
+				else if(ItemEvent.ARCHIVED_ITEM_UPDATED.equals(command))
+				{
+					int viewRowIndex = productListTable.getSelectedRow();
+					productListTableModel.fireTableDataChanged();
+					if(viewRowIndex >= 0 && viewRowIndex <= archivedProducts.size())
+						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				}
+				else if(ItemEvent.ARCHIVED_ITEM_REMOVED.equals(command))
+				{
+					int viewRowIndex = productListTable.getSelectedRow();
+					if(viewRowIndex >= archivedProducts.size())
+						viewRowIndex--;
+					productListTableModel.fireTableDataChanged();
+					if(viewRowIndex >= 0 && viewRowIndex <= archivedProducts.size())
+						productListTable.setRowSelectionInterval(viewRowIndex, viewRowIndex);
+				}
+			}
+			if(ItemEvent.ITEMS_REMOVED.equals(command) ||
+					ItemEvent.ARCHIVED_ITEMS_REMOVED.equals(command))
 			{
 				productListTableModel.fireTableDataChanged();
 			}
 		}
 	}
 
+	/**
+	 * Creates table containing lists of products.
+	 * @param tableModel model containing product data
+	 * @return constructed table object
+	 */
+	private JTable createProductListTable(DefaultTableModel tableModel)
+	{
+		final JTable table = createCatalogueTable(tableModel);
+		final TableColumn tableColumn = table.getColumnModel().getColumn(8);
+		setUpComboBoxColumn(table, tableColumn);
+
+		final JPopupMenu cataloguePopupMenu = new JPopupMenu();
+		final JMenuItem archiveItem = new JMenuItem("Out of Stock");
+		final JMenuItem unarchiveItem = new JMenuItem("In Stock");
+		final JMenuItem newItem = new JMenuItem("Add New");
+		final JMenuItem editItem = new JMenuItem("Edit");
+
+		newItem.addActionListener(event ->
+		{
+			Item newProduct =
+					clientFrame.showProductDialog(myParty.createEmptyProduct(), "Add New Product or Service", true);
+			if (newProduct != null)
+			{
+				try
+				{
+//					myParty.addProduct(newProduct);
+					if(newProduct.isInStock())
+						myParty.addProduct(newProduct);
+					else
+						myParty.archiveProduct(newProduct);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Could not insert new product in the database! Exception is: ", e);
+					EventQueue.invokeLater(() ->
+					JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
+							"Database Error", JOptionPane.ERROR_MESSAGE)
+							);
+				}
+			}
+			else
+			{
+				myParty.decreaseProductID();
+			}
+		});
+
+		editItem.addActionListener(event ->
+		{
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			boolean inStock = (boolean) editItem.getClientProperty("InStock");
+			Item originalProduct = null;
+			if(inStock)
+				originalProduct = myParty.getProducts().get(modelRowIndex);
+			else
+				originalProduct = myParty.getArchivedProducts().get(modelRowIndex);
+			Item editedProduct =
+					clientFrame.showProductDialog(originalProduct, "Edit Product or Service", true);
+			if(editedProduct != null)
+			{
+				try
+				{
+					if(editedProduct.isInStock())
+					{
+						if(originalProduct.isInStock())
+						{
+							myParty.updateProduct(editedProduct, modelRowIndex);
+						}
+						else
+						{
+							myParty.unarchiveProduct(modelRowIndex);
+							myParty.addProduct(editedProduct);
+						}
+					}
+					else
+					{
+						if(originalProduct.isInStock())
+						{
+							myParty.removeProduct(modelRowIndex);
+							myParty.archiveProduct(editedProduct);
+						}
+						else
+						{
+							myParty.updateArchivedProduct(editedProduct, modelRowIndex);
+						}
+					}
+				}
+				catch (DetailException e)
+				{
+					EventQueue.invokeLater(() ->
+					JOptionPane.showMessageDialog(clientFrame, "Could not update the product in the database.",
+							"Database Error", JOptionPane.ERROR_MESSAGE)
+							);
+					logger.error("Could not update the product in the database.", e);
+				}
+			}
+		});
+
+		archiveItem.addActionListener( event ->
+		{
+			try
+			{
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final Item product = myParty.removeProduct(modelRowIndex);
+				myParty.archiveProduct(product);
+			}
+			catch (Exception e)
+			{
+				EventQueue.invokeLater(() ->
+				JOptionPane.showMessageDialog(clientFrame, "Could not remove the product from products list.",
+						"Database Error", JOptionPane.ERROR_MESSAGE)
+						);
+				logger.error("Could not remove the product from the list.", e);
+			}
+		});
+
+		unarchiveItem.addActionListener( event ->
+		{
+			try
+			{
+				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+				final Item product = myParty.unarchiveProduct(modelRowIndex);
+				myParty.addProduct(product);
+			}
+			catch (Exception e)
+			{
+				EventQueue.invokeLater(() ->
+				JOptionPane.showMessageDialog(clientFrame, "Could not remove the product from products list.",
+						"Database Error", JOptionPane.ERROR_MESSAGE)
+						);
+				logger.error("Could not remove the product from the list.", e);
+			}
+		});
+
+		table.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				if(SwingUtilities.isRightMouseButton(event))
+				{
+					Object selectedObject = getSelectedUserObject(productTree);
+					if(selectedObject == null) return;
+					boolean inStock = false;
+					if(selectedObject.getClass() == String.class)
+					{
+						String nodeTitle = (String) selectedObject;
+						if(ARCHIVED.equals(nodeTitle))
+							inStock = false;
+						else if(ACTIVE.equals(nodeTitle))
+							inStock = true;
+					}
+
+					final int viewRowIndex = table.rowAtPoint(event.getPoint());
+					if(viewRowIndex > -1/* && viewRowIndex < table.getRowCount()*/)
+					{
+						cataloguePopupMenu.removeAll();
+						if(inStock)
+						{
+							cataloguePopupMenu.add(newItem);
+							cataloguePopupMenu.addSeparator();
+							editItem.putClientProperty("InStock", true);
+							cataloguePopupMenu.add(editItem);
+							cataloguePopupMenu.add(archiveItem);
+						}
+						else
+						{
+							editItem.putClientProperty("InStock", false);
+							cataloguePopupMenu.add(editItem);
+							cataloguePopupMenu.add(unarchiveItem);
+						}
+						cataloguePopupMenu.show(table, event.getX(), event.getY());
+					}
+					else
+					{
+						cataloguePopupMenu.removeAll();
+						cataloguePopupMenu.add(newItem);
+						cataloguePopupMenu.show(table, event.getX(), event.getY());
+					}
+				}
+			}
+		});
+
+		return table;
+	}
+
+	private JTree createProductTree(DefaultTreeModel productTreeModel)
+	{
+		JTree tree = new JTree(productTreeModel);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		final JLabel blankLabel = new JLabel();
+
+		tree.addTreeSelectionListener(event ->
+		{
+			final Object selectedObject = getSelectedUserObject(tree);
+			if(selectedObject == null) return;
+			if(selectedObject.getClass() == String.class)
+			{
+				String nodeTitle = (String) selectedObject;
+				if(nodeTitle.equals(ACTIVE))
+				{
+					((ProductListTableModel) productListTableModel).setProducts(products);
+					productListTableModel.fireTableDataChanged();
+					rightScrollPane.setViewportView(productListTable);
+				}
+				else if(nodeTitle.equals(ARCHIVED))
+				{
+					((ProductListTableModel) productListTableModel).setProducts(archivedProducts);
+					productListTableModel.fireTableDataChanged();
+					rightScrollPane.setViewportView(productListTable);
+				}
+				else if(nodeTitle.equals(PRODUCTS_AND_SERVICES))
+				{
+					rightScrollPane.setViewportView(blankLabel);
+				}
+			}
+			else
+				rightScrollPane.setViewportView(blankLabel);
+			repaint();
+		});
+
+
+		return tree;
+	}
 }

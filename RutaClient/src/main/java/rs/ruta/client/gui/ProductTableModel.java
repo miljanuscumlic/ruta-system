@@ -32,7 +32,7 @@ public class ProductTableModel extends DefaultTableModel
 	private static final long serialVersionUID = -9067667667701887210L;
 	private static String[] rowNames =
 		{
-				"Name*", "Description", "Pack Size", "ID*", "Barcode", "Commodity Code", "Price*", "Tax percent*", "Keywords"
+				"Name*", "Description", "Pack Size", "ID*", "Barcode", "Commodity Code", "Price*", "Tax*", "Keywords", "In Stock"
 		};
 
 	private boolean editable;
@@ -97,6 +97,8 @@ public class ProductTableModel extends DefaultTableModel
 			case 8:
 				return item.getKeywordCount() == 0 ? null :
 					item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", "));
+			case 9:
+				return item.isInStock();
 			default:
 				return null;
 			}
@@ -122,7 +124,9 @@ public class ProductTableModel extends DefaultTableModel
 		final Object oldValue = getValueAt(rowIndex, columnIndex);
 		try
 		{
-			final String value = ((String) obj).trim();
+			String value = null;
+			if(rowIndex != 9)
+				value = ((String) obj).trim();
 			switch(rowIndex)
 			{
 			case 0:
@@ -175,6 +179,8 @@ public class ProductTableModel extends DefaultTableModel
 				map(keyword -> new KeywordType(keyword)).
 				collect(Collectors.toList());
 				item.setKeyword(keywords);
+			case 9:
+				item.setInStock((boolean) obj);
 			default:
 				break;
 			}
@@ -200,7 +206,7 @@ public class ProductTableModel extends DefaultTableModel
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
 	{
-		return String.class;
+		return Object.class;
 	}
 
 	@Override

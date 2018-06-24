@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -36,13 +37,6 @@ public class ProductTable extends JTable
 	@Override
 	public TableCellEditor getCellEditor(int row, int column)
 	{
-//		if(row == 6 && column == 1)
-//		{
-//			final JTextField bigDecimalField = new JTextField();
-//			bigDecimalField.setInputVerifier(new BigDecimalVerifier());
-//			return new DefaultCellEditor(bigDecimalField);
-//		}
-//		else
 		if(row == 7 && column == 1)
 		{
 			final JComboBox<String> comboBox = new JComboBox<String>(InstanceFactory.getTaxCategories());
@@ -50,8 +44,33 @@ public class ProductTable extends JTable
 			comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN));
 			return new DefaultCellEditor(comboBox);
 		}
+		else if(row == 9 && column == 1)
+		{
+			return new DefaultCellEditor(new JCheckBox());
+		}
 		else
 			return super.getCellEditor(row, column);
+	}
+
+	@Override
+	public TableCellRenderer getCellRenderer(int row, int column)
+	{
+		if(row == 9 && column == 1)
+		{
+			return new TableCellRenderer()
+			{
+				@Override
+				public Component getTableCellRendererComponent(
+						JTable table, Object value, boolean isSelected,
+						boolean hasFocus, int row, int column)
+				{
+					final JCheckBox checkBox = new JCheckBox();
+					checkBox.setSelected((boolean) value);
+					return checkBox;
+				}
+			};
+		}
+		return super.getCellRenderer(row, column);
 	}
 
 	private class ComBoxRenderer extends BasicComboBoxRenderer

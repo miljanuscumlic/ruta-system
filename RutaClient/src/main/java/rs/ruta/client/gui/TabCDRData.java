@@ -106,13 +106,10 @@ public class TabCDRData extends TabComponent
 		DefaultTreeModel searchTreeModel = new SearchTreeModel(new DefaultMutableTreeNode(SEARCHES), myParty);
 		searchTree = new JTree(searchTreeModel);
 		searchTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		selectNode(partyTree, FOLLOWINGS);
 		JPanel treePanel = new JPanel(new BorderLayout());
 		treePanel.add(partyTree, BorderLayout.NORTH);
 		treePanel.add(searchTree, BorderLayout.CENTER);
-
-		/*		JPanel treePanel = new JPanel(new GridLayout(2,1));
-		treePanel.add(partyTree);
-		treePanel.add(searchTree);*/
 
 		leftPane = new JScrollPane(treePanel);
 		leftPane.setPreferredSize(new Dimension(325, 500));

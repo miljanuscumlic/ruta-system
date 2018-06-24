@@ -30,7 +30,7 @@ public class ProductDialog extends JDialog
 	{
 		super(owner, true);
 		this.item = item;
-		setSize(500,235);
+		setSize(500,250);
 		setLocationRelativeTo(owner);
 
 		final JPanel productPanel = new JPanel();

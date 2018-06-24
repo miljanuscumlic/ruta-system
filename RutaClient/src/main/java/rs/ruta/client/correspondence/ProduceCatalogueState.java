@@ -35,7 +35,7 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing My Catalogue..."), Color.BLACK);
 		final CatalogueType catalogue = client.getMyParty().produceCatalogue(client.getCDRParty());
 		if(catalogue == null)
-			throw new StateActivityException("My Catalogue is malformed. UBL validation has failed.");
+			throw new StateActivityException("My Catalogue document is malformed. UBL validation has failed.");
 		else
 			saveCatalogue(correspondence, catalogue);
 		changeState(process, DistributeCatalogueState.getInstance());

@@ -270,7 +270,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				try
 				{
-					client.getMyParty().addProduct(product);
+					if(product.isInStock())
+						client.getMyParty().addProduct(product);
+					else
+						client.getMyParty().archiveProduct(product);
 					tabbedPane.setSelectedIndex(TAB_PRODUCTS);
 				}
 				catch (DetailException e)

@@ -146,7 +146,6 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 		for(BusinessParty aParty : archivedPartners)
 			addNode(aParty);
 
-
 		return root;
 	}
 

@@ -9,6 +9,7 @@ import oasis.names.specification.ubl.schema.xsd.cataloguedeletion_21.CatalogueDe
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "NotifyOfCatalogueDeletionState")
 public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
@@ -29,22 +30,31 @@ public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
 		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing Catalogue Deletion..."), Color.BLACK);
 		final CatalogueDeletionType catalogueDeletion = client.getMyParty().produceCatalogueDeletion(client.getCDRParty());
 		if(catalogueDeletion == null)
-			throw new StateActivityException("My Catalogue is malformed. UBL validation has failed.");
+			throw new StateActivityException("My Catalogue Deletion document is malformed. UBL validation has failed.");
 		else
 			saveCatalogueDeletion(correspondence, catalogueDeletion);
 		final DocumentReference documentReference = correspondence.getLastDocumentReference();
 		final Future<?> ret = client.cdrSendMyCatalogueDeletionRequest(catalogueDeletion, documentReference, correspondence);
 		process.setFuture(ret);
-
 		changeState(process, ReceiveCatalogueDeletionAppResponseState.getInstance());
 	}
 
 	private void saveCatalogueDeletion(Correspondence correspondence, CatalogueDeletionType catalogueDeletion)
+			throws StateActivityException
 	{
-		correspondence.addDocumentReference(catalogueDeletion.getProviderParty(),
-				catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(),
-				catalogueDeletion.getIssueDateValue(), catalogueDeletion.getIssueTimeValue(),
-				catalogueDeletion.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.setRecentlyUpdated(true);
+		try
+		{
+			//		correspondence.addDocumentReference(catalogueDeletion.getProviderParty(),
+			//				catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(),
+			//				catalogueDeletion.getIssueDateValue(), catalogueDeletion.getIssueTimeValue(),
+			//				catalogueDeletion.getClass().getName(), DocumentReference.Status.UBL_VALID);
+
+			correspondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_VALID);
+			correspondence.setRecentlyUpdated(true);
+		}
+		catch(DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
 	}
 }

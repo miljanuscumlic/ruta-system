@@ -118,6 +118,7 @@ public class MyParty extends BusinessParty
 {
 	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private List<Item> products;
+	private List<Item> archivedProducts;
 	/**
 	 * MyParty data retrieved from the CDR service.
 	 */
@@ -196,7 +197,9 @@ public class MyParty extends BusinessParty
 	{
 		super();
 		setFollowing(true);
-		products = getProducts();
+		//products = getProducts();
+		products = null;
+		archivedProducts = null;
 		dirtyCatalogue = dirtyMyParty = insertMyCatalogue = true;
 		//		username = password = secretKey = null;
 		localUser = new RutaUser();
@@ -216,7 +219,9 @@ public class MyParty extends BusinessParty
 	public void loadData() throws DetailException
 	{
 		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
-		setProducts(mapperRegistry.getMapper(Item.class).findAll());
+		final List<Item> allProducts = mapperRegistry.getMapper(Item.class).findAll();
+		setProducts(allProducts.stream().filter(item -> item.isInStock()).collect(Collectors.toList()));
+		setArchivedProducts(allProducts.stream().filter(item -> !item.isInStock()).collect(Collectors.toList()));
 		BusinessPartySearchCriterion criterion = new BusinessPartySearchCriterion();
 		criterion.setPartner(true);
 		final DataMapper<BusinessParty, String> businessPartyMapper = mapperRegistry.getMapper(BusinessParty.class);
@@ -306,14 +311,13 @@ public class MyParty extends BusinessParty
 		if(localUser != null)
 			mapperRegistry.getMapper(MyParty.class).insert(getLocalUsername(), this);
 		mapperRegistry.getMapper(Item.class).insertAll(null, getProducts());
+		mapperRegistry.getMapper(Item.class).insertAll(null, getArchivedProducts());
 		if(businessPartners != null && !businessPartners.isEmpty())
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, businessPartners);
 		if(otherParties != null && !otherParties.isEmpty())
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, otherParties);
 		if(archivedParties != null && !archivedParties.isEmpty())
 			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, archivedParties);
-/*		if(deregisteredParties != null && !deregisteredParties.isEmpty())
-			mapperRegistry.getMapper(BusinessParty.class).insertAll(null, deregisteredParties);*/
 		if(myFollowingParty != null)
 			mapperRegistry.getMapper(BusinessParty.class).insert(null, myFollowingParty);
 		if(partySearches != null && !partySearches.isEmpty())
@@ -371,6 +375,7 @@ public class MyParty extends BusinessParty
 		clearParties();
 		clearSearches();
 		clearProducts();
+		clearArchivedProducts();
 		clearCorrespondences();
 		setCoreParty(null);
 		MapperRegistry.getInstance().getMapper(MyParty.class).deleteAll();//(getLocalUsername(), getPartyID());
@@ -444,7 +449,7 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Removes all products from the data model and data store.
+	 * Removes all active products from the data model and data store.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the database
 	 */
@@ -452,7 +457,32 @@ public class MyParty extends BusinessParty
 	{
 		MapperRegistry.getInstance().getMapper(Item.class).deleteAll();
 		products.clear();
-		notifyListeners(new ItemEvent(new Item(), ItemEvent.ALL_ITEMS_REMOVED));
+		notifyListeners(new ItemEvent(new Item(), ItemEvent.ITEMS_REMOVED));
+	}
+
+	public List<Item> getArchivedProducts()
+	{
+		if (archivedProducts == null)
+			archivedProducts = new ArrayList<Item>();
+		return archivedProducts;
+	}
+
+	public void setArchivedProducts(@Nullable List<Item> archivedProducts)
+	{
+		this.archivedProducts = archivedProducts;
+	}
+
+	/**
+	 * Removes all archived products from the data model and data store.
+	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
+	 * @throws DetailException if data could not be deleted from the database
+	 */
+	public void clearArchivedProducts() throws DetailException
+	{
+		for(Item item: archivedProducts)
+			MapperRegistry.getInstance().getMapper(Item.class).delete(null, item.getID().getValue());
+		archivedProducts.clear();
+		notifyListeners(new ItemEvent(new Item(), ItemEvent.ARCHIVED_ITEMS_REMOVED));
 	}
 
 	public String getProductNameAsString(final int index)
@@ -1819,10 +1849,10 @@ public class MyParty extends BusinessParty
 		return dirtyCatalogue;
 	}
 
-	public void setDirtyCatalogue(Boolean dirty)
+/*	public void setDirtyCatalogue(Boolean dirty)
 	{
 		dirtyCatalogue = dirty;
-	}
+	}*/
 
 	//MMM: maybe this method is not necessary, because of the above one which might be mandatory because of the JAXB serialization ???
 	public void setDirtyCatalogue(boolean dirtyCatalogue)
@@ -3387,9 +3417,10 @@ public class MyParty extends BusinessParty
 	 * Removes {@link Item} from the product list and from the database.
 	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
 	 * @param row product's index
-	 * @throws Exception if {@code Item} could not be deleted from the database
+	 * @throws DetailException if {@code Item} could not be deleted from the database
+	 * @return removed {@code Item}
 	 */
-	public void removeProduct(final int row) throws Exception
+	public Item removeProduct(final int row) throws DetailException
 	{
 		final Item item = products.get(row);
 		final String id = item.getID().getValue();
@@ -3397,6 +3428,7 @@ public class MyParty extends BusinessParty
 		products.remove(row);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_REMOVED));
 		dirtyCatalogue = true;
+		return item;
 	}
 
 	/**
@@ -3407,6 +3439,7 @@ public class MyParty extends BusinessParty
 	 */
 	public void addProduct(final Item item) throws DetailException
 	{
+		item.setInStock(true);
 		MapperRegistry.getInstance().getMapper(Item.class).insert(null, item);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_ADDED));
@@ -3427,6 +3460,52 @@ public class MyParty extends BusinessParty
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_UPDATED));
 		dirtyCatalogue = true;
+	}
+
+	/**
+	 * Adds passed {@link Item} to the archived product list and inserts it in the database.
+	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
+	 * @param item {@link Item} to be added
+	 * @throws DetailException if {@code Item} could not be inserted in the database
+	 */
+	public void archiveProduct(final Item item) throws DetailException
+	{
+		item.setInStock(false);
+		MapperRegistry.getInstance().getMapper(Item.class).insert(null, item);
+		archivedProducts.add(item);
+		notifyListeners(new ItemEvent(item, ItemEvent.ARCHIVED_ITEM_ADDED));
+	}
+
+	/**
+	 * Removes {@link Item} from the archived product list and from the database.
+	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
+	 * @param row product's index
+	 * @throws DetailException if {@code Item} could not be deleted from the database
+	 * @return removed {@code Item}
+	 */
+	public Item unarchiveProduct(final int row) throws DetailException
+	{
+		final Item item = archivedProducts.get(row);
+		final String id = item.getID().getValue();
+		MapperRegistry.getInstance().getMapper(Item.class).delete(null, id);
+		archivedProducts.remove(row);
+		notifyListeners(new ItemEvent(item, ItemEvent.ARCHIVED_ITEM_REMOVED));
+		return item;
+	}
+
+	/**
+	 * Updates passed {@link Item} in the products list and in the database.
+	 * <p>Notifies listeners registered for this type of the {@link ItemEvent event}.</p>
+	 * @param item {@link Item} to be updated
+	 * @param index index of the product in the list of all products
+	 * @throws DetailException if {@code Item} could not be updated in the database
+	 */
+	public void updateArchivedProduct(final Item item, int index) throws DetailException
+	{
+		MapperRegistry.getInstance().getMapper(Item.class).update(null, item);
+		archivedProducts.remove(index);
+		archivedProducts.add(item);
+		notifyListeners(new ItemEvent(item, ItemEvent.ARCHIVED_ITEM_UPDATED));
 	}
 
 	/**
@@ -3672,28 +3751,31 @@ public class MyParty extends BusinessParty
 	 * to its {@link BusinessParty owner}.
 	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
 	 * @param catalogue catalogue to place
-	 * @throws DetailException if party could not be updated in the data store
+	 * @throws DetailException if catalogue could not be updated in the data store
 	 */
 	public void processDocBoxCatalogue(CatalogueType catalogue) throws DetailException
 	{
 		boolean success = false;
-		PartyType provider = catalogue.getProviderParty();
+		final PartyType provider = catalogue.getProviderParty();
 		if(BusinessParty.sameParties(this, provider))
 		{
-			myFollowingParty.setCatalogue(catalogue);
-			myFollowingParty.setRecentlyUpdated(true);
-			notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
-			success = true;
-
 			synchronized(catalogueCorrespondence)
 			{
 				if(InstanceFactory.validateUBLDocument(catalogue, doc -> UBL21Validator.catalogue().validate(catalogue)))
 				{
+					myFollowingParty.setCatalogue(catalogue);
+					myFollowingParty.setRecentlyUpdated(true);
+					notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
+					success = true;
 					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_VALID);
 					catalogueCorrespondence.setRecentlyUpdated(true);
 				}
 				else
+				{
+					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_INVALID);
+					catalogueCorrespondence.setRecentlyUpdated(true);
 					throw new DetailException("Received Catalogue does not conform to the UBL standard.");
+				}
 			}
 		}
 		else
@@ -3749,16 +3831,32 @@ public class MyParty extends BusinessParty
 	 * Places {@link CatalogueDeletionType catalogue deletion} document on the proper place in the data model
 	 * by deleting respective {@link CatalogueType catalogue} from its {@link BusinessParty owner}.
 	 * <p>Notifies listeners registered for this type of the {@link RutaClientFrameEvent event}.</p>
-	 * @param catDeletion {@link CatalogueDeletionType catalogue deletion} to process
+	 * @param catalogueDeletion {@link CatalogueDeletionType catalogue deletion} to process
+	 * @throws DetailException if catalogue could not be updated in the data store
 	 */
-	public void processDocBoxCatalogueDeletion(CatalogueDeletionType catDeletion)
+	public void processDocBoxCatalogueDeletion(CatalogueDeletionType catalogueDeletion) throws DetailException
 	{
-		final PartyType provider = catDeletion.getProviderParty();
+		final PartyType provider = catalogueDeletion.getProviderParty();
 		if(BusinessParty.sameParties(this, provider))
 		{
-			myFollowingParty.setCatalogue(null);
-			myFollowingParty.setRecentlyUpdated(true);
-			notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
+			synchronized(catalogueCorrespondence)
+			{
+				if(InstanceFactory.validateUBLDocument(catalogueDeletion,
+						doc -> UBL21Validator.catalogueDeletion().validate(catalogueDeletion)))
+				{
+					myFollowingParty.setCatalogue(null);
+					myFollowingParty.setRecentlyUpdated(true);
+					notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
+					catalogueCorrespondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_VALID);
+					catalogueCorrespondence.setRecentlyUpdated(true);
+				}
+				else
+				{
+					catalogueCorrespondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_INVALID);
+					catalogueCorrespondence.setRecentlyUpdated(true);
+					throw new DetailException("Received Catalogue does not conform to the UBL standard.");
+				}
+			}
 		}
 		else
 		{
