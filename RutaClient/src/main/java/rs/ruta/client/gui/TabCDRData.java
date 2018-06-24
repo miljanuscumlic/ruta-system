@@ -23,6 +23,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
@@ -79,13 +80,13 @@ public class TabCDRData extends TabComponent
 	private PartnershipRequestListTableModel sentRequestsTableModel;
 	private final TableRowSorter<DefaultTableModel> requestsSorter;
 
-	private JTable searchesTable;
-	private JTable searchesPartyTable;
-	private PartySearchTableModel searchesPartyTableModel;
-	private final TableRowSorter<DefaultTableModel> searchesPartySorter;
-	private JTable searchesCatalogueTable;
-	private CatalogueSearchTableModel searchesCatalogueTableModel;
-	private final TableRowSorter<DefaultTableModel> searchesCatalogueSorter;
+	private JTable searchListTable;
+	private JTable partySearchTable;
+	private PartySearchTableModel partySearchTableModel;
+	private final TableRowSorter<DefaultTableModel> partySearchSorter;
+	private JTable catalogueSearchTable;
+	private CatalogueSearchTableModel catalogueSearchTableModel;
+	private final TableRowSorter<DefaultTableModel> catalogueSearchSorter;
 
 	/**
 	 * Creates tabbed pane for display of the CDR related data.
@@ -344,18 +345,18 @@ public class TabCDRData extends TabComponent
 		});
 
 		//searches tables
-		searchesPartyTableModel = new PartySearchTableModel();
-		searchesPartyTable = createSearchPartyTable(searchesPartyTableModel);
-		searchesPartyTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-		searchesCatalogueTableModel = new CatalogueSearchTableModel();
-		searchesCatalogueTable = createSearchCatalogueTable(searchesCatalogueTableModel);
-		searchesCatalogueTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-		searchesTable = createSearchListTable(new SearchListTableModel<>());
+		partySearchTableModel = new PartySearchTableModel();
+		partySearchTable = createPartySearchTable(partySearchTableModel);
+		partySearchTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
+		catalogueSearchTableModel = new CatalogueSearchTableModel();
+		catalogueSearchTable = createCatalogueSearchTable(catalogueSearchTableModel);
+		catalogueSearchTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
+		searchListTable = createSearchListTable(new SearchListTableModel<>());
 
-		searchesPartySorter = createTableRowSorter(searchesPartyTableModel);
-		searchesPartyTable.setRowSorter(searchesPartySorter);
-		searchesCatalogueSorter = createTableRowSorter(searchesCatalogueTableModel);
-		searchesCatalogueTable.setRowSorter(searchesCatalogueSorter);
+		partySearchSorter = createTableRowSorter(partySearchTableModel);
+		partySearchTable.setRowSorter(partySearchSorter);
+		catalogueSearchSorter = createTableRowSorter(catalogueSearchTableModel);
+		catalogueSearchTable.setRowSorter(catalogueSearchSorter);
 		//there is no searchesTableModel and searchesTableSorter because there are a few different models that
 		//could be instantiated based on the type of the object that is searched for: PartyType, CatalogueType
 
@@ -367,15 +368,15 @@ public class TabCDRData extends TabComponent
 			partyTree.clearSelection();
 			if(selectedSearch instanceof PartySearch)
 			{
-				searchesPartyTableModel.setSearch((Search<PartyType>) selectedSearch);
-				searchesPartySorter.allRowsChanged();
-				rightScrollPane.setViewportView(searchesPartyTable);
+				partySearchTableModel.setSearch((Search<PartyType>) selectedSearch);
+				partySearchSorter.allRowsChanged();
+				rightScrollPane.setViewportView(partySearchTable);
 			}
 			else if(selectedSearch instanceof CatalogueSearch)
 			{
-				searchesCatalogueTableModel.setSearch((Search<CatalogueType>) selectedSearch);
-				searchesCatalogueSorter.allRowsChanged();
-				rightScrollPane.setViewportView(searchesCatalogueTable);
+				catalogueSearchTableModel.setSearch((Search<CatalogueType>) selectedSearch);
+				catalogueSearchSorter.allRowsChanged();
+				rightScrollPane.setViewportView(catalogueSearchTable);
 			}
 			else //String
 			{
@@ -392,10 +393,10 @@ public class TabCDRData extends TabComponent
 				}
 				if(!SEARCHES.equals((String) selectedSearch))
 				{
-					searchesTable.setModel(searchesTableModel);
-					searchesTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
-					searchesTable.setRowSorter(createTableRowSorter(searchesTableModel, 3, true));
-					rightScrollPane.setViewportView(searchesTable);
+					searchListTable.setModel(searchesTableModel);
+					searchListTable.getColumnModel().getColumn(0).setCellRenderer(rowNumberRenderer);
+					searchListTable.setRowSorter(createTableRowSorter(searchesTableModel, 3, true));
+					rightScrollPane.setViewportView(searchListTable);
 				}
 				else
 				{
@@ -919,16 +920,16 @@ public class TabCDRData extends TabComponent
 							if(PARTIES.equals(nodeTitle))
 							{
 								final Search<PartyType> selectedSearch = myParty.getPartySearches().get(modelRowIndex);
-								searchesPartyTableModel.setSearch(selectedSearch);
+								partySearchTableModel.setSearch(selectedSearch);
 								selectNode(searchTree, selectedSearch);
-								rightScrollPane.setViewportView(searchesPartyTable);
+								rightScrollPane.setViewportView(partySearchTable);
 							}
 							else if(CATALOGUES.equals(nodeTitle))
 							{
 								final Search<CatalogueType> selectedSearch = myParty.getCatalogueSearches().get(modelRowIndex);
-								searchesCatalogueTableModel.setSearch(selectedSearch);
+								catalogueSearchTableModel.setSearch(selectedSearch);
 								selectNode(searchTree, selectedSearch);
-								rightScrollPane.setViewportView(searchesCatalogueTable);
+								rightScrollPane.setViewportView(catalogueSearchTable);
 							}
 						}
 					}
@@ -952,7 +953,7 @@ public class TabCDRData extends TabComponent
 	 * @param tableModel model containing party data
 	 * @return constructed table object
 	 */
-	private JTable createSearchPartyTable(DefaultTableModel tableModel)
+	private JTable createPartySearchTable(DefaultTableModel tableModel)
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
 		final JPopupMenu popupMenu = new JPopupMenu();
@@ -1034,7 +1035,7 @@ public class TabCDRData extends TabComponent
 	 * @param tableModel model containing catalogue data
 	 * @return constructed table object
 	 */
-	private JTable createSearchCatalogueTable(DefaultTableModel tableModel)
+	private JTable createCatalogueSearchTable(DefaultTableModel tableModel)
 	{
 		JTable table = new JTable(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -1061,7 +1062,7 @@ public class TabCDRData extends TabComponent
 			new Thread(() ->
 			{
 				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-				final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
+				final PartyType selectedParty = catalogueSearchTableModel.getParty(modelRowIndex);
 				clientFrame.showPartyDialog(new Party(selectedParty), "View Party", false, false);
 			}).start();
 		});
@@ -1071,7 +1072,7 @@ public class TabCDRData extends TabComponent
 			new Thread(() ->
 			{
 				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-				final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
+				final PartyType selectedParty = catalogueSearchTableModel.getParty(modelRowIndex);
 				clientFrame.getClient().requestPartnership(selectedParty);
 			}).start();
 		});
@@ -1079,7 +1080,7 @@ public class TabCDRData extends TabComponent
 		followPartyItem.addActionListener(event ->
 		{
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
-			final PartyType selectedParty = searchesCatalogueTableModel.getParty(modelRowIndex);
+			final PartyType selectedParty = catalogueSearchTableModel.getParty(modelRowIndex);
 			final String followingName = InstanceFactory.getPropertyOrNull(selectedParty.getPartyNameAtIndex(0),
 					PartyNameType::getNameValue);
 			final String followingID = InstanceFactory.getPropertyOrNull(selectedParty.getPartyIdentificationAtIndex(0),
@@ -1139,7 +1140,6 @@ public class TabCDRData extends TabComponent
 			else if(BusinessPartyEvent.BUSINESS_PARTNER_ADDED.equals(command))
 			{
 				makeVisibleNode(partyTree, party);
-				//				selectNode(partyTree, party);
 				final Object selectedUserObject = getSelectedUserObject(partyTree);
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
@@ -1261,12 +1261,22 @@ public class TabCDRData extends TabComponent
 			{
 				selectNode(searchTree, source);
 			}
-			else if(SearchEvent.PARTY_SEARCH_UPDATED.equals(command) ||
-					SearchEvent.CATALOGUE_SEARCH_UPDATED.equals(command))
+			else if(SearchEvent.PARTY_SEARCH_UPDATED.equals(command))
 			{
 				makeVisibleNode(searchTree, source);
-				searchesPartyTableModel.fireTableDataChanged();
+				partySearchTableModel.fireTableDataChanged();
 				selectNode(searchTree, source);
+			}
+			else if(SearchEvent.CATALOGUE_SEARCH_UPDATED.equals(command))
+			{
+				makeVisibleNode(searchTree, source);
+				catalogueSearchTableModel.fireTableDataChanged();
+				selectNode(searchTree, source);
+			}
+			else if(SearchEvent.PARTY_SEARCH_REMOVED.equals(command) ||
+					SearchEvent.CATALOGUE_SEARCH_REMOVED.equals(command))
+			{
+				((AbstractTableModel) searchListTable.getModel()).fireTableDataChanged();
 			}
 			else if(RutaClientFrameEvent.SELECT_NEXT.equals(command))
 			{
