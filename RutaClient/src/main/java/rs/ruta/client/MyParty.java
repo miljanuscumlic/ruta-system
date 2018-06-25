@@ -3526,7 +3526,6 @@ public class MyParty extends BusinessParty
 			return item;
 	}
 
-	//MMM invoke other delete methods if necessary
 	/**
 	 * Clears all data of My Party that are related to the CDR. This method is usually called
 	 * during deregistration from the CDR service.
@@ -3556,7 +3555,7 @@ public class MyParty extends BusinessParty
 	 * @param search search to add
 	 * @throws DetailException if search could not be inserted in the data store
 	 */
-	public void addPartySearch(Search<PartyType> search) throws DetailException
+	public synchronized void addPartySearch(Search<PartyType> search) throws DetailException
 	{
 		if(search != null)
 		{
@@ -3600,7 +3599,7 @@ public class MyParty extends BusinessParty
 	 * @return true if search was contained in list of party searches and removed from it
 	 * @throws DetailException if search could not be deleted from the data store
 	 */
-	public boolean removePartySearch(final Search<PartyType> search) throws DetailException
+	public synchronized boolean removePartySearch(final Search<PartyType> search) throws DetailException
 	{
 		boolean success = false;
 		if(search != null)
@@ -3645,7 +3644,7 @@ public class MyParty extends BusinessParty
 	 * @param newSearch search to add
 	 * @throws DetailException if search could not be inserted in the data store
 	 */
-	public void addCatalogueSearch(Search<CatalogueType> newSearch) throws DetailException
+	public synchronized void addCatalogueSearch(Search<CatalogueType> newSearch) throws DetailException
 	{
 		if(newSearch != null)
 		{
@@ -3662,7 +3661,7 @@ public class MyParty extends BusinessParty
 	 * @return true if search was contained in list of catalogue searches and removed from it
 	 * @throws DetailException if search could not be deleted from the data store
 	 */
-	public boolean removeCatalogueSearch(final Search<CatalogueType> search) throws DetailException
+	public synchronized boolean removeCatalogueSearch(final Search<CatalogueType> search) throws DetailException
 	{
 		boolean success = false;
 		if(search != null)

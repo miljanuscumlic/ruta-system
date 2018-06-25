@@ -1540,9 +1540,9 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void updateTitle(boolean dirty)
 	{
 		if(dirty)
-			setTitle(getTitle() + "*");
+			setTitle(getTitle().replaceAll("[*]+$", "") + "*");
 		else
-			setTitle(getTitle().replaceAll("[*]$", ""));
+			setTitle(getTitle().replaceAll("[*]+$", ""));
 	}
 
 	@Override
