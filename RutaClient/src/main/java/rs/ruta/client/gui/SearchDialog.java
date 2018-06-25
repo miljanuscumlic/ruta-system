@@ -53,19 +53,22 @@ public class SearchDialog extends JDialog
 	 * true if search button has been pressed
 	 */
 	private boolean searchPressed;
+	private boolean derivedPressed;
 
-	public SearchDialog(RutaClientFrame owner)
+	public SearchDialog(RutaClientFrame owner, Search<?> oldSearch, boolean editable)
 	{
 		super(owner, true);
+		this.search = oldSearch;
 		setResizable(false);
 		searchPressed = false;
+		derivedPressed = false;
 
 		setSize(500, 420);
 		setLocationRelativeTo(owner);
 
 		int width = 20;
 		sNameField = new JTextField(width);
-		sNameField.setText(Search.getNextSearchName());
+		sNameField.setEditable(editable);
 
 		addComponentListener(new ComponentAdapter()
 		{
@@ -78,19 +81,67 @@ public class SearchDialog extends JDialog
 		});
 
 		pNameField = new JTextField(width);
+		pNameField.setEditable(editable);
 		pCompanyIDField = new JTextField(width);
+		pCompanyIDField.setEditable(editable);
 		pIndustryClassCodeField = new JTextField(width);
+		pIndustryClassCodeField.setEditable(editable);
 		pCityField = new JTextField(width);
+		pCityField.setEditable(editable);
 		pCountryField = new JTextField(width);
+		pCountryField.setEditable(editable);
+		pAll = new JRadioButton("match all of the following", true);
+		pAny = new JRadioButton("match any of the following", false);
+		pAll.setEnabled(editable);
+		pAny.setEnabled(editable);
 
 		iNameField = new JTextField(width);
+		iNameField.setEditable(editable);
 		iDescriptionField = new JTextField(width);
+		iDescriptionField.setEditable(editable);
 		iBarcodeField = new JTextField(width);
+		iBarcodeField.setEditable(editable);
 		iCommCodeField = new JTextField(width);
+		iCommCodeField.setEditable(editable);
 		iKeywordField = new JTextField(width);
+		iKeywordField.setEditable(editable);
+		iAll = new JRadioButton("match all of the following", true);
+		iAny = new JRadioButton("match any of the following", false);
+		iAll.setEnabled(editable);
+		iAny.setEnabled(editable);
+
+		if(search != null)
+		{
+			sNameField.setText(search.getSearchName());
+			if(search.getClass() == PartySearch.class)
+			{
+				final PartySearchCriterion criterion = (PartySearchCriterion) search.getCriterion();
+				pNameField.setText(criterion.getPartyName());
+				pCompanyIDField.setText(criterion.getPartyCompanyID());
+				pIndustryClassCodeField.setText(criterion.getPartyClassCode());
+				pCityField.setText(criterion.getPartyCity());
+				pCountryField.setText(criterion.getPartyCountry());
+				pAll.setSelected(criterion.isPartyAll());
+				pAny.setSelected(!criterion.isPartyAll());
+			}
+			else if(search.getClass() == CatalogueSearch.class)
+			{
+				final CatalogueSearchCriterion criterion = (CatalogueSearchCriterion) search.getCriterion();
+				iNameField.setText(criterion.getItemName());
+				iDescriptionField.setText(criterion.getItemDescription());
+				iBarcodeField.setText(criterion.getItemBarcode());
+				iCommCodeField.setText(criterion.getItemCommCode());
+				iKeywordField.setText(criterion.getItemKeyword());
+				iAll.setSelected(criterion.isItemAll());
+				iAny.setSelected(!criterion.isItemAll());
+			}
+		}
+		else
+		{
+			sNameField.setText(Search.getNextSearchName());
+		}
 
 		JPanel searchPartyPanel = new JPanel();
-
 		searchPartyPanel.setLayout(new BorderLayout());
 		searchPartyPanel.add(createSearchNamePanel(), BorderLayout.NORTH);
 		searchPartyPanel.add(createPartyPanel(), BorderLayout.CENTER);
@@ -98,62 +149,76 @@ public class SearchDialog extends JDialog
 		add(createItemPanel(), BorderLayout.CENTER);
 
 		JPanel buttonPanel = new JPanel();
-
 		JButton searchButton = new JButton("Search");
-		buttonPanel.add(searchButton);
 		JButton cancelButton = new JButton("Cancel");
+		JButton deriveButton = new JButton("Derive New Search");
+
+		if(!editable)
+		{
+			buttonPanel.add(deriveButton);
+		}
+		buttonPanel.add(searchButton);
 		buttonPanel.add(cancelButton);
 		getRootPane().setDefaultButton(searchButton);
 		searchButton.requestFocusInWindow();
 
 		searchButton.addActionListener(event ->
 		{
-			searchPressed = true;
-			searchName = sNameField.getText();
-			SearchCriterion searchCriterion;
-			if(isCatalogueSearchedFor())
+			if(editable)
 			{
-				search = new CatalogueSearch();//Search<CatalogueType>();
-				((CatalogueSearch) search).setResultType(CatalogueType.class);
-				CatalogueSearchCriterion criterion = new CatalogueSearchCriterion();
-				criterion.setPartyName(pNameField.getText());
-				criterion.setPartyCompanyID(pCompanyIDField.getText());
-				criterion.setPartyClassCode(pIndustryClassCodeField.getText());
-				criterion.setPartyCity(pCityField.getText());
-				criterion.setPartyCountry(pCountryField.getText());
-				criterion.setPartyAll(pAll.isSelected());
+				searchName = sNameField.getText();
+				SearchCriterion searchCriterion;
+				if(isCatalogueSearchedFor())
+				{
+					search = new CatalogueSearch();//Search<CatalogueType>();
+					((CatalogueSearch) search).setResultType(CatalogueType.class);
+					CatalogueSearchCriterion criterion = new CatalogueSearchCriterion();
+					criterion.setPartyName(pNameField.getText());
+					criterion.setPartyCompanyID(pCompanyIDField.getText());
+					criterion.setPartyClassCode(pIndustryClassCodeField.getText());
+					criterion.setPartyCity(pCityField.getText());
+					criterion.setPartyCountry(pCountryField.getText());
+					criterion.setPartyAll(pAll.isSelected());
 
-				criterion.setItemName(iNameField.getText());
-				criterion.setItemDescription(iDescriptionField.getText());
-				criterion.setItemBarcode(iBarcodeField.getText());
-				criterion.setItemCommCode(iCommCodeField.getText());
-				criterion.setItemKeyword(iKeywordField.getText());
-				criterion.setItemAll(iAll.isSelected());
-				searchCriterion = criterion;
+					criterion.setItemName(iNameField.getText());
+					criterion.setItemDescription(iDescriptionField.getText());
+					criterion.setItemBarcode(iBarcodeField.getText());
+					criterion.setItemCommCode(iCommCodeField.getText());
+					criterion.setItemKeyword(iKeywordField.getText());
+					criterion.setItemAll(iAll.isSelected());
+					searchCriterion = criterion;
+				}
+				else
+				{
+					search = new PartySearch();//Search<PartyType>();
+					((PartySearch) search).setResultType(PartyType.class);
+					PartySearchCriterion criterion = new PartySearchCriterion();
+					criterion.setPartyName(pNameField.getText());
+					criterion.setPartyCompanyID(pCompanyIDField.getText());
+					criterion.setPartyClassCode(pIndustryClassCodeField.getText());
+					criterion.setPartyCity(pCityField.getText());
+					criterion.setPartyCountry(pCountryField.getText());
+					criterion.setPartyAll(pAll.isSelected());
+					searchCriterion = criterion;
+				}
+				search.setCriterion(searchCriterion.nullEmptyFields());
+				search.setId();
+				search.setSearchName(searchName);
 			}
-			else
-			{
-				search = new PartySearch();//Search<PartyType>();
-				((PartySearch) search).setResultType(PartyType.class);
-				PartySearchCriterion criterion = new PartySearchCriterion();
-				criterion.setPartyName(pNameField.getText());
-				criterion.setPartyCompanyID(pCompanyIDField.getText());
-				criterion.setPartyClassCode(pIndustryClassCodeField.getText());
-				criterion.setPartyCity(pCityField.getText());
-				criterion.setPartyCountry(pCountryField.getText());
-				criterion.setPartyAll(pAll.isSelected());
-				searchCriterion = criterion;
-			}
-			search.setCriterion(searchCriterion.nullEmptyFields());
-			search.setId();
-			search.setSearchName(searchName);
-//			search.setTimestamp();
+			searchPressed = true;
+			setVisible(false);
+		});
+
+		deriveButton.addActionListener(event ->
+		{
+			derivedPressed = true;
 			setVisible(false);
 		});
 
 		cancelButton.addActionListener(event ->
 		{
-			Search.decreaseSearchNumber();
+			if(editable)
+				Search.decreaseSearchNumber();
 			setVisible(false);
 		});
 		add(buttonPanel, BorderLayout.SOUTH);
@@ -163,7 +228,8 @@ public class SearchDialog extends JDialog
 			@Override
 			public void windowClosing(WindowEvent event)
 			{
-				Search.decreaseSearchNumber();
+				if(editable)
+					Search.decreaseSearchNumber();
 				setVisible(false);
 			}
 		});
@@ -184,11 +250,11 @@ public class SearchDialog extends JDialog
 
 	private JPanel createSearchNamePanel()
 	{
-		JPanel searchNamePanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
+		final JPanel searchNamePanel = new JPanel();
+		final GridBagLayout grid = new GridBagLayout();
 		searchNamePanel.setLayout(grid);
 
-		Insets insets = new Insets(10, 0, 10, 0);
+		final Insets insets = new Insets(10, 0, 10, 0);
 		putGridCell(searchNamePanel, 0, 0, 1, 1, insets, new JLabel("Search name: ", SwingConstants.LEFT));
 		putGridCell(searchNamePanel, 0, 1, 1, 1, insets, sNameField);
 
@@ -197,15 +263,13 @@ public class SearchDialog extends JDialog
 
 	private JPanel createPartyPanel()
 	{
-		JPanel partyPanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
+		final JPanel partyPanel = new JPanel();
+		final GridBagLayout grid = new GridBagLayout();
 		partyPanel.setLayout(grid);
-		JPanel radioPanel = new JPanel();
-		ButtonGroup radioGroup = new ButtonGroup();
-		pAll = new JRadioButton("match all of the following", true);
+		final JPanel radioPanel = new JPanel();
+		final ButtonGroup radioGroup = new ButtonGroup();
 		radioGroup.add(pAll);
 		radioPanel.add(pAll);
-		pAny = new JRadioButton("match any of the following", false);
 		radioGroup.add(pAny);
 		radioPanel.add(pAny);
 
@@ -228,15 +292,13 @@ public class SearchDialog extends JDialog
 
 	private JPanel createItemPanel()
 	{
-		JPanel itemPanel = new JPanel();
-		GridBagLayout grid = new GridBagLayout();
+		final JPanel itemPanel = new JPanel();
+		final GridBagLayout grid = new GridBagLayout();
 		itemPanel.setLayout(grid);
-		JPanel radioPanel = new JPanel();
-		ButtonGroup radioGroup = new ButtonGroup();
-		iAll = new JRadioButton("match all of the following", true);
+		final JPanel radioPanel = new JPanel();
+		final ButtonGroup radioGroup = new ButtonGroup();
 		radioGroup.add(iAll);
 		radioPanel.add(iAll);
-		iAny = new JRadioButton("match any of the following", false);
 		radioGroup.add(iAny);
 		radioPanel.add(iAny);
 
@@ -260,7 +322,7 @@ public class SearchDialog extends JDialog
 	//MMM: this method should be part of some common package and be static, because it is used in many different dialogs
 	private void putGridCell(JPanel panel, int row, int column, int width, int height, Insets insets, Component comp)
 	{
-		GridBagConstraints con = new GridBagConstraints();
+		final GridBagConstraints con = new GridBagConstraints();
 		con.weightx = 0;
 		con.weighty = 0;
 		con.gridx = column;
@@ -293,6 +355,16 @@ public class SearchDialog extends JDialog
 		this.searchPressed = registerPressed;
 	}
 
+	public boolean isDerivedPressed()
+	{
+		return derivedPressed;
+	}
+
+	public void setDerivedPressed(boolean derivedPressed)
+	{
+		this.derivedPressed = derivedPressed;
+	}
+
 	public String getSearchName()
 	{
 		return searchName;
@@ -302,4 +374,7 @@ public class SearchDialog extends JDialog
 	{
 		this.searchName = searchName;
 	}
+
+
+
 }

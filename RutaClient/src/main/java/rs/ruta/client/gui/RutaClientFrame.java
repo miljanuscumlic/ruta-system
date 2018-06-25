@@ -91,6 +91,7 @@ import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
 import rs.ruta.common.PartnershipRequest;
+import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
 import rs.ruta.common.Associates;
@@ -503,7 +504,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				new Thread(() ->
 				{
-					showSearchDialog("Search CDR");
+					showSearchDialog("Search CDR", null, true);
 				}).start();
 			}
 			else
@@ -1198,19 +1199,26 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Shows {@link SearchDialog} for entering the search criterion of the request and calls a method
-	 * that makes the acctual request to the CDR.
+	 * Shows {@link SearchDialog} for viewing passed {@link SearchCriterion} or creating a new one
+	 * and calls a method that makes the acctual request to the CDR.
 	 * @param title {@code SearchDialog}'s title
+	 * @param search {@link Search} to process, view and/or amend
+	 * @param editable whether search criterion is editable or not
 	 */
-	private void showSearchDialog(String title)
+	public void showSearchDialog(String title, Search<?> search, boolean editable)
 	{
-		searchDialog = new SearchDialog(RutaClientFrame.this);
+		searchDialog = new SearchDialog(RutaClientFrame.this, search, editable);
 		searchDialog.setTitle(title);
 		searchDialog.setVisible(true);
 		if(searchDialog.isSearchPressed())
 		{
 			searchDialog.setSearchPressed(false);
-			client.cdrSearch(searchDialog.getSearch(), false);
+			client.cdrSearch(searchDialog.getSearch(), !editable);
+		}
+		else if(searchDialog.isDerivedPressed())
+		{
+			searchDialog.setDerivedPressed(false);
+			showSearchDialog("Search CDR", search, true);
 		}
 	}
 

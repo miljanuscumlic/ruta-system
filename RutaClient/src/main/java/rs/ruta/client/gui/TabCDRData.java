@@ -415,12 +415,31 @@ public class TabCDRData extends TabComponent
 
 		JPopupMenu searchTreePopupMenu = new JPopupMenu();
 		JMenuItem againSearchItem = new JMenuItem("Search Again");
+		JMenuItem viewSearchItem = new JMenuItem("View Search Criterion");
 		JMenuItem renameSearchItem = new JMenuItem("Rename");
 		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		searchTreePopupMenu.add(viewSearchItem);
 		searchTreePopupMenu.add(againSearchItem);
 		searchTreePopupMenu.addSeparator();
 		searchTreePopupMenu.add(renameSearchItem);
 		searchTreePopupMenu.add(deleteSearchItem);
+
+		viewSearchItem.addActionListener(event ->
+		{
+			final Object selectedSearch = getSelectedUserObject(searchTree);
+			if(selectedSearch == null) return;
+			new Thread(() ->
+			{
+				try
+				{
+					clientFrame.showSearchDialog("View Search Criterion", (Search<?>) selectedSearch, false);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+				}
+			}).start();
+		});
 
 		againSearchItem.addActionListener(event ->
 		{
@@ -833,14 +852,33 @@ public class TabCDRData extends TabComponent
 
 		JPopupMenu searchTablePopupMenu = new JPopupMenu();
 		JMenuItem againSearchItem = new JMenuItem("Search Again");
+		JMenuItem viewSearchItem = new JMenuItem("View Search Criterion");
 		JMenuItem renameSearchItem = new JMenuItem("Rename");
 		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		searchTablePopupMenu.add(viewSearchItem);
 		searchTablePopupMenu.add(againSearchItem);
 		searchTablePopupMenu.addSeparator();
 		searchTablePopupMenu.add(renameSearchItem);
 		searchTablePopupMenu.add(deleteSearchItem);
 
 		//in all listeners table model must be get with table.getModel() in orderLines to have a current instance of it
+		viewSearchItem.addActionListener(event ->
+		{
+			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
+			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(modelRowIndex);
+			new Thread(() ->
+			{
+				try
+				{
+					clientFrame.showSearchDialog("View Search Criterion", (Search<?>) selectedSearch, false);
+				}
+				catch(Exception e)
+				{
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+				}
+			}).start();
+		});
+
 		againSearchItem.addActionListener(event ->
 		{
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
