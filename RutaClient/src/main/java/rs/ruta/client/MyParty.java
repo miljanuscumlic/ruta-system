@@ -1308,7 +1308,7 @@ public class MyParty extends BusinessParty
 				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			}
 			else
-				throw new DetailException("Party is a former business partner that My Party have correspondences with.");
+				throw new DetailException("Party is a former Business Partner that My Party have correspondences with.");
 		}
 	}
 
@@ -1847,9 +1847,15 @@ public class MyParty extends BusinessParty
 		return dirtyCatalogue;
 	}
 
+	/**
+	 * Sets flag denoting that My Catalogue's data have changed and are not in the sync with the CDR.
+	 * Also, updates main frames's title.
+	 * @param dirtyCatalogue true when Catalogue data is not in sync with the CDR
+	 */
 	public void setDirtyCatalogue(boolean dirtyCatalogue)
 	{
 		this.dirtyCatalogue = dirtyCatalogue;
+		client.getClientFrame().updateTitle(dirtyCatalogue);
 	}
 
 	public RutaUser getLocalUser()
@@ -3403,7 +3409,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(Item.class).delete(null, id);
 		products.remove(row);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_REMOVED));
-		dirtyCatalogue = true;
+		setDirtyCatalogue(true);
 		return item;
 	}
 
@@ -3419,7 +3425,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(Item.class).insert(null, item);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_ADDED));
-		dirtyCatalogue = true;
+		setDirtyCatalogue(true);
 	}
 
 	/**
@@ -3435,7 +3441,7 @@ public class MyParty extends BusinessParty
 		products.remove(index);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_UPDATED));
-		dirtyCatalogue = true;
+		setDirtyCatalogue(true);
 	}
 
 	/**

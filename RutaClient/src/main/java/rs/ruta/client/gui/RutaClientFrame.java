@@ -1525,12 +1525,24 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Updates the main frame's title.
+	 * Updates main frame's title because of changed name of the Party.
 	 * @param partyName party name that should be shown as a part of the title
 	 */
 	public void updateTitle(String partyName)
 	{
 		setTitle("Ruta Client - " + partyName);
+	}
+
+	/**
+	 * Updates main frame's title because of the local data change.
+	 * @param dirty true when local data (namly My Catalogue) are changed and are not in sync with the CDR
+	 */
+	public void updateTitle(boolean dirty)
+	{
+		if(dirty)
+			setTitle(getTitle() + "*");
+		else
+			setTitle(getTitle().replaceAll("[*]$", ""));
 	}
 
 	@Override

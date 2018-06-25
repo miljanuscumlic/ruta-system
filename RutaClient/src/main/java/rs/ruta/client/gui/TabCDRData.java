@@ -1316,6 +1316,8 @@ public class TabCDRData extends TabComponent
 			else if(SearchEvent.CATALOGUE_SEARCH_UPDATED.equals(command))
 			{
 				makeVisibleNode(searchTree, source);
+				//source object is the same, but model's internal structures must be rebuilt throud setSearch method invocation
+				catalogueSearchTableModel.setSearch((CatalogueSearch) source);
 				catalogueSearchTableModel.fireTableDataChanged();
 				selectNode(searchTree, source);
 			}
