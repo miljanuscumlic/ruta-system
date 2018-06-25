@@ -1601,8 +1601,8 @@ public class MyParty extends BusinessParty
 		final BusinessParty archivedParty = getArchivedParty(party.getPartyID());
 		boolean archived = removeArchivedParty(archivedParty);
 		if(archived)
-			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
-
+//			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED));
 		boolean other = false;
 		party.setPartner(true);
 		other = removeOtherParty(party);
@@ -1631,7 +1631,8 @@ public class MyParty extends BusinessParty
 		final BusinessParty archivedParty = getArchivedParty(party.getPartyID());
 		boolean archived = removeArchivedParty(archivedParty);
 		if(archived)
-			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+//			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED));
 		addOtherParty(party);
 		notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_ADDED));
 	}

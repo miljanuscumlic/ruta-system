@@ -1486,7 +1486,8 @@ public class TabCorrespondences extends TabComponent
 				if(selectedUserObject instanceof String)
 					partiesTableModel.fireTableDataChanged();
 			}
-			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command) ||
+					BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED.equals(command))
 			{
 				makeVisibleNode(correspondenceTree, party);
 				final Object selectedUserObject = getSelectedUserObject(correspondenceTree);

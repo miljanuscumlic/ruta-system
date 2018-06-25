@@ -185,6 +185,11 @@ public class CorrespondenceTreeModel extends RutaTreeModel
 					addNode(sourceParty);
 				}
 			}
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED.equals(command))
+			{
+				archivedPartners.remove(sourceParty);
+				deleteNode(sourceParty);
+			}
 			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
 			{
 				if(myParty.findAllCorrespondences(sourceParty.getPartyID()) == null)

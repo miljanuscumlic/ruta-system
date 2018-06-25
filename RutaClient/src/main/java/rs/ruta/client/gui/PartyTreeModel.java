@@ -256,7 +256,8 @@ public class PartyTreeModel extends RutaTreeModel
 				archivedParties.add(sourceParty);
 				addNode(sourceParty);
 			}
-			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command))
+			else if(BusinessPartyEvent.ARCHIVED_PARTY_REMOVED.equals(command) ||
+					BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED.equals(command))
 			{
 				//delete from archived parties
 				archivedParties.remove(sourceParty);
