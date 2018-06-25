@@ -613,7 +613,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					{
 						try
 						{
-//							client.getMyParty().cdrUpdateMyCatalogue();
 							client.cdrSynchroniseMyCatalogue();
 						}
 						catch(Exception e)
@@ -626,7 +625,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					}).start();
 				}
 				else
-					appendToConsole(new StringBuilder("My Catalogue is already updated on the CDR service."), Color.BLUE);
+					appendToConsole(new StringBuilder("My Catalogue is already updated in the CDR."), Color.BLUE);
 			}
 			else
 				appendToConsole(new StringBuilder("Update request of My Catalogue has not been sent to the CDR service.").

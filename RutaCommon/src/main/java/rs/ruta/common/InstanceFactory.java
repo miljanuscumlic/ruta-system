@@ -42,6 +42,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Res
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxSchemeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.IssueDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NoteType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
@@ -293,6 +294,7 @@ public final class InstanceFactory
 				if(document instanceof CatalogueDeletionType)
 				try
 				{
+					IssueDateType issueDate = ((CatalogueDeletionType)document).getIssueDate();
 					JAXBContext jc = JAXBContext.newInstance(CatalogueDeletionType.class);
 					Marshaller m = jc.createMarshaller();
 					m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

@@ -15,6 +15,7 @@ import rs.ruta.client.MyParty;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "ProduceCatalogueState")
 public class ProduceCatalogueState extends CreateCatalogueProcessState
@@ -50,10 +51,18 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 	{
 		final CatalogueProcess process = (CatalogueProcess) correspondence.getState();
 		process.setCatalogue(catalogue);
-		correspondence.addDocumentReference(catalogue.getProviderParty(),
-				catalogue.getUUIDValue(), catalogue.getIDValue(),
-				catalogue.getIssueDateValue(), catalogue.getIssueTimeValue(),
-				catalogue.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.setRecentlyUpdated(true);
+		try
+		{
+			correspondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_VALID);
+			/*correspondence.addDocumentReference(catalogue.getProviderParty(),
+					catalogue.getUUIDValue(), catalogue.getIDValue(),
+					catalogue.getIssueDateValue(), catalogue.getIssueTimeValue(),
+					catalogue.getClass().getName(), DocumentReference.Status.UBL_VALID);*/
+			correspondence.setRecentlyUpdated(true);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
 	}
 }

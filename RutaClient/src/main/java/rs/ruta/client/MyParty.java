@@ -200,8 +200,8 @@ public class MyParty extends BusinessParty
 		//products = getProducts();
 		products = null;
 		archivedProducts = null;
-		dirtyCatalogue = dirtyMyParty = insertMyCatalogue = true;
-		//		username = password = secretKey = null;
+		dirtyMyParty = insertMyCatalogue = true;
+		setDirtyCatalogue(true);
 		localUser = new RutaUser();
 		cdrUser = new RutaUser();
 		followingParties = businessPartners = otherParties = archivedParties = null; //deregisteredParties = null;
@@ -367,7 +367,8 @@ public class MyParty extends BusinessParty
 	public void deleteData() throws DetailException
 	{
 		localUser = cdrUser = null;
-		dirtyCatalogue = dirtyMyParty = insertMyCatalogue = true;
+		setDirtyCatalogue(true);
+		dirtyMyParty = insertMyCatalogue = true;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		orderID = invoiceID = 0;
 		catalogueIssueDate = null;
@@ -1849,12 +1850,6 @@ public class MyParty extends BusinessParty
 		return dirtyCatalogue;
 	}
 
-/*	public void setDirtyCatalogue(Boolean dirty)
-	{
-		dirtyCatalogue = dirty;
-	}*/
-
-	//MMM: maybe this method is not necessary, because of the above one which might be mandatory because of the JAXB serialization ???
 	public void setDirtyCatalogue(boolean dirtyCatalogue)
 	{
 		this.dirtyCatalogue = dirtyCatalogue;
@@ -2329,7 +2324,7 @@ public class MyParty extends BusinessParty
 	 */
 	public void cancelCatalogue()
 	{
-		setDirtyCatalogue(true);
+		setDirtyCatalogue(false);
 		setInsertMyCatalogue(true);
 		removeCatalogueIssueDate();
 	}
@@ -2349,9 +2344,10 @@ public class MyParty extends BusinessParty
 
 	/**
 	 * Generates {@link CatalogueDeletionType Catalogue Deletion Document}.
+	 * @param receiverParty receiver Party of the {@code Catalogue Deletion}
 	 * @return {@code CatalogueDeletionType Catalogue Deletion Document}
 	 */
-	private CatalogueDeletionType createCatalogueDeletion(Party CDRParty)
+	private CatalogueDeletionType createCatalogueDeletion(Party receiverParty)
 	{
 		final CatalogueDeletionType catalogueDeletion = new CatalogueDeletionType();
 		final String catDelID = String.valueOf(nextCatalogueDeletionID());
@@ -2362,7 +2358,7 @@ public class MyParty extends BusinessParty
 		catalogueDeletion.setIssueTime(now);
 		catalogueDeletion.setDeletedCatalogueReference(getCatalogueReference());
 		catalogueDeletion.setProviderParty((PartyType) getCoreParty());
-		catalogueDeletion.setReceiverParty((PartyType) CDRParty);
+		catalogueDeletion.setReceiverParty((PartyType) receiverParty);
 		return catalogueDeletion;
 	}
 
@@ -2377,8 +2373,11 @@ public class MyParty extends BusinessParty
 		catRef.setID(String.valueOf(getCatalogueID()));
 		catRef.setUUID(getCatalogueUUID());
 		final XMLGregorianCalendar catDate = getCatalogueIssueDate();
-		catRef.setIssueDate(catDate);
-		catRef.setIssueTime(catDate);
+		if(catDate != null) // to conform to the UBL if set issueDate must not be null
+		{
+			catRef.setIssueDate(catDate);
+			catRef.setIssueTime(catDate);
+		}
 		return catRef;
 	}
 
@@ -3245,6 +3244,7 @@ public class MyParty extends BusinessParty
 	 * @param newOne new value of the cell
 	 * @return true if the values differs, false otherwise
 	 */
+	@Deprecated
 	private <T> boolean hasCellValueChanged(T oldOne, T newOne)
 	{
 		boolean changed = false;
@@ -3427,7 +3427,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(Item.class).delete(null, id);
 		products.remove(row);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_REMOVED));
-		dirtyCatalogue = true;
+		setDirtyCatalogue(true);
 		return item;
 	}
 
@@ -3443,7 +3443,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(Item.class).insert(null, item);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_ADDED));
-		dirtyCatalogue = true;
+		setDirtyCatalogue(true);
 	}
 
 	/**
@@ -3459,7 +3459,7 @@ public class MyParty extends BusinessParty
 		products.remove(index);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_UPDATED));
-		dirtyCatalogue = true;
+		setDirtyCatalogue(true);
 	}
 
 	/**
@@ -3767,7 +3767,13 @@ public class MyParty extends BusinessParty
 					myFollowingParty.setRecentlyUpdated(true);
 					notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
 					success = true;
-					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_VALID);
+//					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_VALID);
+
+					catalogueCorrespondence.addDocumentReference(catalogue.getReceiverParty(),
+					catalogue.getUUIDValue(), catalogue.getIDValue(),
+					catalogue.getIssueDateValue(), catalogue.getIssueTimeValue(),
+					catalogue.getClass().getName(), DocumentReference.Status.UBL_VALID);
+
 					catalogueCorrespondence.setRecentlyUpdated(true);
 				}
 				else
@@ -3847,7 +3853,11 @@ public class MyParty extends BusinessParty
 					myFollowingParty.setCatalogue(null);
 					myFollowingParty.setRecentlyUpdated(true);
 					notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
-					catalogueCorrespondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_VALID);
+//					catalogueCorrespondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_VALID);
+					catalogueCorrespondence.addDocumentReference(catalogueDeletion.getReceiverParty(),
+							catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(),
+							catalogueDeletion.getIssueDateValue(), catalogueDeletion.getIssueTimeValue(),
+							catalogueDeletion.getClass().getName(), DocumentReference.Status.UBL_VALID);
 					catalogueCorrespondence.setRecentlyUpdated(true);
 				}
 				else

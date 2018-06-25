@@ -51,7 +51,7 @@ public class DocumentReference extends DocumentReferenceType
 
 	private DocumentReference(CatalogueType document)
 	{
-		setIssuerParty(document.getReceiverParty());
+		setIssuerParty(document.getProviderParty());
 		setUUID(document.getUUIDValue());
 		setID(document.getID());
 		setIssueDate(document.getIssueDate());
@@ -61,7 +61,7 @@ public class DocumentReference extends DocumentReferenceType
 
 	private DocumentReference(CatalogueDeletionType document)
 	{
-		setIssuerParty(document.getReceiverParty());
+		setIssuerParty(document.getProviderParty());
 		setUUID(document.getUUIDValue());
 		setID(document.getID());
 		setIssueDate(document.getIssueDate());

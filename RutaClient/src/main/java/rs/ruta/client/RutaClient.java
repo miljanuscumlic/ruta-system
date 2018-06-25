@@ -815,8 +815,6 @@ public class RutaClient implements RutaNode
 	 * Synchronise Catalogue with the CDR service. If catalogue is empty Catalogue Deletion Process is invoked.
 	 * @throws InterruptedException if correspondence thread is interrupted while being blocked
 	 */
-	//MMM insert and update of My Catalogue are now effectively the same, accept that the
-	//insertMyCatalogue boolean variable which is not used anymore - should be deleted - check this
 	public void cdrSynchroniseMyCatalogue() throws InterruptedException
 	{
 		//MMM check whether is this first upload of My Catalogue: if(myParty.isInsertMyCatalogue() == true) - first time sending catalogue ???
@@ -1128,15 +1126,15 @@ public class RutaClient implements RutaNode
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
 			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
 			{
-				clientFrame.appendToConsole(new StringBuilder("My Catalogue has been successfully deleted from the CDR service."), Color.GREEN);
+				clientFrame.appendToConsole(new StringBuilder("My Catalogue has been successfully deleted from the CDR."), Color.GREEN);
 				positiveResponse = Boolean.TRUE;
-				myParty.setDirtyCatalogue(true); // MMM change to false !!!!!
-				myParty.setInsertMyCatalogue(true);
-				myParty.removeCatalogueIssueDate();
+//				myParty.setDirtyCatalogue(false);
+//				myParty.setInsertMyCatalogue(true);
+//				myParty.removeCatalogueIssueDate();
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 			{
-				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR service! There has been some kind of data error."),
+				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR! There has been some kind of data error."),
 						Color.RED);
 				positiveResponse = Boolean.FALSE;
 			}
