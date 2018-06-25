@@ -62,7 +62,7 @@ import rs.ruta.common.datamapper.DetailException;
 public class TabCorrespondences extends TabComponent
 {
 	private static final long serialVersionUID = -7541063217643235335L;
-	private static final String ARCHIVED = "Archived";
+	private static final String ARCHIVED_PARTNERS = "Archived Partners";
 	private static final String BUSINESS_PARTNERS = "Business Partners";
 	private static final String CDR = "CDR";
 	private static final String CORRESPONDECES = "Correspondences";
@@ -166,21 +166,19 @@ public class TabCorrespondences extends TabComponent
 			else if(selectedObject instanceof String)
 			{
 				List<BusinessParty> partyList = new ArrayList<>();
-				final String secondLevelObject = (String) selectedObject;
-				if(MY_PARTY.equals(secondLevelObject))
+				final String nodeTitle = (String) selectedObject;
+				if(MY_PARTY.equals(nodeTitle))
 				{
 					final BusinessParty my = myParty.getMyFollowingParty();
 					if(my != null)
 						partyList.add(my);
 				}
-				else if(BUSINESS_PARTNERS.equals(secondLevelObject))
+				else if(BUSINESS_PARTNERS.equals(nodeTitle))
 					partyList = myParty.getBusinessPartners();
+ 				else if(ARCHIVED_PARTNERS.equals(nodeTitle))
+					partyList = myParty.getArchivedParties();
 
-				/*				//MMM TODO
- 				else if(ARCHIVED.equals((String) selectedObject))
-					partyList = myParty.getArchivedParties();*/
-
-				if(!CORRESPONDECES.equals(secondLevelObject))
+				if(!CORRESPONDECES.equals(nodeTitle))
 				{
 					partiesTableModel.setParties(partyList);
 					partiesTableModel.fireTableDataChanged();
