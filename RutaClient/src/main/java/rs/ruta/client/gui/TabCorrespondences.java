@@ -957,7 +957,8 @@ public class TabCorrespondences extends TabComponent
 						final Status documentStatus = documentReference.getStatus();
 						if(ApplicationResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == BuyerOrderingProcess.class  ||
 										process.getClass() == CustomerBillingProcess.class ||
@@ -1011,7 +1012,8 @@ public class TabCorrespondences extends TabComponent
 						}
 						else if(InvoiceType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == SupplierBillingProcess.class)
 								{
@@ -1059,11 +1061,14 @@ public class TabCorrespondences extends TabComponent
 								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewInvoiceItem);
+							}
 						}
 						else if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == BuyerOrderingProcess.class)
 								{
@@ -1104,14 +1109,19 @@ public class TabCorrespondences extends TabComponent
 									correspondencePopupMenu.add(viewOrderItem);
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewOrderItem);
+								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewOrderItem);
+							}
 						}
 						else if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == SellerOrderingProcess.class)
 								{
@@ -1152,14 +1162,19 @@ public class TabCorrespondences extends TabComponent
 									correspondencePopupMenu.add(viewOrderResponseItem);
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewOrderResponseItem);
+								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewOrderResponseItem);
+							}
 						}
 						else if(OrderResponseSimpleType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == SellerOrderingProcess.class)
 								{
@@ -1234,14 +1249,19 @@ public class TabCorrespondences extends TabComponent
 									}
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewOrderResponseSimpleItem);
+							}
 						}
 						else if(OrderChangeType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == BuyerOrderingProcess.class)
 								{
@@ -1282,14 +1302,19 @@ public class TabCorrespondences extends TabComponent
 									correspondencePopupMenu.add(viewOrderChangeItem);
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewOrderChangeItem);
+								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewOrderItem);
+							}
 						}
 						else if(OrderCancellationType.class.getName().equals(documentReference.getDocumentTypeValue()))
 						{
-							if(documentReference == corr.getLastDocumentReference())
+							if(documentReference == corr.getLastDocumentReference() &&
+									myParty.getArchivedParty(corr.getCorrespondentID()) == null)
 							{
 								if(process.getClass() == BuyerOrderingProcess.class)
 								{
@@ -1323,10 +1348,14 @@ public class TabCorrespondences extends TabComponent
 									}
 								}
 								else
+								{
 									correspondencePopupMenu.add(viewOrderCancellationItem);
+								}
 							}
 							else
+							{
 								correspondencePopupMenu.add(viewOrderItem);
+							}
 						}
 						correspondencePopupMenu.show(table, event.getX(), event.getY());
 					}
