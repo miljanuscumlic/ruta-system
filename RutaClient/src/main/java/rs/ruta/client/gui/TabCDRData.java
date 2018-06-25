@@ -204,6 +204,17 @@ public class TabCDRData extends TabComponent
 		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
 		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
 		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
+		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+
+		viewPartyItem.addActionListener(event ->
+		{
+			final Object selectedParty = getSelectedUserObject(partyTree);
+			if(selectedParty == null) return;
+			new Thread(() ->
+			{
+				clientFrame.showPartyDialog(((BusinessParty) selectedParty).getCoreParty(), "View Party", false, false);
+			}).start();
+		});
 
 		requestPartnershipItem.addActionListener(event ->
 		{
@@ -316,14 +327,14 @@ public class TabCDRData extends TabComponent
 					partyTree.setSelectionPath(path);
 					if(!(selectedParty instanceof String) && selectedParty != clientFrame.getClient().getMyParty().getMyFollowingParty())
 					{
+						partyTreePopupMenu.removeAll();
+						partyTreePopupMenu.add(viewPartyItem);
 						if(((BusinessParty) selectedParty).isPartner())
 						{
-							partyTreePopupMenu.removeAll();
 							partyTreePopupMenu.add(breakPartnershipItem);
 						}
 						else if(((BusinessParty) selectedParty).isArchived())
 						{
-							partyTreePopupMenu.removeAll();
 							partyTreePopupMenu.add(requestPartnershipItem);
 							partyTreePopupMenu.add(followPartyItem);
 							partyTreePopupMenu.addSeparator();
@@ -331,7 +342,6 @@ public class TabCDRData extends TabComponent
 						}
 						else //Other Parties
 						{
-							partyTreePopupMenu.removeAll();
 							partyTreePopupMenu.add(requestPartnershipItem);
 							partyTreePopupMenu.add(unfollowPartyItem);
 						}
