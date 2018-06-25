@@ -172,8 +172,6 @@ public class MyParty extends BusinessParty
 	private boolean dirtyCatalogue;
 	@XmlElement(name = "DirtyMyParty")
 	private boolean dirtyMyParty;
-	@XmlElement(name = "InsertMyCatalogue")
-	private boolean insertMyCatalogue; // true when catalogue should be inserted in the CDR i.e. deposited for the first time
 	@XmlElement(name = "SearchNumber")
 	private long searchNumber;
 	@XmlElement(name = "CatalogueID")
@@ -200,8 +198,7 @@ public class MyParty extends BusinessParty
 		//products = getProducts();
 		products = null;
 		archivedProducts = null;
-		dirtyMyParty = insertMyCatalogue = true;
-		setDirtyCatalogue(true);
+		dirtyCatalogue = dirtyMyParty = true;
 		localUser = new RutaUser();
 		cdrUser = new RutaUser();
 		followingParties = businessPartners = otherParties = archivedParties = null; //deregisteredParties = null;
@@ -367,8 +364,7 @@ public class MyParty extends BusinessParty
 	public void deleteData() throws DetailException
 	{
 		localUser = cdrUser = null;
-		setDirtyCatalogue(true);
-		dirtyMyParty = insertMyCatalogue = true;
+		dirtyCatalogue = dirtyMyParty = true;
 		searchNumber = catalogueID = catalogueDeletionID = itemID = 0;
 		orderID = invoiceID = 0;
 		catalogueIssueDate = null;
@@ -2325,7 +2321,6 @@ public class MyParty extends BusinessParty
 	public void cancelCatalogue()
 	{
 		setDirtyCatalogue(false);
-		setInsertMyCatalogue(true);
 		removeCatalogueIssueDate();
 	}
 
@@ -3354,26 +3349,6 @@ public class MyParty extends BusinessParty
 		localUser.setSecretKey(secretKey);
 	}
 
-	/**
-	 * Gets the boolean value that tells whether the Catalogue should be inserted or updated in the CDR.
-	 * @return true if Catalogue should be deposited in the CDR service for the first time i.e inserted,
-	 * false otherwise i.e. updated.
-	 */
-	public boolean isInsertMyCatalogue()
-	{
-		return insertMyCatalogue;
-	}
-
-	/**
-	 * Sets the value of the field that tells whether the Catalogue should be inserted or updated in the CDR.
-	 * @param insertMyCatalogue true if Catalogue should be deposited in the CDR service for the first time i.e. inserted,
-	 * false otherwise i.e. updated.
-	 */
-	public void setInsertMyCatalogue(boolean insertMyCatalogue)
-	{
-		this.insertMyCatalogue = insertMyCatalogue;
-	}
-
 	public long getSearchNumber()
 	{
 		return searchNumber;
@@ -3427,7 +3402,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(Item.class).delete(null, id);
 		products.remove(row);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_REMOVED));
-		setDirtyCatalogue(true);
+		dirtyCatalogue = true;
 		return item;
 	}
 
@@ -3443,7 +3418,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(Item.class).insert(null, item);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_ADDED));
-		setDirtyCatalogue(true);
+		dirtyCatalogue = true;
 	}
 
 	/**
@@ -3459,7 +3434,7 @@ public class MyParty extends BusinessParty
 		products.remove(index);
 		products.add(item);
 		notifyListeners(new ItemEvent(item, ItemEvent.ITEM_UPDATED));
-		setDirtyCatalogue(true);
+		dirtyCatalogue = true;
 	}
 
 	/**
@@ -3554,7 +3529,6 @@ public class MyParty extends BusinessParty
 	{
 		setDirtyMyParty(true);
 		setDirtyCatalogue(true);
-		setInsertMyCatalogue(true);
 		setCDRSecretKey(null);
 		setCDRUsername(null);
 		setCDRPassword(null);

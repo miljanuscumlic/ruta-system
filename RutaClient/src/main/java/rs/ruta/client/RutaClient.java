@@ -863,7 +863,6 @@ public class RutaClient implements RutaNode
 							clientFrame.appendToConsole(new StringBuilder("My Catalogue has been successfully deposited into the CDR service."),
 									Color.GREEN);
 							myParty.setDirtyCatalogue(false);
-							myParty.setInsertMyCatalogue(false);
 						}
 						catch(Exception e)
 						{
@@ -1379,7 +1378,6 @@ public class RutaClient implements RutaNode
 				{
 					future.get();
 					myParty.setDirtyCatalogue(true);
-					myParty.setInsertMyCatalogue(true);
 					myParty.removeCatalogueIssueDate();
 					clientFrame.appendToConsole(new StringBuilder("Catalogue has been successfully deleted from the CDR service."), Color.GREEN);
 				}
