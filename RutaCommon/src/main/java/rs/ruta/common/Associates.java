@@ -107,4 +107,14 @@ public class Associates
 	{
 		getAssociateIDs().remove(uuid);
 	}
+
+	/**
+	 * Checks whether party is associate.
+	 * @param uuid party's ID to check
+	 * @return true if it is associate; false otherwise
+	 */
+	public boolean isAssociate(String uuid)
+	{
+		return getAssociateIDs().stream().anyMatch(associateID -> associateID.equals(uuid));
+	}
 }

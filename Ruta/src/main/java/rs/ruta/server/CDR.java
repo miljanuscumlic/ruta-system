@@ -204,16 +204,13 @@ public class CDR implements Server
 		try
 		{
 			init();
-			logger.info("***Catalogue update started");
 			final String id = mapperRegistry.getMapper(CatalogueType.class).update(username, catalogue);
-			logger.info("***Catalogue update finished");
 			final PartyType senderParty = catalogue.getReceiverParty();
 			final PartyType receiverParty = catalogue.getProviderParty();
 			final String docUUID = catalogue.getUUIDValue();
 			final String docID = catalogue.getIDValue();
 			appResponse = InstanceFactory.
 					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE, null);
-			logger.info("***Application Response ready for distribution.");
 			docBoxPool.submit(() ->
 			{
 				try
@@ -221,7 +218,6 @@ public class CDR implements Server
 					final Associates followers = mapperRegistry.getMapper(Associates.class).find(id).clone();
 					final DocumentDistribution catDistribution = new DocumentDistribution(catalogue, followers);
 					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, catDistribution);
-					logger.info("***Application Response distributed to id: " + id);
 				}
 				catch(DetailException e)
 				{
@@ -293,9 +289,7 @@ public class CDR implements Server
 			String objID  = null;
 			try
 			{
-				logger.info("***Catalogue deletion started");
 				objID = mapperRegistry.getMapper(CatalogueDeletionType.class).insert(username, catalogueDeletion);
-				logger.info("***Catalogue deleted");
 			}
 			catch (Exception e1)
 			{
@@ -311,8 +305,7 @@ public class CDR implements Server
 			final String docID = catalogueDeletion.getIDValue();
 			appResponse = InstanceFactory.
 					createApplicationResponse(senderParty, receiverParty, docUUID, docID, InstanceFactory.APP_RESPONSE_POSITIVE, null);
-			String id = objID;
-			logger.info("***Application Response ready for distribution.");
+			final String id = objID;
 			docBoxPool.submit(() ->
 			{
 				try
@@ -650,7 +643,7 @@ public class CDR implements Server
 		try
 		{
 			init();
-			Associates followers = mapperRegistry.getMapper(Associates.class).findByUserId(followID);
+			final Associates followers = mapperRegistry.getMapper(Associates.class).findByUserId(followID);
 			if(followers == null)
 			{
 				String msg = null;
@@ -931,8 +924,10 @@ public class CDR implements Server
 			final String senderID = recepient.getPartyID();
 			final String receiverID = recepient.getAssociateAtIndex(0);
 			if(!mapperRegistry.getMapper(RutaUser.class).checkUser(receiverID))
-				throw new DatabaseException("User with ID" + receiverID + " is not registered with the CDR service!");
-
+				throw new DatabaseException("User with ID " + receiverID + " is not registered with the CDR service!");
+			final Associates followers = mapperRegistry.getMapper(Associates.class).findByUserId(senderID);
+			if(!followers.isAssociate(receiverID))
+				throw new DatabaseException("User with ID " + receiverID + " is not a business partner or follower!");
 			final DocumentDistribution documentDistribution = new DocumentDistribution(document, recepient);
 			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
 
