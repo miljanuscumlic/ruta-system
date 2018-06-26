@@ -9,6 +9,7 @@ import rs.ruta.client.MyParty;
 import rs.ruta.client.gui.OrderResponseDialog;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "SellerAddDetailState")
 public class SellerAddDetailState extends SellerOrderingProcessState
@@ -69,10 +70,19 @@ public class SellerAddDetailState extends SellerOrderingProcessState
 	{
 		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
 		process.setOrderResponse(orderResponse);
-		correspondence.addDocumentReference(orderResponse.getSellerSupplierParty().getParty(),
-				orderResponse.getUUIDValue(), orderResponse.getIDValue(),
-				orderResponse.getIssueDateValue(), orderResponse.getIssueTimeValue(),
-				orderResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(orderResponse);
+//		correspondence.addDocumentReference(orderResponse.getSellerSupplierParty().getParty(),
+//				orderResponse.getUUIDValue(), orderResponse.getIDValue(),
+//				orderResponse.getIssueDateValue(), orderResponse.getIssueTimeValue(),
+//				orderResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
+
+		try
+		{
+			correspondence.addDocumentReference(orderResponse, DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(orderResponse);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
 	}
 }

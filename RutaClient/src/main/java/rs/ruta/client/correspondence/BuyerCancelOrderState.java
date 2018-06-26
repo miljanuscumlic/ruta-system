@@ -7,6 +7,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseTy
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.client.MyParty;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "BuyerCancelOrderState")
 public class BuyerCancelOrderState extends BuyerOrderingProcessState
@@ -70,11 +71,22 @@ public class BuyerCancelOrderState extends BuyerOrderingProcessState
 	{
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		process.setOrderCancellation(orderCancellation);
-		correspondence.addDocumentReference(orderCancellation.getBuyerCustomerParty().getParty(),
-				orderCancellation.getUUIDValue(), orderCancellation.getIDValue(),
-				orderCancellation.getIssueDateValue(), orderCancellation.getIssueTimeValue(),
-				orderCancellation.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(orderCancellation);
+//		correspondence.addDocumentReference(orderCancellation.getBuyerCustomerParty().getParty(),
+//				orderCancellation.getUUIDValue(), orderCancellation.getIDValue(),
+//				orderCancellation.getIssueDateValue(), orderCancellation.getIssueTimeValue(),
+//				orderCancellation.getClass().getName(), DocumentReference.Status.UBL_VALID);
+
+		try
+		{
+			correspondence.addDocumentReference(orderCancellation, DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(orderCancellation);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
+
+
 	}
 
 }

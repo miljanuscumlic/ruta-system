@@ -154,7 +154,7 @@ public class MyParty extends BusinessParty
 	 * Should always be accessed with {@link #getArchivedParties()} method call unless prior to access is checked for {@code null}.
 	 */
 	@Nullable
-//	private List<BusinessParty> deregisteredParties;
+	//	private List<BusinessParty> deregisteredParties;
 	private List<Search<PartyType>> partySearches;
 	private List<Search<CatalogueType>> catalogueSearches;
 	private Map<Class<? extends ActionEvent>, List<ActionListener>> actionListeners;
@@ -248,7 +248,7 @@ public class MyParty extends BusinessParty
 		setArchivedParties(businessPartyMapper.findMany(criterion));
 		criterion = new BusinessPartySearchCriterion();
 		criterion.setDeregistered(true);
-//		setDeregisteredParties(businessPartyMapper.findMany(criterion));
+		//		setDeregisteredParties(businessPartyMapper.findMany(criterion));
 		setPartySearches(Search.toListOfGenerics(mapperRegistry.getMapper(PartySearch.class).findAll()));
 		setCatalogueSearches(Search.toListOfGenerics(mapperRegistry.getMapper(CatalogueSearch.class).findAll()));
 
@@ -925,7 +925,7 @@ public class MyParty extends BusinessParty
 		notifyListeners(new BusinessPartyEvent(new ArrayList<>(), BusinessPartyEvent.ALL_PARTIES_REMOVED));
 		setArchivedParties(null);
 		setBusinessPartners(null);
-//		setDeregisteredParties(null);
+		//		setDeregisteredParties(null);
 		setOtherParties(null);
 	}
 
@@ -968,7 +968,7 @@ public class MyParty extends BusinessParty
 		MapperRegistry.getInstance().getMapper(PartnershipRequest.class).deleteAll();
 		setInboundPartnershipRequests(null);
 		setOutboundPartnershipRequests(null);
-//		notifyListeners(new BusinessPartyEvent(products, CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED)); //MMM do notifying
+		//		notifyListeners(new BusinessPartyEvent(products, CorrespondenceEvent.ALL_CORRESPONDENCES_REMOVED)); //MMM do notifying
 	}
 
 	/**
@@ -1033,7 +1033,10 @@ public class MyParty extends BusinessParty
 		{
 			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			party.setPartner(true);
-			getBusinessPartners().add(party);
+			synchronized(getBusinessPartners())
+			{
+				getBusinessPartners().add(party);
+			}
 		}
 	}
 
@@ -1048,10 +1051,14 @@ public class MyParty extends BusinessParty
 		boolean success = false;
 		if(party != null)
 		{
+
 			try
 			{
 				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
-				success = getBusinessPartners().remove(party);
+				synchronized(getBusinessPartners())
+				{
+					success = getBusinessPartners().remove(party);
+				}
 				party.setPartner(false);
 			}
 			catch(DatabaseException e)
@@ -1126,7 +1133,10 @@ public class MyParty extends BusinessParty
 		{
 			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			party.setPartner(false);
-			getOtherParties().add(party);
+			synchronized(getOtherParties())
+			{
+				getOtherParties().add(party);
+			}
 		}
 	}
 
@@ -1142,10 +1152,13 @@ public class MyParty extends BusinessParty
 		if(party != null)
 		{
 			try
-			{//if(getOtherParties().contains(party))
+			{
 				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
 				party.setPartner(false);
-				success = getOtherParties().remove(party);
+				synchronized(getOtherParties())
+				{
+					success = getOtherParties().remove(party);
+				}
 			}
 			catch(DatabaseException e)
 			{
@@ -1244,7 +1257,10 @@ public class MyParty extends BusinessParty
 		{
 			MapperRegistry.getInstance().getMapper(BusinessParty.class).insert(null, party);
 			party.setArchived(true);
-			getArchivedParties().add(party);
+			synchronized(getArchivedParties())
+			{
+				getArchivedParties().add(party);
+			}
 		}
 	}
 
@@ -1260,12 +1276,15 @@ public class MyParty extends BusinessParty
 		boolean success = false;
 		if(party != null)
 		{
+
 			try
 			{
-				//MMM: TODO can be removed only if there are no correspondence/documents with the party
 				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
 				party.setArchived(false);
-				success = getArchivedParties().remove(party);
+				synchronized(getArchivedParties())
+				{
+					success = getArchivedParties().remove(party);
+				}
 			}
 			catch(DatabaseException e)
 			{
@@ -1316,7 +1335,7 @@ public class MyParty extends BusinessParty
 	 * Gets the {@code List} of all deregistered parties.
 	 * @return list of all deregistered parties that might be empty
 	 */
-/*	public List<BusinessParty> getDeregisteredParties()
+	/*	public List<BusinessParty> getDeregisteredParties()
 	{
 		if(deregisteredParties == null)
 			deregisteredParties = new ArrayList<>();
@@ -1328,7 +1347,7 @@ public class MyParty extends BusinessParty
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
-/*	public void clearDeregisteredParties() throws DetailException
+	/*	public void clearDeregisteredParties() throws DetailException
 	{
 		for(BusinessParty party : getDeregisteredParties())
 			MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
@@ -1347,7 +1366,7 @@ public class MyParty extends BusinessParty
 	 * @return Deregistered party or {@code null} if there is no party with specified ID in the list of
 	 * Deregistered parties
 	 */
-/*	public BusinessParty getDeregisteredParty(String id)
+	/*	public BusinessParty getDeregisteredParty(String id)
 	{
 		try
 		{
@@ -1365,11 +1384,11 @@ public class MyParty extends BusinessParty
 	 * @param party party in check
 	 * @return true if Party is Deregistered, false otherwise
 	 */
-//	private boolean checkDeregisteredParty(BusinessParty party)
-//	{
-//		String partyID = party.getPartyID();
-//		return getDeregisteredParty(partyID) != null ? true : false;
-//	}
+	//	private boolean checkDeregisteredParty(BusinessParty party)
+	//	{
+	//		String partyID = party.getPartyID();
+	//		return getDeregisteredParty(partyID) != null ? true : false;
+	//	}
 
 	/**
 	 * Adds to deregisterd party list and removes it from archived list if it is in it. Also, it
@@ -1378,7 +1397,7 @@ public class MyParty extends BusinessParty
 	 * @param party party to add
 	 * @throws DetailException if party could not be updated in the data store
 	 */
-/*	private void addDeregisteredParty(BusinessParty party) throws DetailException
+	/*	private void addDeregisteredParty(BusinessParty party) throws DetailException
 	{
 		if(party != null)
 		{
@@ -1402,7 +1421,7 @@ public class MyParty extends BusinessParty
 	 * @return true if party was contained in list of deregistered parties and removed from it
 	 * @throws DetailException if party could not be deleted from the data store
 	 */
-/*	private boolean removeDeregisteredParty(BusinessParty party) throws DetailException
+	/*	private boolean removeDeregisteredParty(BusinessParty party) throws DetailException
 	{
 		boolean success = false;
 		if(party != null)
@@ -1436,7 +1455,7 @@ public class MyParty extends BusinessParty
 			unfollowParty(party);
 
 
-/*			party.setFollowing(false);
+			/*			party.setFollowing(false);
 			if(removeOtherParty(party))
 				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_REMOVED));
 
@@ -1445,22 +1464,22 @@ public class MyParty extends BusinessParty
 
 
 
-//			if(party.isPartner())
-//			{
-//				if(removeBusinessPartner(party))
-//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
-//			}
-//			else
+			//			if(party.isPartner())
+			//			{
+			//				if(removeBusinessPartner(party))
+			//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.BUSINESS_PARTNER_REMOVED));
+			//			}
+			//			else
 
-//			addDeregisteredParty(party);
-//			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
+			//			addDeregisteredParty(party);
+			//			notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.DEREGISTERED_PARTY_ADDED));
 
-//			if(checkArchivedParty(party)) //MMM superfluos??? removeArchivedParty down below will succeed or not
-//			{	//This way it is removed the object with the same Party ID, not just
-//				//the same object like in this call: getArchivedParties().remove(party)
-//				if(removeArchivedParty(party))
-//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
-//			}
+			//			if(checkArchivedParty(party)) //MMM superfluos??? removeArchivedParty down below will succeed or not
+			//			{	//This way it is removed the object with the same Party ID, not just
+			//				//the same object like in this call: getArchivedParties().remove(party)
+			//				if(removeArchivedParty(party))
+			//					notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+			//			}
 
 		}
 	}
@@ -1601,7 +1620,7 @@ public class MyParty extends BusinessParty
 		final BusinessParty archivedParty = getArchivedParty(party.getPartyID());
 		boolean archived = removeArchivedParty(archivedParty);
 		if(archived)
-//			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+			//			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED));
 		boolean other = false;
 		party.setPartner(true);
@@ -1631,7 +1650,7 @@ public class MyParty extends BusinessParty
 		final BusinessParty archivedParty = getArchivedParty(party.getPartyID());
 		boolean archived = removeArchivedParty(archivedParty);
 		if(archived)
-//			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
+			//			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			notifyListeners(new BusinessPartyEvent(archivedParty, BusinessPartyEvent.ARCHIVED_PARTY_TRANSFERED));
 		addOtherParty(party);
 		notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.OTHER_PARTY_ADDED));
@@ -1767,9 +1786,13 @@ public class MyParty extends BusinessParty
 	 */
 	public void addBuyingCorrespondence(BuyingCorrespondence correspondence) throws DetailException
 	{
-		getBuyingCorrespondences().add(correspondence);
+		synchronized(getBuyingCorrespondences())
+		{
+			getBuyingCorrespondences().add(correspondence);
+		}
 		MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).insert(null, correspondence);
 		notifyListeners(new CorrespondenceEvent(correspondence, CorrespondenceEvent.CORRESPONDENCE_ADDED));
+
 	}
 
 	/**
@@ -1783,7 +1806,10 @@ public class MyParty extends BusinessParty
 	{
 		if(correspondence != null)
 		{
-			getBuyingCorrespondences().remove(correspondence);
+			synchronized(getBuyingCorrespondences())
+			{
+				getBuyingCorrespondences().remove(correspondence);
+			}
 			MapperRegistry.getInstance().getMapper(BuyingCorrespondence.class).delete(null, correspondence.getIdValue());
 			notifyListeners(new CorrespondenceEvent(correspondence, CorrespondenceEvent.CORRESPONDENCE_REMOVED));
 		}
@@ -2455,7 +2481,7 @@ public class MyParty extends BusinessParty
 			orderLineItem.setItem(catalogueline.getItem().clone());
 			orderLine.setLineItem(orderLineItem);
 			orderLineItem.setPrice(catalogueline.getRequiredItemLocationQuantityAtIndex(0).getPrice());
-//		orderLineItem.getItem().setClassifiedTaxCategory(catalogueline.getItem().getClassifiedTaxCategory()); //MMM enable TAX data
+			//		orderLineItem.getItem().setClassifiedTaxCategory(catalogueline.getItem().getClassifiedTaxCategory()); //MMM enable TAX data
 			orderLines.add(orderLine);
 		}
 		return order;
@@ -3518,12 +3544,12 @@ public class MyParty extends BusinessParty
 	 */
 	public Item createEmptyProduct()
 	{
-			Item item = new Item();
-			item.setID(UUID.randomUUID().toString());
-			final ItemIdentificationType id = new ItemIdentificationType();
-			id.setID(nextProductID());
-			item.setSellersItemIdentification(id);
-			return item;
+		Item item = new Item();
+		item.setID(UUID.randomUUID().toString());
+		final ItemIdentificationType id = new ItemIdentificationType();
+		id.setID(nextProductID());
+		item.setSellersItemIdentification(id);
+		return item;
 	}
 
 	/**
@@ -3555,12 +3581,15 @@ public class MyParty extends BusinessParty
 	 * @param search search to add
 	 * @throws DetailException if search could not be inserted in the data store
 	 */
-	public synchronized void addPartySearch(Search<PartyType> search) throws DetailException
+	public void addPartySearch(Search<PartyType> search) throws DetailException
 	{
 		if(search != null)
 		{
 			MapperRegistry.getInstance().getMapper(PartySearch.class).insert(null, (PartySearch) search);
-			getPartySearches().add(0, search);
+			synchronized(getPartySearches())
+			{
+				getPartySearches().add(0, search);
+			}
 			notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_ADDED));
 		}
 	}
@@ -3599,15 +3628,19 @@ public class MyParty extends BusinessParty
 	 * @return true if search was contained in list of party searches and removed from it
 	 * @throws DetailException if search could not be deleted from the data store
 	 */
-	public synchronized boolean removePartySearch(final Search<PartyType> search) throws DetailException
+	public boolean removePartySearch(final Search<PartyType> search) throws DetailException
 	{
 		boolean success = false;
 		if(search != null)
 		{
+
 			try
 			{
 				MapperRegistry.getInstance().getMapper(PartySearch.class).delete(null, search.getId());
-				success = getPartySearches().remove(search);
+				synchronized(getPartySearches())
+				{
+					success = getPartySearches().remove(search);
+				}
 				notifyListeners(new SearchEvent(search, SearchEvent.PARTY_SEARCH_REMOVED));
 			}
 			catch(DatabaseException e)
@@ -3644,12 +3677,15 @@ public class MyParty extends BusinessParty
 	 * @param newSearch search to add
 	 * @throws DetailException if search could not be inserted in the data store
 	 */
-	public synchronized void addCatalogueSearch(Search<CatalogueType> newSearch) throws DetailException
+	public void addCatalogueSearch(Search<CatalogueType> newSearch) throws DetailException
 	{
 		if(newSearch != null)
 		{
 			MapperRegistry.getInstance().getMapper(CatalogueSearch.class).insert(null, (CatalogueSearch) newSearch);
-			getCatalogueSearches().add(0, newSearch);
+			synchronized(getCatalogueSearches())
+			{
+				getCatalogueSearches().add(0, newSearch);
+			}
 			notifyListeners(new SearchEvent(newSearch, SearchEvent.CATALOGUE_SEARCH_ADDED));
 		}
 	}
@@ -3661,7 +3697,7 @@ public class MyParty extends BusinessParty
 	 * @return true if search was contained in list of catalogue searches and removed from it
 	 * @throws DetailException if search could not be deleted from the data store
 	 */
-	public synchronized boolean removeCatalogueSearch(final Search<CatalogueType> search) throws DetailException
+	public boolean removeCatalogueSearch(final Search<CatalogueType> search) throws DetailException
 	{
 		boolean success = false;
 		if(search != null)
@@ -3669,7 +3705,10 @@ public class MyParty extends BusinessParty
 			try
 			{
 				MapperRegistry.getInstance().getMapper(CatalogueSearch.class).delete(null, search.getId());
-				success = getCatalogueSearches().remove(search);
+				synchronized(getCatalogueSearches())
+				{
+					success = getCatalogueSearches().remove(search);
+				}
 				notifyListeners(new SearchEvent(search, SearchEvent.CATALOGUE_SEARCH_REMOVED));
 			}
 			catch(DatabaseException e)
@@ -3747,12 +3786,11 @@ public class MyParty extends BusinessParty
 					myFollowingParty.setRecentlyUpdated(true);
 					notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
 					success = true;
-//					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_VALID);
-
+					//must be used this addDocumentReference method version because of receiver party
 					catalogueCorrespondence.addDocumentReference(catalogue.getReceiverParty(),
-					catalogue.getUUIDValue(), catalogue.getIDValue(),
-					catalogue.getIssueDateValue(), catalogue.getIssueTimeValue(),
-					catalogue.getClass().getName(), DocumentReference.Status.UBL_VALID);
+							catalogue.getUUIDValue(), catalogue.getIDValue(),
+							catalogue.getIssueDateValue(), catalogue.getIssueTimeValue(),
+							catalogue.getClass().getName(), DocumentReference.Status.UBL_VALID);
 
 					catalogueCorrespondence.setRecentlyUpdated(true);
 				}
@@ -3833,7 +3871,7 @@ public class MyParty extends BusinessParty
 					myFollowingParty.setCatalogue(null);
 					myFollowingParty.setRecentlyUpdated(true);
 					notifyListeners(new BusinessPartyEvent(myFollowingParty, BusinessPartyEvent.CATALOGUE_UPDATED));
-//					catalogueCorrespondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_VALID);
+					//					must be used this addDocumentReference method version because of receiver party
 					catalogueCorrespondence.addDocumentReference(catalogueDeletion.getReceiverParty(),
 							catalogueDeletion.getUUIDValue(), catalogueDeletion.getIDValue(),
 							catalogueDeletion.getIssueDateValue(), catalogueDeletion.getIssueTimeValue(),
@@ -3878,11 +3916,9 @@ public class MyParty extends BusinessParty
 		for(BusinessParty bParty: followingParties)
 			if(BusinessParty.sameParties(bParty, party))
 			{
-				//				notifyListeners(new RutaClientFrameEvent(bParty, RutaClientFrameEvent.SELECT_NEXT));
-//				deregisterParty(bParty);
 				unfollowParty(bParty);
 				bParty.setRecentlyUpdated(true);
-				notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_MOVED)); //MMM should be RutaClientFrameEvent.MAKE_VISIBLE ???
+				notifyListeners(new BusinessPartyEvent(bParty, BusinessPartyEvent.PARTY_MOVED));
 				break;
 			}
 	}
@@ -3918,10 +3954,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(invoice);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(invoice.getAccountingSupplierParty().getParty(),
-						invoice.getUUIDValue(), invoice.getIDValue(),
-						invoice.getIssueDateValue(), invoice.getIssueTimeValue(),
-						invoice.getClass().getName(), null);
+				//				corr.addDocumentReference(invoice.getAccountingSupplierParty().getParty(),
+				//						invoice.getUUIDValue(), invoice.getIDValue(),
+				//						invoice.getIssueDateValue(), invoice.getIssueTimeValue(),
+				//						invoice.getClass().getName(), null);
+				corr.addDocumentReference(invoice, null);
 				((CustomerBillingProcess) process).setInvoice(invoice);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -3955,28 +3992,12 @@ public class MyParty extends BusinessParty
 			throw new DetailException("Failed to find the correspondent Party!");
 		final Correspondence existingCorr = findActiveCorrespondence(correspondentID, order.getUUIDValue());
 		if(existingCorr != null)
-		{
-//			String lastDocumentPartyName = null;
-//			try
-//			{
-//				lastDocumentPartyName = existingCorr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-//			}
-//			catch(Exception e) {}
-//			if(getPartySimpleName().equals(lastDocumentPartyName))
-//				existingCorr.updateOutOfSyncStatus(true);
 			throw new DetailException("Order " + order.getIDValue() + " has been already received and processed.");
-		}
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, false);
 		addBuyingCorrespondence(newCorr);
 		newCorr.storeDocument(order);
 		((OrderingProcess) newCorr.getState()).setOrder(order);
-
-		//		newCorr.addDocumentReference(order.getBuyerCustomerParty().getParty(), order.getUUIDValue(),
-		//				order.getIDValue(), order.getIssueDateValue(), order.getIssueTimeValue(),
-		//				order.getClass().getName(), null);
-
 		newCorr.addDocumentReference(order, null);
-
 		newCorr.start();
 		newCorr.setRecentlyUpdated(true);
 	}
@@ -4011,10 +4032,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(orderResponse);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(orderResponse.getSellerSupplierParty().getParty(),
-						orderResponse.getUUIDValue(), orderResponse.getIDValue(),
-						orderResponse.getIssueDateValue(), orderResponse.getIssueTimeValue(),
-						orderResponse.getClass().getName(), null);
+				//				corr.addDocumentReference(orderResponse.getSellerSupplierParty().getParty(),
+				//						orderResponse.getUUIDValue(), orderResponse.getIDValue(),
+				//						orderResponse.getIssueDateValue(), orderResponse.getIssueTimeValue(),
+				//						orderResponse.getClass().getName(), null);
+				corr.addDocumentReference(orderResponse, null);
 				((BuyerOrderingProcess) process).setOrderResponse(orderResponse);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -4046,14 +4068,14 @@ public class MyParty extends BusinessParty
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderResponseSimple.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-//				String lastDocumentPartyName = null;
-//				try
-//				{
-//					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
-//				}
-//				catch(Exception e) {}
-//				if(getPartySimpleName().equals(lastDocumentPartyName))
-//					corr.updateOutOfSyncStatus(true);
+				//				String lastDocumentPartyName = null;
+				//				try
+				//				{
+				//					lastDocumentPartyName = corr.getLastDocumentReference().getIssuerParty().getPartyNameAtIndex(0).getNameValue();
+				//				}
+				//				catch(Exception e) {}
+				//				if(getPartySimpleName().equals(lastDocumentPartyName))
+				//					corr.updateOutOfSyncStatus(true);
 				throw new DetailException("Order Response Simple " + orderResponseSimple.getIDValue() +
 						" has been already received and processed." + " Try resending your most recently created document if it is the last document of the correspondence.");
 			}
@@ -4065,10 +4087,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(orderResponseSimple);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
-						orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
-						orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
-						orderResponseSimple.getClass().getName(), null);
+				//				corr.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
+				//						orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
+				//						orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
+				//						orderResponseSimple.getClass().getName(), null);
+				corr.addDocumentReference(orderResponseSimple, null);
 				((BuyerOrderingProcess) process).setOrderResponseSimple(orderResponseSimple);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -4110,10 +4133,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(orderChange);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(orderChange.getBuyerCustomerParty().getParty(),
-						orderChange.getUUIDValue(), orderChange.getIDValue(),
-						orderChange.getIssueDateValue(), orderChange.getIssueTimeValue(),
-						orderChange.getClass().getName(), null);
+				//				corr.addDocumentReference(orderChange.getBuyerCustomerParty().getParty(),
+				//						orderChange.getUUIDValue(), orderChange.getIDValue(),
+				//						orderChange.getIssueDateValue(), orderChange.getIssueTimeValue(),
+				//						orderChange.getClass().getName(), null);
+				corr.addDocumentReference(orderChange, null);
 				((SellerOrderingProcess) process).setOrderChange(orderChange);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -4156,10 +4180,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(orderCancellation);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(orderCancellation.getBuyerCustomerParty().getParty(),
-						orderCancellation.getUUIDValue(), orderCancellation.getIDValue(),
-						orderCancellation.getIssueDateValue(), orderCancellation.getIssueTimeValue(),
-						orderCancellation.getClass().getName(), null);
+				//				corr.addDocumentReference(orderCancellation.getBuyerCustomerParty().getParty(),
+				//						orderCancellation.getUUIDValue(), orderCancellation.getIDValue(),
+				//						orderCancellation.getIssueDateValue(), orderCancellation.getIssueTimeValue(),
+				//						orderCancellation.getClass().getName(), null);
+				corr.addDocumentReference(orderCancellation, null);
 				((SellerOrderingProcess) process).setOrderCancellation(orderCancellation);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -4202,10 +4227,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(applicationResponse);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(applicationResponse.getSenderParty(),
-						applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
-						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
-						applicationResponse.getClass().getName(), null);
+				//				corr.addDocumentReference(applicationResponse.getSenderParty(),
+				//						applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
+				//						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
+				//						applicationResponse.getClass().getName(), null);
+				corr.addDocumentReference(applicationResponse, null);
 				((SellerOrderingProcess) process).setApplicationResponse(applicationResponse);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -4217,10 +4243,11 @@ public class MyParty extends BusinessParty
 					corr.start();
 				corr.storeDocument(applicationResponse);
 				corr.waitThreadBlocked();
-				corr.addDocumentReference(applicationResponse.getSenderParty(),
-						applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
-						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
-						applicationResponse.getClass().getName(), null);
+				//				corr.addDocumentReference(applicationResponse.getSenderParty(),
+				//						applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
+				//						applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
+				//						applicationResponse.getClass().getName(), null);
+				corr.addDocumentReference(applicationResponse, null);
 				((SupplierBillingProcess) process).setApplicationResponse(applicationResponse);
 				corr.setRecentlyUpdated(true);
 				corr.proceed();
@@ -4272,17 +4299,14 @@ public class MyParty extends BusinessParty
 	 * @param request {@code PartnershipRequest} to process
 	 * @throws DetailException if document could not be inserted in the data store
 	 */
-	public synchronized void processDocBoxPartnershipRequest(PartnershipRequest request)  throws DetailException
+	public void processDocBoxPartnershipRequest(PartnershipRequest request)  throws DetailException
 	{
-		request.setInbound(true);
-		excludePartnershipRequest(request.getRequesterParty());
-		includeInboundPartnershipRequest(request);
-
-		//MMM think about Document Reference
-		/*		final String documentUUID = documentReceipt.getDocumentReference().getUUIDValue();
-		final DocumentReference documentReference = corr.getDocumentReference(documentUUID);
-		corr.updateDocumentStatus(documentReference, DocumentReference.Status.CORR_RECEIVED);*/
-
+		synchronized(getInboundPartnershipRequests())
+		{
+			request.setInbound(true);
+			excludePartnershipRequest(request.getRequesterParty());
+			includeInboundPartnershipRequest(request);
+		}
 	}
 
 	/**
@@ -4291,46 +4315,49 @@ public class MyParty extends BusinessParty
 	 * @throws DetailException if document could not be matched with a proper {@code PartnershipRequest}
 	 * or data store could not be updated
 	 */
-	public synchronized void processDocBoxPartnershipResolution(PartnershipResolution resolution) throws DetailException
+	public void processDocBoxPartnershipResolution(PartnershipResolution resolution) throws DetailException
 	{
-		final PartnershipSearchCriterion criterion = new PartnershipSearchCriterion();
-		criterion.setRequestedPartyID(resolution.getRequestedPartyID());
-		criterion.setRequesterPartyID(resolution.getRequesterPartyID());
-		PartnershipRequest request = getOutboundPartnershipRequest(resolution.getRequestedParty());
-		if(request != null)
+		synchronized(getInboundPartnershipRequests())
 		{
-			updatePartnershipRequest(request, resolution);
-			if(resolution.isAccepted())
-			{
-				BusinessParty newPartner = getOtherParty(request.getRequestedPartyID());
-				if(newPartner == null)
-				{
-					newPartner = new BusinessParty();
-					newPartner.setCoreParty(request.getRequestedParty());
-				}
-				newPartner.setPartner(true);
-				newPartner.setRecentlyUpdated(true);
-				newPartner.setTimestamp(InstanceFactory.getDate());
-				followBusinessPartner(newPartner);
-			}
-		}
-		else
-		{
-			request = getInboundPartnershipRequest(resolution.getRequesterParty());
+			final PartnershipSearchCriterion criterion = new PartnershipSearchCriterion();
+			criterion.setRequestedPartyID(resolution.getRequestedPartyID());
+			criterion.setRequesterPartyID(resolution.getRequesterPartyID());
+			PartnershipRequest request = getOutboundPartnershipRequest(resolution.getRequestedParty());
 			if(request != null)
 			{
 				updatePartnershipRequest(request, resolution);
 				if(resolution.isAccepted())
 				{
-					final BusinessParty newPartner = new BusinessParty();
-					newPartner.setCoreParty(request.getRequesterParty());
+					BusinessParty newPartner = getOtherParty(request.getRequestedPartyID());
+					if(newPartner == null)
+					{
+						newPartner = new BusinessParty();
+						newPartner.setCoreParty(request.getRequestedParty());
+					}
+					newPartner.setPartner(true);
 					newPartner.setRecentlyUpdated(true);
 					newPartner.setTimestamp(InstanceFactory.getDate());
 					followBusinessPartner(newPartner);
 				}
 			}
 			else
-				throw new DetailException("Partenrship Resolution could not be matched with proper Partnership Request.");
+			{
+				request = getInboundPartnershipRequest(resolution.getRequesterParty());
+				if(request != null)
+				{
+					updatePartnershipRequest(request, resolution);
+					if(resolution.isAccepted())
+					{
+						final BusinessParty newPartner = new BusinessParty();
+						newPartner.setCoreParty(request.getRequesterParty());
+						newPartner.setRecentlyUpdated(true);
+						newPartner.setTimestamp(InstanceFactory.getDate());
+						followBusinessPartner(newPartner);
+					}
+				}
+				else
+					throw new DetailException("Partenrship Resolution could not be matched with proper Partnership Request.");
+			}
 		}
 	}
 

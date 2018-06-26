@@ -10,6 +10,7 @@ import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import rs.ruta.client.RutaClient;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "SupplierRaiseInvoiceState")
 public class SupplierRaiseInvoiceState extends SupplierBillingProcessState
@@ -97,10 +98,19 @@ public class SupplierRaiseInvoiceState extends SupplierBillingProcessState
 	{
 		final SupplierBillingProcess process = (SupplierBillingProcess) correspondence.getState();
 		((SupplierBillingProcess) process).setInvoice(invoice);
-		correspondence.addDocumentReference(invoice.getAccountingSupplierParty().getParty(),
-				invoice.getUUIDValue(), invoice.getIDValue(), invoice.getIssueDateValue(),
-				invoice.getIssueTimeValue(), invoice.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(invoice);
+		//		correspondence.addDocumentReference(invoice.getAccountingSupplierParty().getParty(),
+		//				invoice.getUUIDValue(), invoice.getIDValue(), invoice.getIssueDateValue(),
+		//				invoice.getIssueTimeValue(), invoice.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		try
+		{
+			correspondence.addDocumentReference(invoice, DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(invoice);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
+
 	}
 
 }

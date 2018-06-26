@@ -8,6 +8,7 @@ import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResp
 import rs.ruta.client.MyParty;
 import rs.ruta.client.gui.RutaClientFrame;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "SellerAcceptOrderState")
 public class SellerAcceptOrderState extends SellerOrderingProcessState
@@ -60,10 +61,19 @@ public class SellerAcceptOrderState extends SellerOrderingProcessState
 	{
 		final SellerOrderingProcess process = (SellerOrderingProcess) correspondence.getState();
 		process.setOrderResponseSimple(orderResponseSimple);
-		correspondence.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
-				orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
-				orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
-				orderResponseSimple.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(orderResponseSimple);
+//		correspondence.addDocumentReference(orderResponseSimple.getSellerSupplierParty().getParty(),
+//				orderResponseSimple.getUUIDValue(), orderResponseSimple.getIDValue(),
+//				orderResponseSimple.getIssueDateValue(), orderResponseSimple.getIssueTimeValue(),
+//				orderResponseSimple.getClass().getName(), DocumentReference.Status.UBL_VALID);
+
+		try
+		{
+			correspondence.addDocumentReference(orderResponseSimple, DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(orderResponseSimple);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
 	}
 }

@@ -15,7 +15,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineType;
-import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 
 public abstract class AbstractOrderDialog extends JDialog
 {

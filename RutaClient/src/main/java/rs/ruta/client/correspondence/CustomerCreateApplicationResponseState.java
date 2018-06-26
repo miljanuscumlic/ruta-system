@@ -5,6 +5,7 @@ import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.Applicati
 import rs.ruta.client.MyParty;
 import rs.ruta.common.DocumentReference;
 import rs.ruta.common.InstanceFactory;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "CustomerCreateApplicationResponseState")
 public class CustomerCreateApplicationResponseState extends CustomerBillingProcessState
@@ -62,10 +63,19 @@ public class CustomerCreateApplicationResponseState extends CustomerBillingProce
 	{
 		final CustomerBillingProcess process = (CustomerBillingProcess) correspondence.getState();
 		process.setApplicationResponse(applicationResponse);
-		correspondence.addDocumentReference(applicationResponse.getSenderParty(),
-				applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
-				applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
-				applicationResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(applicationResponse);
+//		correspondence.addDocumentReference(applicationResponse.getSenderParty(),
+//				applicationResponse.getUUIDValue(), applicationResponse.getIDValue(),
+//				applicationResponse.getIssueDateValue(), applicationResponse.getIssueTimeValue(),
+//				applicationResponse.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		try
+		{
+			correspondence.addDocumentReference(applicationResponse,  DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(applicationResponse);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
+
 	}
 }

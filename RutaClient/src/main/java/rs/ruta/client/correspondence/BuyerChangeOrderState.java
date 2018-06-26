@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import rs.ruta.client.MyParty;
 import rs.ruta.common.DocumentReference;
+import rs.ruta.common.datamapper.DetailException;
 
 @XmlRootElement(name = "BuyerChangeOrderState")
 public class BuyerChangeOrderState extends BuyerOrderingProcessState
@@ -57,11 +58,19 @@ public class BuyerChangeOrderState extends BuyerOrderingProcessState
 	{
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		process.setOrderChange(orderChange);
-		correspondence.addDocumentReference(orderChange.getBuyerCustomerParty().getParty(),
-				orderChange.getUUIDValue(), orderChange.getIDValue(),
-				orderChange.getIssueDateValue(), orderChange.getIssueTimeValue(),
-				orderChange.getClass().getName(), DocumentReference.Status.UBL_VALID);
-		correspondence.storeDocument(orderChange);
+//		correspondence.addDocumentReference(orderChange.getBuyerCustomerParty().getParty(),
+//				orderChange.getUUIDValue(), orderChange.getIDValue(),
+//				orderChange.getIssueDateValue(), orderChange.getIssueTimeValue(),
+//				orderChange.getClass().getName(), DocumentReference.Status.UBL_VALID);
+		try
+		{
+			correspondence.addDocumentReference(orderChange, DocumentReference.Status.UBL_VALID);
+			correspondence.storeDocument(orderChange);
+		}
+		catch (DetailException e)
+		{
+			throw new StateActivityException(e.getMessage());
+		}
 	}
 
 }
