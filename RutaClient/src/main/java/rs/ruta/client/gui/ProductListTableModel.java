@@ -239,7 +239,10 @@ public class ProductListTableModel extends DefaultTableModel
 			changed = changed || !newOne.equals(oldOne);
 		}
 		if(changed)
+		{
 			myParty.setDirtyCatalogue(true);
+			changed = false;
+		}
 	}
 
 	/**

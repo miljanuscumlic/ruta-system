@@ -125,7 +125,8 @@ public class ProductTableModel extends DefaultTableModel
 		try
 		{
 			String value = null;
-			if(rowIndex != 9)
+//			if(rowIndex != 9)
+			if(obj.getClass() == String.class)
 				value = ((String) obj).trim();
 			switch(rowIndex)
 			{
