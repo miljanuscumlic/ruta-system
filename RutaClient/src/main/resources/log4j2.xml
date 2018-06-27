@@ -77,15 +77,7 @@
             <DefaultRolloverStrategy max="${rollover.max}"/>
             <PatternLayout pattern="${exist.file.pattern}"/>
         </RollingRandomAccessFile>
-        
-<!--         <RollingRandomAccessFile name="exist.betterform" filePattern="${logs}/betterform.${rollover.file.pattern}.log.gz" fileName="${logs}/betterform.log">
-            <Policies>
-                <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
-            </Policies>
-            <DefaultRolloverStrategy max="${rollover.max}"/>
-            <PatternLayout pattern="${exist.file.pattern}"/>
-        </RollingRandomAccessFile> -->
-        
+
         <RollingRandomAccessFile name="exist.restxq" filePattern="${logs}/restxq.${rollover.file.pattern}.log.gz" fileName="${logs}/restxq.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
@@ -118,14 +110,6 @@
             <PatternLayout pattern="${exist.file.pattern}"/>
         </RollingRandomAccessFile> -->
 
-<!--         <RollingRandomAccessFile name="expath.repo" filePattern="${logs}/expath-repo.${rollover.file.pattern}.log.gz" fileName="${logs}/expath-repo.log">
-            <Policies>
-                <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
-            </Policies>
-            <DefaultRolloverStrategy max="${rollover.max}"/>
-            <PatternLayout pattern="${exist.file.pattern}"/>
-        </RollingRandomAccessFile> -->
-        
         <RollingRandomAccessFile name="exist.launcher" filePattern="${logs}/launcher.${rollover.file.pattern}.log.gz" fileName="${logs}/launcher.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="${rollover.max.size}"/>
@@ -139,13 +123,13 @@
     <Loggers>
     
     	<!-- Ruta client loggers -->
-    	<Logger name="rs.ruta.client" additivity="false" level="info">
-            <AppenderRef ref="STDOUT"/>
+    	<Logger name="rs.ruta.client" additivity="false" level="error">
+	        <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ruta.client"/>
         </Logger>
         
-        <Logger name="rs.ruta.common" additivity="false" level="info">
-            <AppenderRef ref="STDOUT"/>
+        <Logger name="rs.ruta.common" additivity="false" level="error">
+	        <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ruta.client"/>
         </Logger>
         <!-- END Ruta client loggers -->
@@ -225,23 +209,12 @@
             <AppenderRef ref="exist.scheduler"/>
         </Logger>
         
-        <!-- betterFORM extension -->
-<!--         <Logger name="de.betterform" additivity="false" level="warn">
-            <AppenderRef ref="exist.betterform"/>
-        </Logger>
-         -->
         <!-- Metadata Storage extension -->
         <Logger name="mdStorage" additivity="false" level="warn">
             <AppenderRef ref="exist.mdStorage"/>
         </Logger>
 
         <!-- expath pkg repo -->
-<!--         <Logger name="org.expath.pkg" additivity="false" level="trace">
-            <AppenderRef ref="expath.repo"/>
-        </Logger>
-        <Logger name="org.exist.repo" additivity="false" level="trace">
-            <AppenderRef ref="expath.repo"/>
-        </Logger> -->
         <Logger name="org.exist.launcher" additivity="false" level="warn">
             <AppenderRef ref="exist.launcher"/>
         </Logger>

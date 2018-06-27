@@ -28,12 +28,12 @@
     <Loggers>
     
     	<!-- Ruta client loggers -->
-    	<Logger name="rs.ruta.server" additivity="false" level="info">
+    	<Logger name="rs.ruta.server" additivity="false" level="error">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ruta.server"/>
         </Logger>
         
-        <Logger name="rs.ruta.common" additivity="false" level="info">
+        <Logger name="rs.ruta.common" additivity="false" level="error">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ruta.server"/>
         </Logger>
