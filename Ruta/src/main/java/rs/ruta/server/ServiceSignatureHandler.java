@@ -34,31 +34,31 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	@Override
 	public boolean handleMessage(SOAPMessageContext mCtx)
 	{
-		Boolean outbound = (Boolean) mCtx.get(SOAPMessageContext.MESSAGE_OUTBOUND_PROPERTY);
+		final Boolean outbound = (Boolean) mCtx.get(SOAPMessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		if(!outbound)
 		{
-			Boolean registerUser = (Boolean) mCtx.get("RegisterUser");
+			final Boolean registerUser = (Boolean) mCtx.get("RegisterUser");
 			if(registerUser == null || !registerUser)
 			{
-				SOAPMessage message = mCtx.getMessage();
+				final SOAPMessage message = mCtx.getMessage();
 				try
 				{
-					SOAPHeader header = message.getSOAPHeader();
+					final SOAPHeader header = message.getSOAPHeader();
 					if(header == null)
 						generateFault("No header!");
-					Node node = header.getFirstChild();
-					NodeList nodeList = node.getChildNodes();
+					final Node node = header.getFirstChild();
+					final NodeList nodeList = node.getChildNodes();
 					if(nodeList.getLength() < 3)
 						generateFault("Too few header nodes!");
-					String username = nodeList.item(0).getFirstChild().getNodeValue();
-					String timestamp = nodeList.item(1).getFirstChild().getNodeValue();
-					String signature = nodeList.item(2).getFirstChild().getNodeValue();
+					final String username = nodeList.item(0).getFirstChild().getNodeValue();
+					final String timestamp = nodeList.item(1).getFirstChild().getNodeValue();
+					final String signature = nodeList.item(2).getFirstChild().getNodeValue();
 					if(username == null || timestamp == null || signature == null)
 						generateFault("Missing header key/value pairs!");
-					String secretKey = getSecretKey(username);
+					final String secretKey = getSecretKey(username);
 					if(secretKey == null)
 						generateFault(username + " is not registered!");
-					String localSignature = getSignature(username, timestamp, getBytes(secretKey));
+					final String localSignature = getSignature(username, timestamp, getBytes(secretKey));
 					if(!verifySignatures(signature, localSignature))
 						generateFault("Signatures do not match!");
 				}
@@ -105,14 +105,14 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	{
 		try
 		{
-			String toSign = username + timestamp;
-			byte[] toSignBytes = getBytes(toSign);
-			Mac signer = Mac.getInstance("HmacSHA256");
-			SecretKeySpec keySpec = new SecretKeySpec(secretBytes, "HmacSHA256");
+			final String toSign = username + timestamp;
+			final byte[] toSignBytes = getBytes(toSign);
+			final Mac signer = Mac.getInstance("HmacSHA256");
+			final SecretKeySpec keySpec = new SecretKeySpec(secretBytes, "HmacSHA256");
 			signer.init(keySpec);
 			signer.update(toSignBytes);
 			byte[] signBytes = signer.doFinal();
-			String signature = new String(Base64.encodeBase64(signBytes));
+			final String signature = new String(Base64.encodeBase64(signBytes));
 			return signature;
 		}
 		catch(Exception e)
@@ -122,7 +122,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	}
 
 	/**
-	 * Verifies if the contents of two strings are equal.
+	 * Verifies whether the contents of two strings are equal.
 	 * @param sig1
 	 * @param sig2
 	 * @return true it the contents are equal, false otherwise
@@ -167,7 +167,7 @@ public class ServiceSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	{
 		try
 		{
-			SOAPFault soapFault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
+			final SOAPFault soapFault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
 			soapFault.setFaultString(reason);
 			throw new SOAPFaultException(soapFault);
 		}

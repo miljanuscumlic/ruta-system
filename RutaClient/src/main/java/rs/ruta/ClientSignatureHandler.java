@@ -27,6 +27,7 @@ import rs.ruta.client.MyParty;
 
 public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 {
+	private static final String COMMON_NAMESPACE = "http://www.ruta.rs/ns/common";
 	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private MyParty myParty;
 
@@ -38,31 +39,33 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	@Override
 	public boolean handleMessage(SOAPMessageContext mCtx)
 	{
-		Boolean outbound = (Boolean) mCtx.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+		final Boolean outbound = (Boolean) mCtx.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		//process the message only if it is outbound and not RegisterUser message
 		if(outbound)
 		{
-			SOAPMessage message = mCtx.getMessage();
+			final SOAPMessage message = mCtx.getMessage();
 			if(!isRegisterUser(message))
 			{
 				try
 				{
-					SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
+					final SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
+					envelope.removeNamespaceDeclaration("env");
 					if(envelope.getHeader() == null)
 						envelope.addHeader();
-					SOAPHeader header = envelope.getHeader();
-					QName qname = new QName("http://ruta.rs/credentials", "Credentials");
-					header.addHeaderElement(qname);
-					String timestamp = getTimestamp();
-					String username = myParty.getCDRUsername();
-					String secretKey = myParty.getCDRSecretKey();
+					final SOAPHeader header = envelope.getHeader();
+					header.setPrefix("S");
+					final QName credentialsQname = new QName(COMMON_NAMESPACE, "Credentials");
+					header.addHeaderElement(credentialsQname);
+					final String timestamp = getTimestamp();
+					final String username = myParty.getCDRUsername();
+					final String secretKey = myParty.getCDRSecretKey();
 					if(username == null || secretKey == null)
 						throw new RuntimeException("RutaUser is not registered with the CDR service!");
-					String signature = getSignature(username, timestamp, getBytes(secretKey));
-					Node firstChild = header.getFirstChild();
-					append(firstChild, "Username", username);
-					append(firstChild, "Timestamp", timestamp);
-					append(firstChild, "Signature" , signature);
+					final String signature = getSignature(username, timestamp, getBytes(secretKey));
+					final Node firstChild = header.getFirstChild();
+					appendElement(firstChild, "Username", username);
+					appendElement(firstChild, "Timestamp", timestamp);
+					appendElement(firstChild, "Signature" , signature);
 					message.saveChanges();
 				}
 				catch (SOAPException e)
@@ -74,9 +77,9 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		return true;
 	}
 
-	private void append(Node node, String name, String text)
+	private void appendElement(Node node, String name, String text)
 	{
-		Element element = node.getOwnerDocument().createElement(name);
+		final Element element = node.getOwnerDocument().createElementNS(COMMON_NAMESPACE, name);
 		element.setTextContent(text);
 		node.appendChild(element);
 	}
@@ -113,8 +116,8 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 
 	private String getTimestamp()
 	{
-		Calendar calendar = Calendar.getInstance();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm:ss'Z'");
+		final Calendar calendar = Calendar.getInstance();
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm:ss'Z'");
 		dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Belgrade"));
 		return dateFormat.format(calendar.getTime());
 	}
@@ -123,14 +126,14 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 	{
 		try
 		{
-			String toSign = username + timestamp;
+			final String toSign = username + timestamp;
 			byte[] toSignBytes = getBytes(toSign);
-			Mac signer = Mac.getInstance("HmacSHA256");
-			SecretKeySpec keySpec = new SecretKeySpec(secretBytes, "HmacSHA256");
+			final Mac signer = Mac.getInstance("HmacSHA256");
+			final SecretKeySpec keySpec = new SecretKeySpec(secretBytes, "HmacSHA256");
 			signer.init(keySpec);
 			signer.update(toSignBytes);
 			byte[] signBytes = signer.doFinal();
-			String signature = new String(Base64.encodeBase64(signBytes));
+			final String signature = new String(Base64.encodeBase64(signBytes));
 			return signature;
 		}
 		catch(Exception e)
@@ -144,8 +147,8 @@ public class ClientSignatureHandler implements SOAPHandler<SOAPMessageContext>
 		boolean registerUser = false;
 		try
 		{
-			SOAPBody body = message.getSOAPBody();
-			Node node = body.getFirstChild();
+			final SOAPBody body = message.getSOAPBody();
+			final Node node = body.getFirstChild();
 			registerUser = node.getNodeName().contains("RegisterUser");
 		}
 		catch (SOAPException e)
