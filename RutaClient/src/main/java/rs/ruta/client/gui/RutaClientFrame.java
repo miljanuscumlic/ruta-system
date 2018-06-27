@@ -137,8 +137,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private JMenuItem cdrGetDocumentsItem = new JMenuItem("Get New Documents");
 	private JMenuItem cdrSearchItem = new JMenuItem("Search");
 	private JMenuItem cdrUpdateCatalogueItem = new JMenuItem("Update My Catalogue");
-	@Deprecated
-	private JMenuItem cdrPullCatalogueItem = new JMenuItem("Pull My Catalogue");
 	private JMenuItem cdrDeleteCatalogueItem = new JMenuItem("Delete My Catalogue");
 	private JMenuItem cdrUpdatePartyItem = new JMenuItem("Update My Party");
 	private JMenuItem cdrRegisterPartyItem = new JMenuItem("Register My Party");
@@ -246,8 +244,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		localDataMenu.add(newProductItem);
 		localDataMenu.addSeparator();
 		localDataMenu.add(saveDataItem);
-		localDataMenu.add(exportDataItem);
-		localDataMenu.add(importDataItem);
+//		localDataMenu.add(exportDataItem);
+//		localDataMenu.add(importDataItem);
 		localDataMenu.addSeparator();
 		localDataMenu.add(localRegisterPartyItem);
 		localDataMenu.add(localDeregisterPartyItem);
@@ -474,7 +472,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		cdrMenu.add(cdrSearchItem);
 		cdrMenu.addSeparator();
 		cdrMenu.add(cdrUpdateCatalogueItem);
-		//		cdrMenu.add(cdrPullCatalogueItem);
 		cdrMenu.add(cdrDeleteCatalogueItem);
 		cdrMenu.addSeparator();
 		cdrMenu.add(cdrUpdatePartyItem);
@@ -633,28 +630,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						append(" My Party should be registered with the CDR service first!"), Color.RED);
 		});
 
-		cdrPullCatalogueItem.addActionListener(event ->
-		{
-//			MyParty myParty = client.getMyParty();
-			if(myParty.isRegisteredWithCDR())
-			{
-				if(myParty.getMyFollowingParty() != null)
-				{
-					disableCatalogueMenuItems();
-					new Thread(() ->
-					{
-						client.cdrPullMyCatalogue();
-					}).start();
-				}
-				else
-					JOptionPane.showMessageDialog(null, "My Party is not set as the following party", "Synchronising Catalogue",
-							JOptionPane.INFORMATION_MESSAGE);
-			}
-			else
-				appendToConsole(new StringBuilder("Pull request for My Catalogue has not been sent to the CDR service.").
-						append(" My Party should be registered with the CDR service first!"), Color.RED);
-		});
-
 		cdrDeleteCatalogueItem.addActionListener(event ->
 		{
 //			MyParty myParty = client.getMyParty();
@@ -712,16 +687,15 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		JMenuItem updateItem = new JMenuItem("Check for Updates");
 		helpMenu.add(updateItem);
 		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
-		//		MMM: Comment notifyItem before new version of Ruta Client is released!
-		helpMenu.add(notifyItem);
+//		MMM Comment notifyItem before new version of Ruta Client is released!
+//		helpMenu.add(notifyItem);
 		JMenuItem reportBugItem = new JMenuItem("Report Bug");
 		helpMenu.add(reportBugItem);
 		JMenuItem exploreBugItem = new JMenuItem("Explore Bugs");
 		helpMenu.add(exploreBugItem);
 		JMenuItem fileItem = new JMenuItem("Send File");
-		//		helpMenu.add(fileItem);
 		JMenuItem clearCacheItem = new JMenuItem("Clear Service Cache");
-		helpMenu.add(clearCacheItem);
+//		helpMenu.add(clearCacheItem);
 
 		aboutItem.addActionListener(event ->
 		{
