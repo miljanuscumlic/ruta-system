@@ -359,6 +359,8 @@ public class TabProducts extends TabComponent
 						}
 						else
 						{
+							cataloguePopupMenu.add(newItem);
+							cataloguePopupMenu.addSeparator();
 							editItem.putClientProperty("InStock", false);
 							cataloguePopupMenu.add(editItem);
 							cataloguePopupMenu.add(unarchiveItem);
