@@ -217,8 +217,11 @@ public class MyParty extends BusinessParty
 	{
 		final MapperRegistry mapperRegistry = MapperRegistry.getInstance();
 		final List<Item> allProducts = mapperRegistry.getMapper(Item.class).findAll();
-		setProducts(allProducts.stream().filter(item -> item.isInStock()).collect(Collectors.toList()));
-		setArchivedProducts(allProducts.stream().filter(item -> !item.isInStock()).collect(Collectors.toList()));
+		if(allProducts != null)
+		{
+			setProducts(allProducts.stream().filter(item -> item.isInStock()).collect(Collectors.toList()));
+			setArchivedProducts(allProducts.stream().filter(item -> !item.isInStock()).collect(Collectors.toList()));
+		}
 		BusinessPartySearchCriterion criterion = new BusinessPartySearchCriterion();
 		criterion.setPartner(true);
 		final DataMapper<BusinessParty, String> businessPartyMapper = mapperRegistry.getMapper(BusinessParty.class);
@@ -470,14 +473,24 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Removes all archived products from the data model and data store.
+	 * Removes all archived products from the data model and the data store.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the database
 	 */
 	public void clearArchivedProducts() throws DetailException
 	{
 		for(Item item: archivedProducts)
-			MapperRegistry.getInstance().getMapper(Item.class).delete(null, item.getID().getValue());
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(Item.class).delete(null, item.getID().getValue());
+			}
+			catch(DatabaseException e)
+			{	//OK if document does not exist
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!"))
+					throw e;
+			}
+		}
 		archivedProducts.clear();
 		notifyListeners(new ItemEvent(new Item(), ItemEvent.ARCHIVED_ITEMS_REMOVED));
 	}
@@ -925,7 +938,6 @@ public class MyParty extends BusinessParty
 		notifyListeners(new BusinessPartyEvent(new ArrayList<>(), BusinessPartyEvent.ALL_PARTIES_REMOVED));
 		setArchivedParties(null);
 		setBusinessPartners(null);
-		//		setDeregisteredParties(null);
 		setOtherParties(null);
 	}
 
@@ -1010,14 +1022,24 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Removes all parties from the business partners list.
+	 * Removes all parties from the business partners list and deletes them from the data store.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
 	public void clearBusinessPartners() throws DetailException
 	{
 		for(BusinessParty party : getBusinessPartners())
-			MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+			}
+			catch(DatabaseException e)
+			{	//OK if document does not exist
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!"))
+					throw e;
+			}
+		}
 		notifyListeners(new BusinessPartyEvent(businessPartners, BusinessPartyEvent.BUSINESS_LIST_REMOVED));
 		setBusinessPartners(null);
 	}
@@ -1117,7 +1139,17 @@ public class MyParty extends BusinessParty
 	public void clearOtherParties() throws DetailException
 	{
 		for(BusinessParty party : getOtherParties())
-			MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+			}
+			catch(DatabaseException e)
+			{	//OK if document does not exist
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!"))
+					throw e;
+			}
+		}
 		notifyListeners(new BusinessPartyEvent(otherParties, BusinessPartyEvent.OTHER_LIST_REMOVED));
 		setOtherParties(null);
 	}
@@ -1204,14 +1236,24 @@ public class MyParty extends BusinessParty
 	}
 
 	/**
-	 * Removes all parties from the archived parties list.
+	 * Removes all parties from the archived parties list and the data store.
 	 * <p>Notifies listeners registered for this type of the {@link BusinessPartyEvent event}.</p>
 	 * @throws DetailException if data could not be deleted from the data store
 	 */
 	public void clearArchivedParties() throws DetailException
 	{
 		for(BusinessParty party : getArchivedParties())
-			MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+		{
+			try
+			{
+				MapperRegistry.getInstance().getMapper(BusinessParty.class).delete(null, party.getPartyID());
+			}
+			catch(DatabaseException e)
+			{	//OK if document does not exist
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!"))
+					throw e;
+			}
+		}
 		notifyListeners(new BusinessPartyEvent(archivedParties, BusinessPartyEvent.ARCHIVED_LIST_REMOVED));
 		setArchivedParties(null);
 	}
