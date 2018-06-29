@@ -33,9 +33,9 @@ public class ExistConnector implements DatastoreConnector
 	private static String databaseId = "exist";
 	private static String uriPrefix = "xmldb:" + databaseId + "://";
 	private static String existRootCollectionPath = "/db";
-	private static String rutaDevelopCollectionPath = existRootCollectionPath + "/ruta-develop"; // path of the application's base collection in snapshot version
-	private static String rutaReleaseCollectionPath = existRootCollectionPath + "/ruta"; // path of the application's base collection in release version
-	private static String rutaCollectionPath = rutaDevelopCollectionPath; //rutaReleaseCollectionPath; // path of the application's base collection
+	private static String rutaDevelopCollectionPath = existRootCollectionPath + "/apps/ruta-develop"; // path of the application's base collection in snapshot version
+	private static String rutaReleaseCollectionPath = existRootCollectionPath + "/apps/ruta"; // path of the application's base collection in release version
+	private static String rutaCollectionPath = rutaReleaseCollectionPath; //rutaDevelopCollectionPath // path of the application's base collection
 	private static String uriSufix = "/exist/xmlrpc";
 	private static String server = "localhost";
 	private static String port = "8888";
@@ -92,9 +92,10 @@ public class ExistConnector implements DatastoreConnector
 		boolean access = true;
 		try
 		{
-			getExistRootCollection();
+//			getExistRootCollection();
+			checkCollection(rutaCollectionPath);
 		}
-		catch (XMLDBException e)
+		catch (/*XMLDBException |*/ DatabaseException e)
 		{
 			access = false;
 			logger.error("Exception is ", e);

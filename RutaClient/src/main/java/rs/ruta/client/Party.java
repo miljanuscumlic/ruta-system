@@ -174,7 +174,7 @@ public class Party extends PartyType
 		}
 		catch (Exception e)
 		{
-			// should not do anything because the entry is invalid	MMM: should be checked
+			// should not do anything because the entry is invalid	MMM should be checked
 		}
 		}
 	}

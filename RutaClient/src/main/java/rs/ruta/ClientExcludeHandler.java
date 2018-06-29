@@ -7,7 +7,7 @@ import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
-//MMM: not used anymore; incorporated in ClientSignatureHandler
+//MMM not used anymore; incorporated in ClientSignatureHandler
 public class ClientExcludeHandler implements LogicalHandler<LogicalMessageContext>
 {
 

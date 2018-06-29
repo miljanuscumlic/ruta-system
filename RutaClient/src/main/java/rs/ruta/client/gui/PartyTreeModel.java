@@ -263,23 +263,6 @@ public class PartyTreeModel extends RutaTreeModel
 				archivedParties.remove(sourceParty);
 				deleteNode(sourceParty);
 			}
-			/*else if(BusinessPartyEvent.DEREGISTERED_PARTY_ADDED.equals(command))
-			{	//MMM check is it necessary to remove form the lists
-				//delete from a list if it is contained in any
-				businessPartners.remove(sourceParty);
-				otherParties.remove(sourceParty);
-				archivedParties.remove(sourceParty);
-				deleteNode(sourceParty);
-				//add to deregistered parties
-				deregisteredParties.add(sourceParty);
-				addNode(sourceParty);
-			}
-			else if(BusinessPartyEvent.DEREGISTERED_PARTY_REMOVED.equals(command))
-			{
-				//delete from deregistered parties
-				deregisteredParties.remove(sourceParty);
-				deleteNode(sourceParty);
-			}*/
 			else if(BusinessPartyEvent.MY_FOLLOWING_PARTY_ADDED.equals(command))
 			{
 				//add following party

@@ -417,8 +417,6 @@ public class CDR implements Server
 		try
 		{
 			init();
-			//MMM temporary clearing of cache
-			clearCache();
 			final Associates followers = mapperRegistry.getMapper(Associates.class).findByUsername(username).clone();
 			followers.removeAssociate(followers.getPartyID());
 			mapperRegistry.getMapper(RutaUser.class).deleteUser(username);
@@ -930,20 +928,6 @@ public class CDR implements Server
 				throw new DatabaseException("User with ID " + receiverID + " is not a business partner or follower!");
 			final DocumentDistribution documentDistribution = new DocumentDistribution(document, recepient);
 			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
-
-//			docBoxPool.submit(() -> //MMM maybe this should not be submitted to the ExecutorService
-//			{
-//				try
-//				{
-//					final DocumentDistribution documentDistribution = new DocumentDistribution(document, recepient);
-//					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
-//				}
-//				catch(DetailException e)
-//				{
-//					logger.error("Unable to distribute " + InstanceFactory.getDocumentName(document.getClass().getSimpleName()) +
-//							InstanceFactory.getDocumentID(document) + " of the sender: " + senderID + ".\n Exception is ", e);
-//				}
-//			});
 		}
 		catch(Exception e)
 		{
@@ -975,29 +959,6 @@ public class CDR implements Server
 			}
 			final DocumentDistribution documentDistribution = new DocumentDistribution(request, recepient);
 			mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
-
-//			docBoxPool.submit(() -> //MMM maybe this should not be submitted to the ExecutorService
-//			{
-//				try
-//				{
-//					final DocumentDistribution documentDistribution = new DocumentDistribution(request, recepient);
-//					mapperRegistry.getMapper(DocumentDistribution.class).insert(null, documentDistribution);
-//				}
-//				catch(DetailException e)
-//				{
-//					logger.error("Unable to distribute " + InstanceFactory.getDocumentName(request.getClass().getSimpleName()) +
-//							InstanceFactory.getDocumentID(request) + " of the sender: " + senderID + ".\n Exception is ", e);
-//				}
-//				try
-//				{
-//					mapperRegistry.getMapper(PartnershipRequest.class).insert(null, request);
-//				}
-//				catch(DetailException e)
-//				{
-//					logger.error("Unable to insert " + InstanceFactory.getDocumentName(request.getClass().getSimpleName()) +
-//							InstanceFactory.getDocumentID(request) + " of the sender: " + senderID + " to the data store.\n Exception is ", e);
-//				}
-//			});
 		}
 		catch(Exception e)
 		{

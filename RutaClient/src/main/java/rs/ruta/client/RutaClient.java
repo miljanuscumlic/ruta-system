@@ -228,17 +228,19 @@ public class RutaClient implements RutaNode
 
 	}
 
-	/**  //MMM change the comment
-	 * Shows dialog for inputing {@code Party} data if data is not already initialized in the {@link #preInitialize} method.
-	 * This phase of data model initialization is after the view is initialized.
-	 * @throws DetailException if data could be read from the databse
+	/**
+	 * Initializes RutaClient data.
+	 * @throws DetailException if there is some error in communication with the databas
 	 */
 	public void initialize() throws DetailException
 	{
-//		authorizeUserAccess();
 		initializeMyParty();
 	}
 
+	/**
+	 * Initializes MyParty object populating its structures and field from the database.
+	 * @throws DetailException if there is some error in communication with the database
+	 */
 	private void initializeMyParty() throws DetailException
 	{
 		final MyParty retrievedParty = MapperRegistry.getInstance().getMapper(MyParty.class).findByUsername(initialUsername);
@@ -701,7 +703,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Exception is ", e);
+			logger.error("My Party has not been registered with the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("My Party has not been registered with the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enablePartyMenuItems();
@@ -741,6 +744,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("My Party has not been updated with the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("My Party has not been updated with the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enablePartyMenuItems();
@@ -782,7 +787,6 @@ public class RutaClient implements RutaNode
 							Color.GREEN);
 					clientFrame.appendToConsole(new StringBuilder("All CDR related data in regard with parties has been deleted from").
 							append(" the local data store."), Color.BLACK);
-					//					clientFrame.repaint();
 				}
 				catch (InterruptedException | ExecutionException e)
 				{
@@ -804,6 +808,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("My Party has not been deregistered from the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("My Party has not been deregistered from the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enablePartyMenuItems();
@@ -886,6 +892,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("My Catalogue has not been deposited into the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deposited into the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
@@ -953,7 +961,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Exception is ", e);
+			logger.error("My Catalogue has not been updated by the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been updated by the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
@@ -989,7 +998,8 @@ public class RutaClient implements RutaNode
 			catch(WebServiceException e)
 			{
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
-				logger.error("Exception is ", e);
+				logger.error("My Catalogue has not been updated by the CDR service!" +
+						" Server is not accessible. Exception is ", e);
 				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been updated by the CDR service!").
 						append(" Server is not accessible. Please try again later."), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
@@ -1088,6 +1098,8 @@ public class RutaClient implements RutaNode
 			catch(WebServiceException e)
 			{
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
+				logger.error("My Catalogue has not been deleted from the CDR service!" +
+						" Server is not accessible. Exception is ", e);
 				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR service!").
 						append(" Server is not accessible. Please try again later."), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
@@ -1242,9 +1254,6 @@ public class RutaClient implements RutaNode
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
 			throw new StateActivityException(documentName + " " + documentID +
 					" has not been sent to the CDR service! Server is not accessible. Please try again later.", e);
-			/*			logger.error("Exception is ", exception);
-			clientFrame.appendToConsole(new StringBuilder(documentName + " has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED); */
 		}
 		catch(StateActivityException e)
 		{
@@ -1460,6 +1469,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Follow request has not been sent to the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Follow request has not been sent to the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 		}
@@ -1502,6 +1513,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Unfollow request has not been sent to the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Unfollow request has not been sent to the CDR service!"
 					+ " Server is not accessible. Please try again later."), Color.RED);
 		}
@@ -1658,11 +1671,14 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Request for new documents has not been sent to the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service!")
 					.append(" Server is not accessible. Please try again later."), Color.RED);
 		}
 		finally
 		{
+			sequential.release();
 			clientFrame.enableGetDocumentsMenuItem();
 		}
 		return sequential;
@@ -2214,8 +2230,8 @@ public class RutaClient implements RutaNode
 	 */
 	private Server getCDRPort()
 	{
-		try
-		{
+		/*try
+		{*/
 			//getting webservice port
 			final CDRService service = new CDRService();
 			service.setHandlerResolver(new ClientHandlerResolver(myParty));
@@ -2239,12 +2255,12 @@ public class RutaClient implements RutaNode
 			binding.setMTOMEnabled(true);
 
 			return port;
-		}
+	/*	}
 		catch(Exception e)
 		{
 			logger.error("Exception is ", e);
 			throw e;
-		}
+		}*/
 	}
 
 	/**
@@ -2378,6 +2394,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Search request " + search.getSearchName() +
+				" has not been processed! Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Search request \"").append(search.getSearchName()).
 					append("\" has not been processed! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableSearchMenuItems();
@@ -2403,6 +2421,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Update request has hot been sent! Server is not accessible. Please try again later."),
 					Color.RED);
 		}
@@ -2440,6 +2459,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("CDR service could not be notified! Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("CDR service could not be notified! Server is not accessible. Please try again later."),
 					Color.RED);
 		}
@@ -2447,7 +2467,7 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * MMM: This method should be moved to new project Ruta ServiceInterface <br/>
+	 * MMM This method should be moved to new project Ruta ServiceInterface <br/>
 	 * Sends request to CDr service to clear in-memory cache object.
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation
@@ -2475,6 +2495,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("CDR service could not clear its cache! Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("CDR service could not clear its cache! Server is not accessible.").
 					append(" Please try again later."), Color.RED);
 		}
@@ -2506,6 +2527,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Bug could not be reported to the CDR service! Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Bug could not be reported to the CDR service! Server is not accessible.").
 					append(" Please try again later."), Color.RED);
 		}
@@ -2563,6 +2585,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Bug list not be retrived from the CDR service! Server is not accessible.").
 					append(" Please try again later."), Color.RED);
 		}
@@ -2581,12 +2604,13 @@ public class RutaClient implements RutaNode
 		try
 		{
 			Server port = getCDRPort();
-			ret = port.searchBugReportAsync(criterion, futureResult -> { }); //MMM: replace the futureResult with null
+			ret = port.searchBugReportAsync(criterion, futureResult -> { }); //MMM replace the futureResult with null
 			clientFrame.appendToConsole(new StringBuilder("Request for the list of all bug reports has been sent to the CDR service.").
 					append(" Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Bug list could not be retrived from the CDR service! Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Bug list could not be retrived from the CDR service! Server is not accessible.").
 					append(" Please try again later."), Color.RED);
 		}
@@ -2610,6 +2634,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Bug report could not be retrived from the CDR service!" +
+				" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Bug report could not be retrived from the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 		}
@@ -2632,6 +2658,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Comment could not be sent to the CDR service! Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Comment could not be sent to the CDR service! Server is not accessible.").
 					append(" Please try again later."),Color.RED);
 		}
@@ -3004,6 +3031,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Business partnership request has not been sent to the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Business partnership request has not been sent to the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 		}
@@ -3051,17 +3080,17 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Business partnership Resposne has not been sent to the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Business partnership Resposne has not been sent to the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 		}
 	}
 
-	/** //MMM amend the comment
-	 * Sends Business Partnership Breakup request to the CDR if the party to be followed is not My Party,is not among the
-	 * following parties nor the request has already been sent for that party.
+	/**
+	 * Sends Business Partnership Breakup request to the CDR if the request has not already been sent for that party,
+	 * or the party is not a business partner of MyParty.
 	 * @param requestedParty party that request should be sent to
-	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
-	 * or {@code null} if no CDR request has been made during method invocation
 	 */
 	public void breakupPartnership(final PartyType requestedParty)
 	{
@@ -3130,6 +3159,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
+			logger.error("Business Partnership Breakup has not been sent to the CDR service!" +
+					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Business Partnership Breakup has not been sent to the CDR service!").
 					append(" Server is not accessible. Please try again later."), Color.RED);
 		}

@@ -94,30 +94,6 @@ abstract public class AbstractInvoiceDialog extends JDialog
 		return table;
 	}
 
-	/**
-	 * Removes all {@link OrderLineType Invoice lines} which {@link LineItemType line items} have a quantity
-	 * that is a {@code null} value or 0.
-	 * @param invoiceLines invoiceLines to process
-	 * @return true if trimming is done without throwing any exception; false otherwise
-	 */
-	//MMM not used
-	@Deprecated
-	protected boolean trimInvoiceLines(List<OrderLineType> invoiceLines)
-	{
-		boolean success = true;
-		try
-		{
-			invoiceLines.removeIf(orderLine ->
-			orderLine.getLineItem().getQuantityValue() == null ||
-			new BigDecimal(0).compareTo(orderLine.getLineItem().getQuantityValue()) >= 0);
-		}
-		catch(Exception e)
-		{
-			success = false;
-		}
-		return success;
-	}
-
 	protected void numberInvoiceLines(List<InvoiceLineType> invoiceLines)
 	{
 		int lineNumber = 0;
