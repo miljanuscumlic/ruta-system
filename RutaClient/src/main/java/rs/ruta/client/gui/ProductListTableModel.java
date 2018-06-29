@@ -175,6 +175,7 @@ public class ProductListTableModel extends DefaultTableModel
 			}
 			if(item.isInStock())
 				setChanged(oldValue, getValueAt(rowIndex, columnIndex));
+			fireTableDataChanged(); // so that table could be sorted on update
 		}
 		catch(ProductException e)
 		{

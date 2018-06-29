@@ -475,6 +475,7 @@ public abstract class TabComponent extends Container
 	protected TableRowSorter<DefaultTableModel> createTableRowSorter(DefaultTableModel tableModel, int sortIndex, boolean descending)
 	{
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(tableModel);
+		sorter.setSortsOnUpdates(true);
 		sorter.setSortable(0, false);
 		sorter.toggleSortOrder(sortIndex);
 		if(descending)

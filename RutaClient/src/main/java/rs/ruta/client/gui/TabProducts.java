@@ -206,8 +206,8 @@ public class TabProducts extends TabComponent
 		setUpComboBoxColumn(table, tableColumn);
 
 		final JPopupMenu cataloguePopupMenu = new JPopupMenu();
-		final JMenuItem archiveItem = new JMenuItem("Out of Stock");
-		final JMenuItem unarchiveItem = new JMenuItem("In Stock");
+		final JMenuItem archiveItem = new JMenuItem("Put out of Stock");
+		final JMenuItem unarchiveItem = new JMenuItem("Put in Stock");
 		final JMenuItem newItem = new JMenuItem("Add New");
 		final JMenuItem editItem = new JMenuItem("Edit");
 
@@ -219,7 +219,6 @@ public class TabProducts extends TabComponent
 			{
 				try
 				{
-//					myParty.addProduct(newProduct);
 					if(newProduct.isInStock())
 						myParty.addProduct(newProduct);
 					else
