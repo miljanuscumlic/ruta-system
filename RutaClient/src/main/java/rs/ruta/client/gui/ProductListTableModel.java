@@ -188,7 +188,7 @@ public class ProductListTableModel extends DefaultTableModel
 		{
 			EventQueue.invokeLater(() ->
 			{
-				JOptionPane.showMessageDialog(null, "Invalid field format. " + e.getMessage() + "\n Reverting to previous value.",
+				JOptionPane.showMessageDialog(null, "Invalid field format. " + e.getMessage() + "\nReverting to previous value.",
 						"Error", JOptionPane.ERROR_MESSAGE);
 			});
 		}

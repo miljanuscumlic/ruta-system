@@ -125,8 +125,7 @@ public class ProductTableModel extends DefaultTableModel
 		try
 		{
 			String value = null;
-//			if(rowIndex != 9)
-			if(obj.getClass() == String.class)
+			if(obj != null && obj.getClass() == String.class)
 				value = ((String) obj).trim();
 			switch(rowIndex)
 			{
@@ -198,7 +197,7 @@ public class ProductTableModel extends DefaultTableModel
 		{
 			EventQueue.invokeLater(() ->
 			{
-				JOptionPane.showMessageDialog(null, "Invalid field format. " + e.getMessage() + "\n Reverting to previous value.",
+				JOptionPane.showMessageDialog(null, "Invalid field format. " + e.getMessage() + "\nReverting to previous value.",
 						"Error", JOptionPane.ERROR_MESSAGE);
 			});
 		}
