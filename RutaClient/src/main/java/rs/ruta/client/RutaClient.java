@@ -259,8 +259,14 @@ public class RutaClient implements RutaNode
 			myParty.addCatalogueCorrespondence(CatalogueCorrespondence.newInstance(this));
 	}
 
-	public void authorizeUserAccess() throws DetailException
+	/**
+	 * Authorizes access to the database by trying saved credentials and/or requesting new ones.
+	 * @return
+	 * @throws DetailException
+	 */
+	public boolean authorizeUserAccess() throws DetailException
 	{
+		boolean success = true;
 //		if(isLocalUserRegistеred())
 //		{
 //			final MyParty retrievedParty = MapperRegistry.getInstance().getMapper(MyParty.class).findByUsername(initialUsername);
@@ -327,16 +333,18 @@ public class RutaClient implements RutaNode
 			}
 			if(!loop.get())
 			{
-				EventQueue.invokeLater(() ->
-				{
-					JOptionPane.showMessageDialog(clientFrame,
-							"Without correct username and password you are not granted access to Ruta Client Application.\n"
-									+ "Application will be closed.",
-									"Error message", JOptionPane.ERROR_MESSAGE);
-					System.exit(0);
-				});
+				success = false;
+//				EventQueue.invokeLater(() ->
+//				{
+//					JOptionPane.showMessageDialog(clientFrame,
+//							"Without correct username and password you are not granted access\n" +
+//									"to the Ruta Client Application. Application will be closed.",
+//									"Error message", JOptionPane.ERROR_MESSAGE);
+//					System.exit(0);
+//				});
 			}
 		}
+		return success;
 	}
 
 	//MMM only for test

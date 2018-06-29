@@ -60,16 +60,28 @@ public class RutaClientTest
 			{
 				client = new RutaClient(frame, false);
 				frame.setClient(client);
-				client.authorizeUserAccess();
-				EventQueue.invokeLater(() -> splashScreen.setVisible(true));
-				client.initialize();
-				EventQueue.invokeLater(() ->
+				if(client.authorizeUserAccess())
 				{
-					frame.initialize();
-					splashScreen.setVisible(false);
-					frame.setVisible(true);
-				});
-
+					EventQueue.invokeLater(() -> splashScreen.setVisible(true));
+					client.initialize();
+					EventQueue.invokeLater(() ->
+					{
+						frame.initialize();
+						splashScreen.setVisible(false);
+						frame.setVisible(true);
+					});
+				}
+				else
+				{
+					EventQueue.invokeLater(() ->
+					{
+						JOptionPane.showMessageDialog(null,
+								"Without correct username and password you are not granted access\n" +
+										"to the Ruta Client Application. Application will be closed.",
+										"Error message", JOptionPane.ERROR_MESSAGE);
+						System.exit(0);
+					});
+				}
 			}
 			catch(Exception e)
 			{
@@ -107,23 +119,35 @@ public class RutaClientTest
 				if(again.get() == true)
 				{
 					EventQueue.invokeLater(() -> awhileDialog.setVisible(true));
-
 					client = new RutaClient(frame, true);
 					frame.setClient(client);
-					client.authorizeUserAccess();
-					EventQueue.invokeLater(() ->
+					EventQueue.invokeLater(() -> awhileDialog.setVisible(false));
+					if(client.authorizeUserAccess())
 					{
-						awhileDialog.setVisible(false);
-						splashScreen.setVisible(true);
-					});
-					client.initialize();
-					EventQueue.invokeLater(() ->
+						EventQueue.invokeLater(() ->
+						{
+							awhileDialog.setVisible(false);
+							splashScreen.setVisible(true);
+						});
+						client.initialize();
+						EventQueue.invokeLater(() ->
+						{
+							frame.initialize();
+							splashScreen.setVisible(false);
+							frame.setVisible(true);
+						});
+					}
+					else
 					{
-						frame.initialize();
-						splashScreen.setVisible(false);
-						frame.setVisible(true);
-					});
-
+						EventQueue.invokeLater(() ->
+						{
+							JOptionPane.showMessageDialog(null,
+									"Without correct username and password you are not granted access\n" +
+											"to the Ruta Client Application. Application will be closed.",
+											"Error message", JOptionPane.ERROR_MESSAGE);
+							System.exit(0);
+						});
+					}
 				}
 				else
 				{
