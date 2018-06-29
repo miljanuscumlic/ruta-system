@@ -18,8 +18,7 @@ public class PartyTableModel extends DefaultTableModel
 				" - City name*", " - Postal zone", " - Country subentity", " - Country*", "Classification code",
 				"Postal address", " - Street name", " - Building number", " - Floor", " - Room", " - Building name",
 				" - City subdivision", " - City name", " - Postal zone", " - Country subentity", " - Country",
-				"Contact", " - Name", " - Telephone", " - Telefax", " - Email", " - Note", "Website",
-				"Industry Classification Code"
+				"Contact", " - Name", " - Telephone", " - Telefax", " - Email", " - Note", "Website"
 		};
 
 	private Party party;
@@ -139,8 +138,6 @@ public class PartyTableModel extends DefaultTableModel
 				return party.getContactNote();
 			case 33:
 				return party.getWebsite();
-			case 34:
-				return party.getIndustryClassificationCodeValue();
 			default:
 				return null;
 			}
@@ -250,9 +247,6 @@ public class PartyTableModel extends DefaultTableModel
 			break;
 		case 33:
 			party.setWebsite(obj.toString());
-			break;
-		case 34:
-			party.setIndustryClassificationCode(obj.toString());
 			break;
 		default:
 			;
