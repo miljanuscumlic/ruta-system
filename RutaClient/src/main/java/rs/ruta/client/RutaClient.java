@@ -1683,11 +1683,8 @@ public class RutaClient implements RutaNode
 					" Server is not accessible. Exception is ", e);
 			clientFrame.appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service!")
 					.append(" Server is not accessible. Please try again later."), Color.RED);
-		}
-		finally
-		{
-			sequential.release();
 			clientFrame.enableGetDocumentsMenuItem();
+			sequential.release();
 		}
 		return sequential;
 	}

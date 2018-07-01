@@ -350,7 +350,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 			//check to see if user has right credentials
 			collection = getRootCollection(username, password); // user tries to retrieve root collection
 			if(!secretKey.equals(account.getMetadataValue(SECRET_KEY)))
-				throw new UserException("RutaUser is not registered with the database!");
+				throw new UserException("User " + username +  " is not registered with the database!");
 			partyID = account.getMetadataValue(DOCUMENT_ID); //null if user is not yet registered
 		}
 		catch (XMLDBException e)
@@ -429,7 +429,7 @@ public class UserXmlMapper extends XmlMapper<RutaUser>
 			if(account != null)
 				return account.getMetadataValue(schemaType);
 			else
-				throw new UserException("RutaUser is not registered with the database!");
+				throw new UserException("User " + username +  " is not registered with the database!");
 		}
 		catch(XMLDBException e)
 		{
