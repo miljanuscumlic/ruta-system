@@ -30,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.slf4j.Logger;
@@ -44,9 +45,9 @@ public class TabProducts extends TabComponent
 {
 	private static final long serialVersionUID = 7435742718848842547L;
 	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
-	private static final String ACTIVE = "In Stock";
-	private static final String ARCHIVED = "Out of Stock";
-	private static final Object PRODUCTS_AND_SERVICES = "Products & Services";
+	private static final String IN_STOCK = "In Stock";
+	private static final String OUT_OF_STOCK = "Out of Stock";
+	private static final Object PRODUCTS_AND_SERVICES = "Products";
 	private JTable productListTable;
 	private DefaultTableModel productListTableModel;
 	private List<Item> products;
@@ -128,9 +129,9 @@ public class TabProducts extends TabComponent
 		if(selectedObject.getClass() == String.class)
 		{
 			String nodeTitle = (String) selectedObject;
-			if(ARCHIVED.equals(nodeTitle))
+			if(OUT_OF_STOCK.equals(nodeTitle))
 				archived = true;
-			else if(ACTIVE.equals(nodeTitle))
+			else if(IN_STOCK.equals(nodeTitle))
 				archived = false;
 		}
 		if(source instanceof Item)
@@ -339,9 +340,9 @@ public class TabProducts extends TabComponent
 					if(selectedObject.getClass() == String.class)
 					{
 						String nodeTitle = (String) selectedObject;
-						if(ARCHIVED.equals(nodeTitle))
+						if(OUT_OF_STOCK.equals(nodeTitle))
 							inStock = false;
-						else if(ACTIVE.equals(nodeTitle))
+						else if(IN_STOCK.equals(nodeTitle))
 							inStock = true;
 					}
 
@@ -382,9 +383,65 @@ public class TabProducts extends TabComponent
 
 	private JTree createProductTree(DefaultTreeModel productTreeModel)
 	{
-		JTree tree = new JTree(productTreeModel);
+		final JTree tree = new JTree(productTreeModel);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		final JLabel blankLabel = new JLabel();
+
+		final JPopupMenu treePopupMenu = new JPopupMenu();
+		final JMenuItem newItem = new JMenuItem("New item");
+		treePopupMenu.add(newItem);
+
+		newItem.addActionListener(event ->
+		{
+			final Item newProduct =
+					clientFrame.showProductDialog(myParty.createEmptyProduct(), "Add New Product or Service", true);
+			if (newProduct != null)
+			{
+				try
+				{
+					if(newProduct.isInStock())
+						myParty.addProduct(newProduct);
+					else
+						myParty.archiveProduct(newProduct);
+				}
+				catch (DetailException e)
+				{
+					logger.error("Could not insert new product in the database! Exception is: ", e);
+					EventQueue.invokeLater(() ->
+					JOptionPane.showMessageDialog(null, "Could not insert new product in the database!",
+							"Database Error", JOptionPane.ERROR_MESSAGE)
+							);
+				}
+			}
+			else
+			{
+				myParty.decreaseProductID();
+			}
+		});
+
+		tree.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent event)
+			{
+				if(SwingUtilities.isRightMouseButton(event))
+				{
+					final TreePath path = tree.getPathForLocation(event.getX(), event.getY());
+					final Object selectedObject = getSelectedUserObject(path);
+					if(selectedObject == null) return;
+					tree.setSelectionPath(path);
+					if(selectedObject.getClass() == String.class)
+					{
+						String nodeTitle = (String) selectedObject;
+						if(IN_STOCK.equals(nodeTitle) || OUT_OF_STOCK.equals(nodeTitle))
+						{
+							treePopupMenu.show(tree, event.getX(), event.getY());
+						}
+					}
+				}
+			}
+
+		});
 
 		tree.addTreeSelectionListener(event ->
 		{
@@ -393,13 +450,13 @@ public class TabProducts extends TabComponent
 			if(selectedObject.getClass() == String.class)
 			{
 				String nodeTitle = (String) selectedObject;
-				if(nodeTitle.equals(ACTIVE))
+				if(nodeTitle.equals(IN_STOCK))
 				{
 					((ProductListTableModel) productListTableModel).setProducts(products);
 					productListTableModel.fireTableDataChanged();
 					rightScrollPane.setViewportView(productListTable);
 				}
-				else if(nodeTitle.equals(ARCHIVED))
+				else if(nodeTitle.equals(OUT_OF_STOCK))
 				{
 					((ProductListTableModel) productListTableModel).setProducts(archivedProducts);
 					productListTableModel.fireTableDataChanged();
