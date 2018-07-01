@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -426,7 +427,11 @@ public class MyParty extends BusinessParty
 		actionListeners.get(event.getClass()).stream().forEach(listener -> listener.actionPerformed(event));
 	}
 
-	public List<Item> getProducts()
+	/**
+	 * Gets the list of all products and never null.
+	 * @return list of all products, might be empty
+	 */
+	public @Nonnull List<Item> getProducts()
 	{
 		if (products == null)
 			products = new ArrayList<Item>();
@@ -2227,7 +2232,10 @@ public class MyParty extends BusinessParty
 	 */
 	public void cancelCatalogue()
 	{
-		setDirtyCatalogue(false);
+		if(getProducts().isEmpty())
+			setDirtyCatalogue(false);
+		else
+			setDirtyCatalogue(true);
 		removeCatalogueIssueDate();
 	}
 
