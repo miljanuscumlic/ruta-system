@@ -55,7 +55,7 @@ public class RutaClientTest
 
 		try
 		{
-			AtomicBoolean again = new AtomicBoolean();
+			final AtomicBoolean again = new AtomicBoolean();
 			try
 			{
 				client = new RutaClient(frame, false);

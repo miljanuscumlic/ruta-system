@@ -190,8 +190,6 @@ public class RutaClient implements RutaNode
 		myParty.setClient(this);
 		CDRParty = getCDRParty();
 		addShutDownHook();
-//		preInitialize();
-//		initialize();
 	}
 
 	/**
@@ -201,6 +199,7 @@ public class RutaClient implements RutaNode
 	 * <p>{@link #clientFrame} field is not initialized in this method.</p>
 	 * @throws Exception if retrieving data from the data store has been unsuccessful
 	 */
+	@Deprecated
 	public void preInitialize() //throws Exception
 	{
 		// trying to load party data from database

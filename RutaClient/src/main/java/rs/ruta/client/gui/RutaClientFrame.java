@@ -162,8 +162,12 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final Properties properties = client.getProperties();
 		final int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));
 		final int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));
-		final int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
-		final int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
+		int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
+		int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
+		if(width == 0)
+			width = Integer.parseInt(DEFAULT_WIDTH);
+		if(height == 0)
+			height = Integer.parseInt(DEFAULT_HEIGHT);
 		setBounds(left, top, width, height);
 		setTitle("Ruta Client - " + client.getMyParty().getPartySimpleName());
 
@@ -451,7 +455,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						repaint();
 						EventQueue.invokeLater(() ->
 						{
-							JOptionPane.showMessageDialog(RutaClientFrame.this, "All data are deleted. Ruta Client Application will be closed!");
+							JOptionPane.showMessageDialog(RutaClientFrame.this, "All data were deleted. Ruta Client Application will be closed!");
 							System.exit(0);
 						});
 					}).start();
