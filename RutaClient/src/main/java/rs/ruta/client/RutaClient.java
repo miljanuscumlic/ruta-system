@@ -156,6 +156,8 @@ public class RutaClient implements RutaNode
 	 * Exception to be wrapped in StateActivityException and throw to the state machine.
 	 */
 	private Exception exceptionRethrown = null;
+	private boolean enableStoringProperties;
+
 	//MMM maybe JAXBContext should be private class field, if it is used from multiple class methods
 
 	/**
@@ -169,13 +171,12 @@ public class RutaClient implements RutaNode
 	{
 		this.clientFrame = clientFrame;
 		logger.info("Opening Ruta Client Application");
+		enableStoringProperties = true;
 		properties = new Properties();
 		loadProperties();
 		try
 		{
 			checkClientInstantiated();
-			properties.setProperty("started", "true");
-			storeProperties(false);
 		}
 		catch(DetailException e)
 		{
@@ -228,11 +229,13 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Initializes RutaClient data.
+	 * Initializes RutaClient data and saves properties.
 	 * @throws DetailException if there is some error in communication with the databas
 	 */
 	public void initialize() throws DetailException
 	{
+		properties.setProperty("started", "true");
+		storeProperties(false);
 		initializeMyParty();
 	}
 
@@ -260,28 +263,12 @@ public class RutaClient implements RutaNode
 
 	/**
 	 * Authorizes access to the database by trying saved credentials and/or requesting new ones.
-	 * @return
+	 * @return true if authorization was successful; false otherwise
 	 * @throws DetailException
 	 */
 	public boolean authorizeUserAccess() throws DetailException
 	{
 		boolean success = true;
-//		if(isLocalUserRegistеred())
-//		{
-//			final MyParty retrievedParty = MapperRegistry.getInstance().getMapper(MyParty.class).findByUsername(initialUsername);
-//			if(retrievedParty != null)
-//			{
-//				myParty = retrievedParty;
-//				myParty.setClient(this);
-//				Search.setSearchNumber(myParty.getSearchNumber());
-//
-//				final Party coreParty = myParty.getCoreParty();
-//				if(!myParty.hasCoreParty())
-//					myParty.setCoreParty(coreParty);
-//				myParty.loadData();
-//			}
-//		}
-
 		final Semaphore edtSync = new Semaphore(0);
 		if(!isAnyLocalUserRegistеred())
 		{
@@ -307,7 +294,26 @@ public class RutaClient implements RutaNode
 				myParty.setCoreParty(clientFrame.showPartyDialog(coreParty, "My Party", true, true));
 			clientFrame.updateTitle(myParty.getCoreParty().getPartySimpleName());
 			initialUsername = clientFrame.showLocalSignUpDialog("Local database registration", false);
-			clientFrame.showCDRSignUpDialog("CDR registration");
+			EventQueue.invokeLater(() ->
+			{
+				if(initialUsername != null)
+				{
+					JOptionPane.showMessageDialog(null, "Party has been successfully registered with local database.\n" +
+							"Next step is a registration with the Central Data Repository.", "Local database registration",
+							JOptionPane.PLAIN_MESSAGE);
+					edtSync.release();
+				}
+			});
+			try
+			{
+				edtSync.acquire();
+				clientFrame.showCDRSignUpDialog("CDR registration");
+			}
+			catch (InterruptedException e)
+			{
+				throw new DetailException("Unable to synchronize with EDT thread.", e);
+			}
+
 		}
 		else if(!isLocalUserRegistеred() && !myParty.checkLocalUser(initialUsername, initialPassword))
 		{
@@ -333,14 +339,6 @@ public class RutaClient implements RutaNode
 			if(!loop.get())
 			{
 				success = false;
-//				EventQueue.invokeLater(() ->
-//				{
-//					JOptionPane.showMessageDialog(clientFrame,
-//							"Without correct username and password you are not granted access\n" +
-//									"to the Ruta Client Application. Application will be closed.",
-//									"Error message", JOptionPane.ERROR_MESSAGE);
-//					System.exit(0);
-//				});
 			}
 		}
 		return success;
@@ -382,7 +380,6 @@ public class RutaClient implements RutaNode
 		{
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -472,10 +469,20 @@ public class RutaClient implements RutaNode
 	 * @return true if at least one user is registered
 	 * @throws DatabaseException due to database connectivity issues
 	 */
-	public boolean isAnyLocalUserRegistеred() throws DatabaseException
+	private boolean isAnyLocalUserRegistеred() throws DatabaseException
 	{
 		final List<String> usernames = MapperRegistry.getAccountUsernames();
 		return usernames != null && !usernames.isEmpty();
+	}
+
+	public boolean isEnableStoringProperties()
+	{
+		return enableStoringProperties;
+	}
+
+	public void setEnableStoringProperties(boolean enableStoringProperties)
+	{
+		this.enableStoringProperties = enableStoringProperties;
 	}
 
 	public Properties getProperties()
@@ -2800,9 +2807,12 @@ public class RutaClient implements RutaNode
 	 */
 	public void shutdownApplication()
 	{
-		saveProperties();
-		clientFrame.saveProperties();
-		storeProperties(true);
+		if(enableStoringProperties)
+		{
+			saveProperties();
+			clientFrame.saveProperties();
+			storeProperties(true);
+		}
 		final MyParty myParty= getMyParty();
 		try
 		{
@@ -2840,16 +2850,12 @@ public class RutaClient implements RutaNode
 		String secretKey = null;
 		try
 		{
-			//validating UBL conformance
 			final String missingPartyField = myParty.getCoreParty().verifyParty();
 			if(missingPartyField != null)
 			{
 				throw new DetailException(new StringBuilder("Request for the registration of My Party has been discarded because").
 						append(" My Party is missing mandatory field: ").append(missingPartyField).
 						append(". Please populate My Party data with all mandatory fields and try again.").toString());
-//				clientFrame.appendToConsole(new StringBuilder("Request for the registration of My Party has been discarded because").
-//						append(" My Party is missing mandatory field: ").append(missingPartyField).
-//						append(". Please populate My Party data with all mandatory fields and try again."), Color.RED);
 			}
 			else
 			{

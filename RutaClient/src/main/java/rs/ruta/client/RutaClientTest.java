@@ -73,6 +73,7 @@ public class RutaClientTest
 				}
 				else
 				{
+					client.setEnableStoringProperties(false);
 					EventQueue.invokeLater(() ->
 					{
 						JOptionPane.showMessageDialog(null,
@@ -139,6 +140,7 @@ public class RutaClientTest
 					}
 					else
 					{
+						client.setEnableStoringProperties(false);
 						EventQueue.invokeLater(() ->
 						{
 							JOptionPane.showMessageDialog(null,

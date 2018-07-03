@@ -173,7 +173,10 @@ public class RegisterDialog extends JDialog
 					".\nNot entering them will close the application. Do you want to proceed?",
 					"Warning", JOptionPane.YES_NO_OPTION);
 			if(option == JOptionPane.NO_OPTION)
+			{
+				setVisible(false);
 				System.exit(0);
+			}
 		}
 		else
 		{

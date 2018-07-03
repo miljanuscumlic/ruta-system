@@ -164,10 +164,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));
 		int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
 		int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
-		if(width == 0)
-			width = Integer.parseInt(DEFAULT_WIDTH);
-		if(height == 0)
-			height = Integer.parseInt(DEFAULT_HEIGHT);
 		setBounds(left, top, width, height);
 		setTitle("Ruta Client - " + client.getMyParty().getPartySimpleName());
 
@@ -1153,11 +1149,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public boolean showLocalLogInDialog(String title) throws DatabaseException
 	{
 		boolean success = false;
+		client.setEnableStoringProperties(false);// do not store properties if log-in is unsuccessful
 		registerDialog = new RegisterDialog(RutaClientFrame.this, true, true, false);
 		registerDialog.setTitle("Ruta Client - " + title);
 		registerDialog.setVisible(true);
 		if(registerDialog.isOKPressed())
 		{
+			client.setEnableStoringProperties(true);
 			registerDialog.setOKPressed(false);
 			registerDialog.setVisible(false);
 			final String username = registerDialog.getUsername();
