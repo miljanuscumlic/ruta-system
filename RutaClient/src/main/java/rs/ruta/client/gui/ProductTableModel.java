@@ -179,6 +179,7 @@ public class ProductTableModel extends DefaultTableModel
 				map(keyword -> new KeywordType(keyword)).
 				collect(Collectors.toList());
 				item.setKeyword(keywords);
+				break;
 			case 9:
 				item.setInStock((boolean) obj);
 			default:
