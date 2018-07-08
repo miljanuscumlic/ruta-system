@@ -29,8 +29,7 @@ public class RutaClientTest
 		RutaClient client = null;
 		boolean secondTry = false;
 		final Semaphore edtSync = new Semaphore(0);
-		final JOptionPane awhilePane = new JOptionPane("Opening Ruta Client application.        \n" +
-				"This could take a while. Please wait...",
+		final JOptionPane awhilePane = new JOptionPane("Opening Ruta Client application.        \nThis could take a while. Please wait...",
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
 		final JDialog awhileDialog = awhilePane.createDialog(null, "Ruta Client");
 		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -64,8 +63,7 @@ public class RutaClientTest
 					EventQueue.invokeLater(() ->
 					{
 						JOptionPane.showMessageDialog(null,
-								"Without correct username and password you are not granted access\n" +
-										"to the Ruta Client Application. Application will be closed.",
+								"Without correct username and password you are not granted access\nto the Ruta Client Application. Application will be closed.",
 										"Error message", JOptionPane.ERROR_MESSAGE);
 						System.exit(0);
 					});
@@ -78,9 +76,7 @@ public class RutaClientTest
 					secondTry = true;
 					EventQueue.invokeLater(() ->
 					{
-						int option = JOptionPane.showConfirmDialog(null, "It seems there already has been started one instance of" +
-								" Ruta Client application,\nor the previous instance of the appliation was not closed properly.\n"
-								+ "It might not succeed, but do you still want to try to open a new one?",
+						int option = JOptionPane.showConfirmDialog(null, "It seems there already has been started one instance of Ruta Client application,\nor the previous instance of the appliation was not closed properly.\n It might not succeed, but do you still want to try to open a new one?",
 								"Ruta Client - Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 						if(option == JOptionPane.YES_OPTION)
 							again.set(true);
@@ -131,8 +127,7 @@ public class RutaClientTest
 						EventQueue.invokeLater(() ->
 						{
 							JOptionPane.showMessageDialog(null,
-									"Without correct username and password you are not granted access\n" +
-											"to the Ruta Client Application. Application will be closed.",
+									"Without correct username and password you are not granted access\nto the Ruta Client Application. Application will be closed.",
 											"Error message", JOptionPane.ERROR_MESSAGE);
 							System.exit(0);
 						});
