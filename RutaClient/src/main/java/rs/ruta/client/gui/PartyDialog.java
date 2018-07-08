@@ -5,8 +5,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -41,7 +39,6 @@ public class PartyDialog extends JDialog
 
 		JPanel partyPanel = new JPanel();
 		partyTable = new PartyTable(partyTableModel);
-//		partyTable.setDefaultEditor(Object.class, new FocusLostTableCellEditor(new FocusLostTableCell()));// doesn't work MMM: WHY???
 
 		partyTable.setFillsViewportHeight(true);
 		partyTable.getTableHeader().setReorderingAllowed(false); //disables column reordering
@@ -90,11 +87,7 @@ public class PartyDialog extends JDialog
 			}
 		});
 
-//		TableCellRenderer renderer = new PartyTableCellRenderer();
-//		table.setDefaultRenderer(Object.class, renderer);
-
 		JPanel buttonPanel = new JPanel();
-
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(event ->
 		{
