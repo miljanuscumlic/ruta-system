@@ -693,7 +693,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		helpMenu.add(reportBugItem);
 		JMenuItem exploreBugItem = new JMenuItem("Explore Bugs");
 		helpMenu.add(exploreBugItem);
-		JMenuItem fileItem = new JMenuItem("Send File");
 		JMenuItem clearCacheItem = new JMenuItem("Clear Service Cache");
 //		helpMenu.add(clearCacheItem);
 
@@ -747,14 +746,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}
 		});
 
-		fileItem.addActionListener(event ->
-		{
-			new Thread(()->
-			{
-				client.cdrInsertAttachment();
-			}).start();
-		});
-
 		clearCacheItem.addActionListener(event ->
 		{
 			new Thread(()->
@@ -764,7 +755,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				try
 				{
 					future = client.cdrClearCache();
-//					future.get(1, TimeUnit.SECONDS);
 					future.get();
 					long time2 = System.currentTimeMillis();
 					appendToConsole(new StringBuilder("No exception. time elapsed: " + (time2-time1) / 1000), Color.BLACK);
@@ -776,12 +766,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					appendToConsole(new StringBuilder(e1.getClass().getSimpleName() +  ". time elapsed: " + (time2-time1) / 1000), Color.BLACK);
 					e1.printStackTrace();
 				}
-//				catch(TimeoutException e)
-//				{
-//					future.cancel(true);
-//					long time2 = System.currentTimeMillis();
-//					appendToConsole(new StringBuilder("TimeoutException. time elapsed: " + (time2-time1) / 1000), Color.BLACK);
-//				}
 
 			}).start();
 		});
@@ -1403,7 +1387,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 * @param editable true if Application Response is to be created/changed, false if it is just a preview of one
 	 * @param corr {@link Correspondence} if {@link ApplicationResponseType} is already a part of it; {@code null}
 	 * otherwise i.e. should be created and appended to it
-	 * @return Application Resposne or {@code null} if user has decided to abort the creation of it
+	 * @return Application Response or {@code null} if user has decided to abort the creation of it
 	 */
 	public ApplicationResponseType showApplicationResponseDialog(String title, ApplicationResponseType applicationResponse,
 			boolean editable, Correspondence corr)

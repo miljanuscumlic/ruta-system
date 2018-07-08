@@ -141,13 +141,10 @@ public class RutaClient implements RutaNode
 	private static int CONNECT_TIMEOUT = 0;
 	private static int REQUEST_TIMEOUT = 0;
 	private MyParty myParty;
-	//	private MyPartyXMLFileMapper<MyParty> myPartyDataMapper; //former store to myparty.xml
-	//	private DataMapper<MyParty, String> myPartyDataMapper;
 	private Party CDRParty;
 	private RutaClientFrame clientFrame;
 	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);
 	private Properties properties;
-	//	private MapperRegistry mapperRegistry; //MMM: would be used instead of temporary ClientMapperRegistry and ExistConnector (see: constructor)
 	private List<BugReport> bugReports;
 	public static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	private String initialUsername;
@@ -194,41 +191,6 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Initializes fields of {@code RutaClient} object by retrieving data from local data store.
-	 * This phase of data model initialization is before the view is initialized, so that the view could
-	 * be populated with data if they exist in the data store.
-	 * <p>{@link #clientFrame} field is not initialized in this method.</p>
-	 * @throws Exception if retrieving data from the data store has been unsuccessful
-	 */
-	@Deprecated
-	public void preInitialize() //throws Exception
-	{
-		// trying to load party data from database
-		try
-		{
-			if(isLocalUserRegistеred())
-			{
-				final MyParty retrievedParty = MapperRegistry.getInstance().getMapper(MyParty.class).findByUsername(initialUsername);
-				if(retrievedParty != null)
-				{
-					myParty = retrievedParty;
-					myParty.setClient(this);
-					Search.setSearchNumber(myParty.getSearchNumber());
-
-					final Party coreParty = myParty.getCoreParty();
-					if(!myParty.hasCoreParty())
-						myParty.setCoreParty(coreParty);
-					myParty.loadData();
-				}
-			}
-		}
-		catch(DetailException e)
-		{ } //it's OK if user is not registered //MMM maybe it should some error message to be displayed???
-		//MMM but it is not OK if it cannot load the data -> display some error message
-
-	}
-
-	/**
 	 * Initializes RutaClient data and saves properties.
 	 * @throws DetailException if there is some error in communication with the databas
 	 */
@@ -251,7 +213,6 @@ public class RutaClient implements RutaNode
 			myParty = retrievedParty;
 			myParty.setClient(this);
 			Search.setSearchNumber(myParty.getSearchNumber());
-
 			final Party coreParty = myParty.getCoreParty();
 			if(!myParty.hasCoreParty())
 				myParty.setCoreParty(coreParty);
@@ -275,8 +236,7 @@ public class RutaClient implements RutaNode
 			EventQueue.invokeLater(() ->
 			{
 				JOptionPane.showMessageDialog(clientFrame,
-						"Welcome to Ruta Client Application. To start using Ruta System\n" +
-								"you have to register yourself and your Party with it.",
+						"Welcome to Ruta Client Application. To start using Ruta System\n you have to register yourself and your Party with it.",
 								"Welcome message", JOptionPane.PLAIN_MESSAGE);
 				edtSync.release();
 			});
@@ -298,8 +258,7 @@ public class RutaClient implements RutaNode
 			{
 				if(initialUsername != null)
 				{
-					JOptionPane.showMessageDialog(null, "Party has been successfully registered with local database.\n" +
-							"Next step is a registration with the Central Data Repository.", "Local database registration",
+					JOptionPane.showMessageDialog(null, "Party has been successfully registered with local database.\nNext step is a registration with the Central Data Repository.", "Local database registration",
 							JOptionPane.PLAIN_MESSAGE);
 					edtSync.release();
 				}
@@ -342,44 +301,6 @@ public class RutaClient implements RutaNode
 			}
 		}
 		return success;
-	}
-
-	//MMM only for test
-	public static void main(String... args)
-	{
-		try
-		{
-			final JAXBContext jaxbContext = JAXBContext.newInstance("rs.ruta.client.correspondence");
-			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			String xml = "<ns0:CatalogueCorrespondence xmlns:ns6=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\" xmlns:ns7=\"http://www.ruta.rs/ns/common\" xmlns:ns0=\"http://www.ruta.rs/ns/client\" xmlns:ns1=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">\r\n" +
-					"    <ns0:CreateCatalogueProcess>\r\n" +
-					"        <ns0:DistributeCatalogueState/>\r\n" +
-					"        <ns0:UUID>4dc1adbc-834c-410e-b818-7dd23566468e</ns0:UUID>\r\n" +
-					"        <ns0:Active>true</ns0:Active>\r\n" +
-					"    </ns0:CreateCatalogueProcess>\r\n" +
-					"    <ns0:UUID>fc7e4074-a65c-492b-a8a8-96b6a1086419</ns0:UUID>\r\n" +
-					"    <ns0:Active>true</ns0:Active>\r\n" +
-					"    <ns0:RecentlyUpdated>true</ns0:RecentlyUpdated>\r\n" +
-					"    <ns0:CorrespondentParty>\r\n" +
-					"        <ns6:PartyIdentification>\r\n" +
-					"            <ns1:ID>CDR1234567890</ns1:ID>\r\n" +
-					"        </ns6:PartyIdentification>\r\n" +
-					"        <ns6:PartyName>\r\n" +
-					"            <ns1:Name>CDR</ns1:Name>\r\n" +
-					"        </ns6:PartyName>\r\n" +
-					"    </ns0:CorrespondentParty>\r\n" +
-					"    <ns0:CorrespondenceName>fc7e4074-a65c-492b-a8a8-96b6a1086419</ns0:CorrespondenceName>\r\n" +
-					"    <ns0:CreationTime>2018-06-13T13:34:17.046+02:00</ns0:CreationTime>\r\n" +
-					"    <ns0:LastActivityTime>2018-06-13T13:37:45.781+02:00</ns0:LastActivityTime>\r\n" +
-					"    <ns0:CreateCatalogueProcess>true</ns0:CreateCatalogueProcess>\r\n" +
-					"</ns0:CatalogueCorrespondence>";
-			Object object = unmarshaller.unmarshal(new StringReader(xml));
-			int i = 1;
-		}
-		catch (JAXBException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -507,8 +428,7 @@ public class RutaClient implements RutaNode
 		}
 		catch (IOException | NullPointerException e)
 		{
-			JOptionPane.showMessageDialog(null, "Properties could not be read from the ruta.properties file!\n" +
-					"Reverting to default settings.",
+			JOptionPane.showMessageDialog(null, "Properties could not be read from the ruta.properties file!\nReverting to default settings.",
 					"Information", JOptionPane.INFORMATION_MESSAGE);
 			logger.warn("Properties could not be read from the ruta.properties file! " + e.getMessage());
 		}
@@ -600,63 +520,6 @@ public class RutaClient implements RutaNode
 	}
 
 	/**
-	 * Inserts My Party data to the local data store.
-	 * @throws Exception if data could not be inserted in the data store
-	 */
-	//Moved to MyParty
-	/*	public void insertMyParty() throws Exception
-	{
-		myParty.setSearchNumber(Search.getSearchNum());
-		myPartyDataMapper.insert(myParty.getLocalUsername(), myParty);
-		mapperRegistry.getMapper(ItemType.class).insertAll(null, myParty.getProducts());
-	}*/
-
-	/**
-	 * Sends request for registration of My party with the Central Data Repository.
-	 * @param party Party object that should be registered
-	 * @param username username of the party
-	 * @param password password of the party
-	 */
-	/*	@Deprecated
-	public void cdrRegisterMyParty(PartyType party, String username, String password)
-	{
-		try
-		{
-			Server port = getCDRPort();
-			port.registerUserAsync(username, password, futureUser ->
-			{
-				try
-				{
-					RegisterUserResponse response = futureUser.get();
-					String key = response.getReturn();
-					myParty.setUsername(username);
-					myParty.setPassword(password);
-					myParty.setSecretKey(key);
-					clientFrame.appendToConsole(new StringBuilder("Party has been successfully registered with the CDR service."
-							+ " Please synchronise My Party with the CDR service to be able to use it."), Color.GREEN);
-				}
-				catch(Exception exception)
-				{
-					processException(exception, "My Party has not been registered with the CDR service!");
-				}
-				finally
-				{
-					clientFrame.enablePartyMenuItems();
-				}
-			});
-			clientFrame.appendToConsole(new StringBuilder("Request for the registration of My Party has been sent to the CDR service. Waiting for a response...",
-					Color.BLACK);
-		}
-		catch(WebServiceException exception)
-		{
-			logger.error("Exception is ", exception);
-			clientFrame.appendToConsole(new StringBuilder("My Party has not been registered with the CDR service!"
-					+ " Server is not accessible. Please try again later."), Color.RED);
-			clientFrame.enablePartyMenuItems();
-		}
-	}*/
-
-	/**
 	 * Sends request for registration of My Party with the Central Data Repository.
 	 * @param username username of the party
 	 * @param password password of the party
@@ -674,8 +537,7 @@ public class RutaClient implements RutaNode
 			final String missingPartyField = myParty.getCoreParty().verifyParty();
 			if(missingPartyField != null)
 			{
-				clientFrame.appendToConsole(new StringBuilder("Request for the registration of My Party has not been sent to the CDR").
-						append(" service because Party is missing mandatory field: " ).append(missingPartyField).
+				clientFrame.appendToConsole(new StringBuilder("Request for the registration of My Party has not been sent to the CDR  service because Party is missing mandatory field: " ).append(missingPartyField).
 						append(". Please populate My Party data with all mandatory fields and try again."), Color.RED);
 				clientFrame.enablePartyMenuItems();
 			}
@@ -698,8 +560,7 @@ public class RutaClient implements RutaNode
 						clientFrame.appendToConsole(new StringBuilder("My Party has been successfully registered with the CDR service."),
 								Color.GREEN);
 						clientFrame.appendToConsole(new StringBuilder("My Party has been added to the Following parties."), Color.BLACK);
-						clientFrame.appendToConsole(new StringBuilder("Please upload My Catalogue on the CDR service for Ruta users").
-								append(" to be able to see your products."), Color.BLACK);
+						clientFrame.appendToConsole(new StringBuilder("Please upload My Catalogue on the CDR service for Ruta users to be able to see your products."), Color.BLACK);
 					}
 					catch(Exception e)
 					{
@@ -711,16 +572,13 @@ public class RutaClient implements RutaNode
 						clientFrame.enablePartyMenuItems();
 					}
 				});
-				clientFrame.appendToConsole(new StringBuilder("Request for the registration of My Party has been sent to the CDR service.").
-						append(" Waiting for a response..."), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder("Request for the registration of My Party has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 			}
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("My Party has not been registered with the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("My Party has not been registered with the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("My Party has not been registered with the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("My Party has not been registered with the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enablePartyMenuItems();
 		}
 		return ret;
@@ -758,10 +616,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("My Party has not been updated with the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("My Party has not been updated with the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("My Party has not been updated with the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("My Party has not been updated with the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enablePartyMenuItems();
 		}
 		return ret;
@@ -799,8 +655,7 @@ public class RutaClient implements RutaNode
 					myParty.deleteCDRRelatedData();
 					clientFrame.appendToConsole(new StringBuilder("My Party has been successfully deregistered from the CDR service."),
 							Color.GREEN);
-					clientFrame.appendToConsole(new StringBuilder("All CDR related data in regard with parties has been deleted from").
-							append(" the local data store."), Color.BLACK);
+					clientFrame.appendToConsole(new StringBuilder("All CDR related data in regard with parties has been deleted from the local data store."), Color.BLACK);
 				}
 				catch (InterruptedException | ExecutionException e)
 				{
@@ -817,15 +672,12 @@ public class RutaClient implements RutaNode
 					clientFrame.enablePartyMenuItems();
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder("Request for deregistration of My Party has been sent to the CDR service.").
-					append(" Waiting for a response..."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Request for deregistration of My Party has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("My Party has not been deregistered from the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("My Party has not been deregistered from the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("My Party has not been deregistered from the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("My Party has not been deregistered from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enablePartyMenuItems();
 		}
 		return ret;
@@ -865,8 +717,7 @@ public class RutaClient implements RutaNode
 				IErrorList errors = UBL21Validator.catalogue().validate(catalogue);
 				if(errors.containsAtLeastOneFailure())
 				{
-					clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed.").
-							append(" UBL validation has failed."), Color.RED);
+					clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. UBL validation has failed."), Color.RED);
 					clientFrame.enableCatalogueMenuItems();
 					logger.error(errors.toString());
 				}
@@ -899,17 +750,14 @@ public class RutaClient implements RutaNode
 			}
 			else
 			{
-				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed.").
-						append(" All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
+				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
 			}
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("My Catalogue has not been deposited into the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deposited into the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("My Catalogue has not been deposited into the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deposited into the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
 		return ret;
@@ -934,8 +782,7 @@ public class RutaClient implements RutaNode
 				IErrorList errors = UBL21Validator.catalogue().validate(catalogue);
 				if(errors.containsAtLeastOneFailure())
 				{
-					clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed.").
-							append(" UBL validation has failed."), Color.RED);
+					clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. UBL validation has failed."), Color.RED);
 					clientFrame.enableCatalogueMenuItems();
 					logger.error(errors.toString());
 				}
@@ -968,17 +815,14 @@ public class RutaClient implements RutaNode
 			}
 			else
 			{
-				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. ").
-						append("All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
+				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
 			}
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("My Catalogue has not been updated by the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been updated by the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("My Catalogue has not been updated by the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been updated by the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
 		return ret;
@@ -1012,8 +856,7 @@ public class RutaClient implements RutaNode
 			catch(WebServiceException e)
 			{
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
-				logger.error("My Catalogue has not been updated by the CDR service!" +
-						" Server is not accessible. Exception is ", e);
+				logger.error("My Catalogue has not been updated by the CDR service! Server is not accessible. Exception is ", e);
 				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been updated by the CDR service!").
 						append(" Server is not accessible. Please try again later."), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
@@ -1022,8 +865,7 @@ public class RutaClient implements RutaNode
 		else
 		{
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. ").
-					append("All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been sent to the CDR service because it is malformed. All catalogue items should have a name and catalogue has to have at least one item."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
 		return ret;
@@ -1105,17 +947,14 @@ public class RutaClient implements RutaNode
 				Server port = getCDRPort();
 				String username = myParty.getCDRUsername();
 				ret = port.deleteCatalogueWithAppResponseAsync(username, catalogueDeletion, null);
-				clientFrame.appendToConsole(new StringBuilder("Request for My Catalogue deletion has been sent to the CDR service.").
-						append(" Waiting for a response..."), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder("Request for My Catalogue deletion has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
 			}
 			catch(WebServiceException e)
 			{
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
-				logger.error("My Catalogue has not been deleted from the CDR service!" +
-						" Server is not accessible. Exception is ", e);
-				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR service!").
-						append(" Server is not accessible. Please try again later."), Color.RED);
+				logger.error("My Catalogue has not been deleted from the CDR service! Server is not accessible. Exception is ", e);
+				clientFrame.appendToConsole(new StringBuilder("My Catalogue has not been deleted from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
 			}
 		}
@@ -1373,8 +1212,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			clientFrame.appendToConsole(new StringBuilder("My Catlogue has not been retrieved from the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("My Catlogue has not been retrieved from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
 		return ret;
@@ -1413,13 +1251,11 @@ public class RutaClient implements RutaNode
 					clientFrame.enableCatalogueMenuItems();
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder("Request for the Catalogue deletion has been sent to the CDR service.").
-					append(" Waiting for a response..."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Request for the Catalogue deletion has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			clientFrame.appendToConsole(new StringBuilder("Catalogue has not been deleted from the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("Catalogue has not been deleted from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
 		return ret;
@@ -1483,10 +1319,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Follow request has not been sent to the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Follow request has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Follow request has not been sent to the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Follow request has not been sent to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -1527,10 +1361,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Unfollow request has not been sent to the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Unfollow request has not been sent to the CDR service!"
-					+ " Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Unfollow request has not been sent to the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Unfollow request has not been sent to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -1685,10 +1517,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Request for new documents has not been sent to the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service!")
-					.append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Request for new documents has not been sent to the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 			clientFrame.enableGetDocumentsMenuItem();
 			sequential.release();
 		}
@@ -1728,9 +1558,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Document Receipt " + ((DocumentReceipt) document).getIDValue() +
-							" has been updated its document status."),
+			clientFrame.appendToConsole(new StringBuilder("Document Receipt of the Party ").append(partyName).
+					append(((DocumentReceipt) document).getIDValue() + " has been updated its document status."),
 					Color.BLACK);
 		}
 		else if(documentClazz == CatalogueType.class)
@@ -1749,7 +1578,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Catalogue of the party ").append(partyName).append(" has been updated."),
+			clientFrame.appendToConsole(new StringBuilder("Catalogue ").append(((CatalogueType) document).getIDValue()).
+					append(" of the party ").append(partyName).append(" has been updated."),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartyType.class)
@@ -1786,7 +1616,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Catalogue of the party ").append(partyName).append(" has been deleted."),
+			clientFrame.appendToConsole(new StringBuilder("Catalogue ").append(((CatalogueType) document).getIDValue()).
+					append(" of the party ").append(partyName).append(" has been deleted."),
 					Color.BLACK);
 		}
 		else if(documentClazz == DeregistrationNotice.class)
@@ -1824,8 +1655,9 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order " + order.getIDValue() + " has been appended to its correspondence."),
+			clientFrame.appendToConsole(new StringBuilder("Order ").append(order.getIDValue()).
+					append(" of the Party ").append(partyName).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderResponseType.class)
@@ -1845,9 +1677,10 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response " + ((OrderResponseType) document).getIDValue() +
-							" has been appended to its correspondence."),
+			clientFrame.appendToConsole(new StringBuilder("Order Response ").
+					append(((OrderResponseType) document).getIDValue()).
+					append(" of the Party ").append(partyName).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderResponseSimpleType.class)
@@ -1867,9 +1700,10 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response Simple " + ((OrderResponseSimpleType) document).getIDValue() +
-							" has been appended to its correspondence."),
+			clientFrame.appendToConsole(new StringBuilder("Order Response Simple ").
+					append(((OrderResponseSimpleType) document).getIDValue()).
+					append(" of the Party ").append(partyName).
+					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderChangeType.class)
@@ -1889,8 +1723,9 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response Simple ").append(((OrderChangeType) document).getIDValue()).
+			clientFrame.appendToConsole(new StringBuilder("Order Change ").
+					append(((OrderChangeType) document).getIDValue()).
+					append(" of the Party ").append(partyName).
 					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
@@ -1911,8 +1746,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Order Response Simple ").append(((OrderCancellationType) document).getIDValue()).
+			clientFrame.appendToConsole(new StringBuilder("Order Cancellation ").
+					append(((OrderCancellationType) document).getIDValue()).append(" of the Party ").append(partyName).
 					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
@@ -1933,8 +1768,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Application Response ").append(((ApplicationResponseType) document).getIDValue()).
+			clientFrame.appendToConsole(new StringBuilder("Application Response ").
+					append(((ApplicationResponseType) document).getIDValue()).append(" of the Party ").append(partyName).
 					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
@@ -1955,8 +1790,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Invoice ").append(((InvoiceType) document).getIDValue()).
+			clientFrame.appendToConsole(new StringBuilder("Invoice ").append(((InvoiceType) document).getIDValue()).
+					append(" of the Party ").append(partyName).
 					append(" has been appended to its correspondence."),
 					Color.BLACK);
 		}
@@ -1978,8 +1813,8 @@ public class RutaClient implements RutaNode
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-					append("'s Business Partnership Request ").append(((PartnershipRequest) document).getIDValue()).
+			clientFrame.appendToConsole(new StringBuilder("Business Partnership Request ").
+					append(((PartnershipRequest) document).getIDValue()).append(" of the Party ").append(partyName).
 					append(" has been received and set in the data model."),
 					Color.BLACK);
 		}
@@ -1990,17 +1825,6 @@ public class RutaClient implements RutaNode
 					append(((PartnershipResolution) document).getIDValue()).
 					append(" has been successfully retrieved."), Color.GREEN);
 			myParty.processDocBoxPartnershipResolution((PartnershipResolution) document);
-			String partyName;
-			try
-			{
-				partyName = InstanceFactory.getPropertyOrNull(
-						((PartnershipResolution) document).getRequesterParty().getPartyName().get(0),
-						PartyNameType::getNameValue);
-			}
-			catch(Exception e)
-			{
-				partyName = "";
-			}
 			clientFrame.appendToConsole(new StringBuilder("Business Partnership Resolution ").
 					append(((PartnershipResolution) document).getIDValue()).
 					append(" has been received and set in the data model."),
@@ -2303,8 +2127,7 @@ public class RutaClient implements RutaNode
 
 						if(results == null || results.isEmpty())
 						{
-							clientFrame.appendToConsole(new StringBuilder("Nothing found at CDR service that conforms to your search").
-									append(" request \"").append(newSearch.getSearchName()).append("\"."), Color.GREEN);
+							clientFrame.appendToConsole(new StringBuilder("Nothing found at CDR service that conforms to your search request \"").append(newSearch.getSearchName()).append("\"."), Color.GREEN);
 							int option = JOptionPane.showConfirmDialog(clientFrame, "Nothing found at CDR service that conforms to your search request\n\"" +
 									newSearch.getSearchName() + "\". Do you want to save this search with no results?", "No search results",
 									JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -2501,14 +2324,12 @@ public class RutaClient implements RutaNode
 				}
 
 			});
-			clientFrame.appendToConsole(new StringBuilder("Request for clearing the CDR service's cache has been sent.").
-					append(" Waiting for a response..."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Request for clearing the CDR service's cache has been sent. Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
 			logger.error("CDR service could not clear its cache! Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("CDR service could not clear its cache! Server is not accessible.").
-					append(" Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("CDR service could not clear its cache! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -2539,8 +2360,7 @@ public class RutaClient implements RutaNode
 		catch(WebServiceException e)
 		{
 			logger.error("Bug could not be reported to the CDR service! Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Bug could not be reported to the CDR service! Server is not accessible.").
-					append(" Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("Bug could not be reported to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -2591,14 +2411,12 @@ public class RutaClient implements RutaNode
 		{
 			Server port = getCDRPort();
 			ret = port.findAllBugReportsAsync(futureResult -> { });
-			clientFrame.appendToConsole(new StringBuilder("Request for the list of all bug reports has been sent to the CDR service.").
-					append(" Waiting for a response..."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
 			logger.error("Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Bug list not be retrived from the CDR service! Server is not accessible.").
-					append(" Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("Bug list not be retrived from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -2616,14 +2434,12 @@ public class RutaClient implements RutaNode
 		{
 			Server port = getCDRPort();
 			ret = port.searchBugReportAsync(criterion, futureResult -> { }); //MMM replace the futureResult with null
-			clientFrame.appendToConsole(new StringBuilder("Request for the list of all bug reports has been sent to the CDR service.").
-					append(" Waiting for a response..."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
 			logger.error("Bug list could not be retrived from the CDR service! Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Bug list could not be retrived from the CDR service! Server is not accessible.").
-					append(" Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("Bug list could not be retrived from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -2645,10 +2461,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Bug report could not be retrived from the CDR service!" +
-				" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Bug report could not be retrived from the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Bug report could not be retrived from the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Bug report could not be retrived from the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		return ret;
 	}
@@ -2670,8 +2484,7 @@ public class RutaClient implements RutaNode
 		catch(WebServiceException e)
 		{
 			logger.error("Comment could not be sent to the CDR service! Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Comment could not be sent to the CDR service! Server is not accessible.").
-					append(" Please try again later."),Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("Comment could not be sent to the CDR service! Server is not accessible. Please try again later."),Color.RED);
 		}
 		return ret;
 	}
@@ -2715,55 +2528,7 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			clientFrame.appendToConsole(new StringBuilder("File not be deposited into the CDR service! Server is not accessible.").
-					append(" Please try again later."), Color.RED);
-		}
-		catch(Exception e)
-		{
-			clientFrame.appendToConsole(new StringBuilder("File could not be deposited into the CDR service! Error is on the client's side."),
-					Color.RED);
-		}
-		return ret;
-	}
-
-	//MMM: should be deleted, or left for testing purposes of sending a file
-	@Deprecated
-	public Future<?> cdrInsertAttachment()
-	{
-		Future<?> ret = null;
-		try
-		{
-			Server port = getCDRPort();
-			File image = new File("test.jpg");
-			/*			long length = image.length();
-			String path = image.getPath();
-	        FileDataSource fileDataSource = new FileDataSource(path);
-	        DataHandler dataHandler = new DataHandler(fileDataSource);*/
-			ReportAttachment att = new ReportAttachment(image, image.getName());
-
-			/*	        BufferedInputStream bin = new BufferedInputStream(dataHandler.getInputStream());
-	        byte buffer[] = new byte[(int)length];
-	        bin.read(buffer);
-	        bin.close();*/
-
-			ret = port.insertAttachmentAsync(att, "test.jpg", futureResult ->
-			{
-				try
-				{
-					futureResult.get();
-					clientFrame.appendToConsole(new StringBuilder("File has been successfully deposited into the CDR service."), Color.GREEN);
-				}
-				catch(Exception e)
-				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("File could not be inserted! "));
-				}
-			});
-			clientFrame.appendToConsole(new StringBuilder("File has been sent to the CDR service. Waiting for a response..."), Color.BLACK);
-		}
-		catch(WebServiceException e)
-		{
-			clientFrame.appendToConsole(new StringBuilder("File not be deposited into the CDR service! Server is not accessible.").
-					append(" Please try again later."), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder("File not be deposited into the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 		catch(Exception e)
 		{
@@ -2853,8 +2618,7 @@ public class RutaClient implements RutaNode
 			final String missingPartyField = myParty.getCoreParty().verifyParty();
 			if(missingPartyField != null)
 			{
-				throw new DetailException(new StringBuilder("Request for the registration of My Party has been discarded because").
-						append(" My Party is missing mandatory field: ").append(missingPartyField).
+				throw new DetailException(new StringBuilder("Request for the registration of My Party has been discarded because My Party is missing mandatory field: ").append(missingPartyField).
 						append(". Please populate My Party data with all mandatory fields and try again.").toString());
 			}
 			else
@@ -2970,8 +2734,7 @@ public class RutaClient implements RutaNode
 				final PartnershipRequest inboundRequest = myParty.getInboundPartnershipRequest(requestedParty);
 				if(inboundRequest != null &&
 						(!inboundRequest.isResolved() || (inboundRequest.isResolved() && inboundRequest.isAccepted())))
-					clientFrame.appendToConsole(new StringBuilder("Business Partnership Request had been already received ").
-							append("from the ").append(requestedName).
+					clientFrame.appendToConsole(new StringBuilder("Business Partnership Request had been already received from the ").append(requestedName).
 							append(" party. Because of the state of the current request another one is not alowed."),
 							Color.BLACK);
 				else
@@ -2990,9 +2753,6 @@ public class RutaClient implements RutaNode
 					else if(following.isPartner())
 						clientFrame.appendToConsole(new StringBuilder("Party ").append(requestedName).
 								append(" is already in the business partner list."), Color.BLACK);
-					//				else
-					//					clientFrame.appendToConsole(new StringBuilder("Party ").append(requestedName).
-					//							append(" is already in the following list."), Color.BLACK);
 				}
 			}
 		}
@@ -3024,14 +2784,12 @@ public class RutaClient implements RutaNode
 				}
 				catch(DetailException e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership request").
-							append(" for the Party ").append(requestedName).
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership request for the Party ").append(requestedName).
 							append(" could not be successfully inserted to the local data store!"));
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Request").
-							append(" for the Party ").append(requestedName).
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Request for the Party ").append(requestedName).
 							append(" could not be successfully deposited into the CDR service!"));
 				}
 			});
@@ -3041,16 +2799,14 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Business partnership request has not been sent to the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Business partnership request has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Business partnership request has not been sent to the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Business partnership request has not been sent to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 	}
 
 	/**
 	 * Sends a {@link PartnershipResponse Partnership Response} to the CDR service.
-	 * @param businessResponse resposne to sent
+	 * @param businessResponse response to sent
 	 * @return {@link Future} representing the CDR response, that enables calling method to wait for its completion
 	 * or {@code null} if no CDR request has been made during method invocation
 	 */
@@ -3065,22 +2821,13 @@ public class RutaClient implements RutaNode
 				try
 				{
 					future.get();
-					//					myParty.includeBusinessPartnershipResponse(businessResponse);
 					clientFrame.appendToConsole( new StringBuilder("Business Partnership Response for the Party ").
-							append(requestedName).append(" has been successfully deposited into the CDR service. ").
-							append("Get New Documents from the CDR to get a Business Partnership Resolution."),
+							append(requestedName).append(" has been successfully deposited into the CDR service. Get New Documents from the CDR to get a Business Partnership Resolution."),
 							Color.GREEN);
 				}
-				//				catch(DetailException e)
-				//				{
-				//					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Response ").
-				//							append(" for the Party ").append(requestedName).
-				//							append(" could not be successfully inserted to the local data store!"));
-				//				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Response").
-							append(" for the Party ").append(requestedName).
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Response for the Party ").append(requestedName).
 							append(" could not be successfully deposited into the CDR service!"));
 				}
 			});
@@ -3090,10 +2837,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Business partnership Resposne has not been sent to the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Business partnership Resposne has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Business partnership Response has not been sent to the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Business partnership Response has not been sent to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 	}
 
@@ -3109,8 +2854,7 @@ public class RutaClient implements RutaNode
 		final String requestedID = InstanceFactory.
 				getPropertyOrNull(requestedParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
 		if(myParty.getPartnershipBreakup(requestedParty) != null)
-			clientFrame.appendToConsole(new StringBuilder("Business Partnership Breakup had been already sent ").
-					append("to the CDR service."), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder("Business Partnership Breakup had been already sent to the CDR service."), Color.BLACK);
 		else
 		{
 			BusinessParty breakupParty = myParty.getFollowingParty(requestedID);
@@ -3146,20 +2890,17 @@ public class RutaClient implements RutaNode
 					future.get();
 					myParty.includePartnershipBreakup(breakup);
 					clientFrame.appendToConsole( new StringBuilder("Business Partnership Breakup with Party ").
-							append(requestedName).append(" has been successfully processed by the CDR service. ").
-							append("Get New Documents from the CDR to get a response document to it."),
+							append(requestedName).append(" has been successfully processed by the CDR service. Get New Documents from the CDR to get a response document to it."),
 							Color.GREEN);
 				}
 				catch(DetailException e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Breakup").
-							append(" with Party ").append(requestedName).
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Breakup with Party ").append(requestedName).
 							append(" could not be successfully inserted in local data store!"));
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Breakup").
-							append(" with Party ").append(requestedName).
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Business Partnership Breakup with Party ").append(requestedName).
 							append(" could not be successfully processed by the CDR service!"));
 				}
 			});
@@ -3169,10 +2910,8 @@ public class RutaClient implements RutaNode
 		}
 		catch(WebServiceException e)
 		{
-			logger.error("Business Partnership Breakup has not been sent to the CDR service!" +
-					" Server is not accessible. Exception is ", e);
-			clientFrame.appendToConsole(new StringBuilder("Business Partnership Breakup has not been sent to the CDR service!").
-					append(" Server is not accessible. Please try again later."), Color.RED);
+			logger.error("Business Partnership Breakup has not been sent to the CDR service! Server is not accessible. Exception is ", e);
+			clientFrame.appendToConsole(new StringBuilder("Business Partnership Breakup has not been sent to the CDR service! Server is not accessible. Please try again later."), Color.RED);
 		}
 	}
 
