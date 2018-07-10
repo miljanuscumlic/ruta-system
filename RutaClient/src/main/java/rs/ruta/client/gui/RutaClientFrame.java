@@ -3,99 +3,53 @@ package rs.ruta.client.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.Nullable;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextPane;
-import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.JAXBException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import oasis.names.specification.ubl.schema.xsd.applicationresponse_21.ApplicationResponseType;
-import oasis.names.specification.ubl.schema.xsd.catalogue_21.CatalogueType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
 import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_21.OrderType;
 import oasis.names.specification.ubl.schema.xsd.ordercancellation_21.OrderCancellationType;
 import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
-import rs.ruta.client.BusinessParty;
-import rs.ruta.client.Catalogue;
 import rs.ruta.client.Item;
 import rs.ruta.client.MyParty;
 import rs.ruta.client.Party;
 import rs.ruta.client.RutaClient;
 import rs.ruta.client.Search;
-import rs.ruta.client.correspondence.BuyingCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
-import rs.ruta.client.datamapper.MyPartyXMLFileMapper;
 import rs.ruta.common.BugReport;
 import rs.ruta.common.BugReportSearchCriterion;
-import rs.ruta.common.PartnershipRequest;
 import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.datamapper.DatabaseException;
 import rs.ruta.common.datamapper.DetailException;
-import rs.ruta.common.Associates;
-import rs.ruta.common.InstanceFactory;
 import rs.ruta.services.RutaException;
 
 public class RutaClientFrame extends JFrame implements ActionListener
@@ -119,7 +73,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private RegisterDialog registerDialog;
 	private SearchDialog searchDialog;
 	private CDRSettingsDialog settingsDialog;
-	private NotifyDialog notifyDialog;
 	private BugReportDialog bugReportDialog;
 	private BugExploreDialog bugExploreDialog;
 	private JFileChooser chooser;
@@ -128,8 +81,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private JMenuItem myCatalogueItem = new JMenuItem("My Products & Services");
 	private JMenuItem newProductItem = new JMenuItem("New Product or Service");
 	private JMenuItem saveDataItem = new JMenuItem("Save");
-	private JMenuItem exportDataItem = new JMenuItem("Export");
-	private JMenuItem importDataItem = new JMenuItem("Import");
 	private JMenuItem localRegisterPartyItem = new JMenuItem("Register My Party");
 	private JMenuItem localDeregisterPartyItem = new JMenuItem("Deregister My Party");
 	private JMenuItem exitItem = new JMenuItem("Exit");
@@ -244,8 +195,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		localDataMenu.add(newProductItem);
 		localDataMenu.addSeparator();
 		localDataMenu.add(saveDataItem);
-//		localDataMenu.add(exportDataItem);
-//		localDataMenu.add(importDataItem);
 		localDataMenu.addSeparator();
 		localDataMenu.add(localRegisterPartyItem);
 		localDataMenu.add(localDeregisterPartyItem);
@@ -314,96 +263,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}).start();
 		});
 
-		importDataItem.addActionListener(event ->
-		{
-			int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-					"By importing the data from an external file all or part of you local data will be overriden!\nDo you want to proceed?",
-					"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if(option == JOptionPane.YES_OPTION)
-			{
-				chooser.setCurrentDirectory(new File("."));
-				chooser.setDialogTitle("Local Data Import");
-				int result = chooser.showOpenDialog(this);
-				if(result == JFileChooser.APPROVE_OPTION)
-				{
-					final String filePath = chooser.getSelectedFile().getPath();
-					//importing data
-					try
-					{
-						final MyPartyXMLFileMapper<MyParty> partyDataMapper =
-								new MyPartyXMLFileMapper<MyParty>(client.getMyParty(), filePath);
-						final ArrayList<MyParty> parties = (ArrayList<MyParty>) partyDataMapper.findAll();
-//						MyParty myParty;
-						if(parties.size() != 0)
-						{
-							//temporary code for importing core Party only
-//							myParty = client.getMyParty();
-							String oldPartyID = myParty.getPartyID();
-							myParty.setCoreParty(parties.get(0).getCoreParty());
-							myParty.setPartyID(oldPartyID);
-							updateTitle(myParty.getPartySimpleName());
-
-							/*							//MMM old code for importing data - should be improved for the release version
-							myParty = parties.get(0);
-							client.setMyParty(myParty);
-							updateTitle(myParty.getPartySimpleName());
-							Search.setSearchNumber(myParty.getSearchNumber());*/
-
-							repaint();
-							appendToConsole(new StringBuilder("Local data have been successfully imported from the file: ").
-									append(filePath), Color.GREEN);
-						}
-					}
-					catch(JAXBException e)
-					{
-						appendToConsole(new StringBuilder("Could not import data from the chosen file. The file is corrupt!"), Color.RED);
-					}
-					catch(Exception e)
-					{
-						appendToConsole(new StringBuilder("There has been an error. ").append(e.getMessage()), Color.RED);
-					}
-				}
-			}
-		});
-
-		exportDataItem.addActionListener(event ->
-		{
-			chooser.setCurrentDirectory(new File("."));
-			chooser.setDialogTitle("Local Data Export");
-			int result = chooser.showSaveDialog(this);
-			if(result == JFileChooser.APPROVE_OPTION)
-			{
-				StringBuilder filePathBuilder = new StringBuilder(chooser.getSelectedFile().getPath());
-				if(!filePathBuilder.toString().endsWith(".xml"))
-					filePathBuilder = filePathBuilder.append(".xml");
-				final String filePath = filePathBuilder.toString();
-				try
-				{
-					//file must be created because MyPartyXMLFileMapper would throw an exception if file doesn't exist
-					final Path path = Paths.get(filePath);
-					if(Files.notExists(path))
-						Files.createFile(path);
-
-					MyPartyXMLFileMapper<MyParty> fileMapper = new MyPartyXMLFileMapper<MyParty>(client.getMyParty(), filePath);
-					fileMapper.insertAll();
-					appendToConsole(new StringBuilder("Local data have been successfully exported to the file: ").append(filePath),
-							Color.GREEN);
-				}
-				catch (JAXBException e)
-				{
-					appendToConsole(new StringBuilder("There has been an error. Local data could not be exported to the file: ").
-							append(filePath), Color.RED);
-				}
-				catch (Exception e)
-				{
-					appendToConsole(new StringBuilder("There has been an error. ").append(e.getMessage()), Color.RED);
-				}
-			}
-		});
-
 		localRegisterPartyItem.addActionListener(event ->
 		{
-//			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithLocalDatastore())
 				appendToConsole(new StringBuilder("My Party is already registered with the local datastore!"), Color.BLUE);
 			else
@@ -427,23 +288,19 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		localDeregisterPartyItem.addActionListener(event ->
 		{
-//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
-				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the local datastore.").
-						append(" If you want to deregister My Party locally you have to deregister it from the CDR service first!")
+				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the local datastore. If you want to deregister My Party locally you have to deregister it from the CDR service first!")
 						, Color.RED);
 			else if(myParty.isRegisteredWithLocalDatastore())
 			{
 				int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-						"By deregistering My Party from the local datastore, all your data in the store will be deleted.\n" +
-								"Do you want to proceed?", "Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						"By deregistering My Party from the local datastore, all your data in the store will be deleted.\nDo you want to proceed?", "Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(option == JOptionPane.YES_OPTION)
 				{
 					disablePartyMenuItems();
 					new Thread(() ->
 					{
-						appendToConsole(new StringBuilder("Request for deregistration of My Party has been sent to the local ").
-								append("datastore. Waiting for a response..."), Color.BLACK);
+						appendToConsole(new StringBuilder("Request for deregistration of My Party has been sent to the local datastore. Waiting for a response..."), Color.BLACK);
 						client.localDeregisterMyParty();
 						updateTitle("");
 						appendToConsole(new StringBuilder("My Party has been successfully deregistered from the local datastore."),
@@ -458,8 +315,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}
 			}
 			else
-				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the local datastore.").
-						append(" My Party is not registered with the local datastore!"), Color.RED);
+				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the local datastore. My Party is not registered with the local datastore!"), Color.RED);
 		});
 
 		exitItem.addActionListener(event ->
@@ -491,8 +347,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}).start();
 			}
 			else
-				appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service.").
-						append(" My Party should be registered with the CDR service first!"), Color.RED);
+				appendToConsole(new StringBuilder("Request for new documents has not been sent to the CDR service. My Party should be registered with the CDR service first!"), Color.RED);
 		});
 
 		cdrSearchItem.addActionListener(event ->
@@ -505,13 +360,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}).start();
 			}
 			else
-				appendToConsole(new StringBuilder("Search request can not be composed. My Party should be registered with the ").
-						append("CDR service first!"), Color.RED);
+				appendToConsole(new StringBuilder("Search request can not be composed. My Party should be registered with the CDR service first!"), Color.RED);
 		});
 
 		cdrRegisterPartyItem.addActionListener(event ->
 		{
-//			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 				appendToConsole(new StringBuilder("My Party is already registered with the CDR service!"), Color.BLUE);
 			else
@@ -522,8 +375,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					boolean cdrRegistration = true;
 					if(client.getInitialUsername() == null || !myParty.isRegisteredWithLocalDatastore())
 					{
-						JOptionPane.showMessageDialog(RutaClientFrame.this, "My Party is not registered with local database.\n"
-								+ "That will be the first step.", "Information", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(RutaClientFrame.this, "My Party is not registered with local database.\nThat will be the first step.", "Information", JOptionPane.INFORMATION_MESSAGE);
 						try
 						{
 							final String username = showLocalSignUpDialog("Local database registration", true);
@@ -546,7 +398,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		cdrDeregisterPartyItem.addActionListener(event ->
 		{
-//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(!myParty.getBusinessPartners().isEmpty())
@@ -557,9 +408,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				else
 				{
 					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-							"By deregistering My Party from the CDR service, all your data in the CDR will be deleted\n" +
-									"and all your followers will be notified about your deregistration.\n" +
-									"Do you want to proceed?",
+							"By deregistering My Party from the CDR service, all your data in the CDR will be deleted\nand all your followers will be notified about your deregistration.\nDo you want to proceed?",
 									"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)
 					{
@@ -572,13 +421,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}
 			}
 			else
-				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the CDR service.").
-						append(" My Party is not registered with the CDR service!"), Color.RED);
+				appendToConsole(new StringBuilder("Deregistration request of My Party has not been sent to the CDR service. My Party is not registered with the CDR service!"), Color.RED);
 		});
 
 		cdrUpdatePartyItem.addActionListener(event ->
 		{
-//			final MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isDirtyMyParty())
@@ -595,13 +442,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					appendToConsole(new StringBuilder("My Party is already updated on the CDR service!"), Color.BLUE);
 			}
 			else
-				appendToConsole(new StringBuilder("Update request of My Party has not been sent to the CDR service.").
-						append(" My Party should be registered with the CDR service first!"), Color.RED);
+				appendToConsole(new StringBuilder("Update request of My Party has not been sent to the CDR service. My Party should be registered with the CDR service first!"), Color.RED);
 		});
 
 		cdrUpdateCatalogueItem.addActionListener(event ->
 		{
-//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isDirtyCatalogue())
@@ -626,20 +471,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					appendToConsole(new StringBuilder("My Catalogue is already updated in the CDR."), Color.BLUE);
 			}
 			else
-				appendToConsole(new StringBuilder("Update request of My Catalogue has not been sent to the CDR service.").
-						append(" My Party should be registered with the CDR service first!"), Color.RED);
+				appendToConsole(new StringBuilder("Update request of My Catalogue has not been sent to the CDR service. My Party should be registered with the CDR service first!"), Color.RED);
 		});
 
 		cdrDeleteCatalogueItem.addActionListener(event ->
 		{
-//			MyParty myParty = client.getMyParty();
 			if(myParty.isRegisteredWithCDR())
 			{
 				if(myParty.isCatalogueInCDR())
 				{
 					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-							"By deleting your catalogue from the CDR all your business partners and followers\n"
-							+ "will be notified about the catalogue deletion. Do you want to proceed?",
+							"By deleting your catalogue from the CDR all your business partners and followers\nwill be notified about the catalogue deletion. Do you want to proceed?",
 							"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)
 					{
@@ -660,12 +502,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					}
 				}
 				else
-					appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service.").
-							append(" My Catalogue is not present in the CDR!"), Color.RED);
+					appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service. My Catalogue is not present in the CDR!"), Color.RED);
 			}
 			else
-				appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service.").
-						append(" My Party should be registered with the CDR service first!"), Color.RED);
+				appendToConsole(new StringBuilder("Deletion request of My Catalogue has not been sent to the CDR service. My Party should be registered with the CDR service first!"), Color.RED);
 		});
 
 		cdrSettingsItem.addActionListener(event ->
@@ -686,9 +526,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		helpMenu.add(aboutItem);
 		JMenuItem updateItem = new JMenuItem("Check for Updates");
 		helpMenu.add(updateItem);
-		JMenuItem notifyItem = new JMenuItem("Send Update Notification");
-//		MMM Comment notifyItem before new version of Ruta Client is released!
-//		helpMenu.add(notifyItem);
 		JMenuItem reportBugItem = new JMenuItem("Report Bug");
 		helpMenu.add(reportBugItem);
 		JMenuItem exploreBugItem = new JMenuItem("Explore Bugs");
@@ -706,21 +543,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			if(updateDialog == null)
 				updateDialog = new UpdateDialog(RutaClientFrame.this, client);
 			updateDialog.setVisible(true);
-		});
-
-		notifyItem.addActionListener(event ->
-		{
-			if(notifyDialog == null)
-				notifyDialog = new NotifyDialog(RutaClientFrame.this);
-			notifyDialog.setVisible(true);
-			if(notifyDialog.isNotifyPressed())
-			{
-				notifyDialog.setNotifyPressed(false);
-				new Thread(()->
-				{
-					client.cdrUpdateNotification(notifyDialog.getVersion());
-				}).start();
-			}
 		});
 
 		reportBugItem.addActionListener(event ->
@@ -958,8 +780,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		properties.put("mainFrame.top", String.valueOf(getY()));
 		properties.put("mainFrame.width", String.valueOf(getWidth()));
 		properties.put("mainFrame.height", String.valueOf(getHeight()));
-
-		//MMM: add column sizes for all the tabs
 	}
 
 	/**
@@ -1179,19 +999,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		else
 			order = null;
 		return order;
-	}
-
-	/**
-	 * Shows {@link PreviewOrderDialog} for displaying an {@link OrderType order}.
-	 * @param title {@code OrderDialog}'s title
-	 * @param order Order to display
-	 */
-	@Deprecated
-	public void showPreviewOrderDialog(String title, OrderType order)
-	{
-		PreviewOrderDialog orderDialog = new PreviewOrderDialog(RutaClientFrame.this, order);
-		orderDialog.setTitle(title);
-		orderDialog.setVisible(true);
 	}
 
 	/**
@@ -1587,19 +1394,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	public void processExceptionAndAppendToConsole(Exception e, StringBuilder msgBuilder)
 	{
-/*		msgBuilder = msgBuilder.append(" ");
-		final Throwable cause = e.getCause();
-		final String errorMessage = e.getMessage();
-		if(errorMessage != null)
-			msgBuilder.append(errorMessage);
-		if(cause != null)
-		{
-			if(cause instanceof RutaException)
-				msgBuilder.append("Server responds: ").append(cause.getMessage()).append(" ").
-				append(((RutaException) cause).getFaultInfo().getDetail());
-			else
-				msgBuilder.append(" Cause is: ").append(trimSOAPFaultMessage(cause.getMessage()));
-		}*/
 		processException(e, msgBuilder, true);
 		appendToConsole(msgBuilder, Color.RED);
 		getLogger().error(msgBuilder.toString() + "\nException is ", e);
@@ -1615,7 +1409,5 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		return message.replaceFirst("(.*?)Client received SOAP Fault from server: (.+) "
 				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$2");
 	}
-
-
 
 }
