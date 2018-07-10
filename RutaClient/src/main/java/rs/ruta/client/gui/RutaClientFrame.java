@@ -693,8 +693,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		helpMenu.add(reportBugItem);
 		JMenuItem exploreBugItem = new JMenuItem("Explore Bugs");
 		helpMenu.add(exploreBugItem);
-		JMenuItem clearCacheItem = new JMenuItem("Clear Service Cache");
-//		helpMenu.add(clearCacheItem);
 
 		aboutItem.addActionListener(event ->
 		{
@@ -744,30 +742,6 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				appendToConsole(new StringBuilder("Bug reports cannot be explored by non-registered party."), Color.RED);
 			}
-		});
-
-		clearCacheItem.addActionListener(event ->
-		{
-			new Thread(()->
-			{
-				Future<?> future = null;
-				long time1 = System.currentTimeMillis();
-				try
-				{
-					future = client.cdrClearCache();
-					future.get();
-					long time2 = System.currentTimeMillis();
-					appendToConsole(new StringBuilder("No exception. time elapsed: " + (time2-time1) / 1000), Color.BLACK);
-				}
-				catch (InterruptedException | ExecutionException e1)
-				{
-					future.cancel(true);
-					long time2 = System.currentTimeMillis();
-					appendToConsole(new StringBuilder(e1.getClass().getSimpleName() +  ". time elapsed: " + (time2-time1) / 1000), Color.BLACK);
-					e1.printStackTrace();
-				}
-
-			}).start();
 		});
 
 		tabbedPane.setSelectedIndex(TAB_PRODUCTS);
