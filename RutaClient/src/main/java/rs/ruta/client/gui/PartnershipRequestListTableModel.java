@@ -18,7 +18,7 @@ public class PartnershipRequestListTableModel extends DefaultTableModel
 	private static final long serialVersionUID = -1366607627023019652L;
 	private static String[] columnNames =
 		{
-				Messages.getString("PartnershipRequestListTableModel.0"), Messages.getString("PartnershipRequestListTableModel.1"), Messages.getString("PartnershipRequestListTableModel.2"), Messages.getString("PartnershipRequestListTableModel.3"), Messages.getString("PartnershipRequestListTableModel.4"), Messages.getString("PartnershipRequestListTableModel.5") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+				Messages.getString("PartnershipRequestListTableModel.0"), Messages.getString("PartnershipRequestListTableModel.1"), Messages.getString("PartnershipRequestListTableModel.2"), Messages.getString("PartnershipRequestListTableModel.3"), Messages.getString("PartnershipRequestListTableModel.4"), Messages.getString("PartnershipRequestListTableModel.5")      
 		};
 
 	private  List<PartnershipRequest> requests = null;
@@ -86,12 +86,12 @@ public class PartnershipRequestListTableModel extends DefaultTableModel
 				return InstanceFactory.getLocalDateTimeAsString(request.getResponsedTime());
 			case 5:
 				if(!request.isResolved())
-					return Messages.getString("PartnershipRequestListTableModel.6"); //$NON-NLS-1$
+					return Messages.getString("PartnershipRequestListTableModel.6"); 
 				else
 					if(request.isAccepted())
-						return Messages.getString("PartnershipRequestListTableModel.7"); //$NON-NLS-1$
+						return Messages.getString("PartnershipRequestListTableModel.7"); 
 					else
-						return Messages.getString("PartnershipRequestListTableModel.8"); //$NON-NLS-1$
+						return Messages.getString("PartnershipRequestListTableModel.8"); 
 			default:
 				return null;
 			}

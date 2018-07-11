@@ -42,16 +42,16 @@ public class BuyerProcessOrderResponseState extends BuyerOrderingProcessState
 						changeState(process, BuyerAcceptOrderState.getInstance());
 				}
 				else
-					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.0")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.0")); 
 			}
 			catch(InterruptedException e)
 			{
 				if(!correspondence.isStopped()) //non-intentional interruption
-					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.1")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.1")); 
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.2")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.2")); 
 	}
 
 	/**

@@ -47,7 +47,7 @@ import rs.ruta.common.datamapper.MapperRegistry;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class Correspondence extends RutaProcess implements Runnable
 {
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
 	protected volatile Thread thread = null;
 	/**
 	 * Signals that correspondence thread is close to be finished. Signaling is by {@link Semaphore#release()}
@@ -172,7 +172,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 		}
 		else // MMM is this necessary?
-			throw new StateActivityException(Messages.getString("Correspondence.1")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.1")); 
 	}
 
 	/**
@@ -653,7 +653,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException e)
 			{
-				logger.error(Messages.getString("Correspondence.2"), e); //$NON-NLS-1$
+				logger.error(Messages.getString("Correspondence.2"), e); 
 			}
 		});
 	}
@@ -670,7 +670,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException e)
 			{
-				logger.error(Messages.getString("Correspondence.3"), e); //$NON-NLS-1$
+				logger.error(Messages.getString("Correspondence.3"), e); 
 			}
 		});
 	}
@@ -724,7 +724,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException e)
 			{
-				throw new StateActivityException(Messages.getString("Correspondence.4"), e); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.4"), e); 
 			}
 		}
 		return document;
@@ -751,7 +751,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException | ClassNotFoundException e)
 			{
-				throw new StateActivityException(Messages.getString("Correspondence.5"), e); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.5"), e); 
 			}
 		}
 		return document;
@@ -810,7 +810,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 				}
 				catch (DetailException | ClassNotFoundException e)
 				{
-					throw new StateActivityException(Messages.getString("Correspondence.6"), e); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.6"), e); 
 				}
 			}
 		}
@@ -845,8 +845,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.7") + ((OrderType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.8")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.7") + ((OrderType) document).getIDValue() + 
+							Messages.getString("Correspondence.8")); 
 				}
 			}
 			else if(document.getClass() == OrderResponseType.class)
@@ -858,8 +858,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.9") + ((OrderResponseType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.10")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.9") + ((OrderResponseType) document).getIDValue() + 
+							Messages.getString("Correspondence.10")); 
 				}
 			}
 			else if(document.getClass() == OrderResponseSimpleType.class)
@@ -871,8 +871,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.11") + ((OrderResponseSimpleType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.12")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.11") + ((OrderResponseSimpleType) document).getIDValue() + 
+							Messages.getString("Correspondence.12")); 
 				}
 			}
 			else if(document.getClass() == OrderChangeType.class)
@@ -884,8 +884,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.13") + ((OrderChangeType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.14")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.13") + ((OrderChangeType) document).getIDValue() + 
+							Messages.getString("Correspondence.14")); 
 				}
 			}
 			else if(document.getClass() == OrderCancellationType.class)
@@ -897,8 +897,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.15") + ((OrderCancellationType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.16")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.15") + ((OrderCancellationType) document).getIDValue() + 
+							Messages.getString("Correspondence.16")); 
 				}
 			}
 			else if(document.getClass() == ApplicationResponseType.class)
@@ -910,8 +910,8 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.17") + ((ApplicationResponseType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.18")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.17") + ((ApplicationResponseType) document).getIDValue() + 
+							Messages.getString("Correspondence.18")); 
 				}
 			}
 			else if(document.getClass() == InvoiceType.class)
@@ -923,17 +923,17 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 					valid = false;
 					if(docReference != null)
 						updateDocumentStatus(docReference, DocumentReference.Status.UBL_INVALID);
-					throw new StateActivityException(Messages.getString("Correspondence.19") + ((InvoiceType) document).getIDValue() + //$NON-NLS-1$
-							Messages.getString("Correspondence.20")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.19") + ((InvoiceType) document).getIDValue() + 
+							Messages.getString("Correspondence.20")); 
 				}
 			}
 			else
-				throw new StateActivityException(Messages.getString("Correspondence.21")); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.21")); 
 			if(valid && docReference != null)
 				updateDocumentStatus(docReference, DocumentReference.Status.UBL_VALID);
 		}
 		else
-			throw new StateActivityException(Messages.getString("Correspondence.22")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.22")); 
 	}
 
 	/**
@@ -955,7 +955,7 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 				storeOrder(process.getOrder(this));
 		}
 		else
-			throw new StateActivityException(Messages.getString("Correspondence.26")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.26")); 
 	}
 
 	/**
@@ -988,15 +988,15 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 
 
 				else
-					throw new StateActivityException(Messages.getString("Correspondence.27")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("Correspondence.27")); 
 			}
 			catch (DetailException e)
 			{
-				throw new StateActivityException(Messages.getString("Correspondence.28"), e); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.28"), e); 
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("Correspondence.29")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.29")); 
 	}
 
 	/**
@@ -1014,11 +1014,11 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException e)
 			{
-				throw new StateActivityException(Messages.getString("Correspondence.30"), e); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.30"), e); 
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("Correspondence.31")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.31")); 
 	}
 
 	/**
@@ -1036,11 +1036,11 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException e)
 			{
-				throw new StateActivityException(Messages.getString("Correspondence.32"), e); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.32"), e); 
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("Correspondence.33")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.33")); 
 	}
 
 	/**
@@ -1058,11 +1058,11 @@ public abstract class Correspondence extends RutaProcess implements Runnable
 			}
 			catch (DetailException e)
 			{
-				throw new StateActivityException(Messages.getString("Correspondence.34"), e); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("Correspondence.34"), e); 
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("Correspondence.35")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("Correspondence.35")); 
 	}
 
 

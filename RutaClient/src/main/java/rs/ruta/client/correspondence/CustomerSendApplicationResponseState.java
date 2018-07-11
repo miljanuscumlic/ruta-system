@@ -32,7 +32,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.0")); //$NON-NLS-1$
+						throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.0")); 
 				}
 			}
 			try
@@ -43,14 +43,14 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 				else if(process.isInvoiceRejected() && !process.isInvoiceAccepted())
 					changeState(process, CustomerReceiveInvoiceState.getInstance());
 				else
-					throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.1")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.1")); 
 				process.setInvoiceAccepted(false);
 				process.setInvoiceRejected(false);
 			}
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CustomerSendApplicationResponseState.2"))); //$NON-NLS-1$
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CustomerSendApplicationResponseState.2"))); 
 //				changeState(process, CustomerSendApplicationResponseState.getInstance());
 			}
 		}
@@ -58,7 +58,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 		{
 			//			correspondence.updateDocumentStatus(correspondence.getLastDocumentReference(OrderType.class),
 			//					DocumentReference.Status.CLIENT_FAILED);
-			throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.3")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.3")); 
 		}
 	}
 }

@@ -95,7 +95,7 @@ public abstract class AbstractApplicationResponseDialog extends JDialog
 
 		//must be static because it's used in getRowCount method which is called from the
 		//constructor of the super class
-		private static String[] rowNames = { Messages.getString("AbstractApplicationResponseDialog.0"), Messages.getString("AbstractApplicationResponseDialog.1"), Messages.getString("AbstractApplicationResponseDialog.2"), Messages.getString("AbstractApplicationResponseDialog.3"), Messages.getString("AbstractApplicationResponseDialog.4")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		private static String[] rowNames = { Messages.getString("AbstractApplicationResponseDialog.0"), Messages.getString("AbstractApplicationResponseDialog.1"), Messages.getString("AbstractApplicationResponseDialog.2"), Messages.getString("AbstractApplicationResponseDialog.3"), Messages.getString("AbstractApplicationResponseDialog.4")};     
 		private static int RESPONSE_CODE_INDEX = 3;
 		private static int NOTE_INDEX = 4;
 		private boolean editable;
@@ -142,7 +142,7 @@ public abstract class AbstractApplicationResponseDialog extends JDialog
 				switch(rowIndex)
 				{
 				case 0:
-					return Messages.getString("AbstractApplicationResponseDialog.5"); //$NON-NLS-1$
+					return Messages.getString("AbstractApplicationResponseDialog.5"); 
 				case 1:
 					return applicationResponse.getIDValue();
 				case 2:

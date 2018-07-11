@@ -33,10 +33,10 @@ import rs.ruta.common.datamapper.DetailException;
 public class ProductListTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
 	private static String[] columnNames =
 		{
-			Messages.getString("ProductListTableModel.1"), Messages.getString("ProductListTableModel.2"), Messages.getString("ProductListTableModel.3"), Messages.getString("ProductListTableModel.4"), Messages.getString("ProductListTableModel.5"), Messages.getString("ProductListTableModel.6"), Messages.getString("ProductListTableModel.7"), Messages.getString("ProductListTableModel.8"), Messages.getString("ProductListTableModel.9"), Messages.getString("ProductListTableModel.10") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+			Messages.getString("ProductListTableModel.1"), Messages.getString("ProductListTableModel.2"), Messages.getString("ProductListTableModel.3"), Messages.getString("ProductListTableModel.4"), Messages.getString("ProductListTableModel.5"), Messages.getString("ProductListTableModel.6"), Messages.getString("ProductListTableModel.7"), Messages.getString("ProductListTableModel.8"), Messages.getString("ProductListTableModel.9"), Messages.getString("ProductListTableModel.10")          
 		};
 
 	private List<Item> items;
@@ -97,7 +97,7 @@ public class ProductListTableModel extends DefaultTableModel
 				return item.getClassifiedTaxCategoryAtIndex(0).getPercentValue().toString();
 			case 9:
 				return item.getKeywordCount() == 0 ? null :
-					item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", ")); //$NON-NLS-1$
+					item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", ")); 
 			default:
 				return null;
 			}
@@ -134,7 +134,7 @@ public class ProductListTableModel extends DefaultTableModel
 				break;
 			case 5:
 				if(item.getSellersItemIdentification() == null)
-					throw new ProductException(Messages.getString("ProductListTableModel.12")); //$NON-NLS-1$
+					throw new ProductException(Messages.getString("ProductListTableModel.12")); 
 				if(item.getSellersItemIdentification().getBarcodeSymbologyID() == null)
 					item.getSellersItemIdentification().setBarcodeSymbologyID(new BarcodeSymbologyIDType());
 				item.getSellersItemIdentification().setBarcodeSymbologyID(value);
@@ -154,7 +154,7 @@ public class ProductListTableModel extends DefaultTableModel
 					item.getPrice().setPriceAmount(new PriceAmountType());
 				// to conform to the UBL, currencyID is mandatory
 				final PriceAmountType priceAmount = item.getPrice().getPriceAmount();
-				priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications //$NON-NLS-1$
+				priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications 
 				priceAmount.setValue(BigDecimal.valueOf(Double.valueOf(value)));
 				item.getPrice().setPriceAmount(priceAmount);
 				break;
@@ -166,7 +166,7 @@ public class ProductListTableModel extends DefaultTableModel
 				break;
 			case 9:
 				final List<KeywordType> keywords =
-				Stream.of(value.trim().split("( )*[,;]+")). //$NON-NLS-1$
+				Stream.of(value.trim().split("( )*[,;]+")). 
 				map(keyword -> new KeywordType(keyword)).
 				collect(Collectors.toList());
 				item.setKeyword(keywords);
@@ -181,15 +181,15 @@ public class ProductListTableModel extends DefaultTableModel
 		{
 			EventQueue.invokeLater(() ->
 			{
-				JOptionPane.showMessageDialog(null, e.getMessage(), Messages.getString("ProductListTableModel.15"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(null, e.getMessage(), Messages.getString("ProductListTableModel.15"), JOptionPane.ERROR_MESSAGE); 
 			});
 		}
 		catch(Exception e)
 		{
 			EventQueue.invokeLater(() ->
 			{
-				JOptionPane.showMessageDialog(null, Messages.getString("ProductListTableModel.16") + e.getMessage() + Messages.getString("ProductListTableModel.17"), //$NON-NLS-1$ //$NON-NLS-2$
-						Messages.getString("ProductListTableModel.18"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(null, Messages.getString("ProductListTableModel.16") + e.getMessage() + Messages.getString("ProductListTableModel.17"),  
+						Messages.getString("ProductListTableModel.18"), JOptionPane.ERROR_MESSAGE); 
 			});
 		}
 	}
@@ -235,7 +235,7 @@ public class ProductListTableModel extends DefaultTableModel
 	{
 		if(newOne != null)
 		{
-			if(newOne instanceof String && newOne.toString().equals("") && oldOne == null) //$NON-NLS-1$
+			if(newOne instanceof String && newOne.toString().equals("") && oldOne == null) 
 				changed = changed || false;
 			changed = changed || !newOne.equals(oldOne);
 		}

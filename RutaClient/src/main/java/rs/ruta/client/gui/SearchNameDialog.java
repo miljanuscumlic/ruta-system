@@ -21,18 +21,18 @@ class SearchNameDialog extends JDialog implements ActionListener, PropertyChange
 	private String typedText = null;
     private JTextField textField;
     private JOptionPane optionPane;
-    private String btnString1 = Messages.getString("SearchNameDialog.0"); //$NON-NLS-1$
-    private String btnString2 = Messages.getString("SearchNameDialog.1"); //$NON-NLS-1$
+    private String btnString1 = Messages.getString("SearchNameDialog.0"); 
+    private String btnString2 = Messages.getString("SearchNameDialog.1"); 
     private String initialText;
 
     public SearchNameDialog(JFrame parent, String initialText)
     {
         super(parent, true);
-        setTitle(Messages.getString("SearchNameDialog.2")); //$NON-NLS-1$
+        setTitle(Messages.getString("SearchNameDialog.2")); 
         this.initialText = initialText;
         textField = new JTextField(initialText);
 
-        String msgString1 = Messages.getString("SearchNameDialog.3"); //$NON-NLS-1$
+        String msgString1 = Messages.getString("SearchNameDialog.3"); 
         Object[] components = { msgString1, textField };
         Object[] options = { btnString1, btnString2 };
 
@@ -93,7 +93,7 @@ class SearchNameDialog extends JDialog implements ActionListener, PropertyChange
             if (btnString1.equals(value))
             {
                 typedText = textField.getText().trim();
-                if (!"".equals(typedText)) //$NON-NLS-1$
+                if (!"".equals(typedText)) 
                 {
                 	if(initialText.equals(typedText))
                 		typedText = null;
@@ -102,7 +102,7 @@ class SearchNameDialog extends JDialog implements ActionListener, PropertyChange
                 else //text was invalid
                 {
                     textField.selectAll();
-                    JOptionPane.showMessageDialog(this, Messages.getString("SearchNameDialog.5"), Messages.getString("SearchNameDialog.6"), //$NON-NLS-1$ //$NON-NLS-2$
+                    JOptionPane.showMessageDialog(this, Messages.getString("SearchNameDialog.5"), Messages.getString("SearchNameDialog.6"),  
                             JOptionPane.ERROR_MESSAGE);
                     typedText = null;
                     textField.requestFocusInWindow();
@@ -128,6 +128,6 @@ class SearchNameDialog extends JDialog implements ActionListener, PropertyChange
 
     public static void main(String... args)
     {
-        EventQueue.invokeLater(() -> new SearchNameDialog(null, "").setVisible(true)); //$NON-NLS-1$
+        EventQueue.invokeLater(() -> new SearchNameDialog(null, "").setVisible(true)); 
     }
 }

@@ -83,7 +83,7 @@ public abstract class AbstractOrderResponseDialog extends AbstractOrderDialog
 	private static class HeaderTableModel extends DefaultTableModel
 	{
 		private static final long serialVersionUID = -3976099918438412530L;
-		private static final String [] rowNames = { Messages.getString("AbstractOrderResponseDialog.0"), Messages.getString("AbstractOrderResponseDialog.1"), Messages.getString("AbstractOrderResponseDialog.2"), Messages.getString("AbstractOrderResponseDialog.3") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		private static final String [] rowNames = { Messages.getString("AbstractOrderResponseDialog.0"), Messages.getString("AbstractOrderResponseDialog.1"), Messages.getString("AbstractOrderResponseDialog.2"), Messages.getString("AbstractOrderResponseDialog.3") };    
 		private boolean editable;
 
 		public HeaderTableModel(boolean editable)
@@ -119,7 +119,7 @@ public abstract class AbstractOrderResponseDialog extends AbstractOrderDialog
 				switch(row)
 				{
 				case 0 :
-					return Messages.getString("AbstractOrderResponseDialog.4"); //$NON-NLS-1$
+					return Messages.getString("AbstractOrderResponseDialog.4"); 
 				case 1:
 					return orderResponse.getIDValue();
 				case 2:

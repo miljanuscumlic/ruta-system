@@ -15,7 +15,7 @@ public class PartyTableDateVerifier extends InputVerifier
 
 		try //check the validity of the input string of a date
 		{
-			if(!"".equals(text.trim())) //empty string is OK //$NON-NLS-1$
+			if(!"".equals(text.trim())) //empty string is OK 
 			{
 				final DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
 				format.setLenient(false);
@@ -35,7 +35,7 @@ public class PartyTableDateVerifier extends InputVerifier
 		boolean valid = verify(input);
 		if (!valid)
 			EventQueue.invokeLater(() ->
-			JOptionPane.showMessageDialog(null, Messages.getString("PartyTableDateVerifier.1"))); //$NON-NLS-1$
+			JOptionPane.showMessageDialog(null, Messages.getString("PartyTableDateVerifier.1"))); 
 		return valid;
 	}
 }

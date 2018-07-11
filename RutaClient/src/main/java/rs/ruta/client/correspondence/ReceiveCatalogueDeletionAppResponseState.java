@@ -34,7 +34,7 @@ public class ReceiveCatalogueDeletionAppResponseState extends DeleteCataloguePro
 		}
 		catch(Exception e)
 		{
-			throw new StateActivityException(Messages.getString("ReceiveCatalogueDeletionAppResponseState.0"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("ReceiveCatalogueDeletionAppResponseState.0"), e); 
 		}
 	}
 

@@ -32,10 +32,10 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 	{
 		super(owner, invoice.getInvoiceLine(), editable);
 		this.invoice = invoice;
-		final JButton sendButton = new JButton(Messages.getString("InvoiceDialog.0")); //$NON-NLS-1$
-		final JButton resendButton = new JButton(Messages.getString("InvoiceDialog.1")); //$NON-NLS-1$
-		final JButton discardButton = new JButton(Messages.getString("InvoiceDialog.2")); //$NON-NLS-1$
-		final JButton closeButton = new JButton(Messages.getString("InvoiceDialog.3")); //$NON-NLS-1$
+		final JButton sendButton = new JButton(Messages.getString("InvoiceDialog.0")); 
+		final JButton resendButton = new JButton(Messages.getString("InvoiceDialog.1")); 
+		final JButton discardButton = new JButton(Messages.getString("InvoiceDialog.2")); 
+		final JButton closeButton = new JButton(Messages.getString("InvoiceDialog.3")); 
 		sendPressed = false;
 
 		sendButton.addActionListener(event ->
@@ -60,7 +60,7 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder(Messages.getString("InvoiceDialog.4")), Color.RED); //$NON-NLS-1$
+					owner.appendToConsole(new StringBuilder(Messages.getString("InvoiceDialog.4")), Color.RED); 
 				}
 			}).start();
 			setVisible(false);

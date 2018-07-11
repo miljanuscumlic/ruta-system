@@ -117,7 +117,7 @@ import rs.ruta.common.datamapper.MapperRegistry;
 @XmlSeeAlso({CatalogueType.class}) //this solves the issue JAXB context not seeing the CatatalogueType
 public class MyParty extends BusinessParty
 {
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
 	private List<Item> products;
 	private List<Item> archivedProducts;
 	/**
@@ -492,7 +492,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{	//OK if document does not exist
-				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) //$NON-NLS-1$
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) 
 					throw e;
 			}
 		}
@@ -558,10 +558,10 @@ public class MyParty extends BusinessParty
 	public void setProductID(int index, String value) throws ProductException
 	{
 		value = value.trim();
-		if("".equals(value)) //$NON-NLS-1$
-			throw new ProductException(Messages.getString("MyParty.3")); //$NON-NLS-1$
+		if("".equals(value)) 
+			throw new ProductException(Messages.getString("MyParty.3")); 
 		if(!isUniqueProductID(value))
-			throw new ProductException(Messages.getString("MyParty.4")); //$NON-NLS-1$
+			throw new ProductException(Messages.getString("MyParty.4")); 
 		final Item item = products.get(index);
 		if(item.getSellersItemIdentification() == null)
 			item.setSellersItemIdentification(new ItemIdentificationType());
@@ -588,7 +588,7 @@ public class MyParty extends BusinessParty
 		final Item item = products.get(index);
 		if(item.getSellersItemIdentification() == null)
 			//item.setSellersItemIdentification(new ItemIdentificationType());
-			throw new ProductException(Messages.getString("MyParty.5")); //$NON-NLS-1$
+			throw new ProductException(Messages.getString("MyParty.5")); 
 		if(item.getSellersItemIdentification().getBarcodeSymbologyID() == null)
 			item.getSellersItemIdentification().setBarcodeSymbologyID(new BarcodeSymbologyIDType());
 		if(hasCellValueChanged(item.getSellersItemIdentification().getBarcodeSymbologyIDValue(), value))
@@ -662,7 +662,7 @@ public class MyParty extends BusinessParty
 			{
 				// to conform to the UBL, currencyID is mandatory
 				PriceAmountType priceAmount = new PriceAmountType(value);
-				priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications //$NON-NLS-1$
+				priceAmount.setCurrencyID("RSD"); // MMM: currencyID should be pooled from somewhere in the UBL definitions - check specifications 
 				item.getPrice().setPriceAmount(priceAmount);
 			}
 			else
@@ -709,7 +709,7 @@ public class MyParty extends BusinessParty
 	{
 		final Item item = products.get(index);
 		return item.getKeywordCount() == 0 ? null :
-			item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", ")); //$NON-NLS-1$
+			item.getKeyword().stream().map(keyword -> keyword.getValue()).collect(Collectors.joining(", ")); 
 	}
 
 	public List<KeywordType> getProductKeywords(final int index)
@@ -729,7 +729,7 @@ public class MyParty extends BusinessParty
 		value = value.trim();
 		final Item item = products.get(index);
 		List<KeywordType> keywords =
-				Stream.of(value.split("( )*[,;]+")).map(keyword -> new KeywordType(keyword)).collect(Collectors.toList()); //$NON-NLS-1$
+				Stream.of(value.split("( )*[,;]+")).map(keyword -> new KeywordType(keyword)).collect(Collectors.toList()); 
 		item.setKeyword(keywords);
 	}
 
@@ -764,7 +764,7 @@ public class MyParty extends BusinessParty
 		}
 		catch(Exception e) // if for some reason ID could not be accessed e.g. when it is not set - should not happen
 		{
-			throw new ProductException(Messages.getString("MyParty.9")); //$NON-NLS-1$
+			throw new ProductException(Messages.getString("MyParty.9")); 
 		}
 	}
 
@@ -1041,7 +1041,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{	//OK if document does not exist
-				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) //$NON-NLS-1$
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) 
 					throw e;
 			}
 		}
@@ -1090,7 +1090,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -1151,7 +1151,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{	//OK if document does not exist
-				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) //$NON-NLS-1$
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) 
 					throw e;
 			}
 		}
@@ -1199,7 +1199,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -1255,7 +1255,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{	//OK if document does not exist
-				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) //$NON-NLS-1$
+				if(e.getMessage() == null || !e.getMessage().contains("Document does not exist!")) 
 					throw e;
 			}
 		}
@@ -1335,7 +1335,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -1374,7 +1374,7 @@ public class MyParty extends BusinessParty
 				notifyListeners(new BusinessPartyEvent(party, BusinessPartyEvent.ARCHIVED_PARTY_REMOVED));
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.16")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.16")); 
 		}
 	}
 
@@ -1843,7 +1843,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -1965,7 +1965,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -2143,7 +2143,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -2214,7 +2214,7 @@ public class MyParty extends BusinessParty
 			{
 				final ItemType item = (ItemType) prod.clone();
 				final CatalogueLineType catLine = new CatalogueLineType();
-				catLine.setID(catID + "-" + lineCnt++); //$NON-NLS-1$
+				catLine.setID(catID + "-" + lineCnt++); 
 				catLine.setItem(item);
 				final List<ItemLocationQuantityType> itemLocationList = catLine.getRequiredItemLocationQuantity();
 				final ItemLocationQuantityType itemLocation = new ItemLocationQuantityType();
@@ -2326,7 +2326,7 @@ public class MyParty extends BusinessParty
 		if(correspondentCatalogue == null)
 			return null;
 		final OrderType order = convertToOrder(correspondentCatalogue, getCoreParty());
-		return client.getClientFrame().showOrderDialog(Messages.getString("MyParty.21"), order, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showOrderDialog(Messages.getString("MyParty.21"), order, true, null); 
 	}
 
 	/**
@@ -2450,7 +2450,7 @@ public class MyParty extends BusinessParty
 		/*		final OrderType newOrder = convertToOrder(catalogue, order);
 		final OrderResponseType orderResponse = convertToOrderResponse(newOrder);*/
 		final OrderResponseType orderResponse = convertToOrderResponse(catalogue, order);
-		return client.getClientFrame().showOrderResponseDialog(Messages.getString("MyParty.22"), orderResponse, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showOrderResponseDialog(Messages.getString("MyParty.22"), orderResponse, true, null); 
 	}
 
 	/**
@@ -2590,7 +2590,7 @@ public class MyParty extends BusinessParty
 		if(obsoleteCatalogue)
 		{
 			final RejectionNoteType rejectionNote =
-					new RejectionNoteType(Messages.getString("MyParty.23")); //$NON-NLS-1$
+					new RejectionNoteType(Messages.getString("MyParty.23")); 
 			orderResponseSimple.getRejectionNote().add(rejectionNote);
 		}
 		return orderResponseSimple;
@@ -2639,7 +2639,7 @@ public class MyParty extends BusinessParty
 	private OrderChangeType createOrderChange(Catalogue catalogue, OrderResponseType orderResponse, int orderChangeSequenceNumber)
 	{
 		final OrderChangeType orderChange = convertToOrderChange(catalogue, orderResponse, orderChangeSequenceNumber);
-		return client.getClientFrame().showOrderChangeDialog(Messages.getString("MyParty.24"), orderChange, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showOrderChangeDialog(Messages.getString("MyParty.24"), orderChange, true, null); 
 	}
 
 	/**
@@ -2727,7 +2727,7 @@ public class MyParty extends BusinessParty
 	private OrderCancellationType createOrderCancellation(OrderResponseType orderResponse)
 	{
 		final OrderCancellationType orderCancellation = convertToOrderCancellation(orderResponse);
-		return client.getClientFrame().showOrderCancellationDialog(Messages.getString("MyParty.25"), orderCancellation, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showOrderCancellationDialog(Messages.getString("MyParty.25"), orderCancellation, true, null); 
 	}
 
 	/**
@@ -2780,7 +2780,7 @@ public class MyParty extends BusinessParty
 	private OrderCancellationType createOrderCancellation(OrderResponseSimpleType orderResponseSimple)
 	{
 		final OrderCancellationType orderCancellation = convertToOrderCancellation(orderResponseSimple);
-		return client.getClientFrame().showOrderCancellationDialog(Messages.getString("MyParty.26"), orderCancellation, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showOrderCancellationDialog(Messages.getString("MyParty.26"), orderCancellation, true, null); 
 	}
 
 	/**
@@ -2876,7 +2876,7 @@ public class MyParty extends BusinessParty
 		invoice.setIssueDate(now);
 		invoice.setIssueTime(now);
 		invoice.setUUID(UUID.randomUUID().toString());
-		invoice = client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.27"), invoice, true, null); //$NON-NLS-1$
+		invoice = client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.27"), invoice, true, null); 
 		if(invoice != null)
 			valid = InstanceFactory.validateUBLDocument(invoice, doc -> UBL21Validator.invoice().validate(doc));
 		//		else
@@ -2892,7 +2892,7 @@ public class MyParty extends BusinessParty
 	private InvoiceType createInvoice(OrderType order)
 	{
 		final InvoiceType invoice = convertToInvoice(order);
-		return client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.28"), invoice, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.28"), invoice, true, null); 
 	}
 
 	/**
@@ -2903,7 +2903,7 @@ public class MyParty extends BusinessParty
 	private InvoiceType createInvoice(OrderChangeType orderChange)
 	{
 		final InvoiceType invoice = convertToInvoice(orderChange);
-		return client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.29"), invoice, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.29"), invoice, true, null); 
 	}
 
 	/**
@@ -2914,7 +2914,7 @@ public class MyParty extends BusinessParty
 	private InvoiceType createInvoice(OrderResponseType orderResponse)
 	{
 		final InvoiceType invoice = convertToInvoice(orderResponse);
-		return client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.30"), invoice, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showInvoiceDialog(Messages.getString("MyParty.30"), invoice, true, null); 
 	}
 
 	/**
@@ -3076,7 +3076,7 @@ public class MyParty extends BusinessParty
 	private ApplicationResponseType createApplicationResponse(Object document, String responseCode)
 	{
 		final ApplicationResponseType appResponse = InstanceFactory.produceApplicationResponse(document, responseCode, null);
-		return client.getClientFrame().showApplicationResponseDialog(Messages.getString("MyParty.31"), appResponse, true, null); //$NON-NLS-1$
+		return client.getClientFrame().showApplicationResponseDialog(Messages.getString("MyParty.31"), appResponse, true, null); 
 	}
 
 	/**
@@ -3101,7 +3101,7 @@ public class MyParty extends BusinessParty
 	 */
 	private String getCatalogueUUID()
 	{
-		return getCoreParty().getPartyID()+ "CAT" + getCatalogueID(); //$NON-NLS-1$
+		return getCoreParty().getPartyID()+ "CAT" + getCatalogueID(); 
 	}
 
 	/**
@@ -3110,7 +3110,7 @@ public class MyParty extends BusinessParty
 	 */
 	private String getCatalogueDeletionUUID()
 	{
-		return getCoreParty().getPartyID()+ "CDL" + getCatalogueDeletionID(); //$NON-NLS-1$
+		return getCoreParty().getPartyID()+ "CDL" + getCatalogueDeletionID(); 
 	}
 
 	/**
@@ -3125,7 +3125,7 @@ public class MyParty extends BusinessParty
 		for(Item item : myProducts)
 		{
 			final String productName = item.getNameValue();
-			if (productName == null || productName.equals("")) //$NON-NLS-1$
+			if (productName == null || productName.equals("")) 
 			{
 				ok = false;
 				break;
@@ -3160,7 +3160,7 @@ public class MyParty extends BusinessParty
 		boolean changed = false;
 		if(newOne != null)
 		{
-			if(newOne instanceof String && newOne.toString().equals("") && oldOne == null) //$NON-NLS-1$
+			if(newOne instanceof String && newOne.toString().equals("") && oldOne == null) 
 				changed = false;
 			changed = !newOne.equals(oldOne);
 		}
@@ -3234,7 +3234,7 @@ public class MyParty extends BusinessParty
 	 */
 	public String getCDRSecretKey()
 	{
-		return "".equals(cdrUser.getSecretKey()) ? null : cdrUser.getSecretKey(); //$NON-NLS-1$
+		return "".equals(cdrUser.getSecretKey()) ? null : cdrUser.getSecretKey(); 
 	}
 
 	/**
@@ -3252,7 +3252,7 @@ public class MyParty extends BusinessParty
 	 */
 	public String getLocalSecretKey()
 	{
-		return "".equals(localUser.getSecretKey()) ? null : localUser.getSecretKey(); //$NON-NLS-1$
+		return "".equals(localUser.getSecretKey()) ? null : localUser.getSecretKey(); 
 	}
 
 	/**
@@ -3415,8 +3415,8 @@ public class MyParty extends BusinessParty
 		}
 		catch (ProductException e) //should not happen
 		{
-			logger.error(Messages.getString("MyParty.38"), e); //$NON-NLS-1$
-			throw new DetailException(Messages.getString("MyParty.39")); //$NON-NLS-1$
+			logger.error(Messages.getString("MyParty.38"), e); 
+			throw new DetailException(Messages.getString("MyParty.39")); 
 		}
 	}
 
@@ -3496,7 +3496,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -3527,7 +3527,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -3595,7 +3595,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -3622,7 +3622,7 @@ public class MyParty extends BusinessParty
 			}
 			catch(DatabaseException e)
 			{
-				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e //$NON-NLS-1$
+				if(! "Document does not exist!".equals(e.getMessage())) //OK if document does not exist, otherwise throw e 
 					throw e;
 			}
 		}
@@ -3680,7 +3680,7 @@ public class MyParty extends BusinessParty
 				{
 					catalogueCorrespondence.addDocumentReference(catalogue, DocumentReference.Status.UBL_INVALID);
 					catalogueCorrespondence.setRecentlyUpdated(true);
-					throw new DetailException(Messages.getString("MyParty.44")); //$NON-NLS-1$
+					throw new DetailException(Messages.getString("MyParty.44")); 
 				}
 			}
 		}
@@ -3698,8 +3698,8 @@ public class MyParty extends BusinessParty
 				}
 		}
 		if(!success)
-			throw new DetailException(Messages.getString("MyParty.45") + provider.getPartyNameAtIndex(0).getNameValue() + //$NON-NLS-1$
-					Messages.getString("MyParty.46")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.45") + provider.getPartyNameAtIndex(0).getNameValue() + 
+					Messages.getString("MyParty.46")); 
 	}
 
 	/**
@@ -3764,7 +3764,7 @@ public class MyParty extends BusinessParty
 				{
 					catalogueCorrespondence.addDocumentReference(catalogueDeletion, DocumentReference.Status.UBL_INVALID);
 					catalogueCorrespondence.setRecentlyUpdated(true);
-					throw new DetailException(Messages.getString("MyParty.47")); //$NON-NLS-1$
+					throw new DetailException(Messages.getString("MyParty.47")); 
 				}
 			}
 		}
@@ -3819,13 +3819,13 @@ public class MyParty extends BusinessParty
 		final String orderUUID = invoice.getOrderReference().getDocumentReference().getUUIDValue();
 		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.48")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.48")); 
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
 			final Correspondence existingCorr = findCorrespondence(correspondentID, invoice.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				throw new DetailException(Messages.getString("MyParty.49") + invoice.getIDValue() + Messages.getString("MyParty.50")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new DetailException(Messages.getString("MyParty.49") + invoice.getIDValue() + Messages.getString("MyParty.50"));  
 			}
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof CustomerBillingProcess &&
@@ -3845,8 +3845,8 @@ public class MyParty extends BusinessParty
 				corr.proceed();
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.51") + invoice.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.52")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.51") + invoice.getIDValue() + 
+						Messages.getString("MyParty.52")); 
 		}
 	}
 
@@ -3865,14 +3865,14 @@ public class MyParty extends BusinessParty
 		}
 		catch(Exception e)
 		{
-			throw new DetailException(Messages.getString("MyParty.53"), e); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.53"), e); 
 		}
 		final BusinessParty correspondentParty = getBusinessPartner(correspondentID);
 		if(correspondentParty == null)
-			throw new DetailException(Messages.getString("MyParty.54")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.54")); 
 		final Correspondence existingCorr = findActiveCorrespondence(correspondentID, order.getUUIDValue());
 		if(existingCorr != null)
-			throw new DetailException(Messages.getString("MyParty.55") + order.getIDValue() + Messages.getString("MyParty.56")); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new DetailException(Messages.getString("MyParty.55") + order.getIDValue() + Messages.getString("MyParty.56"));  
 		final BuyingCorrespondence newCorr = BuyingCorrespondence.newInstance(client, correspondentParty, false);
 		addBuyingCorrespondence(newCorr);
 		newCorr.storeDocument(order);
@@ -3895,13 +3895,13 @@ public class MyParty extends BusinessParty
 		final String orderUUID = orderResponse.getOrderReferenceAtIndex(0).getDocumentReference().getUUIDValue();
 		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.57")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.57")); 
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderResponse.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				throw new DetailException(Messages.getString("MyParty.58") + orderResponse.getIDValue() + Messages.getString("MyParty.59")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new DetailException(Messages.getString("MyParty.58") + orderResponse.getIDValue() + Messages.getString("MyParty.59"));  
 			}
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof BuyerOrderingProcess &&
@@ -3921,8 +3921,8 @@ public class MyParty extends BusinessParty
 				corr.proceed();
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.60") + orderResponse.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.61")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.60") + orderResponse.getIDValue() + 
+						Messages.getString("MyParty.61")); 
 		}
 	}
 
@@ -3939,7 +3939,7 @@ public class MyParty extends BusinessParty
 		final String orderUUID = orderResponseSimple.getOrderReference().getDocumentReference().getUUIDValue();
 		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.62")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.62")); 
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
 			//correspondence that Order Response Simple belongs to if already had been received
@@ -3954,8 +3954,8 @@ public class MyParty extends BusinessParty
 				//				catch(Exception e) {}
 				//				if(getPartySimpleName().equals(lastDocumentPartyName))
 				//					corr.updateOutOfSyncStatus(true);
-				throw new DetailException(Messages.getString("MyParty.63") + orderResponseSimple.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.64")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.63") + orderResponseSimple.getIDValue() + 
+						Messages.getString("MyParty.64")); 
 			}
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof BuyerOrderingProcess &&
@@ -3975,8 +3975,8 @@ public class MyParty extends BusinessParty
 				corr.proceed();
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.65") + orderResponseSimple.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.66")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.65") + orderResponseSimple.getIDValue() + 
+						Messages.getString("MyParty.66")); 
 		}
 	}
 
@@ -3993,13 +3993,13 @@ public class MyParty extends BusinessParty
 		final String orderUUID = orderChange.getOrderReference().getDocumentReference().getUUIDValue();
 		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.67")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.67")); 
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderChange.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				throw new DetailException(Messages.getString("MyParty.68") + orderChange.getIDValue() + Messages.getString("MyParty.69")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new DetailException(Messages.getString("MyParty.68") + orderChange.getIDValue() + Messages.getString("MyParty.69"));  
 			}
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
@@ -4019,8 +4019,8 @@ public class MyParty extends BusinessParty
 				corr.proceed();
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.70") + orderChange.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.71")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.70") + orderChange.getIDValue() + 
+						Messages.getString("MyParty.71")); 
 		}
 	}
 
@@ -4037,14 +4037,14 @@ public class MyParty extends BusinessParty
 		final String orderUUID = orderCancellation.getOrderReferenceAtIndex(0).getDocumentReference().getUUIDValue();
 		final Correspondence corr = findActiveCorrespondence(correspondentID, orderUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.72")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.72")); 
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
 			final Correspondence existingCorr = findCorrespondence(correspondentID, orderCancellation.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				throw new DetailException(Messages.getString("MyParty.73") + orderCancellation.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.74")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.73") + orderCancellation.getIDValue() + 
+						Messages.getString("MyParty.74")); 
 			}
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
@@ -4064,8 +4064,8 @@ public class MyParty extends BusinessParty
 				corr.proceed();
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.75") + orderCancellation.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.76")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.75") + orderCancellation.getIDValue() + 
+						Messages.getString("MyParty.76")); 
 		}
 	}
 
@@ -4082,14 +4082,14 @@ public class MyParty extends BusinessParty
 		final String docUUID = applicationResponse.getDocumentResponseAtIndex(0).getDocumentReferenceAtIndex(0).getUUIDValue();
 		final Correspondence corr = findActiveCorrespondence(correspondentID, docUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.77")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.77")); 
 		synchronized(corr) //defence against ill arrival of multiple documents of the same type at the same time for a particular correspondence
 		{
 			final Correspondence existingCorr = findCorrespondence(correspondentID, applicationResponse.getUUIDValue());
 			if(existingCorr != null && existingCorr.getIdValue().equals(corr.getIdValue()))
 			{
-				throw new DetailException(Messages.getString("MyParty.78") + applicationResponse.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.79")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.78") + applicationResponse.getIDValue() + 
+						Messages.getString("MyParty.79")); 
 			}
 			final RutaProcess process =  (RutaProcess) corr.getState();
 			if(process instanceof SellerOrderingProcess &&
@@ -4125,8 +4125,8 @@ public class MyParty extends BusinessParty
 				corr.proceed();
 			}
 			else
-				throw new DetailException(Messages.getString("MyParty.80") + applicationResponse.getIDValue() + //$NON-NLS-1$
-						Messages.getString("MyParty.81")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.80") + applicationResponse.getIDValue() + 
+						Messages.getString("MyParty.81")); 
 		}
 	}
 
@@ -4142,7 +4142,7 @@ public class MyParty extends BusinessParty
 		final String docUUID = documentReceipt.getDocumentReference().getUUIDValue();
 		final Correspondence corr = findCorrespondence(correspondentID, docUUID);
 		if(corr == null)
-			throw new DetailException(Messages.getString("MyParty.82")); //$NON-NLS-1$
+			throw new DetailException(Messages.getString("MyParty.82")); 
 		synchronized(corr)
 		{
 			final String documentUUID = documentReceipt.getDocumentReference().getUUIDValue();
@@ -4159,7 +4159,7 @@ public class MyParty extends BusinessParty
 			else
 			{
 				corr.updateOutOfSyncStatus(true);
-				throw new DetailException(Messages.getString("MyParty.83")); //$NON-NLS-1$
+				throw new DetailException(Messages.getString("MyParty.83")); 
 			}
 		}
 	}
@@ -4226,7 +4226,7 @@ public class MyParty extends BusinessParty
 					}
 				}
 				else
-					throw new DetailException(Messages.getString("MyParty.84")); //$NON-NLS-1$
+					throw new DetailException(Messages.getString("MyParty.84")); 
 			}
 		}
 	}
@@ -4249,7 +4249,7 @@ public class MyParty extends BusinessParty
 		if(partnerBreaker != null)
 			unfollowBusinessPartner(partnerBreaker);
 		else
-			throw new DetailException(Messages.getString("MyParty.85") + correspondentID + Messages.getString("MyParty.86")); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new DetailException(Messages.getString("MyParty.85") + correspondentID + Messages.getString("MyParty.86"));  
 		excludePartnershipBreakup(getPartnershipBreakup(correspondentParty));
 		excludePartnershipRequest(correspondentParty);
 	}

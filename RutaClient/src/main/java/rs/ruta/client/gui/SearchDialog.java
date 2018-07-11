@@ -90,8 +90,8 @@ public class SearchDialog extends JDialog
 		pCityField.setEditable(editable);
 		pCountryField = new JTextField(width);
 		pCountryField.setEditable(editable);
-		pAll = new JRadioButton(Messages.getString("SearchDialog.0"), true); //$NON-NLS-1$
-		pAny = new JRadioButton(Messages.getString("SearchDialog.1"), false); //$NON-NLS-1$
+		pAll = new JRadioButton(Messages.getString("SearchDialog.0"), true); 
+		pAny = new JRadioButton(Messages.getString("SearchDialog.1"), false); 
 		pAll.setEnabled(editable);
 		pAny.setEnabled(editable);
 
@@ -105,8 +105,8 @@ public class SearchDialog extends JDialog
 		iCommCodeField.setEditable(editable);
 		iKeywordField = new JTextField(width);
 		iKeywordField.setEditable(editable);
-		iAll = new JRadioButton(Messages.getString("SearchDialog.2"), true); //$NON-NLS-1$
-		iAny = new JRadioButton(Messages.getString("SearchDialog.3"), false); //$NON-NLS-1$
+		iAll = new JRadioButton(Messages.getString("SearchDialog.2"), true); 
+		iAny = new JRadioButton(Messages.getString("SearchDialog.3"), false); 
 		iAll.setEnabled(editable);
 		iAny.setEnabled(editable);
 
@@ -149,9 +149,9 @@ public class SearchDialog extends JDialog
 		add(createItemPanel(), BorderLayout.CENTER);
 
 		JPanel buttonPanel = new JPanel();
-		JButton searchButton = new JButton(Messages.getString("SearchDialog.4")); //$NON-NLS-1$
-		JButton cancelButton = new JButton(Messages.getString("SearchDialog.5")); //$NON-NLS-1$
-		JButton deriveButton = new JButton(Messages.getString("SearchDialog.6")); //$NON-NLS-1$
+		JButton searchButton = new JButton(Messages.getString("SearchDialog.4")); 
+		JButton cancelButton = new JButton(Messages.getString("SearchDialog.5")); 
+		JButton deriveButton = new JButton(Messages.getString("SearchDialog.6")); 
 
 		if(!editable)
 		{
@@ -241,11 +241,11 @@ public class SearchDialog extends JDialog
 	 */
 	private boolean isCatalogueSearchedFor()
 	{
-		return !iNameField.getText().trim().equals("") || //$NON-NLS-1$
-				!iDescriptionField.getText().trim().equals("") || //$NON-NLS-1$
-				!iBarcodeField.getText().trim().equals("") || //$NON-NLS-1$
-				!iCommCodeField.getText().trim().equals("") || //$NON-NLS-1$
-				!iKeywordField.getText().trim().equals(""); //$NON-NLS-1$
+		return !iNameField.getText().trim().equals("") || 
+				!iDescriptionField.getText().trim().equals("") || 
+				!iBarcodeField.getText().trim().equals("") || 
+				!iCommCodeField.getText().trim().equals("") || 
+				!iKeywordField.getText().trim().equals(""); 
 	}
 
 	private JPanel createSearchNamePanel()
@@ -255,7 +255,7 @@ public class SearchDialog extends JDialog
 		searchNamePanel.setLayout(grid);
 
 		final Insets insets = new Insets(10, 0, 10, 0);
-		putGridCell(searchNamePanel, 0, 0, 1, 1, insets, new JLabel(Messages.getString("SearchDialog.7"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(searchNamePanel, 0, 0, 1, 1, insets, new JLabel(Messages.getString("SearchDialog.7"), SwingConstants.LEFT)); 
 		putGridCell(searchNamePanel, 0, 1, 1, 1, insets, sNameField);
 
 		return searchNamePanel;
@@ -274,18 +274,18 @@ public class SearchDialog extends JDialog
 		radioPanel.add(pAny);
 
 		putGridCell(partyPanel, 0, 0, 2, 1, null, radioPanel);
-		putGridCell(partyPanel, 1, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.13"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(partyPanel, 1, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.13"), SwingConstants.LEFT)); 
 		putGridCell(partyPanel, 1, 1, 1, 1, null, pNameField);
-		putGridCell(partyPanel, 2, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.14"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(partyPanel, 2, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.14"), SwingConstants.LEFT)); 
 		putGridCell(partyPanel, 2, 1, 1, 1, null, pCompanyIDField);
-		putGridCell(partyPanel, 3, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.15"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(partyPanel, 3, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.15"), SwingConstants.LEFT)); 
 		putGridCell(partyPanel, 3, 1, 1, 1, null, pIndustryClassCodeField);
-		putGridCell(partyPanel, 4, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.16"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(partyPanel, 4, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.16"), SwingConstants.LEFT)); 
 		putGridCell(partyPanel, 4, 1, 1, 1, null, pCityField);
-		putGridCell(partyPanel, 5, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.17"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(partyPanel, 5, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.17"), SwingConstants.LEFT)); 
 		putGridCell(partyPanel, 5, 1, 1, 1, null, pCountryField);
 
-		partyPanel.setBorder(new TitledBorder(Messages.getString("SearchDialog.18"))); //$NON-NLS-1$
+		partyPanel.setBorder(new TitledBorder(Messages.getString("SearchDialog.18"))); 
 
 		return partyPanel;
 	}
@@ -303,18 +303,18 @@ public class SearchDialog extends JDialog
 		radioPanel.add(iAny);
 
 		putGridCell(itemPanel, 0, 0, 2, 1, null, radioPanel);
-		putGridCell(itemPanel, 1, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.19"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(itemPanel, 1, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.19"), SwingConstants.LEFT)); 
 		putGridCell(itemPanel, 1, 1, 1, 1, null, iNameField);
-		putGridCell(itemPanel, 2, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.20"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(itemPanel, 2, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.20"), SwingConstants.LEFT)); 
 		putGridCell(itemPanel, 2, 1, 1, 1, null, iDescriptionField);
-		putGridCell(itemPanel, 3, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.21"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(itemPanel, 3, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.21"), SwingConstants.LEFT)); 
 		putGridCell(itemPanel, 3, 1, 1, 1, null, iBarcodeField);
-		putGridCell(itemPanel, 4, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.22"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(itemPanel, 4, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.22"), SwingConstants.LEFT)); 
 		putGridCell(itemPanel, 4, 1, 1, 1, null, iCommCodeField);
-		putGridCell(itemPanel, 5, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.23"), SwingConstants.LEFT)); //$NON-NLS-1$
+		putGridCell(itemPanel, 5, 0, 1, 1, null, new JLabel(Messages.getString("SearchDialog.23"), SwingConstants.LEFT)); 
 		putGridCell(itemPanel, 5, 1, 1, 1, null, iKeywordField);
 
-		itemPanel.setBorder(new TitledBorder(Messages.getString("SearchDialog.24"))); //$NON-NLS-1$
+		itemPanel.setBorder(new TitledBorder(Messages.getString("SearchDialog.24"))); 
 
 		return itemPanel;
 	}

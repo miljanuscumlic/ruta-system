@@ -174,9 +174,9 @@ public class SellerOrderingProcess extends OrderingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("SellerOrderingProcess.0"), e1); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("SellerOrderingProcess.0"), e1); 
 			}
-			throw new StateActivityException(Messages.getString("SellerOrderingProcess.1"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("SellerOrderingProcess.1"), e); 
 		}
 		finally
 		{

@@ -13,7 +13,7 @@ public class InvoiceLinesTableModel extends DefaultTableModel
 
 	private static String[] columnNames =
 		{
-				Messages.getString("InvoiceLinesTableModel.0"), Messages.getString("InvoiceLinesTableModel.1"), Messages.getString("InvoiceLinesTableModel.2"), Messages.getString("InvoiceLinesTableModel.3"), Messages.getString("InvoiceLinesTableModel.4"), Messages.getString("InvoiceLinesTableModel.5"), Messages.getString("InvoiceLinesTableModel.6"), Messages.getString("InvoiceLinesTableModel.7"), Messages.getString("InvoiceLinesTableModel.8"), Messages.getString("InvoiceLinesTableModel.9") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+				Messages.getString("InvoiceLinesTableModel.0"), Messages.getString("InvoiceLinesTableModel.1"), Messages.getString("InvoiceLinesTableModel.2"), Messages.getString("InvoiceLinesTableModel.3"), Messages.getString("InvoiceLinesTableModel.4"), Messages.getString("InvoiceLinesTableModel.5"), Messages.getString("InvoiceLinesTableModel.6"), Messages.getString("InvoiceLinesTableModel.7"), Messages.getString("InvoiceLinesTableModel.8"), Messages.getString("InvoiceLinesTableModel.9")          
 		};
 	private static final int ALLOWANCE_INDEX = 10; //MMM to amend
 	private List<InvoiceLineType> invoiceLines;

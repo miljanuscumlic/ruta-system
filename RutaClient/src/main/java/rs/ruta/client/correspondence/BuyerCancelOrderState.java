@@ -56,7 +56,7 @@ public class BuyerCancelOrderState extends BuyerOrderingProcessState
 				orderCancellation = myParty.produceOrderCancellation(process.getOrderResponseSimple(correspondence));
 		}
 		else
-			throw new StateActivityException(Messages.getString("BuyerCancelOrderState.0")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("BuyerCancelOrderState.0")); 
 
 		return orderCancellation;
 	}

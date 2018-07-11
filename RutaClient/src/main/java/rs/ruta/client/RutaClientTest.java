@@ -15,7 +15,7 @@ import rs.ruta.client.gui.RutaClientFrame;
 
 public class RutaClientTest
 {
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
 
 	public static void main(String[] args) throws Exception
 	{
@@ -26,8 +26,8 @@ public class RutaClientTest
 		rs.ruta.client.correspondence.Messages.setLocale(myLocale);
 
 		//setting EXIST_HOME
-		final String EXIST_HOME = System.getProperty("user.dir"); //$NON-NLS-1$
-		System.setProperty("exist.home", EXIST_HOME); //$NON-NLS-1$
+		final String EXIST_HOME = System.getProperty("user.dir"); 
+		System.setProperty("exist.home", EXIST_HOME); 
 
 		final RutaClientFrame frame = new RutaClientFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,14 +35,14 @@ public class RutaClientTest
 		RutaClient client = null;
 		boolean secondTry = false;
 		final Semaphore edtSync = new Semaphore(0);
-		final JOptionPane awhilePane = new JOptionPane(Messages.getString("RutaClientTest.3"), //$NON-NLS-1$
+		final JOptionPane awhilePane = new JOptionPane(Messages.getString("RutaClientTest.3"), 
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-		final JDialog awhileDialog = awhilePane.createDialog(null, Messages.getString("RutaClientTest.4")); //$NON-NLS-1$
+		final JDialog awhileDialog = awhilePane.createDialog(null, Messages.getString("RutaClientTest.4")); 
 		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-		final JOptionPane splashPane = new JOptionPane(Messages.getString("RutaClientTest.5"), //$NON-NLS-1$
+		final JOptionPane splashPane = new JOptionPane(Messages.getString("RutaClientTest.5"), 
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
-		final JDialog splashScreen = splashPane.createDialog(frame, Messages.getString("RutaClientTest.6")); //$NON-NLS-1$
+		final JDialog splashScreen = splashPane.createDialog(frame, Messages.getString("RutaClientTest.6")); 
 		splashScreen.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
 		try
@@ -69,21 +69,21 @@ public class RutaClientTest
 					EventQueue.invokeLater(() ->
 					{
 						JOptionPane.showMessageDialog(null,
-								Messages.getString("RutaClientTest.7"), //$NON-NLS-1$
-										Messages.getString("RutaClientTest.8"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+								Messages.getString("RutaClientTest.7"), 
+										Messages.getString("RutaClientTest.8"), JOptionPane.ERROR_MESSAGE); 
 						System.exit(0);
 					});
 				}
 			}
 			catch(Exception e)
 			{
-				if(e.getMessage() != null && e.getMessage().contains(Messages.getString("RutaClientTest.9"))) //$NON-NLS-1$
+				if(e.getMessage() != null && e.getMessage().contains(Messages.getString("RutaClientTest.9"))) 
 				{
 					secondTry = true;
 					EventQueue.invokeLater(() ->
 					{
-						int option = JOptionPane.showConfirmDialog(null, Messages.getString("RutaClientTest.10"), //$NON-NLS-1$
-								Messages.getString("RutaClientTest.11"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE); //$NON-NLS-1$
+						int option = JOptionPane.showConfirmDialog(null, Messages.getString("RutaClientTest.10"), 
+								Messages.getString("RutaClientTest.11"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE); 
 						if(option == JOptionPane.YES_OPTION)
 							again.set(true);
 						else
@@ -93,11 +93,11 @@ public class RutaClientTest
 				}
 				else
 				{
-					logger.error(Messages.getString("RutaClientTest.12"), e); //$NON-NLS-1$
+					logger.error(Messages.getString("RutaClientTest.12"), e); 
 					EventQueue.invokeLater(() ->
 					{
-						JOptionPane.showMessageDialog(null, Messages.getString("RutaClientTest.13") + e.getMessage(), //$NON-NLS-1$
-								Messages.getString("RutaClientTest.14"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+						JOptionPane.showMessageDialog(null, Messages.getString("RutaClientTest.13") + e.getMessage(), 
+								Messages.getString("RutaClientTest.14"), JOptionPane.ERROR_MESSAGE); 
 						System.exit(1);
 					});
 				}
@@ -133,15 +133,15 @@ public class RutaClientTest
 						EventQueue.invokeLater(() ->
 						{
 							JOptionPane.showMessageDialog(null,
-									Messages.getString("RutaClientTest.15"), //$NON-NLS-1$
-											Messages.getString("RutaClientTest.16"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+									Messages.getString("RutaClientTest.15"), 
+											Messages.getString("RutaClientTest.16"), JOptionPane.ERROR_MESSAGE); 
 							System.exit(0);
 						});
 					}
 				}
 				else
 				{
-					logger.error(Messages.getString("RutaClientTest.17")); //$NON-NLS-1$
+					logger.error(Messages.getString("RutaClientTest.17")); 
 					System.exit(1);
 				}
 			}
@@ -150,11 +150,11 @@ public class RutaClientTest
 		catch(Exception e)
 		{
 			awhileDialog.setVisible(false);
-			logger.error(Messages.getString("RutaClientTest.19"), e); //$NON-NLS-1$
+			logger.error(Messages.getString("RutaClientTest.19"), e); 
 			EventQueue.invokeLater( () ->
 			{
-				JOptionPane.showMessageDialog(null, Messages.getString("RutaClientTest.20") + e.getMessage(), //$NON-NLS-1$
-						Messages.getString("RutaClientTest.21"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(null, Messages.getString("RutaClientTest.20") + e.getMessage(), 
+						Messages.getString("RutaClientTest.21"), JOptionPane.ERROR_MESSAGE); 
 				System.exit(1);
 			});
 		}

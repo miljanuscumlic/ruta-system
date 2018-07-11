@@ -54,9 +54,9 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("DeleteCatalogueProcess.0"), e1); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("DeleteCatalogueProcess.0"), e1); 
 			}
-			throw new StateActivityException(Messages.getString("DeleteCatalogueProcess.1"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("DeleteCatalogueProcess.1"), e); 
 		}
 		finally
 		{

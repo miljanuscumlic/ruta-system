@@ -33,10 +33,10 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
 		final RutaClientFrame clientFrame = client.getClientFrame();
-		clientFrame.appendToConsole(new StringBuilder(Messages.getString("ProduceCatalogueState.0")), Color.BLACK); //$NON-NLS-1$
+		clientFrame.appendToConsole(new StringBuilder(Messages.getString("ProduceCatalogueState.0")), Color.BLACK); 
 		final CatalogueType catalogue = client.getMyParty().produceCatalogue(client.getCDRParty());
 		if(catalogue == null)
-			throw new StateActivityException(Messages.getString("ProduceCatalogueState.1")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("ProduceCatalogueState.1")); 
 		else
 			saveCatalogue(correspondence, catalogue);
 		changeState(process, DistributeCatalogueState.getInstance());

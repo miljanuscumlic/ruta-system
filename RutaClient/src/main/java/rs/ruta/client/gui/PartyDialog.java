@@ -73,8 +73,8 @@ public class PartyDialog extends JDialog
 			{
 				if(registration)
 				{
-					int option = JOptionPane.showConfirmDialog(owner, Messages.getString("PartyDialog.0"), //$NON-NLS-1$
-							Messages.getString("PartyDialog.1"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
+					int option = JOptionPane.showConfirmDialog(owner, Messages.getString("PartyDialog.0"), 
+							Messages.getString("PartyDialog.1"), JOptionPane.YES_NO_OPTION); 
 					if (option == JOptionPane.NO_OPTION)
 					{
 			            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -87,7 +87,7 @@ public class PartyDialog extends JDialog
 		});
 
 		JPanel buttonPanel = new JPanel();
-		JButton okButton = new JButton(Messages.getString("PartyDialog.2")); //$NON-NLS-1$
+		JButton okButton = new JButton(Messages.getString("PartyDialog.2")); 
 		okButton.addActionListener(event ->
 		{
 			stopEditing();
@@ -98,8 +98,8 @@ public class PartyDialog extends JDialog
 				setVisible(false);
 			}
 			else
-				JOptionPane.showMessageDialog(PartyDialog.this, missingField + Messages.getString("PartyDialog.3"), //$NON-NLS-1$
-						Messages.getString("PartyDialog.4"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(PartyDialog.this, missingField + Messages.getString("PartyDialog.3"), 
+						Messages.getString("PartyDialog.4"), JOptionPane.ERROR_MESSAGE); 
 		});
 		if(editable)
 		{
@@ -108,13 +108,13 @@ public class PartyDialog extends JDialog
 			okButton.requestFocusInWindow();
 		}
 
-		JButton cancelButton = new JButton(Messages.getString("PartyDialog.5")); //$NON-NLS-1$
+		JButton cancelButton = new JButton(Messages.getString("PartyDialog.5")); 
 		cancelButton.addActionListener(event ->
 		{
 			if(registration)
 			{
-				int option = JOptionPane.showConfirmDialog(owner, Messages.getString("PartyDialog.6"), //$NON-NLS-1$
-						Messages.getString("PartyDialog.7"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
+				int option = JOptionPane.showConfirmDialog(owner, Messages.getString("PartyDialog.6"), 
+						Messages.getString("PartyDialog.7"), JOptionPane.YES_NO_OPTION); 
 				if(option == JOptionPane.NO_OPTION)
 					System.exit(0);
 			}
@@ -126,7 +126,7 @@ public class PartyDialog extends JDialog
 		{
 			getRootPane().setDefaultButton(cancelButton);
 			cancelButton.requestFocusInWindow();
-			cancelButton.setText(Messages.getString("PartyDialog.8")); //$NON-NLS-1$
+			cancelButton.setText(Messages.getString("PartyDialog.8")); 
 
 		}
 		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked

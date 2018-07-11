@@ -35,7 +35,7 @@ public class SupplierSendInvoiceState extends SupplierBillingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("SupplierSendInvoiceState.0")); //$NON-NLS-1$
+						throw new StateActivityException(Messages.getString("SupplierSendInvoiceState.0")); 
 				}
 			}
 			try
@@ -46,11 +46,11 @@ public class SupplierSendInvoiceState extends SupplierBillingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SupplierSendInvoiceState.1"))); //$NON-NLS-1$
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SupplierSendInvoiceState.1"))); 
 //				changeState(process, SupplierSendInvoiceState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("SupplierSendInvoiceState.2")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("SupplierSendInvoiceState.2")); 
 	}
 }

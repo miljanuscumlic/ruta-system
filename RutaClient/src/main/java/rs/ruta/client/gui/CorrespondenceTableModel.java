@@ -16,7 +16,7 @@ public class CorrespondenceTableModel extends DefaultTableModel
 
 	private static String[] columnNames =
 		{
-				Messages.getString("CorrespondenceTableModel.0"), Messages.getString("CorrespondenceTableModel.1"), Messages.getString("CorrespondenceTableModel.2"), Messages.getString("CorrespondenceTableModel.3"), Messages.getString("CorrespondenceTableModel.4"), Messages.getString("CorrespondenceTableModel.5"), Messages.getString("CorrespondenceTableModel.6") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+				Messages.getString("CorrespondenceTableModel.0"), Messages.getString("CorrespondenceTableModel.1"), Messages.getString("CorrespondenceTableModel.2"), Messages.getString("CorrespondenceTableModel.3"), Messages.getString("CorrespondenceTableModel.4"), Messages.getString("CorrespondenceTableModel.5"), Messages.getString("CorrespondenceTableModel.6")       
 		};
 
 	private Correspondence corr;

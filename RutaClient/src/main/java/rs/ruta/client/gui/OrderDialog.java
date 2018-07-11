@@ -27,11 +27,11 @@ public class OrderDialog extends AbstractOrderDialog
 	{
 		super(owner, order.getOrderLine(), editable);
 		this.order = order;
-		final JButton sendButton = new JButton(Messages.getString("OrderDialog.0")); //$NON-NLS-1$
-		final JButton resendButton = new JButton(Messages.getString("OrderDialog.1")); //$NON-NLS-1$
-		final JButton previewButton = new JButton(Messages.getString("OrderDialog.2")); //$NON-NLS-1$
-		final JButton discardButton = new JButton(Messages.getString("OrderDialog.3")); //$NON-NLS-1$
-		final JButton closeButton = new JButton(Messages.getString("OrderDialog.4")); //$NON-NLS-1$
+		final JButton sendButton = new JButton(Messages.getString("OrderDialog.0")); 
+		final JButton resendButton = new JButton(Messages.getString("OrderDialog.1")); 
+		final JButton previewButton = new JButton(Messages.getString("OrderDialog.2")); 
+		final JButton discardButton = new JButton(Messages.getString("OrderDialog.3")); 
+		final JButton closeButton = new JButton(Messages.getString("OrderDialog.4")); 
 
 		sendButton.addActionListener(event ->
 		{
@@ -40,8 +40,8 @@ public class OrderDialog extends AbstractOrderDialog
 			trimOrderLines(trimOrder.getOrderLine());
 			if(trimOrder.getOrderLineCount() == 0)
 			{
-				JOptionPane.showMessageDialog(OrderDialog.this, Messages.getString("OrderDialog.5"), //$NON-NLS-1$
-						Messages.getString("OrderDialog.6"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(OrderDialog.this, Messages.getString("OrderDialog.5"), 
+						Messages.getString("OrderDialog.6"), JOptionPane.ERROR_MESSAGE); 
 				sendPressed = false;
 			}
 			else
@@ -66,7 +66,7 @@ public class OrderDialog extends AbstractOrderDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder(Messages.getString("OrderDialog.7")), Color.RED); //$NON-NLS-1$
+					owner.appendToConsole(new StringBuilder(Messages.getString("OrderDialog.7")), Color.RED); 
 				}
 			}).start();
 			setVisible(false);
@@ -81,16 +81,16 @@ public class OrderDialog extends AbstractOrderDialog
 //				final PreviewOrderDialog previewDialog = new PreviewOrderDialog(owner, previewOrder);
 //				previewDialog.setTitle("Order Preview");
 //				previewDialog.setVisible(true);
-				owner.showOrderDialog(Messages.getString("OrderDialog.8"), previewOrder, false, null); //$NON-NLS-1$
+				owner.showOrderDialog(Messages.getString("OrderDialog.8"), previewOrder, false, null); 
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(OrderDialog.this, Messages.getString("OrderDialog.9"), //$NON-NLS-1$
-						 Messages.getString("OrderDialog.10"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(OrderDialog.this, Messages.getString("OrderDialog.9"), 
+						 Messages.getString("OrderDialog.10"), JOptionPane.ERROR_MESSAGE); 
 //				final PreviewOrderDialog previewDialog = new PreviewOrderDialog(owner, previewOrder);
 //				previewDialog.setTitle("Order Preview");
 //				previewDialog.setVisible(true);
-				owner.showOrderDialog(Messages.getString("OrderDialog.11"), previewOrder, false, null); //$NON-NLS-1$
+				owner.showOrderDialog(Messages.getString("OrderDialog.11"), previewOrder, false, null); 
 			}
 		});
 //		buttonPanel.add(previewButton);

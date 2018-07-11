@@ -16,8 +16,8 @@ public class PartySearchTableModel extends SearchTableModel<PartyType>
 	private static final long serialVersionUID = -2704312134331885642L;
 	private static String[] columnNames =
 		{
-				Messages.getString("PartySearchTableModel.0"), Messages.getString("PartySearchTableModel.1"), Messages.getString("PartySearchTableModel.2"), Messages.getString("PartySearchTableModel.3"), Messages.getString("PartySearchTableModel.4"), Messages.getString("PartySearchTableModel.5"), Messages.getString("PartySearchTableModel.6"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-				Messages.getString("PartySearchTableModel.7"), Messages.getString("PartySearchTableModel.8"), Messages.getString("PartySearchTableModel.9"), Messages.getString("PartySearchTableModel.10") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				Messages.getString("PartySearchTableModel.0"), Messages.getString("PartySearchTableModel.1"), Messages.getString("PartySearchTableModel.2"), Messages.getString("PartySearchTableModel.3"), Messages.getString("PartySearchTableModel.4"), Messages.getString("PartySearchTableModel.5"), Messages.getString("PartySearchTableModel.6"),       
+				Messages.getString("PartySearchTableModel.7"), Messages.getString("PartySearchTableModel.8"), Messages.getString("PartySearchTableModel.9"), Messages.getString("PartySearchTableModel.10")    
 		};
 
 	public PartySearchTableModel()

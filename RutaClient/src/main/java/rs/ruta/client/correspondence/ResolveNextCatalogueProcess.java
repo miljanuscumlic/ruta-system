@@ -45,7 +45,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		}
 		catch (Exception e)
 		{
-			throw new StateActivityException(Messages.getString("ResolveNextCatalogueProcess.0"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("ResolveNextCatalogueProcess.0"), e); 
 		}
 		finally
 		{

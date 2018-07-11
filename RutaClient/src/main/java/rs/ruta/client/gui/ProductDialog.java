@@ -63,7 +63,7 @@ public class ProductDialog extends JDialog
 
 		JPanel buttonPanel = new JPanel();
 
-		JButton okButton = new JButton(Messages.getString("ProductDialog.0")); //$NON-NLS-1$
+		JButton okButton = new JButton(Messages.getString("ProductDialog.0")); 
 		okButton.addActionListener(event ->
 		{
 			stopEditing();
@@ -74,8 +74,8 @@ public class ProductDialog extends JDialog
 				setVisible(false);
 			}
 			else
-				JOptionPane.showMessageDialog(ProductDialog.this, missingField + Messages.getString("ProductDialog.1"), //$NON-NLS-1$
-						Messages.getString("ProductDialog.2"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(ProductDialog.this, missingField + Messages.getString("ProductDialog.1"), 
+						Messages.getString("ProductDialog.2"), JOptionPane.ERROR_MESSAGE); 
 		});
 		if(editable)
 		{
@@ -84,7 +84,7 @@ public class ProductDialog extends JDialog
 			okButton.requestFocusInWindow();
 		}
 
-		JButton cancelButton = new JButton(Messages.getString("ProductDialog.3")); //$NON-NLS-1$
+		JButton cancelButton = new JButton(Messages.getString("ProductDialog.3")); 
 		cancelButton.addActionListener(event ->
 		{
 			setVisible(false);
@@ -94,7 +94,7 @@ public class ProductDialog extends JDialog
 		{
 			getRootPane().setDefaultButton(cancelButton);
 			cancelButton.requestFocusInWindow();
-			cancelButton.setText(Messages.getString("ProductDialog.4")); //$NON-NLS-1$
+			cancelButton.setText(Messages.getString("ProductDialog.4")); 
 
 		}
 		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked

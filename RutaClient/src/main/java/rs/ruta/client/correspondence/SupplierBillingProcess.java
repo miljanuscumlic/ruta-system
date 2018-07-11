@@ -53,9 +53,9 @@ public class SupplierBillingProcess extends BillingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("SupplierBillingProcess.0"), e1); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("SupplierBillingProcess.0"), e1); 
 			}
-			throw new StateActivityException(Messages.getString("SupplierBillingProcess.1"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("SupplierBillingProcess.1"), e); 
 		}
 		finally
 		{

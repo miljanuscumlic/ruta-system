@@ -114,38 +114,38 @@ public class Item extends ItemType
 		try
 		{
 			if(getNameValue() == null)
-				return Messages.getString("Item.0"); //$NON-NLS-1$
+				return Messages.getString("Item.0"); 
 		}
 		catch(Exception e)
 		{
-			return Messages.getString("Item.1"); //$NON-NLS-1$
+			return Messages.getString("Item.1"); 
 		}
 		try
 		{
 			if(getSellersItemIdentification().getIDValue() == null)
-				return Messages.getString("Item.2"); //$NON-NLS-1$
+				return Messages.getString("Item.2"); 
 		}
 		catch(Exception e)
 		{
-			return Messages.getString("Item.3"); //$NON-NLS-1$
+			return Messages.getString("Item.3"); 
 		}
 		try
 		{
 			if(getPrice().getPriceAmountValue() == null)
-				return Messages.getString("Item.4"); //$NON-NLS-1$
+				return Messages.getString("Item.4"); 
 		}
 		catch(Exception e)
 		{
-			return Messages.getString("Item.5"); //$NON-NLS-1$
+			return Messages.getString("Item.5"); 
 		}
 		try
 		{
 			if(getClassifiedTaxCategoryAtIndex(0).getPercentValue() == null)
-				return Messages.getString("Item.6"); //$NON-NLS-1$
+				return Messages.getString("Item.6"); 
 		}
 		catch(Exception e)
 		{
-			return Messages.getString("Item.7"); //$NON-NLS-1$
+			return Messages.getString("Item.7"); 
 		}
 		return null;
 	}

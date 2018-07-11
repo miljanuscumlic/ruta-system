@@ -34,7 +34,7 @@ public class CustomerReconcileChargesState extends CustomerBillingProcessState
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped())
-				throw new StateActivityException(Messages.getString("CustomerReconcileChargesState.0")); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("CustomerReconcileChargesState.0")); 
 		}
 	}
 

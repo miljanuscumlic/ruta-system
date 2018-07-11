@@ -33,7 +33,7 @@ public class PreviewOrderDialog extends AbstractOrderDialog
 	public PreviewOrderDialog(RutaClientFrame owner, OrderType order)
 	{
 		super(owner, order.getOrderLine(), false);
-		final JButton closeButton = new JButton(Messages.getString("PreviewOrderDialog.0")); //$NON-NLS-1$
+		final JButton closeButton = new JButton(Messages.getString("PreviewOrderDialog.0")); 
 		getRootPane().setDefaultButton(closeButton);
 		closeButton.requestFocusInWindow();
 		closeButton.addActionListener(event ->

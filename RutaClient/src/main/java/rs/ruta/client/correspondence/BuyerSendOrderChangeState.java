@@ -32,7 +32,7 @@ public class BuyerSendOrderChangeState extends BuyerOrderingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("BuyerSendOrderChangeState.0")); //$NON-NLS-1$
+						throw new StateActivityException(Messages.getString("BuyerSendOrderChangeState.0")); 
 				}
 			}
 			try
@@ -44,11 +44,11 @@ public class BuyerSendOrderChangeState extends BuyerOrderingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyerSendOrderChangeState.1"))); //$NON-NLS-1$
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyerSendOrderChangeState.1"))); 
 //				changeState(process, BuyerSendOrderChangeState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("BuyerSendOrderChangeState.2")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("BuyerSendOrderChangeState.2")); 
 	}
 }

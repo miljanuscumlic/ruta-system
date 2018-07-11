@@ -23,10 +23,10 @@ public class OrderResponseDialog extends AbstractOrderResponseDialog
 	{
 		super(owner, orderResponse, editable);
 
-		JButton sendButton = new JButton(Messages.getString("OrderResponseDialog.0")); //$NON-NLS-1$
-		JButton resendButton = new JButton(Messages.getString("OrderResponseDialog.1")); //$NON-NLS-1$
-		JButton discardButton = new JButton(Messages.getString("OrderResponseDialog.2")); //$NON-NLS-1$
-		JButton closeButton = new JButton(Messages.getString("OrderResponseDialog.3")); //$NON-NLS-1$
+		JButton sendButton = new JButton(Messages.getString("OrderResponseDialog.0")); 
+		JButton resendButton = new JButton(Messages.getString("OrderResponseDialog.1")); 
+		JButton discardButton = new JButton(Messages.getString("OrderResponseDialog.2")); 
+		JButton closeButton = new JButton(Messages.getString("OrderResponseDialog.3")); 
 
 		sendButton.addActionListener(event ->
 		{
@@ -53,7 +53,7 @@ public class OrderResponseDialog extends AbstractOrderResponseDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder(Messages.getString("OrderResponseDialog.4")), Color.RED); //$NON-NLS-1$
+					owner.appendToConsole(new StringBuilder(Messages.getString("OrderResponseDialog.4")), Color.RED); 
 				}
 			}).start();
 			setVisible(false);

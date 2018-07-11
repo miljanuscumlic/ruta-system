@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 public class Messages
 {
-	private static final String BUNDLE_NAME = "rs.ruta.client.correspondence.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "rs.ruta.client.correspondence.messages"; 
 
 	private static ResourceBundle RESOURCE_BUNDLE;// = ResourceBundle.getBundle(BUNDLE_NAME);
 

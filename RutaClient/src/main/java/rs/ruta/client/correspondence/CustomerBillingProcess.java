@@ -50,9 +50,9 @@ public class CustomerBillingProcess extends BillingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("CustomerBillingProcess.0"), e1); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("CustomerBillingProcess.0"), e1); 
 			}
-			throw new StateActivityException(Messages.getString("CustomerBillingProcess.1"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("CustomerBillingProcess.1"), e); 
 		}
 		finally
 		{

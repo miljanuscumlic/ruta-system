@@ -85,8 +85,8 @@ public class CatalogueCorrespondence extends Correspondence
 		catch(Exception e)
 		{
 			getClient().getClientFrame().
-			processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CatalogueCorrespondence.0")). //$NON-NLS-1$
-					append(getIdValue()).append(Messages.getString("CatalogueCorrespondence.1"))); //$NON-NLS-1$
+			processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CatalogueCorrespondence.0")). 
+					append(getIdValue()).append(Messages.getString("CatalogueCorrespondence.1"))); 
 			getClient().getClientFrame().enableCatalogueMenuItems();
 		}
 		finally

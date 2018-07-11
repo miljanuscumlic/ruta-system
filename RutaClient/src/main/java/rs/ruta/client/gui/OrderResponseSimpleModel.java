@@ -14,7 +14,7 @@ public class OrderResponseSimpleModel extends DefaultTableModel
 
 	//must be static because it's used in getRowCount method which is called from the
 	//constructor of the super class
-	private static String[] rowNames = { Messages.getString("OrderResponseSimpleModel.0"), Messages.getString("OrderResponseSimpleModel.1"), Messages.getString("OrderResponseSimpleModel.2"), Messages.getString("OrderResponseSimpleModel.3"), Messages.getString("OrderResponseSimpleModel.4"), Messages.getString("OrderResponseSimpleModel.5")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+	private static String[] rowNames = { Messages.getString("OrderResponseSimpleModel.0"), Messages.getString("OrderResponseSimpleModel.1"), Messages.getString("OrderResponseSimpleModel.2"), Messages.getString("OrderResponseSimpleModel.3"), Messages.getString("OrderResponseSimpleModel.4"), Messages.getString("OrderResponseSimpleModel.5")};      
 	private static int NOTE_INDEX = 4;
 	private static int REJECTION_NOTE_INDEX = 5;
 	private OrderResponseSimpleType orderResponse;
@@ -73,7 +73,7 @@ public class OrderResponseSimpleModel extends DefaultTableModel
 			switch(rowIndex)
 			{
 			case 0:
-				return Messages.getString("OrderResponseSimpleModel.6"); //$NON-NLS-1$
+				return Messages.getString("OrderResponseSimpleModel.6"); 
 			case 1:
 				return orderResponse.getIDValue();
 			case 2:

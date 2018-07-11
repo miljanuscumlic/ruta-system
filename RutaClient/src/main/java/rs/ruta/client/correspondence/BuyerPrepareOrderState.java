@@ -33,7 +33,7 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 		{
 			correspondence.setDiscarded(true);
 			process.getClient().getClientFrame().appendToConsole(
-					new StringBuilder(Messages.getString("BuyerPrepareOrderState.0")), Color.BLACK); //$NON-NLS-1$
+					new StringBuilder(Messages.getString("BuyerPrepareOrderState.0")), Color.BLACK); 
 			changeState(process, ClosingState.getInstance());
 		}
 	}
@@ -48,7 +48,7 @@ public class BuyerPrepareOrderState extends BuyerOrderingProcessState
 	private OrderType prepareOrder(RutaProcess process, String correspondentID)
 	{
 		final RutaClient client = process.getClient();
-		client.getClientFrame().appendToConsole(new StringBuilder(Messages.getString("BuyerPrepareOrderState.1")), Color.BLACK); //$NON-NLS-1$
+		client.getClientFrame().appendToConsole(new StringBuilder(Messages.getString("BuyerPrepareOrderState.1")), Color.BLACK); 
 		return client.getMyParty().produceOrder(correspondentID);
 	}
 

@@ -13,12 +13,12 @@ public class PartyTableModel extends DefaultTableModel
 
 	private static String[] rowNames =
 		{
-				Messages.getString("PartyTableModel.0"), Messages.getString("PartyTableModel.1"), Messages.getString("PartyTableModel.2"), Messages.getString("PartyTableModel.3"), Messages.getString("PartyTableModel.4"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				Messages.getString("PartyTableModel.5"), Messages.getString("PartyTableModel.6"), Messages.getString("PartyTableModel.7"), Messages.getString("PartyTableModel.8"), Messages.getString("PartyTableModel.9"), Messages.getString("PartyTableModel.10"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-				Messages.getString("PartyTableModel.11"), Messages.getString("PartyTableModel.12"), Messages.getString("PartyTableModel.13"), Messages.getString("PartyTableModel.14"), Messages.getString("PartyTableModel.15"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				Messages.getString("PartyTableModel.16"), Messages.getString("PartyTableModel.17"), Messages.getString("PartyTableModel.18"), Messages.getString("PartyTableModel.19"), Messages.getString("PartyTableModel.20"), Messages.getString("PartyTableModel.21"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-				Messages.getString("PartyTableModel.22"), Messages.getString("PartyTableModel.23"), Messages.getString("PartyTableModel.24"), Messages.getString("PartyTableModel.25"), Messages.getString("PartyTableModel.26"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				Messages.getString("PartyTableModel.27"), Messages.getString("PartyTableModel.28"), Messages.getString("PartyTableModel.29"), Messages.getString("PartyTableModel.30"), Messages.getString("PartyTableModel.31"), Messages.getString("PartyTableModel.32"), Messages.getString("PartyTableModel.33") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+				Messages.getString("PartyTableModel.0"), Messages.getString("PartyTableModel.1"), Messages.getString("PartyTableModel.2"), Messages.getString("PartyTableModel.3"), Messages.getString("PartyTableModel.4"),     
+				Messages.getString("PartyTableModel.5"), Messages.getString("PartyTableModel.6"), Messages.getString("PartyTableModel.7"), Messages.getString("PartyTableModel.8"), Messages.getString("PartyTableModel.9"), Messages.getString("PartyTableModel.10"),      
+				Messages.getString("PartyTableModel.11"), Messages.getString("PartyTableModel.12"), Messages.getString("PartyTableModel.13"), Messages.getString("PartyTableModel.14"), Messages.getString("PartyTableModel.15"),     
+				Messages.getString("PartyTableModel.16"), Messages.getString("PartyTableModel.17"), Messages.getString("PartyTableModel.18"), Messages.getString("PartyTableModel.19"), Messages.getString("PartyTableModel.20"), Messages.getString("PartyTableModel.21"),      
+				Messages.getString("PartyTableModel.22"), Messages.getString("PartyTableModel.23"), Messages.getString("PartyTableModel.24"), Messages.getString("PartyTableModel.25"), Messages.getString("PartyTableModel.26"),     
+				Messages.getString("PartyTableModel.27"), Messages.getString("PartyTableModel.28"), Messages.getString("PartyTableModel.29"), Messages.getString("PartyTableModel.30"), Messages.getString("PartyTableModel.31"), Messages.getString("PartyTableModel.32"), Messages.getString("PartyTableModel.33")       
 		};
 
 	private Party party;
@@ -259,11 +259,11 @@ public class PartyTableModel extends DefaultTableModel
 		switch(columnIndex)
 		{
 		case 0:
-			return Messages.getString("PartyTableModel.34"); //$NON-NLS-1$
+			return Messages.getString("PartyTableModel.34"); 
 		case 1:
-			return Messages.getString("PartyTableModel.35"); //$NON-NLS-1$
+			return Messages.getString("PartyTableModel.35"); 
 		default:
-			return ""; //$NON-NLS-1$
+			return ""; 
 		}
 	}
 

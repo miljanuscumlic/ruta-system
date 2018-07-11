@@ -13,7 +13,7 @@ public class StateActivityException extends RuntimeException
 
 	public StateActivityException()
 	{
-		super(Messages.getString("StateActivityException.0")); //$NON-NLS-1$
+		super(Messages.getString("StateActivityException.0")); 
 	}
 
 	public StateActivityException(String message)

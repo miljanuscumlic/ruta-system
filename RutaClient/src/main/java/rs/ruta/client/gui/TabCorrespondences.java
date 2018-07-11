@@ -62,11 +62,11 @@ import rs.ruta.common.datamapper.DetailException;
 public class TabCorrespondences extends TabComponent
 {
 	private static final long serialVersionUID = -7541063217643235335L;
-	private static final String ARCHIVED_PARTNERS = Messages.getString("TabCorrespondences.0"); //$NON-NLS-1$
-	private static final String BUSINESS_PARTNERS = Messages.getString("TabCorrespondences.1"); //$NON-NLS-1$
-	private static final String CDR = Messages.getString("TabCorrespondences.2"); //$NON-NLS-1$
-	private static final String CORRESPONDECES = Messages.getString("TabCorrespondences.3"); //$NON-NLS-1$
-	private static final String MY_PARTY = Messages.getString("TabCorrespondences.4"); //$NON-NLS-1$
+	private static final String ARCHIVED_PARTNERS = Messages.getString("TabCorrespondences.0"); 
+	private static final String BUSINESS_PARTNERS = Messages.getString("TabCorrespondences.1"); 
+	private static final String CDR = Messages.getString("TabCorrespondences.2"); 
+	private static final String CORRESPONDECES = Messages.getString("TabCorrespondences.3"); 
+	private static final String MY_PARTY = Messages.getString("TabCorrespondences.4"); 
 	private final JTree correspondenceTree;
 
 	private CorrespondenceListTableModel partnerCorrespondenceListTableModel;
@@ -191,7 +191,7 @@ public class TabCorrespondences extends TabComponent
 		});
 
 		final JPopupMenu partyTreePopupMenu = new JPopupMenu();
-		final JMenuItem newOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.5")); //$NON-NLS-1$
+		final JMenuItem newOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.5")); 
 
 		newOrderItem.addActionListener(event ->
 		{
@@ -222,7 +222,7 @@ public class TabCorrespondences extends TabComponent
 				}
 				catch (DetailException e)
 				{
-					logger.error(Messages.getString("TabCorrespondences.6"), e); //$NON-NLS-1$
+					logger.error(Messages.getString("TabCorrespondences.6"), e); 
 				}
 				partnerCorrespondenceListTableModel.setCorrespondences(myParty.findAllCorrespondences(correspondentID));
 				corr.start();
@@ -382,30 +382,30 @@ public class TabCorrespondences extends TabComponent
 		colModel.getColumn(5).setPreferredWidth(150);
 
 		JPopupMenu correspondencePopupMenu = new JPopupMenu();
-		JMenuItem processDocumentItem = new JMenuItem(Messages.getString("TabCorrespondences.7")); //$NON-NLS-1$
-		JMenuItem resendDocumentItem = new JMenuItem(Messages.getString("TabCorrespondences.8")); //$NON-NLS-1$
-		JMenuItem resendApplicationResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.9")); //$NON-NLS-1$
-		JMenuItem resendInvoiceItem = new JMenuItem(Messages.getString("TabCorrespondences.10")); //$NON-NLS-1$
-		JMenuItem resendOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.11")); //$NON-NLS-1$
-		JMenuItem resendOrderResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.12")); //$NON-NLS-1$
-		JMenuItem resendOrderResponseSimpleItem = new JMenuItem(Messages.getString("TabCorrespondences.13")); //$NON-NLS-1$
-		JMenuItem resendOrderChangeItem = new JMenuItem(Messages.getString("TabCorrespondences.14")); //$NON-NLS-1$
-		JMenuItem resendOrderCancellationItem = new JMenuItem(Messages.getString("TabCorrespondences.15")); //$NON-NLS-1$
+		JMenuItem processDocumentItem = new JMenuItem(Messages.getString("TabCorrespondences.7")); 
+		JMenuItem resendDocumentItem = new JMenuItem(Messages.getString("TabCorrespondences.8")); 
+		JMenuItem resendApplicationResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.9")); 
+		JMenuItem resendInvoiceItem = new JMenuItem(Messages.getString("TabCorrespondences.10")); 
+		JMenuItem resendOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.11")); 
+		JMenuItem resendOrderResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.12")); 
+		JMenuItem resendOrderResponseSimpleItem = new JMenuItem(Messages.getString("TabCorrespondences.13")); 
+		JMenuItem resendOrderChangeItem = new JMenuItem(Messages.getString("TabCorrespondences.14")); 
+		JMenuItem resendOrderCancellationItem = new JMenuItem(Messages.getString("TabCorrespondences.15")); 
 
-		JMenuItem viewApplicationResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.16")); //$NON-NLS-1$
-		JMenuItem viewResendApplicationResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.17")); //$NON-NLS-1$
-		JMenuItem viewInvoiceItem = new JMenuItem(Messages.getString("TabCorrespondences.18")); //$NON-NLS-1$
-		JMenuItem viewResendInvoiceItem = new JMenuItem(Messages.getString("TabCorrespondences.19")); //$NON-NLS-1$
-		JMenuItem viewOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.20")); //$NON-NLS-1$
-		JMenuItem viewResendOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.21")); //$NON-NLS-1$
-		JMenuItem viewOrderChangeItem = new JMenuItem(Messages.getString("TabCorrespondences.22")); //$NON-NLS-1$
-		JMenuItem viewResendOrderChangeItem = new JMenuItem(Messages.getString("TabCorrespondences.23")); //$NON-NLS-1$
-		JMenuItem viewOrderCancellationItem = new JMenuItem(Messages.getString("TabCorrespondences.24")); //$NON-NLS-1$
-		JMenuItem viewResendOrderCancellationItem = new JMenuItem(Messages.getString("TabCorrespondences.25")); //$NON-NLS-1$
-		JMenuItem viewOrderResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.26")); //$NON-NLS-1$
-		JMenuItem viewResendOrderResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.27")); //$NON-NLS-1$
-		JMenuItem viewOrderResponseSimpleItem = new JMenuItem(Messages.getString("TabCorrespondences.28")); //$NON-NLS-1$
-		JMenuItem viewResendOrderResponseSimpleItem = new JMenuItem(Messages.getString("TabCorrespondences.29")); //$NON-NLS-1$
+		JMenuItem viewApplicationResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.16")); 
+		JMenuItem viewResendApplicationResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.17")); 
+		JMenuItem viewInvoiceItem = new JMenuItem(Messages.getString("TabCorrespondences.18")); 
+		JMenuItem viewResendInvoiceItem = new JMenuItem(Messages.getString("TabCorrespondences.19")); 
+		JMenuItem viewOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.20")); 
+		JMenuItem viewResendOrderItem = new JMenuItem(Messages.getString("TabCorrespondences.21")); 
+		JMenuItem viewOrderChangeItem = new JMenuItem(Messages.getString("TabCorrespondences.22")); 
+		JMenuItem viewResendOrderChangeItem = new JMenuItem(Messages.getString("TabCorrespondences.23")); 
+		JMenuItem viewOrderCancellationItem = new JMenuItem(Messages.getString("TabCorrespondences.24")); 
+		JMenuItem viewResendOrderCancellationItem = new JMenuItem(Messages.getString("TabCorrespondences.25")); 
+		JMenuItem viewOrderResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.26")); 
+		JMenuItem viewResendOrderResponseItem = new JMenuItem(Messages.getString("TabCorrespondences.27")); 
+		JMenuItem viewOrderResponseSimpleItem = new JMenuItem(Messages.getString("TabCorrespondences.28")); 
+		JMenuItem viewResendOrderResponseSimpleItem = new JMenuItem(Messages.getString("TabCorrespondences.29")); 
 
 		processDocumentItem.addActionListener(event ->
 		{
@@ -421,7 +421,7 @@ public class TabCorrespondences extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.30")), Color.RED); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.30")), Color.RED); 
 				}
 			}).start();
 		});
@@ -440,20 +440,20 @@ public class TabCorrespondences extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.31")), Color.RED); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.31")), Color.RED); 
 				}
 			}).start();
 		});
 
 		resendApplicationResponseItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.32")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.32")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.33"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.33"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -471,13 +471,13 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.34"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.34"))); 
 						}
 					}
 					else
 					{
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.35")), Color.BLACK); //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.35")), Color.BLACK); 
 					}
 				}).start();
 
@@ -485,13 +485,13 @@ public class TabCorrespondences extends TabComponent
 
 		resendInvoiceItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.36")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.36")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.37"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.37"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -509,13 +509,13 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.38"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.38"))); 
 						}
 					}
 					else
 					{
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.39")), Color.BLACK); //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.39")), Color.BLACK); 
 					}
 				}).start();
 
@@ -523,13 +523,13 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.40")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.40")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.41"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.41"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -547,13 +547,13 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.42"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.42"))); 
 						}
 					}
 					else
 					{
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.43")), Color.BLACK); //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.43")), Color.BLACK); 
 					}
 				}).start();
 
@@ -561,13 +561,13 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderResponseItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.44")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.44")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.45"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.45"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -585,13 +585,13 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.46"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.46"))); 
 						}
 					}
 					else
 					{
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.47")), //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.47")), 
 								Color.BLACK);
 					}
 				}).start();
@@ -599,13 +599,13 @@ public class TabCorrespondences extends TabComponent
 
 		resendOrderResponseSimpleItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.48")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.48")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.49"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.49"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -623,25 +623,25 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.50"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.50"))); 
 						}
 					}
 					else
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.51")), //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.51")), 
 								Color.BLACK);
 				}).start();
 		});
 
 		resendOrderChangeItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.52")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.52")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.53"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.53"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -659,25 +659,25 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.54"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.54"))); 
 						}
 					}
 					else
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.55")), //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.55")), 
 								Color.BLACK);
 				}).start();
 		});
 
 		resendOrderCancellationItem.addActionListener(event ->
 		{
-			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.56")); //$NON-NLS-1$
+			final Object clientProperty = ((JMenuItem) event.getSource()).getClientProperty(Messages.getString("TabCorrespondences.56")); 
 			boolean cdr;
 			int option = JOptionPane.YES_OPTION;
 			if(clientProperty != null)
 			{
 				cdr = (boolean) clientProperty;
-				option = showConfirmDialog(Messages.getString("TabCorrespondences.57"), cdr); //$NON-NLS-1$
+				option = showConfirmDialog(Messages.getString("TabCorrespondences.57"), cdr); 
 			}
 			if(option == JOptionPane.YES_OPTION)
 				new Thread(() ->
@@ -695,12 +695,12 @@ public class TabCorrespondences extends TabComponent
 						catch(Exception e)
 						{
 							process.getClient().getClientFrame().
-							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.58"))); //$NON-NLS-1$
+							processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCorrespondences.58"))); 
 						}
 					}
 					else
 						process.getClient().getClientFrame().appendToConsole(
-								new StringBuilder(Messages.getString("TabCorrespondences.59")), //$NON-NLS-1$
+								new StringBuilder(Messages.getString("TabCorrespondences.59")), 
 								Color.BLACK);
 				}).start();
 		});
@@ -715,10 +715,10 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showApplicationResponseDialog(Messages.getString("TabCorrespondences.60"), //$NON-NLS-1$
+					clientFrame.showApplicationResponseDialog(Messages.getString("TabCorrespondences.60"), 
 							(ApplicationResponseType) document, false, null);
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.61")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.61")), Color.BLACK); 
 			}).start();
 		});
 
@@ -732,10 +732,10 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showApplicationResponseDialog(Messages.getString("TabCorrespondences.62"), //$NON-NLS-1$
+					clientFrame.showApplicationResponseDialog(Messages.getString("TabCorrespondences.62"), 
 							(ApplicationResponseType) document, false, corr);
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.63")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.63")), Color.BLACK); 
 			}).start();
 		});
 
@@ -749,9 +749,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showInvoiceDialog(Messages.getString("TabCorrespondences.64"), (InvoiceType) document, false, null); //$NON-NLS-1$
+					clientFrame.showInvoiceDialog(Messages.getString("TabCorrespondences.64"), (InvoiceType) document, false, null); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.65")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.65")), Color.BLACK); 
 			}).start();
 		});
 
@@ -765,9 +765,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showInvoiceDialog(Messages.getString("TabCorrespondences.66"), (InvoiceType) document, false, corr); //$NON-NLS-1$
+					clientFrame.showInvoiceDialog(Messages.getString("TabCorrespondences.66"), (InvoiceType) document, false, corr); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.67")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.67")), Color.BLACK); 
 			}).start();
 		});
 
@@ -781,9 +781,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderCancellationDialog(Messages.getString("TabCorrespondences.68"), (OrderCancellationType) document, false, null); //$NON-NLS-1$
+					clientFrame.showOrderCancellationDialog(Messages.getString("TabCorrespondences.68"), (OrderCancellationType) document, false, null); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.69")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.69")), Color.BLACK); 
 			}).start();
 		});
 
@@ -797,9 +797,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderCancellationDialog(Messages.getString("TabCorrespondences.70"), (OrderCancellationType) document, false, corr); //$NON-NLS-1$
+					clientFrame.showOrderCancellationDialog(Messages.getString("TabCorrespondences.70"), (OrderCancellationType) document, false, corr); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.71")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.71")), Color.BLACK); 
 			}).start();
 		});
 
@@ -813,9 +813,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderChangeDialog(Messages.getString("TabCorrespondences.72"), (OrderChangeType) document, false, null); //$NON-NLS-1$
+					clientFrame.showOrderChangeDialog(Messages.getString("TabCorrespondences.72"), (OrderChangeType) document, false, null); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.73")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.73")), Color.BLACK); 
 			}).start();
 		});
 
@@ -829,9 +829,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderChangeDialog(Messages.getString("TabCorrespondences.74"), (OrderChangeType) document, false, corr); //$NON-NLS-1$
+					clientFrame.showOrderChangeDialog(Messages.getString("TabCorrespondences.74"), (OrderChangeType) document, false, corr); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.75")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.75")), Color.BLACK); 
 			}).start();
 		});
 
@@ -846,9 +846,9 @@ public class TabCorrespondences extends TabComponent
 
 				if(document != null)
 					//					clientFrame.showPreviewOrderDialog("View Order", (OrderType) document);
-					clientFrame.showOrderDialog(Messages.getString("TabCorrespondences.76"), (OrderType) document, false, null); //$NON-NLS-1$
+					clientFrame.showOrderDialog(Messages.getString("TabCorrespondences.76"), (OrderType) document, false, null); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.77")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.77")), Color.BLACK); 
 
 			}).start();
 		});
@@ -863,9 +863,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderDialog(Messages.getString("TabCorrespondences.78"), (OrderType) document, false, corr); //$NON-NLS-1$
+					clientFrame.showOrderDialog(Messages.getString("TabCorrespondences.78"), (OrderType) document, false, corr); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.79")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.79")), Color.BLACK); 
 
 			}).start();
 		});
@@ -880,9 +880,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderResponseDialog(Messages.getString("TabCorrespondences.80"), (OrderResponseType) document, false, null); //$NON-NLS-1$
+					clientFrame.showOrderResponseDialog(Messages.getString("TabCorrespondences.80"), (OrderResponseType) document, false, null); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.81")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.81")), Color.BLACK); 
 			}).start();
 		});
 
@@ -896,9 +896,9 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderResponseDialog(Messages.getString("TabCorrespondences.82"), (OrderResponseType) document, false, corr); //$NON-NLS-1$
+					clientFrame.showOrderResponseDialog(Messages.getString("TabCorrespondences.82"), (OrderResponseType) document, false, corr); 
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.83")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.83")), Color.BLACK); 
 			}).start();
 		});
 
@@ -912,10 +912,10 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderResponseSimpleDialog(Messages.getString("TabCorrespondences.84"), //$NON-NLS-1$
+					clientFrame.showOrderResponseSimpleDialog(Messages.getString("TabCorrespondences.84"), 
 							(OrderResponseSimpleType) document, false, true, null);
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.85")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.85")), Color.BLACK); 
 			}).start();
 		});
 
@@ -929,10 +929,10 @@ public class TabCorrespondences extends TabComponent
 				final Object document = corr.getDocumentAtIndex(modelRowIndex);
 
 				if(document != null)
-					clientFrame.showOrderResponseSimpleDialog(Messages.getString("TabCorrespondences.86"), //$NON-NLS-1$
+					clientFrame.showOrderResponseSimpleDialog(Messages.getString("TabCorrespondences.86"), 
 							(OrderResponseSimpleType) document, false, true, corr);
 				else
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.87")), Color.BLACK); //$NON-NLS-1$
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCorrespondences.87")), Color.BLACK); 
 			}).start();
 		});
 
@@ -966,13 +966,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewApplicationResponseItem);
-										resendApplicationResponseItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendApplicationResponseItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewApplicationResponseItem);
-										resendApplicationResponseItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendApplicationResponseItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendApplicationResponseItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1019,13 +1019,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewInvoiceItem);
-										resendInvoiceItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendInvoiceItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewInvoiceItem);
-										resendInvoiceItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendInvoiceItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendInvoiceItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1074,13 +1074,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderItem);
-										resendOrderItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendOrderItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendOrderItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderItem);
-										resendOrderItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendOrderItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendOrderItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1127,13 +1127,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseItem);
-										resendOrderResponseItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendOrderResponseItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseItem);
-										resendOrderResponseItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendOrderResponseItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendOrderResponseItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1180,13 +1180,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
-										resendOrderResponseSimpleItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendOrderResponseSimpleItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
-										resendOrderResponseSimpleItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendOrderResponseSimpleItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1221,13 +1221,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
-										resendOrderResponseSimpleItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendOrderResponseSimpleItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderResponseSimpleItem);
-										resendOrderResponseSimpleItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendOrderResponseSimpleItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendOrderResponseSimpleItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1267,13 +1267,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderChangeItem);
-										resendOrderChangeItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendOrderChangeItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderChangeItem);
-										resendOrderChangeItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendOrderChangeItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendOrderChangeItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1320,13 +1320,13 @@ public class TabCorrespondences extends TabComponent
 									if(documentStatus == DocumentReference.Status.CDR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderCancellationItem);
-										resendOrderCancellationItem.putClientProperty("CDR", true); //$NON-NLS-1$
+										resendOrderCancellationItem.putClientProperty("CDR", true); 
 										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_RECEIVED)
 									{
 										correspondencePopupMenu.add(viewOrderCancellationItem);
-										resendOrderCancellationItem.putClientProperty("CDR", false); //$NON-NLS-1$
+										resendOrderCancellationItem.putClientProperty("CDR", false); 
 										correspondencePopupMenu.add(resendOrderCancellationItem); //out of state machine
 									}
 									else if(documentStatus == DocumentReference.Status.CORR_FAILED)
@@ -1375,9 +1375,9 @@ public class TabCorrespondences extends TabComponent
 	private int showConfirmDialog(String documentName, boolean cdr)
 	{
 		return JOptionPane.showConfirmDialog(myParty.getClient().getClientFrame(),
-				documentName + Messages.getString("TabCorrespondences.104") + (cdr ? CDR : Messages.getString("TabCorrespondences.105"))  + //$NON-NLS-1$ //$NON-NLS-2$
-						Messages.getString("TabCorrespondences.106"), //$NON-NLS-1$
-						Messages.getString("TabCorrespondences.107"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
+				documentName + Messages.getString("TabCorrespondences.104") + (cdr ? CDR : Messages.getString("TabCorrespondences.105"))  +  
+						Messages.getString("TabCorrespondences.106"), 
+						Messages.getString("TabCorrespondences.107"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); 
 	}
 
 	/**

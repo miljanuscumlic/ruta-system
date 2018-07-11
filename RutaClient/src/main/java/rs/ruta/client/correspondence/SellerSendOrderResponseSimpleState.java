@@ -33,7 +33,7 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.0")); //$NON-NLS-1$
+						throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.0")); 
 					//flags are not persisted so set them if the correspondence was stored to the database in its blocked state
 					if(!process.isOrderAccepted() && !process.isOrderRejected())
 					{
@@ -46,7 +46,7 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 								process.setOrderRejected(true);
 						}
 						else
-							throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.1")); //$NON-NLS-1$
+							throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.1")); 
 					}
 				}
 			}
@@ -61,16 +61,16 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 				else if(process.isOrderRejected() && !process.isOrderAccepted())
 					changeState(process, ClosingState.getInstance());
 				else
-					throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.2")); //$NON-NLS-1$
+					throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.2")); 
 			}
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SellerSendOrderResponseSimpleState.3"))); //$NON-NLS-1$
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SellerSendOrderResponseSimpleState.3"))); 
 //				changeState(process, SellerSendOrderResponseSimpleState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.4")); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.4")); 
 	}
 }

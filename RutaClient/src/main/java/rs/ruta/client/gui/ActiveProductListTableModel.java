@@ -20,10 +20,10 @@ import rs.ruta.common.datamapper.DetailException;
 public class ActiveProductListTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
 	private static String[] columnNames =
 		{
-			Messages.getString("ActiveProductListTableModel.1"), Messages.getString("ActiveProductListTableModel.2"), Messages.getString("ActiveProductListTableModel.3"), Messages.getString("ActiveProductListTableModel.4"), Messages.getString("ActiveProductListTableModel.5"), Messages.getString("ActiveProductListTableModel.6"), Messages.getString("ActiveProductListTableModel.7"), Messages.getString("ActiveProductListTableModel.8"), Messages.getString("ActiveProductListTableModel.9"), Messages.getString("ActiveProductListTableModel.10") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+			Messages.getString("ActiveProductListTableModel.1"), Messages.getString("ActiveProductListTableModel.2"), Messages.getString("ActiveProductListTableModel.3"), Messages.getString("ActiveProductListTableModel.4"), Messages.getString("ActiveProductListTableModel.5"), Messages.getString("ActiveProductListTableModel.6"), Messages.getString("ActiveProductListTableModel.7"), Messages.getString("ActiveProductListTableModel.8"), Messages.getString("ActiveProductListTableModel.9"), Messages.getString("ActiveProductListTableModel.10")          
 		};
 
 	private MyParty myParty;
@@ -128,9 +128,9 @@ public class ActiveProductListTableModel extends DefaultTableModel
 		{
 			EventQueue.invokeLater(() ->
 			{
-				JOptionPane.showMessageDialog(null, e.getMessage(), Messages.getString("ActiveProductListTableModel.11"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(null, e.getMessage(), Messages.getString("ActiveProductListTableModel.11"), JOptionPane.ERROR_MESSAGE); 
 			});
-			logger.error(Messages.getString("ActiveProductListTableModel.12"), e); //$NON-NLS-1$
+			logger.error(Messages.getString("ActiveProductListTableModel.12"), e); 
 		}
 	}
 

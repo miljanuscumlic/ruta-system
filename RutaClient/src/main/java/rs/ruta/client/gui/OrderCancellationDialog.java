@@ -71,9 +71,9 @@ public class OrderCancellationDialog extends JDialog
 		buttonPanel.addMouseListener(tableFocus);
 		add(buttonPanel, BorderLayout.SOUTH);
 
-		JButton sendButton = new JButton(Messages.getString("OrderCancellationDialog.0")); //$NON-NLS-1$
-		JButton discardButton = new JButton(Messages.getString("OrderCancellationDialog.1")); //$NON-NLS-1$
-		JButton closeButton = new JButton(Messages.getString("OrderCancellationDialog.2")); //$NON-NLS-1$
+		JButton sendButton = new JButton(Messages.getString("OrderCancellationDialog.0")); 
+		JButton discardButton = new JButton(Messages.getString("OrderCancellationDialog.1")); 
+		JButton closeButton = new JButton(Messages.getString("OrderCancellationDialog.2")); 
 
 		sendButton.addActionListener(event ->
 		{
@@ -89,7 +89,7 @@ public class OrderCancellationDialog extends JDialog
 				missing = true;
 			}
 
-			if(!missing && !"".equals(cancellationNote)) //$NON-NLS-1$
+			if(!missing && !"".equals(cancellationNote)) 
 			{
 				sendPressed = true;
 				if(corr != null)
@@ -105,7 +105,7 @@ public class OrderCancellationDialog extends JDialog
 						}
 						catch(Exception e)
 						{
-							owner.appendToConsole(new StringBuilder(Messages.getString("OrderCancellationDialog.4")), Color.RED); //$NON-NLS-1$
+							owner.appendToConsole(new StringBuilder(Messages.getString("OrderCancellationDialog.4")), Color.RED); 
 						}
 					}).start();
 				}
@@ -113,8 +113,8 @@ public class OrderCancellationDialog extends JDialog
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(OrderCancellationDialog.this, Messages.getString("OrderCancellationDialog.5"), //$NON-NLS-1$
-						Messages.getString("OrderCancellationDialog.6"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(OrderCancellationDialog.this, Messages.getString("OrderCancellationDialog.5"), 
+						Messages.getString("OrderCancellationDialog.6"), JOptionPane.ERROR_MESSAGE); 
 			}
 
 		});
@@ -183,7 +183,7 @@ public class OrderCancellationDialog extends JDialog
 	private static class CancellationTableModel extends DefaultTableModel
 	{
 		private static final long serialVersionUID = -3976099918438412530L;
-		private static final String [] rowNames = { Messages.getString("OrderCancellationDialog.7"), Messages.getString("OrderCancellationDialog.8"), Messages.getString("OrderCancellationDialog.9"), Messages.getString("OrderCancellationDialog.10"), Messages.getString("OrderCancellationDialog.11") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		private static final String [] rowNames = { Messages.getString("OrderCancellationDialog.7"), Messages.getString("OrderCancellationDialog.8"), Messages.getString("OrderCancellationDialog.9"), Messages.getString("OrderCancellationDialog.10"), Messages.getString("OrderCancellationDialog.11") };     
 		private boolean editable;
 
 		public CancellationTableModel(boolean editable)
@@ -219,7 +219,7 @@ public class OrderCancellationDialog extends JDialog
 				switch(row)
 				{
 				case 0 :
-					return Messages.getString("OrderCancellationDialog.12"); //$NON-NLS-1$
+					return Messages.getString("OrderCancellationDialog.12"); 
 				case 1:
 					return orderCancellation.getIDValue();
 				case 2:

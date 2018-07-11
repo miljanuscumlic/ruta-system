@@ -56,9 +56,9 @@ public class CreateCatalogueProcess extends CatalogueProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("CreateCatalogueProcess.0"), e1); //$NON-NLS-1$
+				throw new StateActivityException(Messages.getString("CreateCatalogueProcess.0"), e1); 
 			}
-			throw new StateActivityException(Messages.getString("CreateCatalogueProcess.1"), e); //$NON-NLS-1$
+			throw new StateActivityException(Messages.getString("CreateCatalogueProcess.1"), e); 
 		}
 		finally
 		{

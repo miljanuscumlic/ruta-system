@@ -62,7 +62,7 @@ public class Party extends PartyType
 
 	public void setPartySimpleName(String value)
 	{
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			setPartyName(null);
 		else
 		{
@@ -105,7 +105,7 @@ public class Party extends PartyType
 		List<PartyLegalEntityType> legalEntities = getPartyLegalEntity();
 		if(legalEntities.isEmpty())
 			legalEntities.add(new PartyLegalEntityType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).setRegistrationName((RegistrationNameType) null);
 		else
 		{
@@ -134,7 +134,7 @@ public class Party extends PartyType
 		List<PartyLegalEntityType> legalEntities = getPartyLegalEntity();
 		if(legalEntities.isEmpty())
 			legalEntities.add(new PartyLegalEntityType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).setCompanyID((CompanyIDType) null);
 		else
 		{
@@ -162,7 +162,7 @@ public class Party extends PartyType
 		List<PartyLegalEntityType> legalEntities = getPartyLegalEntity();
 		if(legalEntities.isEmpty())
 			legalEntities.add(new PartyLegalEntityType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).setRegistrationDate((RegistrationDateType) null);
 		else
 		{
@@ -200,7 +200,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setStreetName((StreetNameType) null);
 		else
 		{
@@ -231,7 +231,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setBuildingNumber((BuildingNumberType) null);
 		else
 		{
@@ -258,7 +258,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setFloor((FloorType) null);
 		else
 		{
@@ -285,7 +285,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setRoom((RoomType) null);
 		else
 		{
@@ -312,7 +312,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setBuildingName((BuildingNameType) null);
 		else
 		{
@@ -339,7 +339,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setCitySubdivisionName((CitySubdivisionNameType) null);
 		else
 		{
@@ -370,7 +370,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setCityName((CityNameType) null);
 		else
 		{
@@ -397,7 +397,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setPostalZone((PostalZoneType) null);
 		else
 		{
@@ -424,7 +424,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setCountrySubentity((CountrySubentityType) null);
 		else
 		{
@@ -455,7 +455,7 @@ public class Party extends PartyType
 			legalEntities.add(new PartyLegalEntityType());
 		if(legalEntities.get(0).getRegistrationAddress() == null)
 			legalEntities.get(0).setRegistrationAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			legalEntities.get(0).getRegistrationAddress().setCountry((CountryType) null);
 		else
 		{
@@ -479,7 +479,7 @@ public class Party extends PartyType
 
 	public void setClassificationCode(String value)
 	{
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			super.setIndustryClassificationCode((IndustryClassificationCodeType) null);
 		else
 		{
@@ -503,7 +503,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setStreetName((StreetNameType) null);
 		else
 		{
@@ -527,7 +527,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setBuildingNumber((BuildingNumberType) null);
 		else
 		{
@@ -551,7 +551,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setFloor((FloorType) null);
 		else
 		{
@@ -575,7 +575,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setRoom((RoomType) null);
 		else
 		{
@@ -599,7 +599,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setBuildingName((BuildingNameType) null);
 		else
 		{
@@ -623,7 +623,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setCitySubdivisionName((CitySubdivisionNameType) null);
 		else
 		{
@@ -647,7 +647,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setCityName((CityNameType) null);
 		else
 		{
@@ -671,7 +671,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setPostalZone((PostalZoneType) null);
 		else
 		{
@@ -695,7 +695,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setCountrySubentity((CountrySubentityType) null);
 		else
 		{
@@ -719,7 +719,7 @@ public class Party extends PartyType
 	{
 		if(getPostalAddress() == null)
 			setPostalAddress(new AddressType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getPostalAddress().setCountry((CountryType) null);
 		else
 		{
@@ -745,7 +745,7 @@ public class Party extends PartyType
 	{
 		if(getContact() == null)
 			setContact(new ContactType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getContact().setName((NameType) null);
 		else
 		{
@@ -769,7 +769,7 @@ public class Party extends PartyType
 	{
 		if(getContact() == null)
 			setContact(new ContactType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getContact().setTelephone((TelephoneType) null);
 		else
 		{
@@ -793,7 +793,7 @@ public class Party extends PartyType
 	{
 		if(getContact() == null)
 			setContact(new ContactType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getContact().setTelefax((TelefaxType) null);
 		else
 		{
@@ -817,7 +817,7 @@ public class Party extends PartyType
 	{
 		if(getContact() == null)
 			setContact(new ContactType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getContact().setElectronicMail((ElectronicMailType) null);
 		else
 		{
@@ -841,7 +841,7 @@ public class Party extends PartyType
 	{
 		if(getContact() == null)
 			setContact(new ContactType());
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			getContact().setNote((List<NoteType>) null);
 		else
 		{
@@ -863,7 +863,7 @@ public class Party extends PartyType
 
 	public void setWebsite(String value)
 	{
-		if(value == null || "".equals(value)) //$NON-NLS-1$
+		if(value == null || "".equals(value)) 
 			setWebsiteURI((WebsiteURIType) null);
 		else
 		{
@@ -892,7 +892,7 @@ public class Party extends PartyType
 	public String getPartyID()
 	{
 		String ID = InstanceFactory.getPropertyOrNull(super.getPartyIdentification().get(0).getID(), IDType::getValue);
-		return ("").equals(ID) ? null : ID; //$NON-NLS-1$
+		return ("").equals(ID) ? null : ID; 
 	}
 
 	/**
@@ -903,7 +903,7 @@ public class Party extends PartyType
 	public static String getPartyID(PartyType party)
 	{
 		String ID = InstanceFactory.getPropertyOrNull(party.getPartyIdentification().get(0).getID(), IDType::getValue);
-		return ("").equals(ID) ? null : ID; //$NON-NLS-1$
+		return ("").equals(ID) ? null : ID; 
 	}
 
 	/**
@@ -914,19 +914,19 @@ public class Party extends PartyType
 	{
 		String missingField = null;
 		if(getPartySimpleName() == null)
-			missingField = Messages.getString("Party.33"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.33"); 
 		else if(getRegistrationName() == null)
-			missingField = Messages.getString("Party.34"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.34"); 
 		else if(getCompanyID() == null)
-			missingField = Messages.getString("Party.35"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.35"); 
 		else if(getRegistrationStreetName() == null)
-			missingField = Messages.getString("Party.36"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.36"); 
 		else if(getRegistrationBuildingNumber() == null)
-			missingField = Messages.getString("Party.37"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.37"); 
 		else if(getRegistrationCityName() == null)
-			missingField = Messages.getString("Party.38"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.38"); 
 		else if(getRegistrationCountry() == null)
-			missingField = Messages.getString("Party.39"); //$NON-NLS-1$
+			missingField = Messages.getString("Party.39"); 
 		return missingField;
 	}
 
