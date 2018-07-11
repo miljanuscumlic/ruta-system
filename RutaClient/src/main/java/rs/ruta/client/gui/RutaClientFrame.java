@@ -4,12 +4,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Properties;
 import java.util.concurrent.Future;
+
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -55,9 +63,9 @@ import rs.ruta.services.RutaException;
 public class RutaClientFrame extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = -6582749886269431483L;
-	private static final String DEFAULT_WIDTH = "1000"; 
-	private static final String DEFAULT_HEIGHT = "800"; 
-	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
+	private static final String DEFAULT_WIDTH = "1000";
+	private static final String DEFAULT_HEIGHT = "800";
+	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.client");
 	public static final int TAB_PRODUCTS = 0;
 	public static final int TAB_CORRESPONDENSCES = 1;
 	public static final int TAB_CDR_DATA = 2;
@@ -77,22 +85,22 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private BugExploreDialog bugExploreDialog;
 	private JFileChooser chooser;
 
-	private JMenuItem myPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.3")); 
-	private JMenuItem myCatalogueItem = new JMenuItem(Messages.getString("RutaClientFrame.4")); 
-	private JMenuItem newProductItem = new JMenuItem(Messages.getString("RutaClientFrame.5")); 
-	private JMenuItem saveDataItem = new JMenuItem(Messages.getString("RutaClientFrame.6")); 
-	private JMenuItem localRegisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.7")); 
-	private JMenuItem localDeregisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.8")); 
-	private JMenuItem exitItem = new JMenuItem(Messages.getString("RutaClientFrame.9")); 
+	private JMenuItem myPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.3"));
+	private JMenuItem myCatalogueItem = new JMenuItem(Messages.getString("RutaClientFrame.4"));
+	private JMenuItem newProductItem = new JMenuItem(Messages.getString("RutaClientFrame.5"));
+	private JMenuItem saveDataItem = new JMenuItem(Messages.getString("RutaClientFrame.6"));
+	private JMenuItem localRegisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.7"));
+	private JMenuItem localDeregisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.8"));
+	private JMenuItem exitItem = new JMenuItem(Messages.getString("RutaClientFrame.9"));
 
-	private JMenuItem cdrGetDocumentsItem = new JMenuItem(Messages.getString("RutaClientFrame.10")); 
-	private JMenuItem cdrSearchItem = new JMenuItem(Messages.getString("RutaClientFrame.11")); 
-	private JMenuItem cdrUpdateCatalogueItem = new JMenuItem(Messages.getString("RutaClientFrame.12")); 
-	private JMenuItem cdrDeleteCatalogueItem = new JMenuItem(Messages.getString("RutaClientFrame.13")); 
-	private JMenuItem cdrUpdatePartyItem = new JMenuItem(Messages.getString("RutaClientFrame.14")); 
-	private JMenuItem cdrRegisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.15")); 
-	private JMenuItem cdrDeregisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.16")); 
-	private JMenuItem cdrSettingsItem = new JMenuItem(Messages.getString("RutaClientFrame.17")); 
+	private JMenuItem cdrGetDocumentsItem = new JMenuItem(Messages.getString("RutaClientFrame.10"));
+	private JMenuItem cdrSearchItem = new JMenuItem(Messages.getString("RutaClientFrame.11"));
+	private JMenuItem cdrUpdateCatalogueItem = new JMenuItem(Messages.getString("RutaClientFrame.12"));
+	private JMenuItem cdrDeleteCatalogueItem = new JMenuItem(Messages.getString("RutaClientFrame.13"));
+	private JMenuItem cdrUpdatePartyItem = new JMenuItem(Messages.getString("RutaClientFrame.14"));
+	private JMenuItem cdrRegisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.15"));
+	private JMenuItem cdrDeregisterPartyItem = new JMenuItem(Messages.getString("RutaClientFrame.16"));
+	private JMenuItem cdrSettingsItem = new JMenuItem(Messages.getString("RutaClientFrame.17"));
 
 	private TabComponent tabCDR;
 	private TabComponent tabProducts;
@@ -111,15 +119,28 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		//get frame related properties
 		final Properties properties = client.getProperties();
-		final int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));  
-		final int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));  
-		int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH)); 
-		int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT)); 
+		final int left = Integer.parseInt(properties.getProperty("mainFrame.left", "0"));
+		final int top = Integer.parseInt(properties.getProperty("mainFrame.top", "0"));
+		int width = Integer.parseInt(properties.getProperty("mainFrame.width", DEFAULT_WIDTH));
+		int height = Integer.parseInt(properties.getProperty("mainFrame.height", DEFAULT_HEIGHT));
 		setBounds(left, top, width, height);
-		setTitle(Messages.getString("RutaClientFrame.24") + client.getMyParty().getPartySimpleName()); 
+		setTitle(Messages.getString("RutaClientFrame.24") + client.getMyParty().getPartySimpleName());
+
+		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		final InputStream iconStream = classLoader.getResourceAsStream("ruta.png");
+		Image rutaIcon = null;
+		try
+		{
+			rutaIcon =  ImageIO.read(iconStream);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		setIconImage(rutaIcon);
 
 		chooser = new JFileChooser();
-		final FileFilter filter = new FileNameExtensionFilter("XML files", "xml");  
+		final FileFilter filter = new FileNameExtensionFilter("XML files", "xml");
 		chooser.setFileFilter(filter);
 
 		addWindowListener(new WindowAdapter()
@@ -153,11 +174,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		//setting tabs
 		tabbedPane = new JTabbedPane();
 		tabProducts = new TabProducts(this);
-		tabbedPane.addTab(Messages.getString("RutaClientFrame.27"), tabProducts); 
+		tabbedPane.addTab(Messages.getString("RutaClientFrame.27"), tabProducts);
 		tabCorrespondences = new TabCorrespondences(this);
-		tabbedPane.addTab(Messages.getString("RutaClientFrame.28"), tabCorrespondences); 
+		tabbedPane.addTab(Messages.getString("RutaClientFrame.28"), tabCorrespondences);
 		tabCDR = new TabCDRData(this);
-		tabbedPane.addTab(Messages.getString("RutaClientFrame.29"), tabCDR); 
+		tabbedPane.addTab(Messages.getString("RutaClientFrame.29"), tabCDR);
 
 		tabbedPane.addChangeListener(event ->
 		{
@@ -183,9 +204,9 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		//setting the menu
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		JMenu localDataMenu = new JMenu(Messages.getString("RutaClientFrame.30")); 
-		JMenu cdrMenu = new JMenu(Messages.getString("RutaClientFrame.31")); 
-		JMenu helpMenu = new JMenu(Messages.getString("RutaClientFrame.32")); 
+		JMenu localDataMenu = new JMenu(Messages.getString("RutaClientFrame.30"));
+		JMenu cdrMenu = new JMenu(Messages.getString("RutaClientFrame.31"));
+		JMenu helpMenu = new JMenu(Messages.getString("RutaClientFrame.32"));
 		menuBar.add(localDataMenu);
 		menuBar.add(cdrMenu);
 		menuBar.add(helpMenu);
@@ -203,7 +224,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		myPartyItem.addActionListener(event ->
 		{
-			showPartyDialog(client.getMyParty().getCoreParty(), Messages.getString("RutaClientFrame.33"), true, false); 
+			showPartyDialog(client.getMyParty().getCoreParty(), Messages.getString("RutaClientFrame.33"), true, false);
 		});
 
 		myCatalogueItem.addActionListener(event ->
@@ -213,7 +234,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		newProductItem.addActionListener(event ->
 		{
-			Item product = showProductDialog(client.getMyParty().createEmptyProduct(), Messages.getString("RutaClientFrame.34"), true); 
+			Item product = showProductDialog(client.getMyParty().createEmptyProduct(), Messages.getString("RutaClientFrame.34"), true);
 			if (product != null)
 			{
 				try
@@ -226,10 +247,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}
 				catch (DetailException e)
 				{
-					logger.error(Messages.getString("RutaClientFrame.35"), e); 
+					logger.error(Messages.getString("RutaClientFrame.35"), e);
 					EventQueue.invokeLater(() ->
-					JOptionPane.showMessageDialog(null, Messages.getString("RutaClientFrame.36"), 
-							Messages.getString("RutaClientFrame.37"), JOptionPane.ERROR_MESSAGE)); 
+					JOptionPane.showMessageDialog(null, Messages.getString("RutaClientFrame.36"),
+							Messages.getString("RutaClientFrame.37"), JOptionPane.ERROR_MESSAGE));
 				}
 			}
 			else
@@ -240,7 +261,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 
 		saveDataItem.addActionListener(event ->
 		{
-			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.38")), Color.BLACK); 
+			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.38")), Color.BLACK);
 			new Thread(() ->
 			{
 				try
@@ -248,17 +269,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					if(client.getMyParty().isRegisteredWithLocalDatastore())
 					{
 						client.getMyParty().storeAllData();
-						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.39")), Color.GREEN); 
+						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.39")), Color.GREEN);
 					}
 					else
-						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.40")), 
+						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.40")),
 								Color.RED);
 				}
 				catch(Exception e)
 				{
-					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.41")), 
+					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.41")),
 							Color.RED);
-					getLogger().error(Messages.getString("RutaClientFrame.42"), e); 
+					getLogger().error(Messages.getString("RutaClientFrame.42"), e);
 				}
 			}).start();
 		});
@@ -266,7 +287,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		localRegisterPartyItem.addActionListener(event ->
 		{
 			if(myParty.isRegisteredWithLocalDatastore())
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.43")), Color.BLUE); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.43")), Color.BLUE);
 			else
 			{
 				disablePartyMenuItems();
@@ -275,12 +296,12 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						try
 						{
 							if(!myParty.isRegisteredWithLocalDatastore())
-								client.setInitialUsername(showLocalSignUpDialog(Messages.getString("RutaClientFrame.44"), true)); 
+								client.setInitialUsername(showLocalSignUpDialog(Messages.getString("RutaClientFrame.44"), true));
 						}
 						catch (DetailException e1)
 						{
 							processExceptionAndAppendToConsole(e1,
-									new StringBuilder(Messages.getString("RutaClientFrame.45"))); 
+									new StringBuilder(Messages.getString("RutaClientFrame.45")));
 						}
 				}).start();
 			}
@@ -289,33 +310,33 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		localDeregisterPartyItem.addActionListener(event ->
 		{
 			if(myParty.isRegisteredWithCDR())
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.46")) 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.46"))
 						, Color.RED);
 			else if(myParty.isRegisteredWithLocalDatastore())
 			{
 				int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-						Messages.getString("RutaClientFrame.47"), Messages.getString("RutaClientFrame.48"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);  
+						Messages.getString("RutaClientFrame.47"), Messages.getString("RutaClientFrame.48"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(option == JOptionPane.YES_OPTION)
 				{
 					disablePartyMenuItems();
 					new Thread(() ->
 					{
-						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.49")), Color.BLACK); 
+						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.49")), Color.BLACK);
 						client.localDeregisterMyParty();
-						updateTitle(""); 
-						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.51")), 
+						updateTitle("");
+						appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.51")),
 								Color.GREEN);
 						repaint();
 						EventQueue.invokeLater(() ->
 						{
-							JOptionPane.showMessageDialog(RutaClientFrame.this, Messages.getString("RutaClientFrame.52")); 
+							JOptionPane.showMessageDialog(RutaClientFrame.this, Messages.getString("RutaClientFrame.52"));
 							System.exit(0);
 						});
 					}).start();
 				}
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.53")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.53")), Color.RED);
 		});
 
 		exitItem.addActionListener(event ->
@@ -347,7 +368,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}).start();
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.54")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.54")), Color.RED);
 		});
 
 		cdrSearchItem.addActionListener(event ->
@@ -356,17 +377,17 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				new Thread(() ->
 				{
-					showSearchDialog(Messages.getString("RutaClientFrame.55"), null, true); 
+					showSearchDialog(Messages.getString("RutaClientFrame.55"), null, true);
 				}).start();
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.56")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.56")), Color.RED);
 		});
 
 		cdrRegisterPartyItem.addActionListener(event ->
 		{
 			if(myParty.isRegisteredWithCDR())
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.57")), Color.BLUE); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.57")), Color.BLUE);
 			else
 			{
 				disablePartyMenuItems();
@@ -375,10 +396,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					boolean cdrRegistration = true;
 					if(client.getInitialUsername() == null || !myParty.isRegisteredWithLocalDatastore())
 					{
-						JOptionPane.showMessageDialog(RutaClientFrame.this, Messages.getString("RutaClientFrame.58"), Messages.getString("RutaClientFrame.59"), JOptionPane.INFORMATION_MESSAGE);  
+						JOptionPane.showMessageDialog(RutaClientFrame.this, Messages.getString("RutaClientFrame.58"), Messages.getString("RutaClientFrame.59"), JOptionPane.INFORMATION_MESSAGE);
 						try
 						{
-							final String username = showLocalSignUpDialog(Messages.getString("RutaClientFrame.60"), true); 
+							final String username = showLocalSignUpDialog(Messages.getString("RutaClientFrame.60"), true);
 							if(username != null)
 								client.setInitialUsername(username);
 							else
@@ -387,11 +408,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						catch (DetailException e)
 						{
 							processExceptionAndAppendToConsole(e,
-									new StringBuilder(Messages.getString("RutaClientFrame.61"))); 
+									new StringBuilder(Messages.getString("RutaClientFrame.61")));
 						}
 					}
 					if(cdrRegistration)
-						showCDRSignUpDialog(Messages.getString("RutaClientFrame.62")); 
+						showCDRSignUpDialog(Messages.getString("RutaClientFrame.62"));
 				}).start();
 			}
 		});
@@ -402,14 +423,14 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				if(!myParty.getBusinessPartners().isEmpty())
 				{
-					JOptionPane.showMessageDialog(RutaClientFrame.this, Messages.getString("RutaClientFrame.63"), 
-							Messages.getString("RutaClientFrame.64"), JOptionPane.INFORMATION_MESSAGE); 
+					JOptionPane.showMessageDialog(RutaClientFrame.this, Messages.getString("RutaClientFrame.63"),
+							Messages.getString("RutaClientFrame.64"), JOptionPane.INFORMATION_MESSAGE);
 				}
 				else
 				{
 					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-							Messages.getString("RutaClientFrame.65"), 
-									Messages.getString("RutaClientFrame.66"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); 
+							Messages.getString("RutaClientFrame.65"),
+									Messages.getString("RutaClientFrame.66"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)
 					{
 						disablePartyMenuItems();
@@ -421,7 +442,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				}
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.67")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.67")), Color.RED);
 		});
 
 		cdrUpdatePartyItem.addActionListener(event ->
@@ -430,7 +451,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			{
 				if(myParty.isDirtyMyParty())
 				{
-					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.68")), Color.BLACK); 
+					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.68")), Color.BLACK);
 					disablePartyMenuItems();
 					new Thread(() ->
 					{
@@ -439,10 +460,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					}).start();
 				}
 				else
-					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.69")), Color.BLUE); 
+					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.69")), Color.BLUE);
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.70")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.70")), Color.RED);
 		});
 
 		cdrUpdateCatalogueItem.addActionListener(event ->
@@ -460,18 +481,18 @@ public class RutaClientFrame extends JFrame implements ActionListener
 						}
 						catch(Exception e)
 						{
-							appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.71")). 
+							appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.71")).
 									append(e.getMessage()), Color.RED);
-							logger.error(Messages.getString("RutaClientFrame.72"), e); 
+							logger.error(Messages.getString("RutaClientFrame.72"), e);
 							enableCatalogueMenuItems();
 						}
 					}).start();
 				}
 				else
-					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.73")), Color.BLUE); 
+					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.73")), Color.BLUE);
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.74")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.74")), Color.RED);
 		});
 
 		cdrDeleteCatalogueItem.addActionListener(event ->
@@ -481,8 +502,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				if(myParty.isCatalogueInCDR())
 				{
 					int option = JOptionPane.showConfirmDialog(RutaClientFrame.this,
-							Messages.getString("RutaClientFrame.75"), 
-							Messages.getString("RutaClientFrame.76"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); 
+							Messages.getString("RutaClientFrame.75"),
+							Messages.getString("RutaClientFrame.76"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(option == JOptionPane.YES_OPTION)
 					{
 						disableCatalogueMenuItems();
@@ -494,7 +515,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 							}
 							catch(Exception e)
 							{
-								appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.77")). 
+								appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.77")).
 										append(e.getMessage()), Color.RED);
 								enableCatalogueMenuItems();
 							}
@@ -502,16 +523,16 @@ public class RutaClientFrame extends JFrame implements ActionListener
 					}
 				}
 				else
-					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.78")), Color.RED); 
+					appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.78")), Color.RED);
 			}
 			else
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.79")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.79")), Color.RED);
 		});
 
 		cdrSettingsItem.addActionListener(event ->
 		{
 			settingsDialog = new CDRSettingsDialog(RutaClientFrame.this);
-			settingsDialog.setTitle(Messages.getString("RutaClientFrame.80")); 
+			settingsDialog.setTitle(Messages.getString("RutaClientFrame.80"));
 			settingsDialog.setVisible(true);
 			if(settingsDialog.isApplyPressed())
 			{
@@ -522,13 +543,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}
 		});
 
-		JMenuItem aboutItem = new JMenuItem(Messages.getString("RutaClientFrame.81")); 
+		JMenuItem aboutItem = new JMenuItem(Messages.getString("RutaClientFrame.81"));
 		helpMenu.add(aboutItem);
-		JMenuItem updateItem = new JMenuItem(Messages.getString("RutaClientFrame.82")); 
+		JMenuItem updateItem = new JMenuItem(Messages.getString("RutaClientFrame.82"));
 		helpMenu.add(updateItem);
-		JMenuItem reportBugItem = new JMenuItem(Messages.getString("RutaClientFrame.83")); 
+		JMenuItem reportBugItem = new JMenuItem(Messages.getString("RutaClientFrame.83"));
 		helpMenu.add(reportBugItem);
-		JMenuItem exploreBugItem = new JMenuItem(Messages.getString("RutaClientFrame.84")); 
+		JMenuItem exploreBugItem = new JMenuItem(Messages.getString("RutaClientFrame.84"));
 		helpMenu.add(exploreBugItem);
 
 		aboutItem.addActionListener(event ->
@@ -562,7 +583,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}
 			else
 			{
-				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.85")), Color.RED); 
+				appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.85")), Color.RED);
 			}
 		});
 
@@ -588,11 +609,11 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		//setting tabs
 		tabbedPane = new JTabbedPane();
 		tabProducts = new TabProducts(this);
-		tabbedPane.addTab(Messages.getString("RutaClientFrame.86"), tabProducts); 
+		tabbedPane.addTab(Messages.getString("RutaClientFrame.86"), tabProducts);
 		tabCorrespondences = new TabCorrespondences(this);
-		tabbedPane.addTab(Messages.getString("RutaClientFrame.87"), tabCorrespondences); 
+		tabbedPane.addTab(Messages.getString("RutaClientFrame.87"), tabCorrespondences);
 		tabCDR = new TabCDRData(this);
-		tabbedPane.addTab(Messages.getString("RutaClientFrame.88"), tabCDR); 
+		tabbedPane.addTab(Messages.getString("RutaClientFrame.88"), tabCDR);
 
 		tabbedPane.addChangeListener(event ->
 		{
@@ -630,7 +651,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			}
 		}
 		else
-			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.89")), Color.RED); 
+			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.89")), Color.RED);
 	}
 
 	/**
@@ -645,7 +666,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		if(client.getMyParty().isRegisteredWithCDR())
 			future = client.cdrSearchBugReport(criterion);
 		else
-			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.90")), Color.RED); 
+			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.90")), Color.RED);
 		return future;
 	}
 
@@ -660,7 +681,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		if(client.getMyParty().isRegisteredWithCDR())
 			future = client.cdrFindAllBugs();
 		else
-			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.91")), Color.RED); 
+			appendToConsole(new StringBuilder(Messages.getString("RutaClientFrame.91")), Color.RED);
 		return future;
 	}
 
@@ -776,10 +797,10 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void saveProperties()
 	{
 		Properties properties = client.getProperties();
-		properties.put("mainFrame.left", String.valueOf(getX())); 
-		properties.put("mainFrame.top", String.valueOf(getY())); 
-		properties.put("mainFrame.width", String.valueOf(getWidth())); 
-		properties.put("mainFrame.height", String.valueOf(getHeight())); 
+		properties.put("mainFrame.left", String.valueOf(getX()));
+		properties.put("mainFrame.top", String.valueOf(getY()));
+		properties.put("mainFrame.width", String.valueOf(getWidth()));
+		properties.put("mainFrame.height", String.valueOf(getHeight()));
 	}
 
 	/**
@@ -869,7 +890,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		boolean registerPressed = false;
 		registerDialog = new RegisterDialog(RutaClientFrame.this, false, false, true);
-		registerDialog.setTitle(Messages.getString("RutaClientFrame.96") + title); 
+		registerDialog.setTitle(Messages.getString("RutaClientFrame.96") + title);
 		registerDialog.setVisible(true);
 		registerPressed = registerDialog.isOKPressed();
 		registerDialog.setOKPressed(false);
@@ -894,7 +915,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		String username = null;
 		registerDialog = new RegisterDialog(RutaClientFrame.this, false, true, mayExit);
-		registerDialog.setTitle(Messages.getString("RutaClientFrame.97") + title); 
+		registerDialog.setTitle(Messages.getString("RutaClientFrame.97") + title);
 		registerDialog.setVisible(true);
 		if(registerDialog.isOKPressed())
 		{
@@ -905,13 +926,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			final Properties properties = client.getProperties();
 			if(registerDialog.isRememberMe())
 			{
-				properties.setProperty("username", username); 
-				properties.setProperty("password", password); 
+				properties.setProperty("username", username);
+				properties.setProperty("password", password);
 			}
 			else
 			{
-				properties.remove("username"); 
-				properties.remove("password"); 
+				properties.remove("username");
+				properties.remove("password");
 			}
 		}
 		EventQueue.invokeLater(() -> enablePartyMenuItems());
@@ -929,7 +950,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		boolean success = false;
 		client.setEnableStoringProperties(false);// do not store properties if log-in is unsuccessful
 		registerDialog = new RegisterDialog(RutaClientFrame.this, true, true, false);
-		registerDialog.setTitle(Messages.getString("RutaClientFrame.102") + title); 
+		registerDialog.setTitle(Messages.getString("RutaClientFrame.102") + title);
 		registerDialog.setVisible(true);
 		if(registerDialog.isOKPressed())
 		{
@@ -939,14 +960,14 @@ public class RutaClientFrame extends JFrame implements ActionListener
 			final String username = registerDialog.getUsername();
 			final String password = registerDialog.getPassword();
 			final Properties properties = client.getProperties();
-			properties.setProperty("username", username); 
-			properties.setProperty("password", password); 
+			properties.setProperty("username", username);
+			properties.setProperty("password", password);
 			success = client.isLocalUserRegistеred();
 
 			if(!registerDialog.isRememberMe())
 			{
-				properties.remove("username"); 
-				properties.remove("password"); 
+				properties.remove("username");
+				properties.remove("password");
 			}
 		}
 		return success;
@@ -972,7 +993,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		else if(searchDialog.isDerivedPressed())
 		{
 			searchDialog.setDerivedPressed(false);
-			showSearchDialog(Messages.getString("RutaClientFrame.107"), search, true); 
+			showSearchDialog(Messages.getString("RutaClientFrame.107"), search, true);
 		}
 	}
 
@@ -1053,7 +1074,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public String showProcessOrderResponseDialog(OrderResponseType orderResponse)
 	{
 		final ProcessOrderResponseDialog processDialog = new ProcessOrderResponseDialog(RutaClientFrame.this, orderResponse);
-		processDialog.setTitle(Messages.getString("RutaClientFrame.108")); 
+		processDialog.setTitle(Messages.getString("RutaClientFrame.108"));
 		processDialog.setVisible(true);
 		return processDialog.getDecision();
 	}
@@ -1069,7 +1090,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		final ProcessOrderResponseSimpleDialog processDialog =
 				new ProcessOrderResponseSimpleDialog(RutaClientFrame.this, orderResponseSimple,
 						orderResponseSimple.isAcceptedIndicatorValue(false));
-		processDialog.setTitle(Messages.getString("RutaClientFrame.109")); 
+		processDialog.setTitle(Messages.getString("RutaClientFrame.109"));
 		processDialog.setVisible(true);
 		return processDialog.getDecision();
 	}
@@ -1095,9 +1116,9 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		if(title != null)
 			orderResponseDialog.setTitle(title);
 		else if(orderResponseSimple.isAcceptedIndicatorValue(false))
-			orderResponseDialog.setTitle(Messages.getString("RutaClientFrame.110")); 
+			orderResponseDialog.setTitle(Messages.getString("RutaClientFrame.110"));
 		else
-			orderResponseDialog.setTitle(Messages.getString("RutaClientFrame.111")); 
+			orderResponseDialog.setTitle(Messages.getString("RutaClientFrame.111"));
 		orderResponseDialog.setVisible(true);
 		if(orderResponseDialog.isSendPressed())
 		{
@@ -1197,7 +1218,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		final ProcessApplicationResponseDialog processDialog =
 				new ProcessApplicationResponseDialog(RutaClientFrame.this, applicationResponse);
-		processDialog.setTitle(Messages.getString("RutaClientFrame.112")); 
+		processDialog.setTitle(Messages.getString("RutaClientFrame.112"));
 		processDialog.setVisible(true);
 		return processDialog.getDecision();
 	}
@@ -1235,7 +1256,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public String showProcessInvoiceDialog(InvoiceType invoice)
 	{
 		final ProcessInvoiceDialog processInvoiceDialog = new ProcessInvoiceDialog(RutaClientFrame.this, invoice);
-		processInvoiceDialog.setTitle(Messages.getString("RutaClientFrame.113")); 
+		processInvoiceDialog.setTitle(Messages.getString("RutaClientFrame.113"));
 		processInvoiceDialog.setVisible(true);
 		return processInvoiceDialog.getDecision();
 	}
@@ -1271,7 +1292,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	public void updateTitle(String partyName)
 	{
-		setTitle(Messages.getString("RutaClientFrame.114") + partyName); 
+		setTitle(Messages.getString("RutaClientFrame.114") + partyName);
 	}
 
 	/**
@@ -1281,9 +1302,9 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	public void updateTitle(boolean dirty)
 	{
 		if(dirty)
-			setTitle(getTitle().replaceAll("[*]+$", "") + "*");   
+			setTitle(getTitle().replaceAll("[*]+$", "") + "*");
 		else
-			setTitle(getTitle().replaceAll("[*]+$", ""));  
+			setTitle(getTitle().replaceAll("[*]+$", ""));
 	}
 
 	@Override
@@ -1343,13 +1364,13 @@ public class RutaClientFrame extends JFrame implements ActionListener
 				StyledDocument doc = consolePane.getStyledDocument();
 				try
 				{
-					doc.insertString(doc.getLength(), formatter.format(LocalDateTime.now()) + ": ", aset); 
+					doc.insertString(doc.getLength(), formatter.format(LocalDateTime.now()) + ": ", aset);
 					aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
-					doc.insertString(doc.getLength(), textBuilder.append("\n").toString(), aset); 
+					doc.insertString(doc.getLength(), textBuilder.append("\n").toString(), aset);
 				}
 				catch (BadLocationException e)
 				{
-					getLogger().error(Messages.getString("RutaClientFrame.122"), e); 
+					getLogger().error(Messages.getString("RutaClientFrame.122"), e);
 				}
 				consolePane.setCaretPosition(consolePane.getDocument().getLength());
 			});
@@ -1364,22 +1385,22 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	private StringBuilder processException(Exception e, StringBuilder msgBuilder, boolean recursion)
 	{
-		msgBuilder = msgBuilder.append(" "); 
+		msgBuilder = msgBuilder.append(" ");
 		final Throwable cause = e.getCause();
 		final String errorMessage = e.getMessage();
 		if(errorMessage != null && (cause == null || (cause != null && cause.getClass() != RutaException.class)))
 			if(e instanceof RutaException)
-				msgBuilder.append(Messages.getString("RutaClientFrame.124")).append(errorMessage).append(" ").  
+				msgBuilder.append(Messages.getString("RutaClientFrame.124")).append(errorMessage).append(" ").
 				append(((RutaException) e).getFaultInfo().getDetail());
 			else
-				msgBuilder.append(Messages.getString("RutaClientFrame.126")).append(trimSOAPFaultMessage(errorMessage)); 
+				msgBuilder.append(Messages.getString("RutaClientFrame.126")).append(trimSOAPFaultMessage(errorMessage));
 		if(cause != null)
 		{
 			if(cause instanceof RutaException)
-				msgBuilder.append(Messages.getString("RutaClientFrame.127")).append(cause.getMessage()).append(" ").  
+				msgBuilder.append(Messages.getString("RutaClientFrame.127")).append(cause.getMessage()).append(" ").
 				append(((RutaException) cause).getFaultInfo().getDetail());
 			else if(cause.getMessage() != null)
-				msgBuilder.append(Messages.getString("RutaClientFrame.129")).append(trimSOAPFaultMessage(cause.getMessage())); 
+				msgBuilder.append(Messages.getString("RutaClientFrame.129")).append(trimSOAPFaultMessage(cause.getMessage()));
 		if(cause.getCause() != null)
 			processException((Exception) cause.getCause(), msgBuilder, false);
 		}
@@ -1396,7 +1417,7 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	{
 		processException(e, msgBuilder, true);
 		appendToConsole(msgBuilder, Color.RED);
-		getLogger().error(msgBuilder.toString() + Messages.getString("RutaClientFrame.130"), e); 
+		getLogger().error(msgBuilder.toString() + Messages.getString("RutaClientFrame.130"), e);
 	}
 
 	/**
@@ -1406,8 +1427,8 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	 */
 	private String trimSOAPFaultMessage(String message)
 	{
-		return message.replaceFirst("(.*?)Client received SOAP Fault from server: (.+) " 
-				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$2");  
+		return message.replaceFirst("(.*?)Client received SOAP Fault from server: (.+) "
+				+ "Please see the server log to find more detail regarding exact cause of the failure.", "$2");
 	}
 
 }
