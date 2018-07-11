@@ -11,8 +11,8 @@ import rs.ruta.client.MyParty;
 public class ProductTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = -2524672299973742238L;
-	private static final String ACTIVE = "In Stock";
-	private static final String ARCHIVED = "Out of Stock";
+	private static final String ACTIVE = Messages.getString("ProductTreeModel.0"); //$NON-NLS-1$
+	private static final String ARCHIVED = Messages.getString("ProductTreeModel.1"); //$NON-NLS-1$
 
 	public ProductTreeModel(TreeNode root, MyParty myParty)
 	{

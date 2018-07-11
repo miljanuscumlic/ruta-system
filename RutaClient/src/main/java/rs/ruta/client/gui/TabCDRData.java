@@ -56,16 +56,16 @@ import rs.ruta.common.datamapper.DetailException;
 public class TabCDRData extends TabComponent
 {
 	private static final long serialVersionUID = -2833805682921078609L;
-	private static final String CATALOGUES = "Catalogues";
-	private static final String PARTIES = "Parties";
-	private static final String MY_PARTY = "My Party";
-	private static final String SEARCHES = "Searches";
-	private static final String FOLLOWINGS = "Followings";
-	private static final String ARCHIVED_PARTIES = "Archived Parties";
-	private static final String OTHER_PARTIES = "Other Parties";
-	private static final String BUSINESS_PARTNERS = "Business Partners";
-	private static final String SENT = "Sent";
-	private static final String RECEIVED = "Received";
+	private static final String CATALOGUES = Messages.getString("TabCDRData.0"); //$NON-NLS-1$
+	private static final String PARTIES = Messages.getString("TabCDRData.1"); //$NON-NLS-1$
+	private static final String MY_PARTY = Messages.getString("TabCDRData.2"); //$NON-NLS-1$
+	private static final String SEARCHES = Messages.getString("TabCDRData.3"); //$NON-NLS-1$
+	private static final String FOLLOWINGS = Messages.getString("TabCDRData.4"); //$NON-NLS-1$
+	private static final String ARCHIVED_PARTIES = Messages.getString("TabCDRData.5"); //$NON-NLS-1$
+	private static final String OTHER_PARTIES = Messages.getString("TabCDRData.6"); //$NON-NLS-1$
+	private static final String BUSINESS_PARTNERS = Messages.getString("TabCDRData.7"); //$NON-NLS-1$
+	private static final String SENT = Messages.getString("TabCDRData.8"); //$NON-NLS-1$
+	private static final String RECEIVED = Messages.getString("TabCDRData.9"); //$NON-NLS-1$
 
 	private final JTree partyTree;
 	private final JTree searchTree;
@@ -199,12 +199,12 @@ public class TabCDRData extends TabComponent
 		});
 
 		JPopupMenu partyTreePopupMenu = new JPopupMenu();
-		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
-		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow Party");
-		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
-		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
-		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
-		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+		final JMenuItem followPartyItem = new JMenuItem(Messages.getString("TabCDRData.10")); //$NON-NLS-1$
+		final JMenuItem unfollowPartyItem = new JMenuItem(Messages.getString("TabCDRData.11")); //$NON-NLS-1$
+		final JMenuItem requestPartnershipItem = new JMenuItem(Messages.getString("TabCDRData.12")); //$NON-NLS-1$
+		final JMenuItem breakPartnershipItem = new JMenuItem(Messages.getString("TabCDRData.13")); //$NON-NLS-1$
+		final JMenuItem deleteArchivedItem = new JMenuItem(Messages.getString("TabCDRData.14")); //$NON-NLS-1$
+		final JMenuItem viewPartyItem = new JMenuItem(Messages.getString("TabCDRData.15")); //$NON-NLS-1$
 
 		viewPartyItem.addActionListener(event ->
 		{
@@ -212,7 +212,7 @@ public class TabCDRData extends TabComponent
 			if(selectedParty == null) return;
 			new Thread(() ->
 			{
-				clientFrame.showPartyDialog(((BusinessParty) selectedParty).getCoreParty(), "View Party", false, false);
+				clientFrame.showPartyDialog(((BusinessParty) selectedParty).getCoreParty(), Messages.getString("TabCDRData.16"), false, false); //$NON-NLS-1$
 			}).start();
 		});
 
@@ -231,10 +231,9 @@ public class TabCDRData extends TabComponent
 			final Object selectedParty = getSelectedUserObject(partyTree);
 			if(selectedParty == null) return;
 			int option = JOptionPane.showConfirmDialog(clientFrame,
-					"By breaking up the Partnership with " + ((BusinessParty) selectedParty).getPartySimpleName() +
-					" party, you will not be able to do the business\nthrough the Ruta System with it." +
-					" Do you want to proceed?",
-							"Warning message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					Messages.getString("TabCDRData.17") + ((BusinessParty) selectedParty).getPartySimpleName() + //$NON-NLS-1$
+					Messages.getString("TabCDRData.18"), //$NON-NLS-1$
+							Messages.getString("TabCDRData.19"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if(option == JOptionPane.YES_OPTION)
 			{
 				new Thread(() ->
@@ -261,9 +260,9 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.20")). //$NON-NLS-1$
 							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be added to the following parties!"));
+							append(Messages.getString("TabCDRData.21"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -280,9 +279,9 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.22")). //$NON-NLS-1$
 							append( selectedParty.getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
+							append(Messages.getString("TabCDRData.23"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -297,19 +296,19 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.purgeParty(selectedParty);
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" has been deleted from Archived Parties."), Color.GREEN);
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCDRData.24")).append(partyName). //$NON-NLS-1$
+							append(Messages.getString("TabCDRData.25")), Color.GREEN); //$NON-NLS-1$
 				}
 				catch (DetailException e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Archived Parties."));
-					if(e.getMessage() != null && e.getMessage().contains("Party is a former"))
-						logger.info(new StringBuilder("Party ").append(partyName).
-								append(" could not be deleted from Archived Parties.").toString());
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.26")).append(partyName). //$NON-NLS-1$
+							append(Messages.getString("TabCDRData.27"))); //$NON-NLS-1$
+					if(e.getMessage() != null && e.getMessage().contains(Messages.getString("TabCDRData.28"))) //$NON-NLS-1$
+						logger.info(new StringBuilder(Messages.getString("TabCDRData.29")).append(partyName). //$NON-NLS-1$
+								append(Messages.getString("TabCDRData.30")).toString()); //$NON-NLS-1$
 					else
-						logger.error(new StringBuilder("Party ").append(partyName).
-								append(" could not be deleted from Archived Parties.").toString(), e);
+						logger.error(new StringBuilder(Messages.getString("TabCDRData.31")).append(partyName). //$NON-NLS-1$
+								append(Messages.getString("TabCDRData.32")).toString(), e); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -414,10 +413,10 @@ public class TabCDRData extends TabComponent
 		});
 
 		JPopupMenu searchTreePopupMenu = new JPopupMenu();
-		JMenuItem againSearchItem = new JMenuItem("Search Again");
-		JMenuItem viewSearchItem = new JMenuItem("View Search Criterion");
-		JMenuItem renameSearchItem = new JMenuItem("Rename");
-		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		JMenuItem againSearchItem = new JMenuItem(Messages.getString("TabCDRData.33")); //$NON-NLS-1$
+		JMenuItem viewSearchItem = new JMenuItem(Messages.getString("TabCDRData.34")); //$NON-NLS-1$
+		JMenuItem renameSearchItem = new JMenuItem(Messages.getString("TabCDRData.35")); //$NON-NLS-1$
+		JMenuItem deleteSearchItem = new JMenuItem(Messages.getString("TabCDRData.36")); //$NON-NLS-1$
 		searchTreePopupMenu.add(viewSearchItem);
 		searchTreePopupMenu.add(againSearchItem);
 		searchTreePopupMenu.addSeparator();
@@ -432,11 +431,11 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					clientFrame.showSearchDialog("View Search Criterion", (Search<?>) selectedSearch, false);
+					clientFrame.showSearchDialog(Messages.getString("TabCDRData.37"), (Search<?>) selectedSearch, false); //$NON-NLS-1$
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.38"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -453,7 +452,7 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.39"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -477,7 +476,7 @@ public class TabCDRData extends TabComponent
 					}
 					catch(Exception e)
 					{
-						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.40"))); //$NON-NLS-1$
 					}
 				}).start();
 			}
@@ -495,7 +494,7 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.41"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -530,12 +529,12 @@ public class TabCDRData extends TabComponent
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
 		final JPopupMenu partyTablePopupMenu = new JPopupMenu();
-		final JMenuItem unfollowPartyItem = new JMenuItem("Unfollow party");
-		final JMenuItem deleteArchivedItem = new JMenuItem("Delete from Archived Parties");
-		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
-		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
-		final JMenuItem breakPartnershipItem = new JMenuItem("Break up Business Partnership");
-		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+		final JMenuItem unfollowPartyItem = new JMenuItem(Messages.getString("TabCDRData.42")); //$NON-NLS-1$
+		final JMenuItem deleteArchivedItem = new JMenuItem(Messages.getString("TabCDRData.43")); //$NON-NLS-1$
+		final JMenuItem followPartyItem = new JMenuItem(Messages.getString("TabCDRData.44")); //$NON-NLS-1$
+		final JMenuItem requestPartnershipItem = new JMenuItem(Messages.getString("TabCDRData.45")); //$NON-NLS-1$
+		final JMenuItem breakPartnershipItem = new JMenuItem(Messages.getString("TabCDRData.46")); //$NON-NLS-1$
+		final JMenuItem viewPartyItem = new JMenuItem(Messages.getString("TabCDRData.47")); //$NON-NLS-1$
 
 		final MyParty myParty = clientFrame.getClient().getMyParty();
 
@@ -545,7 +544,7 @@ public class TabCDRData extends TabComponent
 			{
 				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 				final BusinessParty selectedParty = partiesTableModel.getPartyAtIndex(modelRowIndex);
-				clientFrame.showPartyDialog(selectedParty.getCoreParty(), "View Party", false, false);
+				clientFrame.showPartyDialog(selectedParty.getCoreParty(), Messages.getString("TabCDRData.48"), false, false); //$NON-NLS-1$
 			}).start();
 		});
 
@@ -586,9 +585,9 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.49")). //$NON-NLS-1$
 							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
+							append(Messages.getString("TabCDRData.50"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -605,9 +604,9 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.51")). //$NON-NLS-1$
 							append(((BusinessParty) selectedParty).getPartySimpleName()).
-							append(" could not be removed from the following parties!"));
+							append(Messages.getString("TabCDRData.52"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -622,15 +621,15 @@ public class TabCDRData extends TabComponent
 				try
 				{
 					myParty.purgeParty(selectedParty);
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" has been deleted from Archived Parties."), Color.GREEN);
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCDRData.53")).append(partyName). //$NON-NLS-1$
+							append(Messages.getString("TabCDRData.54")), Color.GREEN); //$NON-NLS-1$
 				}
 				catch (DetailException e)
 				{
-					clientFrame.appendToConsole(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Archived Parties."), Color.GREEN);
-					logger.error(new StringBuilder("Party ").append(partyName).
-							append(" could not be deleted from Archived Parties.").toString(), e);
+					clientFrame.appendToConsole(new StringBuilder(Messages.getString("TabCDRData.55")).append(partyName). //$NON-NLS-1$
+							append(Messages.getString("TabCDRData.56")), Color.GREEN); //$NON-NLS-1$
+					logger.error(new StringBuilder(Messages.getString("TabCDRData.57")).append(partyName). //$NON-NLS-1$
+							append(Messages.getString("TabCDRData.58")).toString(), e); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -712,9 +711,9 @@ public class TabCDRData extends TabComponent
 		colModel.getColumn(4).setPreferredWidth(100);
 
 		final JPopupMenu requestTablePopupMenu = new JPopupMenu();
-		final JMenuItem viewRequsterPartyItem = new JMenuItem("View Requester Party");
-		final JMenuItem viewRequstedPartyItem = new JMenuItem("View Requested Party");
-		final JMenuItem processItem = new JMenuItem("Process Request");
+		final JMenuItem viewRequsterPartyItem = new JMenuItem(Messages.getString("TabCDRData.59")); //$NON-NLS-1$
+		final JMenuItem viewRequstedPartyItem = new JMenuItem(Messages.getString("TabCDRData.60")); //$NON-NLS-1$
+		final JMenuItem processItem = new JMenuItem(Messages.getString("TabCDRData.61")); //$NON-NLS-1$
 
 		final MyParty myParty = clientFrame.getClient().getMyParty();
 
@@ -726,7 +725,7 @@ public class TabCDRData extends TabComponent
 				PartnershipRequest selectedRequest = null;
 				selectedRequest = sentRequestsTableModel.getRequestAtIndex(modelRowIndex);
 				if(selectedRequest == null) return;
-				clientFrame.showPartyDialog(new Party(selectedRequest.getRequesterParty()), "View Requester Party", false, false);
+				clientFrame.showPartyDialog(new Party(selectedRequest.getRequesterParty()), Messages.getString("TabCDRData.62"), false, false); //$NON-NLS-1$
 			}).start();
 		});
 
@@ -738,7 +737,7 @@ public class TabCDRData extends TabComponent
 				PartnershipRequest selectedRequest = null;
 				selectedRequest = sentRequestsTableModel.getRequestAtIndex(modelRowIndex);
 				if(selectedRequest == null) return;
-				clientFrame.showPartyDialog(new Party(selectedRequest.getRequestedParty()), "View Requested Party", false, false);
+				clientFrame.showPartyDialog(new Party(selectedRequest.getRequestedParty()), Messages.getString("TabCDRData.63"), false, false); //$NON-NLS-1$
 			}).start();
 		});
 
@@ -756,8 +755,8 @@ public class TabCDRData extends TabComponent
 				EventQueue.invokeLater( () ->
 				{
 					int option = JOptionPane.showConfirmDialog(clientFrame,
-							"Do you accept Business Partnership with " + requesterPartyName + "?",
-							"Process Business Partnership Request", JOptionPane.YES_NO_CANCEL_OPTION,
+							Messages.getString("TabCDRData.64") + requesterPartyName + "?", //$NON-NLS-1$ //$NON-NLS-2$
+							Messages.getString("TabCDRData.66"), JOptionPane.YES_NO_CANCEL_OPTION, //$NON-NLS-1$
 							JOptionPane.QUESTION_MESSAGE);
 					aOption.set(option);
 					waiter.release();
@@ -779,7 +778,7 @@ public class TabCDRData extends TabComponent
 				}
 				catch (InterruptedException e)
 				{
-					logger.error("Unable to synchronise with the Event Dispatch Thread.\n", e);
+					logger.error(Messages.getString("TabCDRData.67"), e); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -851,10 +850,10 @@ public class TabCDRData extends TabComponent
 		colModel.getColumn(3).setPreferredWidth(200);
 
 		JPopupMenu searchTablePopupMenu = new JPopupMenu();
-		JMenuItem againSearchItem = new JMenuItem("Search Again");
-		JMenuItem viewSearchItem = new JMenuItem("View Search Criterion");
-		JMenuItem renameSearchItem = new JMenuItem("Rename");
-		JMenuItem deleteSearchItem = new JMenuItem("Delete");
+		JMenuItem againSearchItem = new JMenuItem(Messages.getString("TabCDRData.68")); //$NON-NLS-1$
+		JMenuItem viewSearchItem = new JMenuItem(Messages.getString("TabCDRData.69")); //$NON-NLS-1$
+		JMenuItem renameSearchItem = new JMenuItem(Messages.getString("TabCDRData.70")); //$NON-NLS-1$
+		JMenuItem deleteSearchItem = new JMenuItem(Messages.getString("TabCDRData.71")); //$NON-NLS-1$
 		searchTablePopupMenu.add(viewSearchItem);
 		searchTablePopupMenu.add(againSearchItem);
 		searchTablePopupMenu.addSeparator();
@@ -870,11 +869,11 @@ public class TabCDRData extends TabComponent
 			{
 				try
 				{
-					clientFrame.showSearchDialog("View Search Criterion", (Search<?>) selectedSearch, false);
+					clientFrame.showSearchDialog(Messages.getString("TabCDRData.72"), (Search<?>) selectedSearch, false); //$NON-NLS-1$
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.73"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -899,7 +898,7 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.74"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -908,7 +907,7 @@ public class TabCDRData extends TabComponent
 		{
 			final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 			Search<?> selectedSearch = (Search<?>) ((SearchListTableModel<?>) table.getModel()).getSearches().get(modelRowIndex);
-			String newName = (String) JOptionPane.showInputDialog(clientFrame, "Enter new name: ", "Rename a search",
+			String newName = (String) JOptionPane.showInputDialog(clientFrame, Messages.getString("TabCDRData.75"), Messages.getString("TabCDRData.76"), //$NON-NLS-1$ //$NON-NLS-2$
 					JOptionPane.PLAIN_MESSAGE, null, null, selectedSearch.getSearchName());
 			if(newName != null)
 			{
@@ -922,7 +921,7 @@ public class TabCDRData extends TabComponent
 					}
 					catch(Exception e)
 					{
-						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.77"))); //$NON-NLS-1$
 					}
 				}).start();
 			}
@@ -941,7 +940,7 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Search could not be processed!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.78"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -1002,9 +1001,9 @@ public class TabCDRData extends TabComponent
 	{
 		final JTable table = newEmptyPartyListTable(tableModel);
 		final JPopupMenu popupMenu = new JPopupMenu();
-		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
-		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
-		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+		final JMenuItem followPartyItem = new JMenuItem(Messages.getString("TabCDRData.79")); //$NON-NLS-1$
+		final JMenuItem requestPartnershipItem = new JMenuItem(Messages.getString("TabCDRData.80")); //$NON-NLS-1$
+		final JMenuItem viewPartyItem = new JMenuItem(Messages.getString("TabCDRData.81")); //$NON-NLS-1$
 
 		popupMenu.add(viewPartyItem);
 		popupMenu.add(requestPartnershipItem);
@@ -1016,7 +1015,7 @@ public class TabCDRData extends TabComponent
 			new Thread(() ->
 			{
 				final PartyType selectedParty = ((PartySearchTableModel) table.getModel()).getParty(modelRowIndex);
-				clientFrame.showPartyDialog(new Party(selectedParty), "View Party", false, false);
+				clientFrame.showPartyDialog(new Party(selectedParty), Messages.getString("TabCDRData.82"), false, false); //$NON-NLS-1$
 			}).start();
 		});
 
@@ -1046,8 +1045,8 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").
-							append(followingName).append(" could not be added to the following parties!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.83")). //$NON-NLS-1$
+							append(followingName).append(Messages.getString("TabCDRData.84"))); //$NON-NLS-1$
 				}
 			}).start();
 		});
@@ -1095,9 +1094,9 @@ public class TabCDRData extends TabComponent
 		table.setFillsViewportHeight(true);
 
 		final JPopupMenu popupMenu = new JPopupMenu();
-		final JMenuItem followPartyItem = new JMenuItem("Follow Party");
-		final JMenuItem requestPartnershipItem = new JMenuItem("Request Business Partnership");
-		final JMenuItem viewPartyItem = new JMenuItem("View Party");
+		final JMenuItem followPartyItem = new JMenuItem(Messages.getString("TabCDRData.85")); //$NON-NLS-1$
+		final JMenuItem requestPartnershipItem = new JMenuItem(Messages.getString("TabCDRData.86")); //$NON-NLS-1$
+		final JMenuItem viewPartyItem = new JMenuItem(Messages.getString("TabCDRData.87")); //$NON-NLS-1$
 		popupMenu.add(viewPartyItem);
 		popupMenu.add(requestPartnershipItem);
 		popupMenu.add(followPartyItem);
@@ -1108,7 +1107,7 @@ public class TabCDRData extends TabComponent
 			{
 				final int modelRowIndex = table.convertRowIndexToModel(table.getSelectedRow());
 				final PartyType selectedParty = catalogueSearchTableModel.getParty(modelRowIndex);
-				clientFrame.showPartyDialog(new Party(selectedParty), "View Party", false, false);
+				clientFrame.showPartyDialog(new Party(selectedParty), Messages.getString("TabCDRData.88"), false, false); //$NON-NLS-1$
 			}).start();
 		});
 
@@ -1138,8 +1137,8 @@ public class TabCDRData extends TabComponent
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder("Party ").append(followingName).
-							append(" could not be added to the following parties!"));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("TabCDRData.89")).append(followingName). //$NON-NLS-1$
+							append(Messages.getString("TabCDRData.90"))); //$NON-NLS-1$
 				}
 			}).start();
 		});

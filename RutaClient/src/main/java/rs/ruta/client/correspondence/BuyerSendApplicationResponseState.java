@@ -23,7 +23,7 @@ public class BuyerSendApplicationResponseState extends BuyerOrderingProcessState
 		if(applicationResponse != null)
 		{
 			final DocumentReference documentReference = correspondence.getDocumentReference(applicationResponse.getUUIDValue());
-			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous attempt
 			{
 				try
 				{
@@ -32,7 +32,7 @@ public class BuyerSendApplicationResponseState extends BuyerOrderingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException("Correspondence has been interrupted!");
+						throw new StateActivityException(Messages.getString("BuyerSendApplicationResponseState.0")); //$NON-NLS-1$
 				}
 			}
 			try
@@ -43,12 +43,12 @@ public class BuyerSendApplicationResponseState extends BuyerOrderingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Application Response has failed!"));
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyerSendApplicationResponseState.1"))); //$NON-NLS-1$
 //				changeState(process, BuyerSendApplicationResponseState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException("Application Response has not been sent to the CDR service! Application Response could not be found!");
+			throw new StateActivityException(Messages.getString("BuyerSendApplicationResponseState.2")); //$NON-NLS-1$
 	}
 
 }

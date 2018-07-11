@@ -46,9 +46,9 @@ public class OrderChangeDialog extends AbstractOrderDialog
 		headerPanel.setPreferredSize(buttonPanelSize);
 		headerTable.addMouseListener(stopEditingListener);
 
-		JButton sendButton = new JButton("Send");
-		JButton discardButton = new JButton("Discard");
-		JButton closeButton = new JButton("Close");
+		JButton sendButton = new JButton(Messages.getString("OrderChangeDialog.0")); //$NON-NLS-1$
+		JButton discardButton = new JButton(Messages.getString("OrderChangeDialog.1")); //$NON-NLS-1$
+		JButton closeButton = new JButton(Messages.getString("OrderChangeDialog.2")); //$NON-NLS-1$
 
 		sendButton.addActionListener(event ->
 		{
@@ -72,7 +72,7 @@ public class OrderChangeDialog extends AbstractOrderDialog
 					}
 					catch(Exception e)
 					{
-						owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+						owner.appendToConsole(new StringBuilder(Messages.getString("OrderChangeDialog.3")), Color.RED); //$NON-NLS-1$
 					}
 				}).start();
 			}
@@ -146,7 +146,7 @@ public class OrderChangeDialog extends AbstractOrderDialog
 	private static class HeaderTableModel extends DefaultTableModel
 	{
 		private static final long serialVersionUID = -3976099918438412530L;
-		private static final String [] rowNames = { "Document Type", "ID", "Issue Date", "Note" };
+		private static final String [] rowNames = { Messages.getString("OrderChangeDialog.4"), Messages.getString("OrderChangeDialog.5"), Messages.getString("OrderChangeDialog.6"), Messages.getString("OrderChangeDialog.7") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		private boolean editable;
 
 		public HeaderTableModel(boolean editable)
@@ -182,7 +182,7 @@ public class OrderChangeDialog extends AbstractOrderDialog
 				switch(row)
 				{
 				case 0 :
-					return "Order Change";
+					return Messages.getString("OrderChangeDialog.8"); //$NON-NLS-1$
 				case 1:
 					return orderChange.getIDValue();
 				case 2:

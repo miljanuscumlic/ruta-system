@@ -35,7 +35,7 @@ public class CDRSettingsDialog extends JDialog
 	{
 		super(owner, true);
 		setResizable(false);
-		setSize(500, 200);
+		setSize(550, 200);
 		setLocationRelativeTo(owner);
 		serviceLocation = RutaClient.getCDREndPoint();
 		serviceField = new JTextField(30);
@@ -101,27 +101,27 @@ public class CDRSettingsDialog extends JDialog
 		final JPanel settingsPanel = new JPanel();
 		final GridBagLayout grid = new GridBagLayout();
 		settingsPanel.setLayout(grid);
-		final JButton resetButton = new JButton("Restore defaults");
-		resetButton.setToolTipText("Revert to default service location setting.");
+		final JButton resetButton = new JButton(Messages.getString("CDRSettingsDialog.0")); //$NON-NLS-1$
+		resetButton.setToolTipText(Messages.getString("CDRSettingsDialog.1")); //$NON-NLS-1$
 
 		resetButton.addActionListener(event ->
 		{
 			serviceLocation = RutaClient.getDefaultEndPoint();
 			serviceField.setText(serviceLocation);
-			connectTimeout = requestTimeout = "0";
-			connectTimeoutField.setText("0");
-			requestTimeoutField.setText("0");
+			connectTimeout = requestTimeout = "0"; //$NON-NLS-1$
+			connectTimeoutField.setText("0"); //$NON-NLS-1$
+			requestTimeoutField.setText("0"); //$NON-NLS-1$
 		});
 
 		final Insets insets = new Insets(5, 0, 0, 0);
-		putGridCell(settingsPanel, 0, 0, 1, 1, insets, new JLabel("Service location: ", SwingConstants.LEFT));
+		putGridCell(settingsPanel, 0, 0, 1, 1, insets, new JLabel(Messages.getString("CDRSettingsDialog.5"), SwingConstants.LEFT)); //$NON-NLS-1$
 		putGridCell(settingsPanel, 0, 1, 1, 1, insets, serviceField);
-		putGridCell(settingsPanel, 1, 0, 1, 1, insets, new JLabel("Connect timeout (s): ", SwingConstants.LEFT));
+		putGridCell(settingsPanel, 1, 0, 1, 1, insets, new JLabel(Messages.getString("CDRSettingsDialog.6"), SwingConstants.LEFT)); //$NON-NLS-1$
 		putGridCell(settingsPanel, 1, 1, 1, 1, insets, connectTimeoutField);
-		putGridCell(settingsPanel, 2, 0, 1, 1, insets, new JLabel("Request timeout (s): ", SwingConstants.LEFT));
+		putGridCell(settingsPanel, 2, 0, 1, 1, insets, new JLabel(Messages.getString("CDRSettingsDialog.7"), SwingConstants.LEFT)); //$NON-NLS-1$
 		putGridCell(settingsPanel, 2, 1, 1, 1, insets, requestTimeoutField);
 		putGridCell(settingsPanel, 3, 1, 1, 1, new Insets(5, 0, 5, 0), resetButton);
-		settingsPanel.setBorder(new TitledBorder("Service settings"));
+		settingsPanel.setBorder(new TitledBorder(Messages.getString("CDRSettingsDialog.8"))); //$NON-NLS-1$
 
 		return settingsPanel;
 	}
@@ -129,8 +129,8 @@ public class CDRSettingsDialog extends JDialog
 	private JPanel createButtonPanel()
 	{
 		final JPanel buttonPanel = new JPanel();
-		final JButton applyButton = new JButton("Apply and close");
-		final JButton cancelButton = new JButton("Cancel");
+		final JButton applyButton = new JButton(Messages.getString("CDRSettingsDialog.9")); //$NON-NLS-1$
+		final JButton cancelButton = new JButton(Messages.getString("CDRSettingsDialog.10")); //$NON-NLS-1$
 		getRootPane().setDefaultButton(applyButton);
 		applyButton.requestFocusInWindow();
 		applyButton.addActionListener(event ->
@@ -139,8 +139,8 @@ public class CDRSettingsDialog extends JDialog
 			connectTimeout = connectTimeoutField.getText();
 			requestTimeout = requestTimeoutField.getText();
 			//MMM here should be some better validation of the input string
-			if("".equals(serviceString))
-				JOptionPane.showMessageDialog(this, "Service location field can not be empty!", "Invalid input", JOptionPane.ERROR_MESSAGE);
+			if("".equals(serviceString)) //$NON-NLS-1$
+				JOptionPane.showMessageDialog(this, Messages.getString("CDRSettingsDialog.12"), Messages.getString("CDRSettingsDialog.13"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
 			else
 			{
 				serviceLocation = serviceString;
@@ -205,7 +205,7 @@ public class CDRSettingsDialog extends JDialog
 			if(!valid)
 			{
 				EventQueue.invokeLater(() -> JOptionPane.showMessageDialog(CDRSettingsDialog.this,
-						"Input value is not a nonnegative integer number.", "Error", JOptionPane.ERROR_MESSAGE));
+						Messages.getString("CDRSettingsDialog.14"), Messages.getString("CDRSettingsDialog.15"), JOptionPane.ERROR_MESSAGE)); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			return valid;
 		}

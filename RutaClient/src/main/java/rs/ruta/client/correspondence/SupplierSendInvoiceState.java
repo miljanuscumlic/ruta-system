@@ -26,7 +26,7 @@ public class SupplierSendInvoiceState extends SupplierBillingProcessState
 		if(invoice != null)
 		{
 			final DocumentReference documentReference = correspondence.getDocumentReference(invoice.getUUIDValue());
-			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous attempt
 			{
 				try
 				{
@@ -35,7 +35,7 @@ public class SupplierSendInvoiceState extends SupplierBillingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException("Correspondence has been interrupted!");
+						throw new StateActivityException(Messages.getString("SupplierSendInvoiceState.0")); //$NON-NLS-1$
 				}
 			}
 			try
@@ -46,11 +46,11 @@ public class SupplierSendInvoiceState extends SupplierBillingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Invoice has failed!"));
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SupplierSendInvoiceState.1"))); //$NON-NLS-1$
 //				changeState(process, SupplierSendInvoiceState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException("Invoice has not been sent to the CDR service! Invoice could not be found!");
+			throw new StateActivityException(Messages.getString("SupplierSendInvoiceState.2")); //$NON-NLS-1$
 	}
 }

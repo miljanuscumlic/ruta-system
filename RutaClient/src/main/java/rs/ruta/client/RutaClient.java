@@ -39,7 +39,6 @@ import oasis.names.specification.ubl.schema.xsd.orderchange_21.OrderChangeType;
 import oasis.names.specification.ubl.schema.xsd.orderresponse_21.OrderResponseType;
 import oasis.names.specification.ubl.schema.xsd.orderresponsesimple_21.OrderResponseSimpleType;
 import rs.ruta.ClientHandlerResolver;
-import rs.ruta.RutaNode;
 import rs.ruta.client.correspondence.CatalogueCorrespondence;
 import rs.ruta.client.correspondence.Correspondence;
 import rs.ruta.client.correspondence.StateActivityException;
@@ -78,7 +77,7 @@ import rs.ruta.common.InstanceFactory;
 import rs.ruta.common.PartnershipBreakup;
 import rs.ruta.common.PartySearchCriterion;
 
-public class RutaClient implements RutaNode
+public class RutaClient
 {
 	private static String packageList = "oasis.names.specification.ubl.schema.xsd.catalogue_21"; // colon separated package list
 	final private static String defaultEndPoint = "http://ruta.sytes.net:9009/ruta-server-0.2.0-SNAPSHOT/CDR";

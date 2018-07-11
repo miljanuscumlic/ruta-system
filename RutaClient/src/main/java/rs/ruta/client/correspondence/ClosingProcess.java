@@ -36,8 +36,8 @@ public class ClosingProcess extends DocumentProcess
 		while(active)
 			state.doActivity(correspondence);
 		correspondence.setActive(false);
-		client.getClientFrame().appendToConsole(new StringBuilder("Correspondence ").
-				append(correspondence.getName()).append(" has been closed."), Color.BLACK);
+		client.getClientFrame().appendToConsole(new StringBuilder(Messages.getString("ClosingProcess.0")). //$NON-NLS-1$
+				append(correspondence.getName()).append(Messages.getString("ClosingProcess.1")), Color.BLACK); //$NON-NLS-1$
 	}
 
 

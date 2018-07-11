@@ -27,8 +27,8 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 		EventQueue.invokeLater(() ->
 		{
 			int option = JOptionPane.showConfirmDialog(clientFrame,
-					"Catalogue update has been rejected. Would you like to start catalogue update process over again?",
-					"Catalogue update rejected by CDR service", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					Messages.getString("DecideOnActionState.0"), //$NON-NLS-1$
+					Messages.getString("DecideOnActionState.1"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if(option == JOptionPane.YES_OPTION)
 				changeState(process, PrepareCatalogueState.getInstance());
 			else
@@ -42,7 +42,7 @@ public class DecideOnActionState extends CreateCatalogueProcessState
 		}
 		catch (InterruptedException e)
 		{
-			throw new StateActivityException("Interrupted execution of Create Catalogue Process!", e);
+			throw new StateActivityException(Messages.getString("DecideOnActionState.2"), e); //$NON-NLS-1$
 		}
 	}
 }

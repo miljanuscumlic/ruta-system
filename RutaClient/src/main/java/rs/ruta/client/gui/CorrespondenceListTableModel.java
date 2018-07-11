@@ -12,8 +12,8 @@ public class CorrespondenceListTableModel extends DefaultTableModel
 	private static final long serialVersionUID = -1366607627023019652L;
 	private static String[] columnNames =
 		{
-				"No.", "Correspondence Name", "Number of Documents", "Creation Time", "Last Activity Time",
-				"Last Document Issue Time", "Status"
+				Messages.getString("CorrespondenceListTableModel.0"), Messages.getString("CorrespondenceListTableModel.1"), Messages.getString("CorrespondenceListTableModel.2"), Messages.getString("CorrespondenceListTableModel.3"), Messages.getString("CorrespondenceListTableModel.4"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+				Messages.getString("CorrespondenceListTableModel.5"), Messages.getString("CorrespondenceListTableModel.6") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 	private List<Correspondence> correspondences = null;
 
@@ -76,7 +76,7 @@ public class CorrespondenceListTableModel extends DefaultTableModel
 			case 5:
 				return InstanceFactory.getLocalDateTimeAsString(corr.getLastDocumentIssueTime());
 			case 6:
-				return corr.isActive() ? "OPEN" : "CLOSED";
+				return corr.isActive() ? Messages.getString("CorrespondenceListTableModel.7") : Messages.getString("CorrespondenceListTableModel.8"); //$NON-NLS-1$ //$NON-NLS-2$
 			default:
 				return null;
 			}

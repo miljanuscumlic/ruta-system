@@ -51,8 +51,8 @@ public class BuyingCorrespondence extends Correspondence
 		corr.setActive(true);
 		corr.setStopped(false);
 		corr.setRecentlyUpdated(true);
-		client.getClientFrame().appendToConsole(new StringBuilder("Correspondence ").
-				append(corr.getName()).append(" has been opened."), Color.BLACK);
+		client.getClientFrame().appendToConsole(new StringBuilder(Messages.getString("BuyingCorrespondence.0")). //$NON-NLS-1$
+				append(corr.getName()).append(Messages.getString("BuyingCorrespondence.1")), Color.BLACK); //$NON-NLS-1$
 		return corr;
 	}
 
@@ -69,8 +69,8 @@ public class BuyingCorrespondence extends Correspondence
 			if(discarded)
 			{
 				delete();
-				client.getClientFrame().appendToConsole(new StringBuilder("Correspondence ").
-						append(getName()).append(" has been deleted."), Color.BLACK);
+				client.getClientFrame().appendToConsole(new StringBuilder(Messages.getString("BuyingCorrespondence.2")). //$NON-NLS-1$
+						append(getName()).append(Messages.getString("BuyingCorrespondence.3")), Color.BLACK); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -78,8 +78,8 @@ public class BuyingCorrespondence extends Correspondence
 /*			EventQueue.invokeLater(() ->
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error messsage", JOptionPane.ERROR_MESSAGE));*/
 			getClient().getClientFrame().
-			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence ").
-					append(getIdValue()).append(" has been stopped!"));
+			processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyingCorrespondence.4")). //$NON-NLS-1$
+					append(getIdValue()).append(Messages.getString("BuyingCorrespondence.5"))); //$NON-NLS-1$
 		}
 		finally
 		{

@@ -73,7 +73,7 @@ public class BuyerOrderingProcess extends OrderingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException("Unable to stop the correspondence!", e1);
+				throw new StateActivityException(Messages.getString("BuyerOrderingProcess.0"), e1); //$NON-NLS-1$
 			}
 			throw e;
 		}

@@ -31,7 +31,7 @@ public class ApplicationResponseDialog extends AbstractApplicationResponseDialog
 	 * Creates {@link OrderResponseSimpleDialog} for making new {@link ApplicationResponseType} document.
 	 * {@code corr} argument should be set to {@code null}
 	 * when new {@code Order Response} is to be created or old one viewed and to appropriate non-{@code null} value only when
-	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
+	 * some old {@code Order Response} failed to be delievered and new sending attempt of it could be tried.
 	 * @param owner parent frame
 	 * @param applicationResponse Application Response to show or amend
 	 * @param editable true if Application Response document is to be created; false if is to be viewed only
@@ -43,10 +43,10 @@ public class ApplicationResponseDialog extends AbstractApplicationResponseDialog
 	{
 		super(owner, applicationResponse, editable);
 
-		JButton sendButton = new JButton("Send");
-		JButton resendButton = new JButton("Resend");
-		JButton discardButton = new JButton("Discard");
-		JButton closeButton = new JButton("Close");
+		JButton sendButton = new JButton(Messages.getString("ApplicationResponseDialog.0")); //$NON-NLS-1$
+		JButton resendButton = new JButton(Messages.getString("ApplicationResponseDialog.1")); //$NON-NLS-1$
+		JButton discardButton = new JButton(Messages.getString("ApplicationResponseDialog.2")); //$NON-NLS-1$
+		JButton closeButton = new JButton(Messages.getString("ApplicationResponseDialog.3")); //$NON-NLS-1$
 
 		sendButton.addActionListener(event ->
 		{
@@ -68,7 +68,7 @@ public class ApplicationResponseDialog extends AbstractApplicationResponseDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+					owner.appendToConsole(new StringBuilder(Messages.getString("ApplicationResponseDialog.4")), Color.RED); //$NON-NLS-1$
 				}
 			}).start();
 			sendPressed = false;

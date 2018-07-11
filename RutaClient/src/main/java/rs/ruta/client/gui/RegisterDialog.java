@@ -50,16 +50,16 @@ public class RegisterDialog extends JDialog
 
 		final JPanel credentialsPanel = new JPanel();
 		credentialsPanel.setLayout(new GridBagLayout());
-		final JLabel usernameLabel = new JLabel("Username: ", SwingConstants.LEFT);
+		final JLabel usernameLabel = new JLabel(Messages.getString("RegisterDialog.0"), SwingConstants.LEFT); //$NON-NLS-1$
 		final JTextField usernameField = new JTextField(30);
 		final UsernameVerifier usernameVerifier = new UsernameVerifier();
 		usernameField.setInputVerifier(usernameVerifier);
-		final JLabel passwordLabel = new JLabel("Password: ",  SwingConstants.LEFT);
+		final JLabel passwordLabel = new JLabel(Messages.getString("RegisterDialog.1"),  SwingConstants.LEFT); //$NON-NLS-1$
 		final JTextField passwordField = new JPasswordField(30);
 		final PasswordVerifier passwordVerifier = new PasswordVerifier();
 		passwordField.setInputVerifier(passwordVerifier);
 
-		final JCheckBox rememberMeBox = new JCheckBox("Remember me");
+		final JCheckBox rememberMeBox = new JCheckBox(Messages.getString("RegisterDialog.2")); //$NON-NLS-1$
 		final Insets insets = new Insets(15, 0, 0, 0);
 		putGridCell(credentialsPanel, 0, 0, 1, 1, insets, usernameLabel);
 		putGridCell(credentialsPanel, 0, 1, 1, 1, insets, usernameField);
@@ -73,9 +73,9 @@ public class RegisterDialog extends JDialog
 		final JPanel buttonPanel = new JPanel();
 		final JButton okButton = new JButton();
 		if(login)
-			okButton.setText("Log in");
+			okButton.setText(Messages.getString("RegisterDialog.3")); //$NON-NLS-1$
 		else
-			okButton.setText("Register");
+			okButton.setText(Messages.getString("RegisterDialog.4")); //$NON-NLS-1$
 		buttonPanel.add(okButton);
 		okButton.addActionListener(event ->
 		{
@@ -92,13 +92,13 @@ public class RegisterDialog extends JDialog
 
 		getRootPane().setDefaultButton(okButton);
 		okButton.requestFocusInWindow();
-		final JButton cancelButton = new JButton("Cancel");
+		final JButton cancelButton = new JButton(Messages.getString("RegisterDialog.5")); //$NON-NLS-1$
 		cancelButton.setVerifyInputWhenFocusTarget(false);
 		buttonPanel.add(cancelButton);
 		cancelButton.addActionListener(event ->
 		{
-			passwordField.setText("");
-			usernameField.setText("");
+			passwordField.setText(""); //$NON-NLS-1$
+			usernameField.setText(""); //$NON-NLS-1$
 			exit(owner, login, mayExit);
 		});
 
@@ -166,12 +166,12 @@ public class RegisterDialog extends JDialog
 		{
 			String procedure = null;
 			if(login)
-				procedure = "log-in";
+				procedure = Messages.getString("RegisterDialog.8"); //$NON-NLS-1$
 			else
-				procedure = "registration";
-			int option = JOptionPane.showConfirmDialog(owner, "Entering your credentials is mandatory during " + procedure +
-					".\nNot entering them will close the application. Do you want to proceed?",
-					"Warning", JOptionPane.YES_NO_OPTION);
+				procedure = Messages.getString("RegisterDialog.9"); //$NON-NLS-1$
+			int option = JOptionPane.showConfirmDialog(owner, Messages.getString("RegisterDialog.10") + procedure + //$NON-NLS-1$
+					Messages.getString("RegisterDialog.11"), //$NON-NLS-1$
+					Messages.getString("RegisterDialog.12"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
 			if(option == JOptionPane.NO_OPTION)
 			{
 				setVisible(false);
@@ -202,8 +202,8 @@ public class RegisterDialog extends JDialog
 			boolean valid = verify(input);
 			if (!valid)
 				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(RegisterDialog.this, "Username has to be at least 3 characters long.",
-						"Incorrect input data", JOptionPane.ERROR_MESSAGE));
+				JOptionPane.showMessageDialog(RegisterDialog.this, Messages.getString("RegisterDialog.13"), //$NON-NLS-1$
+						Messages.getString("RegisterDialog.14"), JOptionPane.ERROR_MESSAGE)); //$NON-NLS-1$
 			return valid;
 		}
 	}
@@ -226,8 +226,8 @@ public class RegisterDialog extends JDialog
 			boolean valid = verify(input);
 			if (!valid)
 				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(RegisterDialog.this, "Password has to be at least 3 characters long.",
-						"Incorrect input data", JOptionPane.ERROR_MESSAGE));
+				JOptionPane.showMessageDialog(RegisterDialog.this, Messages.getString("RegisterDialog.15"), //$NON-NLS-1$
+						Messages.getString("RegisterDialog.16"), JOptionPane.ERROR_MESSAGE)); //$NON-NLS-1$
 			return valid;
 		}
 	}

@@ -33,10 +33,10 @@ public class ProduceCatalogueState extends CreateCatalogueProcessState
 		final RutaProcess process = (RutaProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
 		final RutaClientFrame clientFrame = client.getClientFrame();
-		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing My Catalogue..."), Color.BLACK);
+		clientFrame.appendToConsole(new StringBuilder(Messages.getString("ProduceCatalogueState.0")), Color.BLACK); //$NON-NLS-1$
 		final CatalogueType catalogue = client.getMyParty().produceCatalogue(client.getCDRParty());
 		if(catalogue == null)
-			throw new StateActivityException("My Catalogue document is malformed. UBL validation has failed.");
+			throw new StateActivityException(Messages.getString("ProduceCatalogueState.1")); //$NON-NLS-1$
 		else
 			saveCatalogue(correspondence, catalogue);
 		changeState(process, DistributeCatalogueState.getInstance());

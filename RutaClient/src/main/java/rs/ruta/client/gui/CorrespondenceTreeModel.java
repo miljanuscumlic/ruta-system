@@ -29,10 +29,10 @@ import rs.ruta.client.correspondence.Correspondence;
 public class CorrespondenceTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = -841281945123956954L;
-	private static final String ARCHIVED_PARTNERS = "Archived Partners";
-	private static final String BUSINESS_PARTNERS = "Business Partners";
-	private static final String CDR = "CDR";
-	private static final String MY_PARTY = "My Party";
+	private static final String ARCHIVED_PARTNERS = Messages.getString("CorrespondenceTreeModel.0"); //$NON-NLS-1$
+	private static final String BUSINESS_PARTNERS = Messages.getString("CorrespondenceTreeModel.1"); //$NON-NLS-1$
+	private static final String CDR = Messages.getString("CorrespondenceTreeModel.2"); //$NON-NLS-1$
+	private static final String MY_PARTY = Messages.getString("CorrespondenceTreeModel.3"); //$NON-NLS-1$
 	private MyParty myParty;
 	//using sets for keeping sorted collection of parties and because they are faster than lists
 	//when it comes to the sorting; sets should be maintained and representing current view of the data model

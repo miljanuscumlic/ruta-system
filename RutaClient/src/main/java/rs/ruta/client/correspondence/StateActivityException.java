@@ -13,7 +13,7 @@ public class StateActivityException extends RuntimeException
 
 	public StateActivityException()
 	{
-		super("Illegal state transition requested.");
+		super(Messages.getString("StateActivityException.0")); //$NON-NLS-1$
 	}
 
 	public StateActivityException(String message)

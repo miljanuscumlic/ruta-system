@@ -27,8 +27,8 @@ public class ReviewDeletionOfCatalogueState extends DeleteCatalogueProcessState
 		EventQueue.invokeLater(() ->
 		{
 			int option = JOptionPane.showConfirmDialog(clientFrame,
-					"Catalogue deletion has been rejected. Would you like to start catalogue deletion process over again?",
-					"Catalogue deletion rejected by CDR service", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					Messages.getString("ReviewDeletionOfCatalogueState.0"), //$NON-NLS-1$
+					Messages.getString("ReviewDeletionOfCatalogueState.1"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if(option == JOptionPane.YES_OPTION)
 				changeState(process, NotifyOfCatalogueDeletionState.getInstance());
 			else
@@ -42,7 +42,7 @@ public class ReviewDeletionOfCatalogueState extends DeleteCatalogueProcessState
 		}
 		catch (InterruptedException e)
 		{
-			throw new StateActivityException("Interrupted execution of Create Catalogue Process!", e);
+			throw new StateActivityException(Messages.getString("ReviewDeletionOfCatalogueState.2"), e); //$NON-NLS-1$
 		}
 	}
 }

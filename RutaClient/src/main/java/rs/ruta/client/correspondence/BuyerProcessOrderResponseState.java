@@ -42,16 +42,16 @@ public class BuyerProcessOrderResponseState extends BuyerOrderingProcessState
 						changeState(process, BuyerAcceptOrderState.getInstance());
 				}
 				else
-					throw new StateActivityException("Order Response could not be found in the correspondence.");
+					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.0")); //$NON-NLS-1$
 			}
 			catch(InterruptedException e)
 			{
 				if(!correspondence.isStopped()) //non-intentional interruption
-					throw new StateActivityException("Correspondence has been interrupted!");
+					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.1")); //$NON-NLS-1$
 			}
 		}
 		else
-			throw new StateActivityException("Document could not be found in the correspondence.");
+			throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseState.2")); //$NON-NLS-1$
 	}
 
 	/**

@@ -23,7 +23,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 		if(applicationResponse != null)
 		{
 			final DocumentReference documentReference = correspondence.getDocumentReference(applicationResponse.getUUIDValue());
-			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous attempt
 			{
 				try
 				{
@@ -32,7 +32,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException("Correspondence has been interrupted!");
+						throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.0")); //$NON-NLS-1$
 				}
 			}
 			try
@@ -43,14 +43,14 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 				else if(process.isInvoiceRejected() && !process.isInvoiceAccepted())
 					changeState(process, CustomerReceiveInvoiceState.getInstance());
 				else
-					throw new StateActivityException("Unexpected state of the Order Response Simple processing.");
+					throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.1")); //$NON-NLS-1$
 				process.setInvoiceAccepted(false);
 				process.setInvoiceRejected(false);
 			}
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order has failed!"));
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CustomerSendApplicationResponseState.2"))); //$NON-NLS-1$
 //				changeState(process, CustomerSendApplicationResponseState.getInstance());
 			}
 		}
@@ -58,7 +58,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 		{
 			//			correspondence.updateDocumentStatus(correspondence.getLastDocumentReference(OrderType.class),
 			//					DocumentReference.Status.CLIENT_FAILED);
-			throw new StateActivityException("Application Response has not been sent to the CDR service! Application Response could not be found!");
+			throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.3")); //$NON-NLS-1$
 		}
 	}
 }

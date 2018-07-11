@@ -40,7 +40,7 @@ public class SupplierRaiseInvoiceState extends SupplierBillingProcessState
 			else
 			{
 				process.getClient().getClientFrame().
-				appendToConsole(new StringBuilder("Invoice has been discarded."), Color.BLACK);
+				appendToConsole(new StringBuilder(Messages.getString("SupplierRaiseInvoiceState.0")), Color.BLACK); //$NON-NLS-1$
 				process.setInvoiceDiscarded(true);
 				changeState(process, SupplierRaiseInvoiceState.getInstance());
 			}
@@ -48,7 +48,7 @@ public class SupplierRaiseInvoiceState extends SupplierBillingProcessState
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped())
-				throw new StateActivityException("Correspondence has been interrupted!");
+				throw new StateActivityException(Messages.getString("SupplierRaiseInvoiceState.1")); //$NON-NLS-1$
 		}
 	}
 
@@ -63,7 +63,7 @@ public class SupplierRaiseInvoiceState extends SupplierBillingProcessState
 		InvoiceType invoice = null;
 		final SupplierBillingProcess process = (SupplierBillingProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
-		client.getClientFrame().appendToConsole(new StringBuilder("Collecting data and preparing the Invoice..."), Color.BLACK);
+		client.getClientFrame().appendToConsole(new StringBuilder(Messages.getString("SupplierRaiseInvoiceState.2")), Color.BLACK); //$NON-NLS-1$
 		invoice = process.getInvoice(correspondence);
 		if(invoice != null)
 			invoice = client.getMyParty().produceInvoice(invoice);

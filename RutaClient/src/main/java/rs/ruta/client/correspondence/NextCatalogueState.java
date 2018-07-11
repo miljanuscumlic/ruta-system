@@ -23,7 +23,7 @@ public class NextCatalogueState extends ResolveNextCatalogueProcessState
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped()) //non-intentional interruption
-				throw new StateActivityException("Correspondence has been interrupted!");
+				throw new StateActivityException(Messages.getString("NextCatalogueState.0")); //$NON-NLS-1$
 		}
 	}
 }

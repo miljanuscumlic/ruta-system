@@ -50,9 +50,9 @@ public class CustomerBillingProcess extends BillingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException("Unable to stop the correspondence!", e1);
+				throw new StateActivityException(Messages.getString("CustomerBillingProcess.0"), e1); //$NON-NLS-1$
 			}
-			throw new StateActivityException("Interrupted execution of Billing Process.", e);
+			throw new StateActivityException(Messages.getString("CustomerBillingProcess.1"), e); //$NON-NLS-1$
 		}
 		finally
 		{

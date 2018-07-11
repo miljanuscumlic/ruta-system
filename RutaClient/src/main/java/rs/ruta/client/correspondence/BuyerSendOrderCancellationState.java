@@ -23,7 +23,7 @@ public class BuyerSendOrderCancellationState extends BuyerOrderingProcessState
 		if(orderCancellation != null)
 		{
 			final DocumentReference documentReference = correspondence.getDocumentReference(orderCancellation.getUUIDValue());
-			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous atempt
+			if(!documentReference.getStatus().equals(DocumentReference.Status.UBL_VALID)) // sending failed in a previous attempt
 			{
 				try
 				{
@@ -32,7 +32,7 @@ public class BuyerSendOrderCancellationState extends BuyerOrderingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException("Correspondence has been interrupted!");
+						throw new StateActivityException(Messages.getString("BuyerSendOrderCancellationState.0")); //$NON-NLS-1$
 				}
 			}
 			try
@@ -43,11 +43,11 @@ public class BuyerSendOrderCancellationState extends BuyerOrderingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Cancellation has failed!"));
+				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyerSendOrderCancellationState.1"))); //$NON-NLS-1$
 //				changeState(process, BuyerSendOrderCancellationState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException("Order Cancellation has not been sent to the CDR service! Order Cancellation could not be found!");
+			throw new StateActivityException(Messages.getString("BuyerSendOrderCancellationState.2")); //$NON-NLS-1$
 	}
 }

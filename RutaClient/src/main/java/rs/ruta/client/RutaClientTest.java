@@ -22,6 +22,8 @@ public class RutaClientTest
 		final Locale myLocale = Locale.forLanguageTag("sr-RS");
 		Locale.setDefault(myLocale);
 		Messages.setLocale(myLocale);
+		rs.ruta.client.gui.Messages.setLocale(myLocale);
+		rs.ruta.client.correspondence.Messages.setLocale(myLocale);
 
 		//setting EXIST_HOME
 		final String EXIST_HOME = System.getProperty("user.dir"); //$NON-NLS-1$

@@ -190,7 +190,6 @@ public abstract class TabComponent extends Container
 		colModel.getColumn(8).setPreferredWidth(100);
 		colModel.getColumn(9).setPreferredWidth(100);
 		colModel.getColumn(10).setPreferredWidth(100);
-		colModel.getColumn(11).setPreferredWidth(100);
 		return table;
 	}
 

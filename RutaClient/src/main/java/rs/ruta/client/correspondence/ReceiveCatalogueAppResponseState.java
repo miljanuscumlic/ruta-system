@@ -35,7 +35,7 @@ public class ReceiveCatalogueAppResponseState extends CreateCatalogueProcessStat
 		}
 		catch(Exception e)
 		{
-			throw new StateActivityException("My Catalogue has not been updated in the CDR service!", e);
+			throw new StateActivityException(Messages.getString("ReceiveCatalogueAppResponseState.0"), e); //$NON-NLS-1$
 		}
 	}
 }

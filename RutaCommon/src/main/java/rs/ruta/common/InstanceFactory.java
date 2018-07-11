@@ -63,19 +63,19 @@ public final class InstanceFactory
 	public static final TaxSchemeType TAX_SCHEME = new TaxSchemeType();
 	public static final Map<String, TaxCategoryType> taxCategories;
 
-	public static final String APP_RESPONSE_POSITIVE = "POSITIVE";
-	public static final String APP_RESPONSE_NEGATIVE = "NEGATIVE";
+	public static final String APP_RESPONSE_POSITIVE = "ПОЗИТИВАН";//"POSITIVE";
+	public static final String APP_RESPONSE_NEGATIVE = "НЕГАТИВАН";//"NEGATIVE";
 
-	public static final String ACCEPT_ORDER = "Accept Order";
-	public static final String ADD_DETAIL = "Add Detail";
-	public static final String DECIDE_LATER = "Decide Later";
-	public static final String REJECT_ORDER = "Reject Order";
-	public static final String CANCEL_ORDER = "Cancel Order";
-	public static final String CHANGE_ORDER = "Change Order";
-	public static final String ACCEPT_INVOICE = "Accept Invoice";
-	public static final String MODIFY_INVOICE = "Modify Invoice";
-	public static final String REJECT_INVOICE = "Reject Invoice";
-	public static final String ACCEPT = "Accept";
+	public static final String ACCEPT_ORDER = "Прихвати Наруџбеницу";//"Accept Order";
+	public static final String ADD_DETAIL = "Промени Наруџбеницу";//"Add Detail";
+	public static final String DECIDE_LATER = "Одлучи касније";//"Decide Later";
+	public static final String REJECT_ORDER = "Одбаци Наруџбеницу";//"Reject Order";
+	public static final String CANCEL_ORDER = "Одустани од Наруџбенице";//"Cancel Order";
+	public static final String CHANGE_ORDER = "Промени Наруџбеницу";//"Change Order";
+	public static final String ACCEPT_INVOICE = "Прихвати Рачун";//"Accept Invoice";
+	public static final String MODIFY_INVOICE = "Промени Рачун";//"Modify Invoice";
+	public static final String REJECT_INVOICE = "Одбаци Рачун";//"Reject Invoice";
+	public static final String ACCEPT = "Прихвати";//"Accept";
 	private static final Logger logger = LoggerFactory.getLogger("rs.ruta.common");
 
 	static

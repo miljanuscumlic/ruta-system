@@ -22,7 +22,7 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 	/**
 	 * Creates new Invoice Dialogue displaying its orderLines line items. {@code corr} argument should be set to {@code null}
 	 * when new {@code Invoice} is to be created or old one viewed and to appropriate non-{@code null} value only when
-	 * some old {@code Invoice} failed to be delievered and new sending atempt of it could be tried.
+	 * some old {@code Invoice} failed to be delievered and new sending attempt of it could be tried.
 	 * @param owner parent frame of this dialogue
 	 * @param invoice {@link InvoiceType invoice} to display
 	 * @param editable whether the Invoice is editable i.e. its quantity column
@@ -32,10 +32,10 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 	{
 		super(owner, invoice.getInvoiceLine(), editable);
 		this.invoice = invoice;
-		final JButton sendButton = new JButton("Send");
-		final JButton resendButton = new JButton("Resend");
-		final JButton discardButton = new JButton("Discard");
-		final JButton closeButton = new JButton("Close");
+		final JButton sendButton = new JButton(Messages.getString("InvoiceDialog.0")); //$NON-NLS-1$
+		final JButton resendButton = new JButton(Messages.getString("InvoiceDialog.1")); //$NON-NLS-1$
+		final JButton discardButton = new JButton(Messages.getString("InvoiceDialog.2")); //$NON-NLS-1$
+		final JButton closeButton = new JButton(Messages.getString("InvoiceDialog.3")); //$NON-NLS-1$
 		sendPressed = false;
 
 		sendButton.addActionListener(event ->
@@ -60,7 +60,7 @@ public class InvoiceDialog extends AbstractInvoiceDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED);
+					owner.appendToConsole(new StringBuilder(Messages.getString("InvoiceDialog.4")), Color.RED); //$NON-NLS-1$
 				}
 			}).start();
 			setVisible(false);

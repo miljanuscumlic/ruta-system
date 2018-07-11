@@ -39,12 +39,12 @@ public class BuyerReceiveOrderResponseState extends BuyerOrderingProcessState
 				changeState(process, BuyerProcessOrderResponseSimpleState.getInstance());
 			}
 			else
-				throw new StateActivityException("Received document of unexpected type.");
+				throw new StateActivityException(Messages.getString("BuyerReceiveOrderResponseState.0")); //$NON-NLS-1$
 		}
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped()) //non-intentional interruption
-				throw new StateActivityException("Correspondence has been interrupted!");
+				throw new StateActivityException(Messages.getString("BuyerReceiveOrderResponseState.1")); //$NON-NLS-1$
 		}
 	}
 }

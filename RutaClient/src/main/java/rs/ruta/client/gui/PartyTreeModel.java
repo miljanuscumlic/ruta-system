@@ -25,13 +25,13 @@ public class PartyTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = 4960608964751110674L;
 //	private static final String DEREGISTERED_PARTIES = "Deregistered Parties";
-	private static final String ARCHIVED_PARTIES = "Archived Parties";
-	private static final String OTHER_PARTIES = "Other Parties";
-	private static final String BUSINESS_PARTNERS = "Business Partners";
-	private static final String MY_PARTY = "My Party";
-	private static final String PARTNERSHIP_REQUESTS = "Partnership Requests";
-	private static final String OUTBOUND_PARTNERSHIPS = "Sent";
-	private static final String INBOUND_PARTNERSHIPS = "Received";
+	private static final String ARCHIVED_PARTIES = Messages.getString("PartyTreeModel.0"); //$NON-NLS-1$
+	private static final String OTHER_PARTIES = Messages.getString("PartyTreeModel.1"); //$NON-NLS-1$
+	private static final String BUSINESS_PARTNERS = Messages.getString("PartyTreeModel.2"); //$NON-NLS-1$
+	private static final String MY_PARTY = Messages.getString("PartyTreeModel.3"); //$NON-NLS-1$
+	private static final String PARTNERSHIP_REQUESTS = Messages.getString("PartyTreeModel.4"); //$NON-NLS-1$
+	private static final String OUTBOUND_PARTNERSHIPS = Messages.getString("PartyTreeModel.5"); //$NON-NLS-1$
+	private static final String INBOUND_PARTNERSHIPS = Messages.getString("PartyTreeModel.6"); //$NON-NLS-1$
 
 	private MyParty myParty;
 	//using sets for keeping sorted collection of parties and because they are faster than lists

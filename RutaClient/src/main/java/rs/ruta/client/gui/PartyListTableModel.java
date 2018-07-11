@@ -18,7 +18,7 @@ public class PartyListTableModel extends DefaultTableModel
 	private static String[] columnNames =
 		{
 				"No.", "Party name", "Company ID", "Street", "Building number", "City", "Country",
-				"Classification code", "Telephone", "Email", "Website", "Industry Classification Code"
+				"Classification code", "Telephone", "Email", "Website"
 		};
 	private List<BusinessParty> parties = null;
 
@@ -100,22 +100,16 @@ public class PartyListTableModel extends DefaultTableModel
 				return party.getIndustryClassificationCodeValue();
 			case 8:
 				return party.getContact() == null ? null : party.getContact().getTelephoneValue();
-				//InstanceFactory.getPropertyOrNull(party.getContact().getTelephone(), TelephoneType::getValue);
-				//MMM: could put some speed measuring test to see which one is faster
 			case 9:
 				return party.getContact() == null ? null : party.getContact().getElectronicMailValue();
-				//InstanceFactory.getPropertyOrNull(party.getContact().getElectronicMail(), ElectronicMailType::getValue);
 			case 10:
 				return party.getWebsiteURIValue();
-			case 11:
-				return party.getIndustryClassificationCodeValue();
 			default:
 				return null;
 			}
 		}
 		catch(Exception e) // i.e when party.getPartyLegalEntityAtIndex(0).getRegistrationAddress() = null
 		{
-			//logger.error("Exception is ", e);
 			return null;
 		}
 	}

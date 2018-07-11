@@ -33,7 +33,7 @@ public abstract class AbstractApplicationResponseDialog extends JDialog
 	 * Creates {@link OrderResponseSimpleDialog} for making new {@link ApplicationResponseType} document.
 	 * {@code corr} argument should be set to {@code null}
 	 * when new {@code Order Response} is to be created or old one viewed and to appropriate non-{@code null} value only when
-	 * some old {@code Order Response} failed to be delievered and new sending atempt of it could be tried.
+	 * some old {@code Order Response} failed to be delievered and new sending attempt of it could be tried.
 	 * @param owner parent frame
 	 * @param applicationResponse Application Response to show or amend
 	 * @param editable true if Application Response document is to be created; false if is to be viewed only
@@ -95,7 +95,7 @@ public abstract class AbstractApplicationResponseDialog extends JDialog
 
 		//must be static because it's used in getRowCount method which is called from the
 		//constructor of the super class
-		private static String[] rowNames = { "Response Document Type", "ID", "Issue Date", "Response code", "Note"};
+		private static String[] rowNames = { Messages.getString("AbstractApplicationResponseDialog.0"), Messages.getString("AbstractApplicationResponseDialog.1"), Messages.getString("AbstractApplicationResponseDialog.2"), Messages.getString("AbstractApplicationResponseDialog.3"), Messages.getString("AbstractApplicationResponseDialog.4")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		private static int RESPONSE_CODE_INDEX = 3;
 		private static int NOTE_INDEX = 4;
 		private boolean editable;
@@ -142,7 +142,7 @@ public abstract class AbstractApplicationResponseDialog extends JDialog
 				switch(rowIndex)
 				{
 				case 0:
-					return "Application Response";
+					return Messages.getString("AbstractApplicationResponseDialog.5"); //$NON-NLS-1$
 				case 1:
 					return applicationResponse.getIDValue();
 				case 2:

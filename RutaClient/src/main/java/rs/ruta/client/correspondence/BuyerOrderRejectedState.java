@@ -19,8 +19,8 @@ public class BuyerOrderRejectedState extends BuyerOrderingProcessState
 	{
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		correspondence.getClient().getClientFrame().appendToConsole(
-				new StringBuilder("Order " + process.getOrder(correspondence).getIDValue() +
-						" has been rejected by " + correspondence.getCorrespondentPartyName() + " party."), Color.BLACK);
+				new StringBuilder(Messages.getString("BuyerOrderRejectedState.0") + process.getOrder(correspondence).getIDValue() + //$NON-NLS-1$
+						Messages.getString("BuyerOrderRejectedState.1") + correspondence.getCorrespondentPartyName() + Messages.getString("BuyerOrderRejectedState.2")), Color.BLACK); //$NON-NLS-1$ //$NON-NLS-2$
 		process.setOrderRejected(true);
 		changeState(process, ClosingState.getInstance());
 	}
