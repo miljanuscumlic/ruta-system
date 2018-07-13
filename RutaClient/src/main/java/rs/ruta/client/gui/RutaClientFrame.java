@@ -106,7 +106,21 @@ public class RutaClientFrame extends JFrame implements ActionListener
 	private TabComponent tabProducts;
 	private TabComponent tabCorrespondences;
 
-	public RutaClientFrame() {}
+	public RutaClientFrame()
+	{
+		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		final InputStream iconStream = classLoader.getResourceAsStream("ruta.png");
+		Image rutaIcon = null;
+		try
+		{
+			rutaIcon =  ImageIO.read(iconStream);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		setIconImage(rutaIcon);
+	}
 
 	public void setClient(RutaClient client)
 	{
@@ -126,18 +140,18 @@ public class RutaClientFrame extends JFrame implements ActionListener
 		setBounds(left, top, width, height);
 		setTitle(Messages.getString("RutaClientFrame.24") + client.getMyParty().getPartySimpleName());
 
-		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		final InputStream iconStream = classLoader.getResourceAsStream("ruta.png");
-		Image rutaIcon = null;
-		try
-		{
-			rutaIcon =  ImageIO.read(iconStream);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		setIconImage(rutaIcon);
+//		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//		final InputStream iconStream = classLoader.getResourceAsStream("ruta.png");
+//		Image rutaIcon = null;
+//		try
+//		{
+//			rutaIcon =  ImageIO.read(iconStream);
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		setIconImage(rutaIcon);
 
 		chooser = new JFileChooser();
 		final FileFilter filter = new FileNameExtensionFilter("XML files", "xml");

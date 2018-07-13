@@ -88,7 +88,7 @@ public class RutaClient
 	private MyParty myParty;
 	private Party CDRParty;
 	private RutaClientFrame clientFrame;
-	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);   
+	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);
 	private Properties properties;
 	private List<BugReport> bugReports;
 	public static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
@@ -1226,7 +1226,7 @@ public class RutaClient
 				partyName = Messages.getString("RutaClient.189");
 			}
 			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.190")).append(partyName).
-					append(((DocumentReceipt) document).getIDValue() + Messages.getString("RutaClient.191")),
+					append(" ").append(((DocumentReceipt) document).getIDValue() + Messages.getString("RutaClient.191")),
 					Color.BLACK);
 		}
 		else if(documentClazz == CatalogueType.class)
@@ -1645,7 +1645,7 @@ public class RutaClient
 		{
 			CDRParty = new Party();
 			CDRParty.setPartyID("CDR1234567890");
-			CDRParty.setPartySimpleName("CDR");
+			CDRParty.setPartySimpleName(Messages.getString("RutaClient.400"));
 		}
 		return CDRParty;
 	}
