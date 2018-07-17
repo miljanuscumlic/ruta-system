@@ -2223,11 +2223,6 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 					}
 				}
 			}
-/*			finally
-			{
-				if(connector != null)
-					connector.shutdownDatabase();
-			}*/
 		}
 		catch(Exception e)
 		{

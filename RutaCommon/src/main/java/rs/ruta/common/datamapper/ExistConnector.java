@@ -93,7 +93,7 @@ public class ExistConnector implements DatastoreConnector
 		try
 		{
 //			getExistRootCollection();
-			checkCollection(rutaCollectionPath);
+			checkCollection(""/*rutaCollectionPath*/);
 		}
 		catch (/*XMLDBException |*/ DatabaseException e)
 		{
@@ -720,5 +720,4 @@ public class ExistConnector implements DatastoreConnector
 		}
 		return usernames;
 	}
-
 }
