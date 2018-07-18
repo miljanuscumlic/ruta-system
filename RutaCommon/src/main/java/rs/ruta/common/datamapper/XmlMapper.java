@@ -735,7 +735,7 @@ public abstract class XmlMapper<T> implements DataMapper<T, String>
 			//MMM: maybe this if clause in superfluous
 			Object jaxbResult = u.unmarshal(new StringReader(xml));
 			if(jaxbResult instanceof JAXBElement)
-				result = ((JAXBElement<T>)jaxbResult).getValue();
+				result = ((JAXBElement<T>) jaxbResult).getValue();
 			else
 				result = (T) jaxbResult; // This is not used anymore ???
 		}

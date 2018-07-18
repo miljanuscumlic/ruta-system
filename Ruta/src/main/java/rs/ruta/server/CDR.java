@@ -95,14 +95,13 @@ public class CDR implements Server
 	public CDR()
 	{
 		//setting EXIST_HOME
-		final String EXIST_HOME = System.getProperty("user.dir");
+		final String EXIST_HOME = System.getProperty("user.home");
 		System.setProperty("exist.home", EXIST_HOME);
 		mapperRegistry = MapperRegistry.initialize(new EmbeddedServiceMapperRegistryFactory());
 		if(!MapperRegistry.isDatastoreAccessible())
 		{
 			logger.warn("Cound not connect to the database! The database is not accessible.");
-			logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable"
-					+ " and all future SOAP requests will be rejected.");
+			logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable and all future SOAP requests will be rejected.");
 		}
 		checkInstallation();
 		docBoxPool = Executors.newCachedThreadPool();
@@ -145,10 +144,15 @@ public class CDR implements Server
 		{
 			MapperRegistry.getConnector().shutdownDatabase();
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			logger.error("Could not shut down the database! Exception is ", e);
+			final String errMsg = e.getMessage();
+			if(errMsg == null)
+				logger.error(e.getCause().getMessage());
+			else
+				logger.error(errMsg);
 		}
+
 	}
 
 	/**
