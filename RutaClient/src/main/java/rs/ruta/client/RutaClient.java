@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -19,6 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
@@ -2363,6 +2367,44 @@ public class RutaClient
 		{
 			logger.error(Messages.getString("RutaClient.398"), e);
 			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.399")), Color.RED);
+		}
+	}
+
+	//MMM only for test
+	public static void main(String... args)
+	{
+		try
+		{
+			final JAXBContext jaxbContext = JAXBContext.newInstance("rs.ruta.client.correspondence");
+			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			String xml = "<ns0:CatalogueCorrespondence xmlns:ns6=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\" xmlns:ns7=\"http://www.ruta.rs/ns/common\" xmlns:ns0=\"http://www.ruta.rs/ns/client\" xmlns:ns1=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">\r\n" +
+					"    <ns0:CreateCatalogueProcess>\r\n" +
+					"        <ns0:DistributeCatalogueState/>\r\n" +
+					"        <ns0:UUID>4dc1adbc-834c-410e-b818-7dd23566468e</ns0:UUID>\r\n" +
+					"        <ns0:Active>true</ns0:Active>\r\n" +
+					"    </ns0:CreateCatalogueProcess>\r\n" +
+					"    <ns0:UUID>fc7e4074-a65c-492b-a8a8-96b6a1086419</ns0:UUID>\r\n" +
+					"    <ns0:Active>true</ns0:Active>\r\n" +
+					"    <ns0:RecentlyUpdated>true</ns0:RecentlyUpdated>\r\n" +
+					"    <ns0:CorrespondentParty>\r\n" +
+					"        <ns6:PartyIdentification>\r\n" +
+					"            <ns1:ID>CDR1234567890</ns1:ID>\r\n" +
+					"        </ns6:PartyIdentification>\r\n" +
+					"        <ns6:PartyName>\r\n" +
+					"            <ns1:Name>CDR</ns1:Name>\r\n" +
+					"        </ns6:PartyName>\r\n" +
+					"    </ns0:CorrespondentParty>\r\n" +
+					"    <ns0:CorrespondenceName>fc7e4074-a65c-492b-a8a8-96b6a1086419</ns0:CorrespondenceName>\r\n" +
+					"    <ns0:CreationTime>2018-06-13T13:34:17.046+02:00</ns0:CreationTime>\r\n" +
+					"    <ns0:LastActivityTime>2018-06-13T13:37:45.781+02:00</ns0:LastActivityTime>\r\n" +
+					"    <ns0:CreateCatalogueProcess>true</ns0:CreateCatalogueProcess>\r\n" +
+					"</ns0:CatalogueCorrespondence>";
+			Object object = unmarshaller.unmarshal(new StringReader(xml));
+			int i = 1;
+		}
+		catch (JAXBException e)
+		{
+			e.printStackTrace();
 		}
 	}
 }
