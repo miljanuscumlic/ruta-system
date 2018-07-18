@@ -1,4 +1,4 @@
-package rs.ruta.client.datamapper;
+package rs.ruta.server.datamapper;
 
 import rs.ruta.common.datamapper.ExistConnector;
 import rs.ruta.common.datamapper.DatabaseAdmin;

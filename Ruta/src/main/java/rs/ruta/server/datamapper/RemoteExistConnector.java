@@ -7,7 +7,7 @@ public class RemoteExistConnector extends ExistConnector
 {
 	public RemoteExistConnector()
 	{
-		DatabaseAdmin.newInstance("admin", "admin");
+		DatabaseAdmin.newInstance("admin", null);
 	}
 
 }

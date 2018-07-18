@@ -8,7 +8,7 @@ import rs.ruta.common.datamapper.MapperRegistry;
  * Factory class for instantiating appropriate client side objects during initialization
  * of the client side {@link MapperRegistry}.
  */
-public class ServiceMapperRegistryFactory extends AbstractMapperRegistryFactory
+public class EmbeddedServiceMapperRegistryFactory extends AbstractMapperRegistryFactory
 {
 	@Override
 	protected MapperRegistry createMapperRegistry()
@@ -19,7 +19,7 @@ public class ServiceMapperRegistryFactory extends AbstractMapperRegistryFactory
 	@Override
 	protected ExistConnector createExistConnector()
 	{
-		return new RemoteExistConnector();
+		return new LocalExistConnector();
 	}
 
 }

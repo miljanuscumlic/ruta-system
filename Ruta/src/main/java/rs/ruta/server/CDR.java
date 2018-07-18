@@ -60,7 +60,8 @@ import rs.ruta.common.SearchCriterion;
 import rs.ruta.common.RutaUser;
 import rs.ruta.common.datamapper.*;
 import rs.ruta.server.datamapper.ServiceMapperRegistry;
-import rs.ruta.server.datamapper.ServiceMapperRegistryFactory;
+import rs.ruta.server.datamapper.EmbeddedServiceMapperRegistryFactory;
+import rs.ruta.server.datamapper.RemoteServiceMapperRegistryFactory;
 
 //handlers.xml should be inside ResourceRoot directory /WEB-INF/classes because WildFly is searching for it on that path
 //ResourceRoot [root=\"/C:/Program Files/wildfly-10.1.0.Final/bin/content/Ruta-SNAPSHOT-0.0.1.war/WEB-INF/classes\"]
@@ -93,14 +94,32 @@ public class CDR implements Server
 
 	public CDR()
 	{
-		mapperRegistry = MapperRegistry.initialize(new ServiceMapperRegistryFactory());
+		//setting EXIST_HOME
+		final String EXIST_HOME = System.getProperty("user.home");
+		System.setProperty("exist.home", EXIST_HOME);
+		mapperRegistry = MapperRegistry.initialize(new EmbeddedServiceMapperRegistryFactory());
 		if(!MapperRegistry.isDatastoreAccessible())
 		{
 			logger.warn("Cound not connect to the database! The database is not accessible.");
-			logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable"
-					+ " and all future SOAP requests will be rejected.");
+			logger.warn("If database has not been started please start it. Otherwise CDR service will not be operable and all future SOAP requests will be rejected.");
 		}
+		checkInstallation();
 		docBoxPool = Executors.newCachedThreadPool();
+	}
+
+	/**
+	 * Checks whether xquery files are present in the database and stores them to the database if they are not.
+	 */
+	private void checkInstallation()
+	{
+		try
+		{
+			MapperRegistry.getInstance().getMapper(RutaUser.class).checkDatastoreSetup();
+		}
+		catch(DetailException e)
+		{
+			logger.warn("Failed to check the installation. Presence of xquery files is not confirmed.", e);
+		}
 	}
 
 	private void init() throws DetailException
@@ -121,6 +140,19 @@ public class CDR implements Server
 	private void shutdown()
 	{
 		docBoxPool.shutdown();
+		try
+		{
+			MapperRegistry.getConnector().shutdownDatabase();
+		}
+		catch(Exception e)
+		{
+			final String errMsg = e.getMessage();
+			if(errMsg == null)
+				logger.error(e.getCause().getMessage());
+			else
+				logger.error(errMsg);
+		}
+
 	}
 
 	/**
