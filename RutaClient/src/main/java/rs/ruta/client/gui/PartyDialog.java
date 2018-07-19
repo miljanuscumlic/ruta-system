@@ -73,8 +73,8 @@ public class PartyDialog extends JDialog
 			{
 				if(registration)
 				{
-					int option = JOptionPane.showConfirmDialog(owner, Messages.getString("PartyDialog.0"), 
-							Messages.getString("PartyDialog.1"), JOptionPane.YES_NO_OPTION); 
+					int option = JOptionPane.showConfirmDialog(owner, "Entering My Party data is mandatory step during application setup.\nNot entering data will close the application. Do you want to proceed?", 
+							"Warning", JOptionPane.YES_NO_OPTION); 
 					if (option == JOptionPane.NO_OPTION)
 					{
 			            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -87,7 +87,7 @@ public class PartyDialog extends JDialog
 		});
 
 		JPanel buttonPanel = new JPanel();
-		JButton okButton = new JButton(Messages.getString("PartyDialog.2")); 
+		JButton okButton = new JButton("OK"); 
 		okButton.addActionListener(event ->
 		{
 			stopEditing();
@@ -98,8 +98,8 @@ public class PartyDialog extends JDialog
 				setVisible(false);
 			}
 			else
-				JOptionPane.showMessageDialog(PartyDialog.this, missingField + Messages.getString("PartyDialog.3"), 
-						Messages.getString("PartyDialog.4"), JOptionPane.ERROR_MESSAGE); 
+				JOptionPane.showMessageDialog(PartyDialog.this, missingField + " field is mandatory.", 
+						"Error: Missing mandatory field", JOptionPane.ERROR_MESSAGE); 
 		});
 		if(editable)
 		{
@@ -108,13 +108,13 @@ public class PartyDialog extends JDialog
 			okButton.requestFocusInWindow();
 		}
 
-		JButton cancelButton = new JButton(Messages.getString("PartyDialog.5")); 
+		JButton cancelButton = new JButton("Cancel"); 
 		cancelButton.addActionListener(event ->
 		{
 			if(registration)
 			{
-				int option = JOptionPane.showConfirmDialog(owner, Messages.getString("PartyDialog.6"), 
-						Messages.getString("PartyDialog.7"), JOptionPane.YES_NO_OPTION); 
+				int option = JOptionPane.showConfirmDialog(owner, "Entering My Party data is mandatory step during application setup.\nNot entering data will close the application. Do you want to proceed?", 
+						"Warning", JOptionPane.YES_NO_OPTION); 
 				if(option == JOptionPane.NO_OPTION)
 					System.exit(0);
 			}
@@ -126,7 +126,7 @@ public class PartyDialog extends JDialog
 		{
 			getRootPane().setDefaultButton(cancelButton);
 			cancelButton.requestFocusInWindow();
-			cancelButton.setText(Messages.getString("PartyDialog.8")); 
+			cancelButton.setText("Close"); 
 
 		}
 		cancelButton.setVerifyInputWhenFocusTarget(false); //do not verify previously focused element when Cancel is clicked

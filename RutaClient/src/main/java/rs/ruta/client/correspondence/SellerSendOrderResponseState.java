@@ -35,7 +35,7 @@ public class SellerSendOrderResponseState extends SellerOrderingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("SellerSendOrderResponseState.0")); 
+						throw new StateActivityException("Correspondence has been interrupted!"); 
 				}
 			}
 			try
@@ -47,11 +47,11 @@ public class SellerSendOrderResponseState extends SellerOrderingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SellerSendOrderResponseState.1"))); 
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response has failed!")); 
 //				changeState(process, SellerSendOrderResponseState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("SellerSendOrderResponseState.2")); 
+			throw new StateActivityException("Order Response has not been sent to the CDR service! Order Response could not be found!"); 
 	}
 }

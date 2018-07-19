@@ -30,10 +30,10 @@ public class OrderResponseSimpleDialog extends AbstractOrderResponseSimpleDialog
 	{
 		super(owner, orderResponseSimple, editable);
 
-		JButton sendButton = new JButton(Messages.getString("OrderResponseSimpleDialog.0")); 
-		JButton resendButton = new JButton(Messages.getString("OrderResponseSimpleDialog.1")); 
-		JButton discardButton = new JButton(Messages.getString("OrderResponseSimpleDialog.2")); 
-		JButton closeButton = new JButton(Messages.getString("OrderResponseSimpleDialog.3")); 
+		JButton sendButton = new JButton("Send"); 
+		JButton resendButton = new JButton("Resend"); 
+		JButton discardButton = new JButton("Discard"); 
+		JButton closeButton = new JButton("Close"); 
 
 		sendButton.addActionListener(event ->
 		{
@@ -55,7 +55,7 @@ public class OrderResponseSimpleDialog extends AbstractOrderResponseSimpleDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder(Messages.getString("OrderResponseSimpleDialog.4")), Color.RED); 
+					owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED); 
 				}
 			}).start();
 			setVisible(false);

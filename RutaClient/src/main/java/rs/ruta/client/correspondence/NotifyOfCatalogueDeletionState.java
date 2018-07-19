@@ -27,10 +27,10 @@ public class NotifyOfCatalogueDeletionState extends DeleteCatalogueProcessState
 		final DeleteCatalogueProcess process = (DeleteCatalogueProcess) correspondence.getState();
 		final RutaClient client = process.getClient();
 		final RutaClientFrame clientFrame = client.getClientFrame();
-		clientFrame.appendToConsole(new StringBuilder(Messages.getString("NotifyOfCatalogueDeletionState.0")), Color.BLACK); 
+		clientFrame.appendToConsole(new StringBuilder("Collecting data and producing Catalogue Deletion..."), Color.BLACK); 
 		final CatalogueDeletionType catalogueDeletion = client.getMyParty().produceCatalogueDeletion(client.getCDRParty());
 		if(catalogueDeletion == null)
-			throw new StateActivityException(Messages.getString("NotifyOfCatalogueDeletionState.1")); 
+			throw new StateActivityException("My Catalogue Deletion document is malformed. UBL validation has failed."); 
 		else
 			saveCatalogueDeletion(correspondence, catalogueDeletion);
 		final DocumentReference documentReference = correspondence.getLastDocumentReference();

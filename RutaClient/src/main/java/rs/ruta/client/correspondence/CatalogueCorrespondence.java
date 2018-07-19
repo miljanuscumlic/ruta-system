@@ -85,8 +85,8 @@ public class CatalogueCorrespondence extends Correspondence
 		catch(Exception e)
 		{
 			getClient().getClientFrame().
-			processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CatalogueCorrespondence.0")). 
-					append(getIdValue()).append(Messages.getString("CatalogueCorrespondence.1"))); 
+			processExceptionAndAppendToConsole(e, new StringBuilder("Correspondence "). 
+					append(getIdValue()).append(" has been stopped!")); 
 			getClient().getClientFrame().enableCatalogueMenuItems();
 		}
 		finally

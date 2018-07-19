@@ -53,9 +53,9 @@ public class SupplierBillingProcess extends BillingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("SupplierBillingProcess.0"), e1); 
+				throw new StateActivityException("Unable to stop the correspondence!", e1); 
 			}
-			throw new StateActivityException(Messages.getString("SupplierBillingProcess.1"), e); 
+			throw new StateActivityException("Interrupted execution of Billing Process.", e); 
 		}
 		finally
 		{

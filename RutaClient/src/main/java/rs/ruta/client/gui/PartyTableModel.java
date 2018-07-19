@@ -13,12 +13,12 @@ public class PartyTableModel extends DefaultTableModel
 
 	private static String[] rowNames =
 		{
-				Messages.getString("PartyTableModel.0"), Messages.getString("PartyTableModel.1"), Messages.getString("PartyTableModel.2"), Messages.getString("PartyTableModel.3"), Messages.getString("PartyTableModel.4"),     
-				Messages.getString("PartyTableModel.5"), Messages.getString("PartyTableModel.6"), Messages.getString("PartyTableModel.7"), Messages.getString("PartyTableModel.8"), Messages.getString("PartyTableModel.9"), Messages.getString("PartyTableModel.10"),      
-				Messages.getString("PartyTableModel.11"), Messages.getString("PartyTableModel.12"), Messages.getString("PartyTableModel.13"), Messages.getString("PartyTableModel.14"), Messages.getString("PartyTableModel.15"),     
-				Messages.getString("PartyTableModel.16"), Messages.getString("PartyTableModel.17"), Messages.getString("PartyTableModel.18"), Messages.getString("PartyTableModel.19"), Messages.getString("PartyTableModel.20"), Messages.getString("PartyTableModel.21"),      
-				Messages.getString("PartyTableModel.22"), Messages.getString("PartyTableModel.23"), Messages.getString("PartyTableModel.24"), Messages.getString("PartyTableModel.25"), Messages.getString("PartyTableModel.26"),     
-				Messages.getString("PartyTableModel.27"), Messages.getString("PartyTableModel.28"), Messages.getString("PartyTableModel.29"), Messages.getString("PartyTableModel.30"), Messages.getString("PartyTableModel.31"), Messages.getString("PartyTableModel.32"), Messages.getString("PartyTableModel.33")       
+				"Party name*", "Registration name*", "Company ID*", "Registration date", "Registration address",     
+				" - Street name*", " - Building number*", " - Floor", " - Room", " - Building name", " - City subdivision",      
+				" - City name*", " - Postal zone", " - Country subentity", " - Country*", "Classification code",     
+				"Postal address", " - Street name", " - Building number", " - Floor", " - Room", " - Building name",      
+				" - City subdivision", " - City name", " - Postal zone", " - Country subentity", " - Country",     
+				"Contact", " - Name", " - Telephone", " - Telefax", " - Email", " - Note", "Website"       
 		};
 
 	private Party party;
@@ -259,11 +259,11 @@ public class PartyTableModel extends DefaultTableModel
 		switch(columnIndex)
 		{
 		case 0:
-			return Messages.getString("PartyTableModel.34"); 
+			return "Property"; 
 		case 1:
-			return Messages.getString("PartyTableModel.35"); 
+			return "Value"; 
 		default:
-			return ""; 
+			return ""; //$NON-NLS-1$
 		}
 	}
 

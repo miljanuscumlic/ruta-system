@@ -17,7 +17,7 @@ public class OrderLinesTableModel extends DefaultTableModel
 
 	private static String[] columnNames =
 		{
-				Messages.getString("OrderLinesTableModel.0"), Messages.getString("OrderLinesTableModel.1"), Messages.getString("OrderLinesTableModel.2"), Messages.getString("OrderLinesTableModel.3"), Messages.getString("OrderLinesTableModel.4"), Messages.getString("OrderLinesTableModel.5"), Messages.getString("OrderLinesTableModel.6"), Messages.getString("OrderLinesTableModel.7"), Messages.getString("OrderLinesTableModel.8")         
+				"No.", "Name", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Tax", "Quantity"         
 		};
 
 	private List<OrderLineType> orderLines;

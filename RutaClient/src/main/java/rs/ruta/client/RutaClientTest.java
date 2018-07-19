@@ -15,19 +15,16 @@ import rs.ruta.client.gui.RutaClientFrame;
 
 public class RutaClientTest
 {
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
 
 	public static void main(String[] args) throws Exception
 	{
 		final Locale myLocale = Locale.forLanguageTag("sr-RS");
 		Locale.setDefault(myLocale);
-		Messages.setLocale(myLocale);
-		rs.ruta.client.gui.Messages.setLocale(myLocale);
-		rs.ruta.client.correspondence.Messages.setLocale(myLocale);
 
 		//setting EXIST_HOME
-		final String EXIST_HOME = System.getProperty("user.dir"); 
-		System.setProperty("exist.home", EXIST_HOME); 
+		final String EXIST_HOME = System.getProperty("user.dir"); //$NON-NLS-1$
+		System.setProperty("exist.home", EXIST_HOME); //$NON-NLS-1$
 
 		final RutaClientFrame frame = new RutaClientFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,14 +32,14 @@ public class RutaClientTest
 		RutaClient client = null;
 		boolean secondTry = false;
 		final Semaphore edtSync = new Semaphore(0);
-		final JOptionPane awhilePane = new JOptionPane(Messages.getString("RutaClientTest.3"), 
+		final JOptionPane awhilePane = new JOptionPane(("Opening Ruta Client application.        \nThis could take a while. Please wait..."), //$NON-NLS-1$
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-		final JDialog awhileDialog = awhilePane.createDialog(null, Messages.getString("RutaClientTest.4")); 
+		final JDialog awhileDialog = awhilePane.createDialog(null, ("Ruta Client")); //$NON-NLS-1$
 		awhileDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-		final JOptionPane splashPane = new JOptionPane(Messages.getString("RutaClientTest.5"), 
+		final JOptionPane splashPane = new JOptionPane(("Initializing Ruta Client application.        \nPlease wait..."), //$NON-NLS-1$
 				JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
-		final JDialog splashScreen = splashPane.createDialog(frame, Messages.getString("RutaClientTest.6")); 
+		final JDialog splashScreen = splashPane.createDialog(frame, ("Ruta Client")); //$NON-NLS-1$
 		splashScreen.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
 		try
@@ -69,21 +66,21 @@ public class RutaClientTest
 					EventQueue.invokeLater(() ->
 					{
 						JOptionPane.showMessageDialog(null,
-								Messages.getString("RutaClientTest.7"), 
-										Messages.getString("RutaClientTest.8"), JOptionPane.ERROR_MESSAGE); 
+								("Without correct username and password you are not granted access\nto the Ruta Client Application. Application will be closed."), //$NON-NLS-1$
+										("Error message"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 						System.exit(0);
 					});
 				}
 			}
 			catch(Exception e)
 			{
-				if(e.getMessage() != null && e.getMessage().contains(Messages.getString("RutaClientTest.9"))) 
+				if(e.getMessage() != null && e.getMessage().contains(("Ruta Client application has been already started."))) //$NON-NLS-1$
 				{
 					secondTry = true;
 					EventQueue.invokeLater(() ->
 					{
-						int option = JOptionPane.showConfirmDialog(null, Messages.getString("RutaClientTest.10"), 
-								Messages.getString("RutaClientTest.11"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE); 
+						int option = JOptionPane.showConfirmDialog(null, ("It seems there already has been started one instance of Ruta Client application,\nor the previous instance of the appliation was not closed properly.\nIt might not succeed, but do you still want to try to open a new one?"), //$NON-NLS-1$
+								("Ruta Client - Warning"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE); //$NON-NLS-1$
 						if(option == JOptionPane.YES_OPTION)
 							again.set(true);
 						else
@@ -93,11 +90,11 @@ public class RutaClientTest
 				}
 				else
 				{
-					logger.error(Messages.getString("RutaClientTest.12"), e); 
+					logger.error(("Fatal error! Data could not be read from the database. Exception is"), e); //$NON-NLS-1$
 					EventQueue.invokeLater(() ->
 					{
-						JOptionPane.showMessageDialog(null, Messages.getString("RutaClientTest.13") + e.getMessage(), 
-								Messages.getString("RutaClientTest.14"), JOptionPane.ERROR_MESSAGE); 
+						JOptionPane.showMessageDialog(null, ("Unable to read data from the database.\n") + e.getMessage(), //$NON-NLS-1$
+								("Ruta Client - Critical error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 						System.exit(1);
 					});
 				}
@@ -133,15 +130,15 @@ public class RutaClientTest
 						EventQueue.invokeLater(() ->
 						{
 							JOptionPane.showMessageDialog(null,
-									Messages.getString("RutaClientTest.15"), 
-											Messages.getString("RutaClientTest.16"), JOptionPane.ERROR_MESSAGE); 
+									("Without correct username and password you are not granted access\\nto the Ruta Client Application. Application will be closed."), //$NON-NLS-1$
+											("Error message"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 							System.exit(0);
 						});
 					}
 				}
 				else
 				{
-					logger.error(Messages.getString("RutaClientTest.17")); 
+					logger.error(("Unable to open Ruta Client application.")); //$NON-NLS-1$
 					System.exit(1);
 				}
 			}
@@ -150,11 +147,11 @@ public class RutaClientTest
 		catch(Exception e)
 		{
 			awhileDialog.setVisible(false);
-			logger.error(Messages.getString("RutaClientTest.19"), e); 
+			logger.error(("Unable to open Ruta Client application. Exception is "), e); //$NON-NLS-1$
 			EventQueue.invokeLater( () ->
 			{
-				JOptionPane.showMessageDialog(null, Messages.getString("RutaClientTest.20") + e.getMessage(), 
-						Messages.getString("RutaClientTest.21"), JOptionPane.ERROR_MESSAGE); 
+				JOptionPane.showMessageDialog(null, ("Unable to open Ruta Client application.\n") + e.getMessage(), //$NON-NLS-1$
+						("Ruta Client - Critical error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 				System.exit(1);
 			});
 		}

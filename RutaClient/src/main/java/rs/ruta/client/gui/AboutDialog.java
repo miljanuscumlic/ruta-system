@@ -16,6 +16,7 @@ public class AboutDialog extends JDialog
 	//closing dialog by pressing escape key
 	private static final KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 	public static final String dispatchWindowClosingActionMapKey = "rs.ruta.dialog.about:WINDOW_CLOSING";
+
 	public void installEscapeCloseOperation()
 	{
 		Action dispatchClosing = new AbstractAction()
@@ -36,12 +37,12 @@ public class AboutDialog extends JDialog
 
 	public AboutDialog(JFrame owner)
 	{
-		super(owner, Messages.getString("AboutDialog.1"), true);
-		JLabel label = new JLabel(Messages.getString("AboutDialog.2") + RutaClient.getVersion().getVersion() +
-				Messages.getString("AboutDialog.3"),
+		super(owner, ("About Ruta Client"), true);
+		JLabel label = new JLabel(("<html>&nbsp;&nbsp;Ruta Client ver.") + RutaClient.getVersion().getVersion() +
+				("<br />&nbsp;&nbsp;Ruta is an application for global Electronic Data Interchange.</html>"),
 				SwingConstants.CENTER);
 		add(label, BorderLayout.CENTER);
-		JButton ok = new JButton(Messages.getString("AboutDialog.0"));
+		JButton ok = new JButton(("OK"));
 		ok.addActionListener(event -> setVisible(false));
 		JPanel panel = new JPanel();
 		panel.add(ok);
@@ -50,8 +51,6 @@ public class AboutDialog extends JDialog
 		ok.requestFocusInWindow();
 		setSize(370, 120);
 		setLocationRelativeTo(owner);
-
 		installEscapeCloseOperation();
-
 	}
 }

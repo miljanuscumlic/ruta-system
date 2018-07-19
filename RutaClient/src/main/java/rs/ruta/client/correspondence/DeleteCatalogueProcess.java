@@ -54,9 +54,9 @@ public class DeleteCatalogueProcess extends CatalogueProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("DeleteCatalogueProcess.0"), e1); 
+				throw new StateActivityException("Unable to stop the correspondence!", e1); 
 			}
-			throw new StateActivityException(Messages.getString("DeleteCatalogueProcess.1"), e); 
+			throw new StateActivityException("Interrupted execution of Delete Catalogue Process!", e); 
 		}
 		finally
 		{

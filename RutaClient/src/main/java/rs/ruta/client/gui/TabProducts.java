@@ -43,10 +43,10 @@ import rs.ruta.common.datamapper.DetailException;
 public class TabProducts extends TabComponent
 {
 	private static final long serialVersionUID = 7435742718848842547L;
-	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
-	private static final String IN_STOCK = Messages.getString("TabProducts.1"); 
-	private static final String OUT_OF_STOCK = Messages.getString("TabProducts.2"); 
-	private static final Object PRODUCTS_AND_SERVICES = Messages.getString("TabProducts.3"); 
+	protected static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
+	private static final String IN_STOCK = "In Stock";
+	private static final String OUT_OF_STOCK = ("Out of Stock");
+	private static final Object PRODUCTS_AND_SERVICES = ("Products");
 	private JTable productListTable;
 	private DefaultTableModel productListTableModel;
 	private List<Item> products;
@@ -86,10 +86,10 @@ public class TabProducts extends TabComponent
 	{
 		final JComboBox<String> comboBox = new JComboBox<String>(InstanceFactory.getTaxCategories());
 		comboBox.setRenderer(new ComBoxCellRenderer());
-		comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN)); 
+		comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN));
 		tableColumn.setCellEditor(new DefaultCellEditor(comboBox));
 		final DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setToolTipText(Messages.getString("TabProducts.5")); 
+		renderer.setToolTipText(("Click for combo box"));
 		tableColumn.setCellRenderer(renderer);
 	}
 
@@ -204,15 +204,15 @@ public class TabProducts extends TabComponent
 		setUpComboBoxColumn(table, tableColumn);
 
 		final JPopupMenu cataloguePopupMenu = new JPopupMenu();
-		final JMenuItem archiveItem = new JMenuItem(Messages.getString("TabProducts.6")); 
-		final JMenuItem unarchiveItem = new JMenuItem(Messages.getString("TabProducts.7")); 
-		final JMenuItem newItem = new JMenuItem(Messages.getString("TabProducts.8")); 
-		final JMenuItem editItem = new JMenuItem(Messages.getString("TabProducts.9")); 
+		final JMenuItem archiveItem = new JMenuItem(("Put out of Stock"));
+		final JMenuItem unarchiveItem = new JMenuItem(("Put in Stock"));
+		final JMenuItem newItem = new JMenuItem(("Add New"));
+		final JMenuItem editItem = new JMenuItem(("Edit"));
 
 		newItem.addActionListener(event ->
 		{
 			Item newProduct =
-					clientFrame.showProductDialog(myParty.createEmptyProduct(), Messages.getString("TabProducts.10"), true); 
+					clientFrame.showProductDialog(myParty.createEmptyProduct(), ("Add New Product or Service"), true);
 			if (newProduct != null)
 			{
 				try
@@ -224,10 +224,10 @@ public class TabProducts extends TabComponent
 				}
 				catch (DetailException e)
 				{
-					logger.error(Messages.getString("TabProducts.11"), e); 
+					logger.error(("Could not insert new product in the database! Exception is"), e);
 					EventQueue.invokeLater(() ->
-					JOptionPane.showMessageDialog(null, Messages.getString("TabProducts.12"), 
-							Messages.getString("TabProducts.13"), JOptionPane.ERROR_MESSAGE) 
+					JOptionPane.showMessageDialog(null, ("Could not insert new product in the database!"),
+							("Database Error"), JOptionPane.ERROR_MESSAGE)
 							);
 				}
 			}
@@ -247,7 +247,7 @@ public class TabProducts extends TabComponent
 			else
 				originalProduct = myParty.getArchivedProducts().get(modelRowIndex);
 			Item editedProduct =
-					clientFrame.showProductDialog(originalProduct, Messages.getString("TabProducts.15"), true); 
+					clientFrame.showProductDialog(originalProduct, ("Edit Product or Service"), true);
 			if(editedProduct != null)
 			{
 				try
@@ -280,10 +280,10 @@ public class TabProducts extends TabComponent
 				catch (DetailException e)
 				{
 					EventQueue.invokeLater(() ->
-					JOptionPane.showMessageDialog(clientFrame, Messages.getString("TabProducts.16"), 
-							Messages.getString("TabProducts.17"), JOptionPane.ERROR_MESSAGE) 
+					JOptionPane.showMessageDialog(clientFrame, ("Could not update the product in the database."),
+							("Database Error"), JOptionPane.ERROR_MESSAGE)
 							);
-					logger.error(Messages.getString("TabProducts.18"), e); 
+					logger.error(("Could not update the product in the database."), e);
 				}
 			}
 		});
@@ -299,10 +299,10 @@ public class TabProducts extends TabComponent
 			catch (Exception e)
 			{
 				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(clientFrame, Messages.getString("TabProducts.19"), 
-						Messages.getString("TabProducts.20"), JOptionPane.ERROR_MESSAGE) 
+				JOptionPane.showMessageDialog(clientFrame, ("Could not remove the product from products list."),
+						("Database Error"), JOptionPane.ERROR_MESSAGE)
 						);
-				logger.error(Messages.getString("TabProducts.21"), e); 
+				logger.error(("Could not remove the product from the list."), e);
 			}
 		});
 
@@ -317,10 +317,10 @@ public class TabProducts extends TabComponent
 			catch (Exception e)
 			{
 				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(clientFrame, Messages.getString("TabProducts.22"), 
-						Messages.getString("TabProducts.23"), JOptionPane.ERROR_MESSAGE) 
+				JOptionPane.showMessageDialog(clientFrame, ("Could not remove the product from products list."),
+						("Database Error"), JOptionPane.ERROR_MESSAGE)
 						);
-				logger.error(Messages.getString("TabProducts.24"), e); 
+				logger.error(("Could not remove the product from the list."), e);
 			}
 		});
 
@@ -351,7 +351,7 @@ public class TabProducts extends TabComponent
 						{
 							cataloguePopupMenu.add(newItem);
 							cataloguePopupMenu.addSeparator();
-							editItem.putClientProperty("InStock", true); 
+							editItem.putClientProperty("InStock", true);
 							cataloguePopupMenu.add(editItem);
 							cataloguePopupMenu.add(archiveItem);
 						}
@@ -359,7 +359,7 @@ public class TabProducts extends TabComponent
 						{
 							cataloguePopupMenu.add(newItem);
 							cataloguePopupMenu.addSeparator();
-							editItem.putClientProperty("InStock", false); 
+							editItem.putClientProperty("InStock", false);
 							cataloguePopupMenu.add(editItem);
 							cataloguePopupMenu.add(unarchiveItem);
 						}
@@ -385,13 +385,13 @@ public class TabProducts extends TabComponent
 		final JLabel blankLabel = new JLabel();
 
 		final JPopupMenu treePopupMenu = new JPopupMenu();
-		final JMenuItem newItem = new JMenuItem(Messages.getString("TabProducts.27")); 
+		final JMenuItem newItem = new JMenuItem(("New item"));
 		treePopupMenu.add(newItem);
 
 		newItem.addActionListener(event ->
 		{
 			final Item newProduct =
-					clientFrame.showProductDialog(myParty.createEmptyProduct(), Messages.getString("TabProducts.28"), true); 
+					clientFrame.showProductDialog(myParty.createEmptyProduct(), ("Add New Product or Service"), true);
 			if (newProduct != null)
 			{
 				try
@@ -403,10 +403,10 @@ public class TabProducts extends TabComponent
 				}
 				catch (DetailException e)
 				{
-					logger.error(Messages.getString("TabProducts.29"), e); 
+					logger.error(("Could not insert new product in the database! Exception is"), e);
 					EventQueue.invokeLater(() ->
-					JOptionPane.showMessageDialog(null, Messages.getString("TabProducts.30"), 
-							Messages.getString("TabProducts.31"), JOptionPane.ERROR_MESSAGE) 
+					JOptionPane.showMessageDialog(null, ("Could not insert new product in the database!"),
+							("Database Error"), JOptionPane.ERROR_MESSAGE)
 							);
 				}
 			}

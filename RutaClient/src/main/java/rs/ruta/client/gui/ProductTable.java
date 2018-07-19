@@ -41,7 +41,7 @@ public class ProductTable extends JTable
 		{
 			final JComboBox<String> comboBox = new JComboBox<String>(InstanceFactory.getTaxCategories());
 			comboBox.setRenderer(new ComBoxRenderer());
-			comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN)); 
+			comboBox.setFont(new JLabel("Test").getFont().deriveFont(Font.PLAIN)); //$NON-NLS-1$
 			return new DefaultCellEditor(comboBox);
 		}
 		else if(row == 9 && column == 1)
@@ -104,7 +104,7 @@ public class ProductTable extends JTable
 			final String text = ((JTextField) input).getText();
 			try
 			{
-				if("".equals(text.trim())) 
+				if("".equals(text.trim())) //$NON-NLS-1$
 					return false;
 				else
 				{
@@ -124,7 +124,7 @@ public class ProductTable extends JTable
 			boolean valid = verify(input);
 			if (!valid)
 				EventQueue.invokeLater(() ->
-				JOptionPane.showMessageDialog(null, Messages.getString("ProductTable.2"))); 
+				JOptionPane.showMessageDialog(null, "Invalid decimal number.")); 
 			return valid;
 		}
 	}

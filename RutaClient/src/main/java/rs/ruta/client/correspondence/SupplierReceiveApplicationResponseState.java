@@ -28,7 +28,7 @@ public class SupplierReceiveApplicationResponseState extends SupplierBillingProc
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped())
-				throw new StateActivityException(Messages.getString("SupplierReceiveApplicationResponseState.0")); 
+				throw new StateActivityException("Correspondence has been interrupted!"); 
 		}
 
 	}

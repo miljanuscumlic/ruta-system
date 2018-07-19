@@ -56,7 +56,7 @@ public class BuyerCancelOrderState extends BuyerOrderingProcessState
 				orderCancellation = myParty.produceOrderCancellation(process.getOrderResponseSimple(correspondence));
 		}
 		else
-			throw new StateActivityException(Messages.getString("BuyerCancelOrderState.0")); 
+			throw new StateActivityException("No document references in the correspondence!"); 
 
 		return orderCancellation;
 	}

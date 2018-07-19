@@ -13,7 +13,7 @@ public class CatalogueTableModel extends DefaultTableModel
 
 	private static String[] columnNames =
 		{
-				Messages.getString("CatalogueTableModel.0"), Messages.getString("CatalogueTableModel.1"), Messages.getString("CatalogueTableModel.2"), Messages.getString("CatalogueTableModel.3"), Messages.getString("CatalogueTableModel.4"), Messages.getString("CatalogueTableModel.5"), Messages.getString("CatalogueTableModel.6"), Messages.getString("CatalogueTableModel.7"), Messages.getString("CatalogueTableModel.8"), Messages.getString("CatalogueTableModel.9")          
+				"No.", "Name", "Description", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Tax", "Keywords"          
 		};
 
 	private Catalogue catalogue;

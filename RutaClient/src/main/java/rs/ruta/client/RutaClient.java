@@ -92,7 +92,7 @@ public class RutaClient
 	private MyParty myParty;
 	private Party CDRParty;
 	private RutaClientFrame clientFrame;
-	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);
+	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);   //$NON-NLS-3$
 	private Properties properties;
 	private List<BugReport> bugReports;
 	public static Logger logger = LoggerFactory.getLogger("rs.ruta.client");
@@ -114,7 +114,7 @@ public class RutaClient
 	public RutaClient(RutaClientFrame clientFrame, boolean force) throws DetailException
 	{
 		this.clientFrame = clientFrame;
-		logger.info(Messages.getString("RutaClient.7"));
+		logger.info(("Opening Ruta Client Application."));
 		enableStoringProperties = true;
 		properties = new Properties();
 		loadProperties();
@@ -183,8 +183,8 @@ public class RutaClient
 			EventQueue.invokeLater(() ->
 			{
 				JOptionPane.showMessageDialog(clientFrame,
-						Messages.getString("RutaClient.10"),
-								Messages.getString("RutaClient.11"), JOptionPane.PLAIN_MESSAGE);
+						("Welcome to Ruta Client Application. To start using Ruta System\\nyou have to register yourself and your Party with it."),
+								("Welcome message"), JOptionPane.PLAIN_MESSAGE);
 				edtSync.release();
 			});
 			try
@@ -193,43 +193,43 @@ public class RutaClient
 			}
 			catch (InterruptedException e)
 			{
-				throw new DetailException(Messages.getString("RutaClient.12"), e);
+				throw new DetailException(("Unable to synchronize with EDT thread."), e);
 			}
 
 			final Party coreParty = myParty.getCoreParty();
 			if(!myParty.hasCoreParty() || coreParty.verifyParty() != null)
-				myParty.setCoreParty(clientFrame.showPartyDialog(coreParty, Messages.getString("RutaClient.13"), true, true));
+				myParty.setCoreParty(clientFrame.showPartyDialog(coreParty, ("My Party"), true, true));
 			clientFrame.updateTitle(myParty.getCoreParty().getPartySimpleName());
-			initialUsername = clientFrame.showLocalSignUpDialog(Messages.getString("RutaClient.14"), false);
+			initialUsername = clientFrame.showLocalSignUpDialog(("Local database registration"), false);
 			EventQueue.invokeLater(() ->
 			{
 				if(initialUsername != null)
 				{
-					JOptionPane.showMessageDialog(null, Messages.getString("RutaClient.15"), Messages.getString("RutaClient.16"),
-							JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(null, ("Party has been successfully registered with local database.\nNext step is a registration with the Central Data Repository."),
+							("Local database registration"), JOptionPane.PLAIN_MESSAGE);
 					edtSync.release();
 				}
 			});
 			try
 			{
 				edtSync.acquire();
-				clientFrame.showCDRSignUpDialog(Messages.getString("RutaClient.17"));
+				clientFrame.showCDRSignUpDialog(("CDR registration"));
 			}
 			catch (InterruptedException e)
 			{
-				throw new DetailException(Messages.getString("RutaClient.12"), e);
+				throw new DetailException(("Unable to synchronize with EDT thread."), e);
 			}
 
 		}
 		else if(!isLocalUserRegistеred() && !myParty.checkLocalUser(initialUsername, initialPassword))
 		{
 			final AtomicBoolean loop = new AtomicBoolean(true);
-			while(loop.get() && !clientFrame.showLocalLogInDialog(Messages.getString("RutaClient.19")))
+			while(loop.get() && !clientFrame.showLocalLogInDialog(("Log in")))
 			{
 				EventQueue.invokeLater(() ->
 				{
-					int option = JOptionPane.showConfirmDialog(clientFrame, Messages.getString("RutaClient.20"),
-							Messages.getString("RutaClient.21"), JOptionPane.YES_NO_OPTION);
+					int option = JOptionPane.showConfirmDialog(clientFrame, ("Log-in credentials are wrong. Do you want to try again?"),
+							("Log-in Error"), JOptionPane.YES_NO_OPTION);
 					loop.set(option == JOptionPane.YES_OPTION);
 					edtSync.release();
 				});
@@ -239,7 +239,7 @@ public class RutaClient
 				}
 				catch (InterruptedException e)
 				{
-					throw new DetailException(Messages.getString("RutaClient.12"), e);
+					throw new DetailException(("Unable to synchronize with EDT thread."), e);
 				}
 			}
 			if(!loop.get())
@@ -284,14 +284,14 @@ public class RutaClient
 			{
 				try
 				{
-					logger.info(Messages.getString("RutaClient.23"));
+					logger.info(("Shutdown hook started."));
 					shutdownApplication();
-					logger.info(Messages.getString("RutaClient.24"));
-					logger.info(Messages.getString("RutaClient.25"));
+					logger.info(("Shutdown hook ended."));
+					logger.info(("Closing Ruta Client Application."));
 				}
 				catch(Exception e)
 				{
-					logger.error(Messages.getString("RutaClient.26"), e);
+					logger.error(("Exception is"), e);
 				}
 			}
 		});
@@ -312,7 +312,7 @@ public class RutaClient
 			catch(DetailException e)
 			{
 				properties.setProperty("installed", "false");
-				logger.warn(Messages.getString("RutaClient.0"), e);
+				logger.warn(("Failed to check the installation. Presence of xquery files is not confirmed."), e);
 			}
 		}
 	}
@@ -374,9 +374,9 @@ public class RutaClient
 		}
 		catch (IOException | NullPointerException e)
 		{
-			JOptionPane.showMessageDialog(null, Messages.getString("RutaClient.37"),
-					Messages.getString("RutaClient.38"), JOptionPane.INFORMATION_MESSAGE);
-			logger.warn(Messages.getString("RutaClient.39") + e.getMessage());
+			JOptionPane.showMessageDialog(null, ("Properties could not be read from the ruta.properties file!\\nReverting to default settings."),
+					("Information"), JOptionPane.INFORMATION_MESSAGE);
+			logger.warn(("Properties could not be read from the ruta.properties file!") + e.getMessage());
 		}
 		RutaClient.cdrEndPoint = properties.getProperty("cdrEndPoint", RutaClient.defaultEndPoint);
 		RutaClient.CONNECT_TIMEOUT = Integer.valueOf(properties.getProperty("connectTimeout", "0"));
@@ -399,9 +399,9 @@ public class RutaClient
 		}
 		catch (IOException | NullPointerException e)
 		{
-			JOptionPane.showMessageDialog(null, Messages.getString("RutaClient.47"),
-					Messages.getString("RutaClient.48"), JOptionPane.ERROR_MESSAGE);
-			logger.warn(Messages.getString("RutaClient.49"));
+			JOptionPane.showMessageDialog(null, ("Properties could not be stored to the ruta.properties file!"),
+					("Error"), JOptionPane.ERROR_MESSAGE);
+			logger.warn(("Properties could not be stored to the ruta.properties file!"));
 		}
 	}
 
@@ -427,7 +427,7 @@ public class RutaClient
 		if(properties.get(prop) != null)
 			started = Boolean.parseBoolean(properties.get(prop).toString());
 		if(started)
-			throw new DetailException(Messages.getString("RutaClient.56"));
+			throw new DetailException(("Ruta Client application has been already started."));
 	}
 
 	public RutaClientFrame getClientFrame()
@@ -483,8 +483,8 @@ public class RutaClient
 			final String missingPartyField = myParty.getCoreParty().verifyParty();
 			if(missingPartyField != null)
 			{
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.57") ).append(missingPartyField).
-						append(Messages.getString("RutaClient.58")), Color.RED);
+				clientFrame.appendToConsole(new StringBuilder(("Request for the registration of My Party has not been sent to the CDR service because Party is missing mandatory field:") ).append(missingPartyField).
+						append((". Please populate My Party data with all mandatory fields and try again.")), Color.RED);
 				clientFrame.enablePartyMenuItems();
 			}
 			else
@@ -503,28 +503,28 @@ public class RutaClient
 						myParty.setCDRSecretKey(key);
 						myParty.setDirtyMyParty(false);
 						myParty.followMyself();
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.59")),
+						clientFrame.appendToConsole(new StringBuilder(("My Party has been successfully registered with the CDR service.")),
 								Color.GREEN);
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.60")), Color.BLACK);
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.61")), Color.BLACK);
+						clientFrame.appendToConsole(new StringBuilder(("My Party has been added to the Following parties.")), Color.BLACK);
+						clientFrame.appendToConsole(new StringBuilder(("Please upload My Catalogue on the CDR service for Ruta users to be able to see your products.")), Color.BLACK);
 					}
 					catch(Exception e)
 					{
 						myParty.clearPartyID();
-						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.62")));
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("My Party has not been registered with the CDR service!")));
 					}
 					finally
 					{
 						clientFrame.enablePartyMenuItems();
 					}
 				});
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.63")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Request for the registration of My Party has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 			}
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.64"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.65")), Color.RED);
+			logger.error(("My Party has not been registered with the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("My Party has not been registered with the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 			clientFrame.enablePartyMenuItems();
 		}
 		return ret;
@@ -547,23 +547,23 @@ public class RutaClient
 				{
 					future.get();
 					myParty.setDirtyMyParty(false);
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.66")), Color.GREEN);
+					clientFrame.appendToConsole(new StringBuilder(("My Party has been successfully updated with the CDR service.")), Color.GREEN);
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.67")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("My Party has not been updated with the CDR service!")));
 				}
 				finally
 				{
 					clientFrame.enablePartyMenuItems();
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.68")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("My Party has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.69"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.70")), Color.RED);
+			logger.error(("My Party has not been updated with the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("My Party has not been updated with the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 			clientFrame.enablePartyMenuItems();
 		}
 		return ret;
@@ -578,7 +578,7 @@ public class RutaClient
 	public Future<?> cdrDeregisterMyParty()
 	{
 		Future<?> ret = null;
-		clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.71")), Color.BLACK);
+		clientFrame.appendToConsole(new StringBuilder(("Checking whether there are new documents in the DocBox.")), Color.BLACK);
 		Semaphore sequential = cdrGetNewDocuments();
 		try
 		{
@@ -586,7 +586,7 @@ public class RutaClient
 		}
 		catch (InterruptedException e)
 		{
-			logger.error(Messages.getString("RutaClient.72"), e);
+			logger.error(("Unable to make sequental calls of the CDR service."), e);
 		}
 
 		try
@@ -599,31 +599,31 @@ public class RutaClient
 				{
 					future.get();
 					myParty.deleteCDRRelatedData();
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.73")),
+					clientFrame.appendToConsole(new StringBuilder(("My Party has been successfully deregistered from the CDR service.")),
 							Color.GREEN);
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.74")), Color.BLACK);
+					clientFrame.appendToConsole(new StringBuilder(("All CDR related data in regard with parties has been deleted from the local data store.")), Color.BLACK);
 				}
 				catch (InterruptedException | ExecutionException e)
 				{
 					clientFrame.processExceptionAndAppendToConsole(
-							e, new StringBuilder(Messages.getString("RutaClient.75")));
+							e, new StringBuilder(("My Party has not been deregistered from the CDR service!")));
 				}
 				catch(Exception e)
 				{
 					clientFrame.processExceptionAndAppendToConsole(
-							e, new StringBuilder(Messages.getString("RutaClient.76")));
+							e, new StringBuilder(("My Party has been deregistered from the CDR service, but some local data is not deleted!")));
 				}
 				finally
 				{
 					clientFrame.enablePartyMenuItems();
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.77")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Request for deregistration of My Party has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.78"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.79")), Color.RED);
+			logger.error(("My Party has not been deregistered from the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("My Party has not been deregistered from the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 			clientFrame.enablePartyMenuItems();
 		}
 		return ret;
@@ -658,28 +658,28 @@ public class RutaClient
 		{
 			try
 			{
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.94")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Sending My Catalogue update to the CDR service...")), Color.BLACK);
 				myParty.setCatalogue(catalogue);
 				Server port = getCDRPort();
 				String username = myParty.getCDRUsername();
 				ret = port.updateCatalogueWithAppResponseAsync(username, catalogue, null);
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.95")),
+				clientFrame.appendToConsole(new StringBuilder(("My Catalogue has been sent to the CDR service. Waiting for a response...")),
 						Color.BLACK);
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
 			}
 			catch(WebServiceException e)
 			{
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
-				logger.error(Messages.getString("RutaClient.96"), e);
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.97")).
-						append(Messages.getString("RutaClient.98")), Color.RED);
+				logger.error(("My Catalogue has not been updated by the CDR service! Server is not accessible. Exception is"), e);
+				clientFrame.appendToConsole(new StringBuilder(("My Catalogue has not been updated by the CDR service!")).
+						append((" Server is not accessible. Please try again later.")), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
 			}
 		}
 		else
 		{
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.99")), Color.RED);
+			clientFrame.appendToConsole(new StringBuilder(("My Catalogue has not been sent to the CDR service because it is malformed. All catalogue items should have a name and catalogue has to have at least one item.")), Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
 		return ret;
@@ -707,14 +707,14 @@ public class RutaClient
 			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
 			{
 				myParty.setDirtyCatalogue(false);
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.100")),
+				clientFrame.appendToConsole(new StringBuilder(("My Catalogue has been successfully updated in the CDR.")),
 						Color.GREEN);
 				positiveResponse = Boolean.TRUE;
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 			{
 				clientFrame.appendToConsole(
-						new StringBuilder(Messages.getString("RutaClient.101")),
+						new StringBuilder(("My Catalogue has not been updated in the CDR service! Check My Catalogue data and try again.")),
 						Color.RED);
 				positiveResponse = Boolean.FALSE;
 			}
@@ -757,25 +757,25 @@ public class RutaClient
 		{
 			try
 			{
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.103")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Sending Request for My Catalogue deletion to the CDR service...")), Color.BLACK);
 				Server port = getCDRPort();
 				String username = myParty.getCDRUsername();
 				ret = port.deleteCatalogueWithAppResponseAsync(username, catalogueDeletion, null);
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.104")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Request for My Catalogue deletion has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
 			}
 			catch(WebServiceException e)
 			{
 				correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
-				logger.error(Messages.getString("RutaClient.105"), e);
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.106")), Color.RED);
+				logger.error(("My Catalogue has not been deleted from the CDR service! Server is not accessible. Exception is"), e);
+				clientFrame.appendToConsole(new StringBuilder(("My Catalogue has not been deleted from the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 				clientFrame.enableCatalogueMenuItems();
 			}
 		}
 		else
 		{
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_FAILED);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.107")),
+			clientFrame.appendToConsole(new StringBuilder(("Request for My Catalogue deletion has not been sent to the CDR service because it is malformed.")),
 					Color.RED);
 			clientFrame.enableCatalogueMenuItems();
 		}
@@ -804,12 +804,12 @@ public class RutaClient
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
 			if(InstanceFactory.APP_RESPONSE_POSITIVE.equals(responseCode))
 			{
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.108")), Color.GREEN);
+				clientFrame.appendToConsole(new StringBuilder(("My Catalogue has been successfully deleted from the CDR.")), Color.GREEN);
 				positiveResponse = Boolean.TRUE;
 			}
 			else if(InstanceFactory.APP_RESPONSE_NEGATIVE.equals(responseCode))
 			{
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.109")),
+				clientFrame.appendToConsole(new StringBuilder(("My Catalogue has not been deleted from the CDR! There has been some kind of data error.")),
 						Color.RED);
 				positiveResponse = Boolean.FALSE;
 			}
@@ -857,8 +857,8 @@ public class RutaClient
 	{
 		final String documentName = InstanceFactory.getDocumentName(documentReference.getDocumentTypeValue());
 		final String documentID = documentReference.getIDValue();
-		clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.111") + documentName + " " + documentID +
-				Messages.getString("RutaClient.113")), Color.BLACK);
+		clientFrame.appendToConsole(new StringBuilder(("Sending") + documentName + " " + documentID +
+				(" to the CDR service...")), Color.BLACK);
 		final Semaphore serviceCallFinished = new Semaphore(0);
 		try
 		{
@@ -869,7 +869,7 @@ public class RutaClient
 				{
 					future.get();
 					clientFrame.appendToConsole(new StringBuilder(documentName + " " + documentID +
-							Messages.getString("RutaClient.115")), Color.GREEN);
+							(" has been successfully deposited into the CDR.")), Color.GREEN);
 					correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_RECEIVED);
 				}
 				catch (Exception e)
@@ -894,7 +894,7 @@ public class RutaClient
 				}
 			});
 			clientFrame.appendToConsole(new StringBuilder(documentName + " " + documentID +
-					Messages.getString("RutaClient.118")), Color.BLACK);
+					(" has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CLIENT_SENT);
 			try
 			{
@@ -905,19 +905,19 @@ public class RutaClient
 					final Exception exceptionCopy = exceptionRethrown;
 					exceptionRethrown = null;
 					throw new StateActivityException(documentName + " " + documentID +
-							Messages.getString("RutaClient.120"), exceptionCopy);
+							(" might not be deposited into the CDR due to this failure! Please try resending it."), exceptionCopy);
 				}
 			}
 			catch (InterruptedException e)
 			{
-				throw new StateActivityException(Messages.getString("RutaClient.121"), e);
+				throw new StateActivityException(("Interrupted execution of sending the document!"), e);
 			}
 		}
 		catch(WebServiceException e)
 		{
 			correspondence.updateDocumentStatus(documentReference, DocumentReference.Status.CDR_DOWN);
 			throw new StateActivityException(documentName + " " + documentID +
-					Messages.getString("RutaClient.123"), e);
+					(" has not been sent to the CDR service! Server is not accessible. Please try again later."), e);
 		}
 		catch(StateActivityException e)
 		{
@@ -969,27 +969,27 @@ public class RutaClient
 						newFollowing.setTimestamp(InstanceFactory.getDate());
 						myParty.followParty(newFollowing);
 
-						StringBuilder msg = new StringBuilder(Messages.getString("RutaClient.146")).append(followingName).
-								append(Messages.getString("RutaClient.138"));
+						StringBuilder msg = new StringBuilder(("Party")).append(followingName).
+								append((" has been successfully added to the following parties."));
 						clientFrame.appendToConsole(msg, Color.GREEN);
 					}
 					else
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).append(followingName).
-								append(Messages.getString("RutaClient.140")), Color.RED);
+						clientFrame.appendToConsole(new StringBuilder(("Party")).append(followingName).
+								append((" could not be added to the following parties!")), Color.RED);
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.146")).
-							append(followingName).append(Messages.getString("RutaClient.142")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Party")).
+							append(followingName).append((" could not be added to the following parties!")));
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.143")),
+			clientFrame.appendToConsole(new StringBuilder(("Follow request has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.144"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.145")), Color.RED);
+			logger.error(("Follow request has not been sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Follow request has not been sent to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 		return ret;
 	}
@@ -1017,21 +1017,21 @@ public class RutaClient
 				{
 					future.get();
 					myParty.unfollowParty(followingParty);
-					StringBuilder msg = new StringBuilder(Messages.getString("RutaClient.146") + followingName + Messages.getString("RutaClient.147"));
+					StringBuilder msg = new StringBuilder(("Party") + followingName + (" has been unfollowed."));
 					clientFrame.appendToConsole(msg, Color.GREEN);
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.146")).append(followingName).
-							append(Messages.getString("RutaClient.149")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Party")).append(followingName).
+							append((" could not be removed from the following parties!")));
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.150")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Unfollow request has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.151"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.152")), Color.RED);
+			logger.error(("Unfollow request has not been sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Unfollow request has not been sent to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 		return ret;
 	}
@@ -1061,15 +1061,15 @@ public class RutaClient
 					final int docCount = docBoxDocumentIDs.size();
 					if(docCount != 0)
 					{
-						String plural = docCount + Messages.getString("RutaClient.153");
-						String there = Messages.getString("RutaClient.154");
+						String plural = docCount + (" documents");
+						String there = ("There are ");
 						if(docCount == 1)
 						{
-							plural = docCount + Messages.getString("RutaClient.155");
-							there = Messages.getString("RutaClient.156");
+							plural = docCount + (" document");
+							there = ("There is ");
 						}
-						clientFrame.appendToConsole(new StringBuilder(there).append(plural).append(Messages.getString("RutaClient.157")), Color.BLACK);
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.158")).append(plural).append(Messages.getString("RutaClient.159")), Color.BLACK);
+						clientFrame.appendToConsole(new StringBuilder(there).append(plural).append((" in my DocBox.")), Color.BLACK);
+						clientFrame.appendToConsole(new StringBuilder(("Started download of ")).append(plural).append((". Waiting...")), Color.BLACK);
 						AtomicInteger downloadCount = new AtomicInteger(0);
 						CountDownLatch finished = new CountDownLatch(docCount);
 						Semaphore oneAtATime = new Semaphore(1);
@@ -1094,16 +1094,16 @@ public class RutaClient
 										documentReceipt = processDocBoxDocument(document, docID);
 									}
 									else
-										clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.160")).append(docID).
-												append(Messages.getString("RutaClient.161")), Color.RED);
+										clientFrame.appendToConsole(new StringBuilder(("Document ")).append(docID).
+												append((" could not be downloaded!")), Color.RED);
 								}
 								catch (InterruptedException | ExecutionException e)
 								{
 									oneAtATime.release();
-									clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.162")).
-											append(docID).append(Messages.getString("RutaClient.163")));
-									logger.error(new StringBuilder(Messages.getString("RutaClient.164")).
-											append(docID).append(Messages.getString("RutaClient.165")).toString(), e);
+									clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Document ")).
+											append(docID).append((" could not be downloaded!")));
+									logger.error(new StringBuilder(("Document ")).
+											append(docID).append((" could not be downloaded!")).toString(), e);
 								}
 								catch (Exception e)
 								{
@@ -1111,7 +1111,7 @@ public class RutaClient
 									final String exceptionMessage = e.getMessage();
 									if(exceptionMessage != null)
 									{
-										if(exceptionMessage.contains(Messages.getString("RutaClient.166")))
+										if(exceptionMessage.contains(("has been already received and processed")))
 										{
 											try
 											{
@@ -1121,7 +1121,7 @@ public class RutaClient
 											{
 											}
 										}
-										else if(exceptionMessage.contains(Messages.getString("RutaClient.167")))
+										else if(exceptionMessage.contains(("does not belong to the current state of the correspondence")))
 										{
 											try
 											{
@@ -1133,10 +1133,10 @@ public class RutaClient
 											}
 										}
 									}
-									clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.168")).
-											append(docID).append(Messages.getString("RutaClient.169")));
-									logger.error(new StringBuilder(Messages.getString("RutaClient.170")).
-											append(docID).append(Messages.getString("RutaClient.171")).toString(), e);
+									clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Document ")).
+											append(docID).append((" could not be placed where it belogs!")));
+									logger.error(new StringBuilder(("Document ")).
+											append(docID).append((" could not be placed where it belogs!")).toString(), e);
 								}
 								finally
 								{
@@ -1152,30 +1152,30 @@ public class RutaClient
 						if(downCount != docCount)
 						{
 							if(downCount != 1)
-								plural = downCount + Messages.getString("RutaClient.172");
+								plural = downCount + (" documents");
 							else
-								plural = Messages.getString("RutaClient.173");
+								plural = ("1 document");
 
 							if(docCount - downCount != 1)
-								failed = Messages.getString("RutaClient.174") + (docCount - downCount) + Messages.getString("RutaClient.175");
+								failed = ("Failed download of ") + (docCount - downCount) + (" documents.");
 							else
-								failed = Messages.getString("RutaClient.176");
+								failed = ("Failed download of 1 document.");
 						}
 						if(failed != null)
-							clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.177")).append(plural).
+							clientFrame.appendToConsole(new StringBuilder(("Successful download of ")).append(plural).
 									append(".").append(failed),
 									Color.BLACK);
 						else
-							clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.179")).append(plural).
+							clientFrame.appendToConsole(new StringBuilder(("Successful download of ")).append(plural).
 									append("."), Color.BLACK);
 					}
 					else
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.181")), Color.GREEN);
+						clientFrame.appendToConsole(new StringBuilder(("There are no new documents in my DocBox.")), Color.GREEN);
 				}
 				catch(Exception e)
 				{
 					clientFrame.processExceptionAndAppendToConsole(e,
-							new StringBuilder(Messages.getString("RutaClient.182")));
+							new StringBuilder(("Download request for new documents has not been successcully processed!")));
 				}
 				finally
 				{
@@ -1183,13 +1183,13 @@ public class RutaClient
 					clientFrame.enableGetDocumentsMenuItem();
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.183")).
-					append(Messages.getString("RutaClient.184")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Download request for new documents has been sent to the CDR service.")).
+					append((" Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.185"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.186")), Color.RED);
+			logger.error(("Request for new documents has not been sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Request for new documents has not been sent to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 			clientFrame.enableGetDocumentsMenuItem();
 			sequential.release();
 		}
@@ -1214,9 +1214,9 @@ public class RutaClient
 		if(documentClazz == DocumentReceipt.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.187")).
+			clientFrame.appendToConsole(new StringBuilder(("Document Receipt")).
 					append(((DocumentReceipt) document).getIDValue()).
-					append(Messages.getString("RutaClient.188")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxDocumentReceipt((DocumentReceipt) document);
 			String partyName;
 			try
@@ -1227,17 +1227,17 @@ public class RutaClient
 			}
 			catch(Exception e)
 			{
-				partyName = Messages.getString("RutaClient.189");
+				partyName = ("Log in");
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.190")).append(partyName).
-					append(" ").append(((DocumentReceipt) document).getIDValue() + Messages.getString("RutaClient.191")),
+			clientFrame.appendToConsole(new StringBuilder(("Document Receipt of the Party")).append(partyName).
+					append(((DocumentReceipt) document).getIDValue() + (" has been updated its document status.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == CatalogueType.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.192")).append(docID).
-					append(Messages.getString("RutaClient.193")), Color.GREEN);
+			clientFrame.appendToConsole(new StringBuilder(("Catalogue document")).append(docID).
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxCatalogue((CatalogueType) document);
 			String partyName;
 			try
@@ -1249,16 +1249,16 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.195")).
+			clientFrame.appendToConsole(new StringBuilder(("Catalogue ")).
 					append(((CatalogueType) document).getIDValue()).
-					append(Messages.getString("RutaClient.196")).append(partyName).append(Messages.getString("RutaClient.197")),
+					append((" of the party")).append(partyName).append((" has been updated.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartyType.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.198")).append(docID).
-					append(Messages.getString("RutaClient.199")), Color.GREEN);
+			clientFrame.appendToConsole(new StringBuilder(("Party document ")).append(docID).
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxParty((PartyType) document);
 			String partyName;
 			try
@@ -1270,14 +1270,14 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).
-					append(partyName).append(Messages.getString("RutaClient.202")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Party")).
+					append(partyName).append((" has been updated.")), Color.BLACK);
 		}
 		else if(documentClazz == CatalogueDeletionType.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.203")).append(docID).
-					append(Messages.getString("RutaClient.204")), Color.GREEN);
+			clientFrame.appendToConsole(new StringBuilder(("Catalogue Deletion document")).append(docID).
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxCatalogueDeletion((CatalogueDeletionType) document);
 			String partyName;
 			try
@@ -1289,16 +1289,16 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.206")).
+			clientFrame.appendToConsole(new StringBuilder(("Catalogue ")).
 					append(((CatalogueDeletionType) document).getIDValue()).
-					append(Messages.getString("RutaClient.207")).append(partyName).append(Messages.getString("RutaClient.208")),
+					append((" of the party")).append(partyName).append((" has been deleted.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == DeregistrationNotice.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.209")).append(docID).
-					append(Messages.getString("RutaClient.210")), Color.GREEN);
+			clientFrame.appendToConsole(new StringBuilder(("Deregistration Notice document ")).append(docID).
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxDeregistrationNotice((DeregistrationNotice) document);
 			String partyName;
 			try
@@ -1310,13 +1310,13 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).append(partyName).append(Messages.getString("RutaClient.213")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Party ")).append(partyName).append((" has been archived.")), Color.BLACK);
 		}
 		else if(documentClazz == OrderType.class)
 		{
 			final OrderType order = (OrderType) document;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.214")).append(order.getIDValue()).
-					append(Messages.getString("RutaClient.215")), Color.GREEN);
+			clientFrame.appendToConsole(new StringBuilder(("Order ")).append(order.getIDValue()).
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxOrder(order);
 			String partyName;
 			try
@@ -1327,18 +1327,18 @@ public class RutaClient
 			}
 			catch(Exception e)
 			{
-				partyName = Messages.getString("RutaClient.216");
+				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.217")).append(order.getIDValue()).
-					append(Messages.getString("RutaClient.218")).append(partyName).
-					append(Messages.getString("RutaClient.219")),
+			clientFrame.appendToConsole(new StringBuilder(("Order ")).append(order.getIDValue()).
+					append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderResponseType.class)
 		{
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.220")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Response ")).
 					append(((OrderResponseType) document).getIDValue()).
-					append(Messages.getString("RutaClient.221")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxOrderResponse((OrderResponseType) document);
 			String partyName;
 			try
@@ -1351,17 +1351,17 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.223")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Response ")).
 					append(((OrderResponseType) document).getIDValue()).
-					append(Messages.getString("RutaClient.224")).append(partyName).
-					append(Messages.getString("RutaClient.225")),
+					append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderResponseSimpleType.class)
 		{
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.226")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Response Simple ")).
 					append(((OrderResponseSimpleType) document).getIDValue()).
-					append(Messages.getString("RutaClient.227")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxOrderResponseSimple((OrderResponseSimpleType) document);
 			String partyName;
 			try
@@ -1374,17 +1374,17 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.229")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Response Simple ")).
 					append(((OrderResponseSimpleType) document).getIDValue()).
-					append(Messages.getString("RutaClient.230")).append(partyName).
-					append(Messages.getString("RutaClient.231")),
+					append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderChangeType.class)
 		{
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.232")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Change ")).
 					append(((OrderChangeType) document).getIDValue()).
-					append(Messages.getString("RutaClient.233")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxOrderChange((OrderChangeType) document);
 			String partyName;
 			try
@@ -1397,17 +1397,17 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.235")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Change ")).
 					append(((OrderChangeType) document).getIDValue()).
-					append(Messages.getString("RutaClient.236")).append(partyName).
-					append(Messages.getString("RutaClient.237")),
+					append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == OrderCancellationType.class)
 		{
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.238")).
+			clientFrame.appendToConsole(new StringBuilder(("Order Cancellation ")).
 					append(((OrderCancellationType) document).getIDValue()).
-					append(Messages.getString("RutaClient.239")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxOrderCancellation((OrderCancellationType) document);
 			String partyName;
 			try
@@ -1420,16 +1420,16 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.241")).
-					append(((OrderCancellationType) document).getIDValue()).append(Messages.getString("RutaClient.242")).append(partyName).
-					append(Messages.getString("RutaClient.243")),
+			clientFrame.appendToConsole(new StringBuilder(("Order Cancellation ")).
+					append(((OrderCancellationType) document).getIDValue()).append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == ApplicationResponseType.class)
 		{
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.244")).
+			clientFrame.appendToConsole(new StringBuilder(("Application Response ")).
 					append(((ApplicationResponseType) document).getIDValue()).
-					append(Messages.getString("RutaClient.245")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxApplicationResponse((ApplicationResponseType) document);
 			String partyName;
 			try
@@ -1442,16 +1442,16 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.247")).
-					append(((ApplicationResponseType) document).getIDValue()).append(Messages.getString("RutaClient.248")).append(partyName).
-					append(Messages.getString("RutaClient.249")),
+			clientFrame.appendToConsole(new StringBuilder(("Application Response ")).
+					append(((ApplicationResponseType) document).getIDValue()).append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == InvoiceType.class)
 		{
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.250")).
+			clientFrame.appendToConsole(new StringBuilder(("Invoice ")).
 					append(((InvoiceType) document).getIDValue()).
-					append(Messages.getString("RutaClient.251")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxInvoice((InvoiceType) document);
 			String partyName;
 			try
@@ -1464,18 +1464,18 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.253")).
+			clientFrame.appendToConsole(new StringBuilder(("Invoice ")).
 					append(((InvoiceType) document).getIDValue()).
-					append(Messages.getString("RutaClient.254")).append(partyName).
-					append(Messages.getString("RutaClient.255")),
+					append((" of the Party")).append(partyName).
+					append((" has been appended to its correspondence.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipRequest.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.256")).
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Request ")).
 					append(((PartnershipRequest) document).getIDValue()).
-					append(Messages.getString("RutaClient.257")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxPartnershipRequest((PartnershipRequest) document);
 			String partyName;
 			try
@@ -1488,29 +1488,29 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.259")).
-					append(((PartnershipRequest) document).getIDValue()).append(Messages.getString("RutaClient.260")).append(partyName).
-					append(Messages.getString("RutaClient.261")),
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Request ")).
+					append(((PartnershipRequest) document).getIDValue()).append((" of the Party")).append(partyName).
+					append((" has been received and set in the data model.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipResolution.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.262")).
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Resolution ")).
 					append(((PartnershipResolution) document).getIDValue()).
-					append(Messages.getString("RutaClient.263")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxPartnershipResolution((PartnershipResolution) document);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.264")).
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Resolution ")).
 					append(((PartnershipResolution) document).getIDValue()).
-					append(Messages.getString("RutaClient.265")),
+					append((" has been received and set in the data model.")),
 					Color.BLACK);
 		}
 		else if(documentClazz == PartnershipBreakup.class)
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.266")).
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Breakup ")).
 					append(((PartnershipBreakup) document).getIDValue()).
-					append(Messages.getString("RutaClient.267")), Color.GREEN);
+					append((" has been successfully retrieved.")), Color.GREEN);
 			myParty.processDocBoxPartnershipBreakup((PartnershipBreakup) document);
 			String partyName;
 			try
@@ -1527,17 +1527,17 @@ public class RutaClient
 			{
 				partyName = "";
 			}
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.269")).append(partyName).
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Breakup with Party ")).append(partyName).
 					append(" ").append(((PartnershipBreakup) document).getIDValue()).
-					append(Messages.getString("RutaClient.271")),
+					append((" has been received and set in the data model.")),
 					Color.BLACK);
 		}
 		else
 		{
 			createDocumentReceipt = false;
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.272")).append(docID).
-					append(Messages.getString("RutaClient.273")).append(document.getClass().getSimpleName()).
-					append(Messages.getString("RutaClient.274")),
+			clientFrame.appendToConsole(new StringBuilder(("Document ")).append(docID).
+					append((" of an unexpected type: ")).append(document.getClass().getSimpleName()).
+					append((" has been successfully retrieved. Don't know what to do with it. Moving it to the trash.")),
 					Color.BLACK);
 		}
 		if(createDocumentReceipt)
@@ -1649,7 +1649,7 @@ public class RutaClient
 		{
 			CDRParty = new Party();
 			CDRParty.setPartyID("CDR1234567890");
-			CDRParty.setPartySimpleName(Messages.getString("RutaClient.400"));
+			CDRParty.setPartySimpleName("CDR");
 		}
 		return CDRParty;
 	}
@@ -1719,9 +1719,9 @@ public class RutaClient
 
 						if(results == null || results.isEmpty())
 						{
-							clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.285")).append(newSearch.getSearchName()).append("\"."), Color.GREEN);
-							int option = JOptionPane.showConfirmDialog(clientFrame, Messages.getString("RutaClient.287") +
-									newSearch.getSearchName() + Messages.getString("RutaClient.288"), Messages.getString("RutaClient.289"),
+							clientFrame.appendToConsole(new StringBuilder(("Nothing found at CDR service that conforms to your search request \"")).append(newSearch.getSearchName()).append("\"."), Color.GREEN);
+							int option = JOptionPane.showConfirmDialog(clientFrame, ("Nothing found at CDR service that conforms to your search request\n\"") +
+									newSearch.getSearchName() + ("\". Do you want to save this search with no results?"), ("No search results"),
 									JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 							if(option == JOptionPane.YES_OPTION)
 							{
@@ -1734,8 +1734,8 @@ public class RutaClient
 								if(exist)
 								{
 									myParty.removeCatalogueSearch(newSearch);
-									clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.290")).append(newSearch.getSearchName()).
-											append(Messages.getString("RutaClient.291")), Color.GREEN);
+									clientFrame.appendToConsole(new StringBuilder(("Search \"")).append(newSearch.getSearchName()).
+											append(("\" has been deleted.")), Color.GREEN);
 								}
 						}
 						else
@@ -1744,22 +1744,22 @@ public class RutaClient
 								myParty.updateCatalogueSearch(newSearch);
 							else
 								myParty.addCatalogueSearch(newSearch);
-							clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.292")).
-									append(newSearch.getSearchName()).append(Messages.getString("RutaClient.293")),
+							clientFrame.appendToConsole(new StringBuilder(("Search results for search request \"")).
+									append(newSearch.getSearchName()).append(("\" have been successfully retrieved from the CDR service.")),
 									Color.GREEN);
 						}
 					}
 					catch(Exception e)
 					{
-						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.294")));
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Search request could not be processed!")));
 					}
 					finally
 					{
 						clientFrame.enableSearchMenuItems();
 					}
 				});
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.295")).append(search.getSearchName()).
-						append(Messages.getString("RutaClient.296")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Search request \"")).append(search.getSearchName()).
+						append(("\" has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 			}
 			else // querying only parties
 			{
@@ -1774,10 +1774,10 @@ public class RutaClient
 
 						if(results == null || results.isEmpty())
 						{
-							clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.297")).
+							clientFrame.appendToConsole(new StringBuilder(("Nothing found at CDR service that conforms to your search request \"")).
 									append(newSearch.getSearchName()).append("\"."), Color.GREEN);
-							int option = JOptionPane.showConfirmDialog(clientFrame, Messages.getString("RutaClient.299") +
-									newSearch.getSearchName() + Messages.getString("RutaClient.300"), Messages.getString("RutaClient.301"),
+							int option = JOptionPane.showConfirmDialog(clientFrame, ("Nothing found at CDR service that conforms to your search request\n\"") +
+									newSearch.getSearchName() + ("\". Do you want to save this search with no results?"), ("No search results"),
 									JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 							if(option == JOptionPane.YES_OPTION)
 							{
@@ -1790,9 +1790,9 @@ public class RutaClient
 								if(exist)
 								{
 									myParty.removePartySearch(newSearch);
-									clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.302")).
+									clientFrame.appendToConsole(new StringBuilder(("Search \"")).
 											append(newSearch.getSearchName()).
-											append(Messages.getString("RutaClient.303")), Color.GREEN);
+											append(("\" has been deleted.")), Color.GREEN);
 								}
 						}
 						else
@@ -1801,30 +1801,30 @@ public class RutaClient
 								myParty.updatePartySearch(newSearch);
 							else
 								myParty.addPartySearch(newSearch);
-							clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.304")).
-									append(newSearch.getSearchName()).append(Messages.getString("RutaClient.305")),
+							clientFrame.appendToConsole(new StringBuilder(("Search results for search request \"")).
+									append(newSearch.getSearchName()).append(("\" have been successfully retrieved from the CDR service.")),
 									Color.GREEN);
 						}
 					}
 					catch(Exception e)
 					{
-						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.306")));
+						clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Search request could not be processed!")));
 					}
 					finally
 					{
 						clientFrame.enableSearchMenuItems();
 					}
 				});
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.307")).append(search.getSearchName()).
-						append(Messages.getString("RutaClient.308")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Search request \"")).append(search.getSearchName()).
+						append(("\" has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 			}
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.309") + search.getSearchName() +
-				Messages.getString("RutaClient.310"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.311")).append(search.getSearchName()).
-					append(Messages.getString("RutaClient.312")), Color.RED);
+			logger.error(("Search request") + search.getSearchName() +
+				(" has not been processed! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Search request \"")).append(search.getSearchName()).
+					append(("\" has not been processed! Server is not accessible. Please try again later.")), Color.RED);
 			clientFrame.enableSearchMenuItems();
 			if(!exist)
 				Search.decreaseSearchNumber();
@@ -1848,8 +1848,8 @@ public class RutaClient
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.313"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.314")),
+			logger.error(("Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Update request has hot been sent! Server is not accessible. Please try again later.")),
 					Color.RED);
 		}
 		return ret;
@@ -1873,21 +1873,21 @@ public class RutaClient
 				try
 				{
 					futureResult.get();
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.315")),
+					clientFrame.appendToConsole(new StringBuilder(("CDR service has been successfully notified about new Ruta Client version.")),
 							Color.GREEN);
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.316")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("CDR service could not be notified!")));
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.317")),
+			clientFrame.appendToConsole(new StringBuilder(("Update notification has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.318"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.319")),
+			logger.error(("CDR service could not be notified! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("CDR service could not be notified! Server is not accessible. Please try again later.")),
 					Color.RED);
 		}
 		return ret;
@@ -1905,21 +1905,21 @@ public class RutaClient
 				try
 				{
 					futureResult.get();
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.324")),
+					clientFrame.appendToConsole(new StringBuilder(("Bug report has been successfully deposited into the CDR service.")),
 							Color.GREEN);
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.325")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Bug could not be reported!")));
 				}
 			});
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.326")),
+			clientFrame.appendToConsole(new StringBuilder(("Bug report has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.327"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.328")), Color.RED);
+			logger.error(("Bug could not be reported to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Bug could not be reported to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 		return ret;
 	}
@@ -1936,12 +1936,12 @@ public class RutaClient
 		{
 			Server port = getCDRPort();
 			ret = port.findAllBugReportsAsync(futureResult -> { });
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.329")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.330"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.331")), Color.RED);
+			logger.error(("Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Bug list could not be retrived from the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 		return ret;
 	}
@@ -1959,12 +1959,12 @@ public class RutaClient
 		{
 			Server port = getCDRPort();
 			ret = port.searchBugReportAsync(criterion, futureResult -> { }); //MMM replace the futureResult with null
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.329")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Request for the list of all bug reports has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.333"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.331")), Color.RED);
+			logger.error(("Bug list could not be retrived from the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Bug list could not be retrived from the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 		return ret;
 	}
@@ -1981,13 +1981,13 @@ public class RutaClient
 		{
 			Server port = getCDRPort();
 			ret = port.findBugReportAsync(id, futureResult -> { });
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.335")),
+			clientFrame.appendToConsole(new StringBuilder(("Request for the bug report has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.336"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.337")), Color.RED);
+			logger.error(("Bug report could not be retrived from the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Bug report could not be retrived from the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 		return ret;
 	}
@@ -2004,12 +2004,12 @@ public class RutaClient
 		{
 			Server port = getCDRPort();
 			ret = port.addBugReportCommentAsync(id, comment, futureResult -> { });
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.338")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Comment has been sent to the CDR service. Waiting for a response...")), Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.339"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.340")),Color.RED);
+			logger.error(("Comment could not be sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Comment could not be sent to the CDR service! Server is not accessible. Please try again later.")),Color.RED);
 		}
 		return ret;
 	}
@@ -2042,7 +2042,7 @@ public class RutaClient
 		}
 		catch(Exception e)
 		{
-			logger.error(Messages.getString("RutaClient.351"), e);
+			logger.error(("Data could not be stored to the local data store!"), e);
 		}
 
 		try
@@ -2074,18 +2074,18 @@ public class RutaClient
 			final String missingPartyField = myParty.getCoreParty().verifyParty();
 			if(missingPartyField != null)
 			{
-				throw new DetailException(new StringBuilder(Messages.getString("RutaClient.352")).append(missingPartyField).
-						append(Messages.getString("RutaClient.353")).toString());
+				throw new DetailException(new StringBuilder(("Request for the registration of My Party has been discarded because My Party is missing mandatory field:")).append(missingPartyField).
+						append((". Please populate My Party data with all mandatory fields and try again.")).toString());
 			}
 			else
 			{
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.354")),
+				clientFrame.appendToConsole(new StringBuilder(("Request for the registration of My Party with the local data store has been sent.")),
 						Color.BLACK);
 				myParty.setPartyID();
 				secretKey = (String) MapperRegistry.getInstance().getMapper(RutaUser.class).
 						registerUser(username, password, myParty.getCoreParty());
 				myParty.setLocalUser(new RutaUser(username, password, secretKey));
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.355")),
+				clientFrame.appendToConsole(new StringBuilder(("My Party has been successfully registered with the local data store.")),
 						Color.GREEN);
 			}
 		}
@@ -2117,13 +2117,13 @@ public class RutaClient
 			final String localUsername = myParty.getLocalUsername();
 			localDeleteData();
 			MapperRegistry.getInstance().getMapper(RutaUser.class).deleteUser(localUsername);
-			properties.remove(Messages.getString("username"));
-			properties.remove(Messages.getString("password"));
+			properties.remove(("username"));
+			properties.remove(("password"));
 			storeProperties(false);
 		}
 		catch(Exception e)
 		{
-			clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.358")));
+			clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("There has been an error! My Party has not been deregistered from the local datastore!")));
 		}
 		finally
 		{
@@ -2145,18 +2145,18 @@ public class RutaClient
 	{
 		Future<?> ret = null;
 		if(followingID.equals(myParty.getPartyID()))
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.359")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("My Party is already in the following list.")), Color.BLACK);
 		else
 		{
 			final BusinessParty following = myParty.getFollowingParty(followingID);
 			if(following == null)
 				ret = cdrFollowParty(followingName, followingID);
 			else if(following.isPartner())
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).append(followingName).
-						append(Messages.getString("RutaClient.361")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Party")).append(followingName).
+						append((" is already in the business partner list.")), Color.BLACK);
 			else
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).append(followingName).
-						append(Messages.getString("RutaClient.363")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Party")).append(followingName).
+						append((" is already in the following list.")), Color.BLACK);
 		}
 		return ret;
 	}
@@ -2175,22 +2175,22 @@ public class RutaClient
 		final String requestedID = InstanceFactory.
 				getPropertyOrNull(requestedParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
 		if(requestedID.equals(myParty.getPartyID()))
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.359")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("My Party is already in the following list.")), Color.BLACK);
 		else
 		{
 			final PartnershipRequest outboundRequest = myParty.getOutboundPartnershipRequest(requestedParty);
 			if(outboundRequest != null &&
 					(!outboundRequest.isResolved() || (outboundRequest.isResolved() && outboundRequest.isAccepted())))
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.365")).
-						append(requestedName).append(Messages.getString("RutaClient.366")),
+				clientFrame.appendToConsole(new StringBuilder(("Business Partnership Request had been already sent to the")).
+						append(requestedName).append((" party. Because of the state of the current request another one is not alowed.")),
 						Color.BLACK);
 			else
 			{
 				final PartnershipRequest inboundRequest = myParty.getInboundPartnershipRequest(requestedParty);
 				if(inboundRequest != null &&
 						(!inboundRequest.isResolved() || (inboundRequest.isResolved() && inboundRequest.isAccepted())))
-					clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.367")).append(requestedName).
-							append(Messages.getString("RutaClient.368")),
+					clientFrame.appendToConsole(new StringBuilder(("Business Partnership Request had been already received from the")).append(requestedName).
+							append((" party. Because of the state of the current request another one is not alowed.")),
 							Color.BLACK);
 				else
 				{
@@ -2206,8 +2206,8 @@ public class RutaClient
 						cdrRequestPartnership(businessRequest);
 					}
 					else if(following.isPartner())
-						clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).append(requestedName).
-								append(Messages.getString("RutaClient.370")), Color.BLACK);
+						clientFrame.appendToConsole(new StringBuilder(("Party")).append(requestedName).
+								append((" is already in the business partner list.")), Color.BLACK);
 				}
 			}
 		}
@@ -2232,30 +2232,30 @@ public class RutaClient
 					future.get();
 					myParty.excludePartnershipRequest(businessRequest.getRequestedParty());
 					myParty.includeOutboundPartnershipRequest(businessRequest);
-					clientFrame.appendToConsole( new StringBuilder(Messages.getString("RutaClient.371")).
-							append(requestedName).append(Messages.getString("RutaClient.372")).
-							append(requestedName).append(Messages.getString("RutaClient.373")),
+					clientFrame.appendToConsole( new StringBuilder(("Business Partnership Request for the Party")).
+							append(requestedName).append((" has been successfully deposited into the CDR service. Party")).
+							append(requestedName).append((" should respond to it before any further actions on your behalf.")),
 							Color.GREEN);
 				}
 				catch(DetailException e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.374")).append(requestedName).
-							append(Messages.getString("RutaClient.375")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Business Partnership Request for the Party")).append(requestedName).
+							append((" could not be successfully inserted to the local data store!")));
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.376")).append(requestedName).
-							append(Messages.getString("RutaClient.377")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Business Partnership Request for the Party")).append(requestedName).
+							append((" could not be successfully deposited into the CDR service!")));
 				}
 			});
 
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.378")),
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Request has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.379"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.380")), Color.RED);
+			logger.error(("Business partnership request has not been sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Business partnership request has not been sent to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 	}
 
@@ -2276,24 +2276,24 @@ public class RutaClient
 				try
 				{
 					future.get();
-					clientFrame.appendToConsole( new StringBuilder(Messages.getString("RutaClient.381")).
-							append(requestedName).append(Messages.getString("RutaClient.382")),
+					clientFrame.appendToConsole( new StringBuilder(("Business Partnership Response for the Party")).
+							append(requestedName).append((" has been successfully deposited into the CDR service. Get New Documents from the CDR to get a Business Partnership Resolution.")),
 							Color.GREEN);
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.383")).append(requestedName).
-							append(Messages.getString("RutaClient.384")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Business Partnership Response for the Party")).append(requestedName).
+							append((" could not be successfully deposited into the CDR service!")));
 				}
 			});
 
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.385")),
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Response has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.386"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.387")), Color.RED);
+			logger.error(("Business partnership Response has not been sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Business partnership Response has not been sent to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 	}
 
@@ -2309,7 +2309,7 @@ public class RutaClient
 		final String requestedID = InstanceFactory.
 				getPropertyOrNull(requestedParty.getPartyIdentificationAtIndex(0), PartyIdentificationType::getIDValue);
 		if(myParty.getPartnershipBreakup(requestedParty) != null)
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.388")), Color.BLACK);
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Breakup had been already sent to the CDR service.")), Color.BLACK);
 		else
 		{
 			BusinessParty breakupParty = myParty.getFollowingParty(requestedID);
@@ -2323,8 +2323,8 @@ public class RutaClient
 				cdrBreakupPartnership(breakup);
 			}
 			else
-				clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.146")).append(requestedName).
-						append(Messages.getString("RutaClient.390")), Color.BLACK);
+				clientFrame.appendToConsole(new StringBuilder(("Party")).append(requestedName).
+						append((" is not a Business Partner.")), Color.BLACK);
 		}
 	}
 
@@ -2344,29 +2344,29 @@ public class RutaClient
 				{
 					future.get();
 					myParty.includePartnershipBreakup(breakup);
-					clientFrame.appendToConsole( new StringBuilder(Messages.getString("RutaClient.391")).
-							append(requestedName).append(Messages.getString("RutaClient.392")),
+					clientFrame.appendToConsole( new StringBuilder(("Business Partnership Breakup with Party")).
+							append(requestedName).append((" has been successfully processed by the CDR service. Get New Documents from the CDR to get a response document to it.")),
 							Color.GREEN);
 				}
 				catch(DetailException e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.393")).append(requestedName).
-							append(Messages.getString("RutaClient.394")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Business Partnership Breakup with Party")).append(requestedName).
+							append((" could not be successfully inserted in local data store!")));
 				}
 				catch(Exception e)
 				{
-					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("RutaClient.395")).append(requestedName).
-							append(Messages.getString("RutaClient.396")));
+					clientFrame.processExceptionAndAppendToConsole(e, new StringBuilder(("Business Partnership Breakup with Party")).append(requestedName).
+							append((" could not be successfully processed by the CDR service!")));
 				}
 			});
 
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.397")),
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Breakup has been sent to the CDR service. Waiting for a response...")),
 					Color.BLACK);
 		}
 		catch(WebServiceException e)
 		{
-			logger.error(Messages.getString("RutaClient.398"), e);
-			clientFrame.appendToConsole(new StringBuilder(Messages.getString("RutaClient.399")), Color.RED);
+			logger.error(("Business Partnership Breakup has not been sent to the CDR service! Server is not accessible. Exception is"), e);
+			clientFrame.appendToConsole(new StringBuilder(("Business Partnership Breakup has not been sent to the CDR service! Server is not accessible. Please try again later.")), Color.RED);
 		}
 	}
 

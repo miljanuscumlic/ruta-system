@@ -34,7 +34,7 @@ public class ReceiveCatalogueDeletionAppResponseState extends DeleteCataloguePro
 		}
 		catch(Exception e)
 		{
-			throw new StateActivityException(Messages.getString("ReceiveCatalogueDeletionAppResponseState.0"), e); 
+			throw new StateActivityException("My Catalogue has not been updated in the CDR service!", e); 
 		}
 	}
 

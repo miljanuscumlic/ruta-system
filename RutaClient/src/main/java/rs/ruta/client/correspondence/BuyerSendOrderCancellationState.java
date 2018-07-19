@@ -32,7 +32,7 @@ public class BuyerSendOrderCancellationState extends BuyerOrderingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("BuyerSendOrderCancellationState.0")); 
+						throw new StateActivityException("Correspondence has been interrupted!"); 
 				}
 			}
 			try
@@ -43,11 +43,11 @@ public class BuyerSendOrderCancellationState extends BuyerOrderingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyerSendOrderCancellationState.1"))); 
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Cancellation has failed!")); 
 //				changeState(process, BuyerSendOrderCancellationState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("BuyerSendOrderCancellationState.2")); 
+			throw new StateActivityException("Order Cancellation has not been sent to the CDR service! Order Cancellation could not be found!"); 
 	}
 }

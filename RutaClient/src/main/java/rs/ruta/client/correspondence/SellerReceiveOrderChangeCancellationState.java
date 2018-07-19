@@ -44,12 +44,12 @@ public class SellerReceiveOrderChangeCancellationState extends SellerOrderingPro
 				changeState(process, ClosingState.getInstance());
 			}
 			else
-				throw new StateActivityException(Messages.getString("SellerReceiveOrderChangeCancellationState.0")); 
+				throw new StateActivityException("Received document of unexpected type."); 
 		}
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped())
-				throw new StateActivityException(Messages.getString("SellerReceiveOrderChangeCancellationState.1")); 
+				throw new StateActivityException("Correspondence has been interrupted!"); 
 		}
 
 	}

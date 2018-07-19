@@ -20,10 +20,10 @@ import rs.ruta.common.datamapper.DetailException;
 public class ActiveProductListTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = 3505493863019815517L;
-	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); 
+	private static Logger logger = LoggerFactory.getLogger("rs.ruta.client"); //$NON-NLS-1$
 	private static String[] columnNames =
 		{
-			Messages.getString("ActiveProductListTableModel.1"), Messages.getString("ActiveProductListTableModel.2"), Messages.getString("ActiveProductListTableModel.3"), Messages.getString("ActiveProductListTableModel.4"), Messages.getString("ActiveProductListTableModel.5"), Messages.getString("ActiveProductListTableModel.6"), Messages.getString("ActiveProductListTableModel.7"), Messages.getString("ActiveProductListTableModel.8"), Messages.getString("ActiveProductListTableModel.9"), Messages.getString("ActiveProductListTableModel.10")          
+			"No.", "Name", "Description", "Pack Size", "ID", "Barcode", "Commodity Code", "Price", "Tax", "Keywords"          
 		};
 
 	private MyParty myParty;
@@ -128,9 +128,9 @@ public class ActiveProductListTableModel extends DefaultTableModel
 		{
 			EventQueue.invokeLater(() ->
 			{
-				JOptionPane.showMessageDialog(null, e.getMessage(), Messages.getString("ActiveProductListTableModel.11"), JOptionPane.ERROR_MESSAGE); 
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
 			});
-			logger.error(Messages.getString("ActiveProductListTableModel.12"), e); 
+			logger.error("Coud not set the property. Exception is ", e); 
 		}
 	}
 

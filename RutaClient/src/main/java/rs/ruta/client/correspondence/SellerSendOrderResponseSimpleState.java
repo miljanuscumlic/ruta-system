@@ -33,7 +33,7 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.0")); 
+						throw new StateActivityException("Correspondence has been interrupted!"); 
 					//flags are not persisted so set them if the correspondence was stored to the database in its blocked state
 					if(!process.isOrderAccepted() && !process.isOrderRejected())
 					{
@@ -46,7 +46,7 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 								process.setOrderRejected(true);
 						}
 						else
-							throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.1")); 
+							throw new StateActivityException("Order Response Simple has no Accepted Indicator defined!"); 
 					}
 				}
 			}
@@ -61,16 +61,16 @@ public class SellerSendOrderResponseSimpleState extends SellerOrderingProcessSta
 				else if(process.isOrderRejected() && !process.isOrderAccepted())
 					changeState(process, ClosingState.getInstance());
 				else
-					throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.2")); 
+					throw new StateActivityException("Unexpected state of the Order Response Simple processing."); 
 			}
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("SellerSendOrderResponseSimpleState.3"))); 
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order Response Simple has failed!")); 
 //				changeState(process, SellerSendOrderResponseSimpleState.getInstance());
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("SellerSendOrderResponseSimpleState.4")); 
+			throw new StateActivityException("Order Response Simple has not been sent to the CDR service! Order Response Simple could not be found!"); 
 	}
 }

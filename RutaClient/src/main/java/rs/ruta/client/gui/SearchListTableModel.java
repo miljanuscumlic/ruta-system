@@ -12,7 +12,7 @@ import rs.ruta.client.Search;
 public class SearchListTableModel<T> extends DefaultTableModel
 {
 	private static final long serialVersionUID = -3491302158739229497L;
-	private static String[] colNames = { Messages.getString("SearchListTableModel.0"), Messages.getString("SearchListTableModel.1"), Messages.getString("SearchListTableModel.2"), Messages.getString("SearchListTableModel.3") };    
+	private static String[] colNames = { "No.", "Name", "Number of results", "Time" };    
 	private List<Search<T>> searchList;
 
 	public SearchListTableModel()

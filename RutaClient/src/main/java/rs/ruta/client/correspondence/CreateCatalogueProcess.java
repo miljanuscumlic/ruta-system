@@ -56,9 +56,9 @@ public class CreateCatalogueProcess extends CatalogueProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("CreateCatalogueProcess.0"), e1); 
+				throw new StateActivityException("Unable to stop the correspondence!", e1); 
 			}
-			throw new StateActivityException(Messages.getString("CreateCatalogueProcess.1"), e); 
+			throw new StateActivityException("Interrupted execution of Create Catalogue Process!", e); 
 		}
 		finally
 		{

@@ -45,7 +45,7 @@ public class ResolveNextCatalogueProcess extends CatalogueProcess
 		}
 		catch (Exception e)
 		{
-			throw new StateActivityException(Messages.getString("ResolveNextCatalogueProcess.0"), e); 
+			throw new StateActivityException("Interrupted execution of Buyer Ordering Process!", e); 
 		}
 		finally
 		{

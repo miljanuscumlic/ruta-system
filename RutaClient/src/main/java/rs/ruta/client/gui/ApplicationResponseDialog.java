@@ -43,10 +43,10 @@ public class ApplicationResponseDialog extends AbstractApplicationResponseDialog
 	{
 		super(owner, applicationResponse, editable);
 
-		JButton sendButton = new JButton(Messages.getString("ApplicationResponseDialog.0")); 
-		JButton resendButton = new JButton(Messages.getString("ApplicationResponseDialog.1")); 
-		JButton discardButton = new JButton(Messages.getString("ApplicationResponseDialog.2")); 
-		JButton closeButton = new JButton(Messages.getString("ApplicationResponseDialog.3")); 
+		JButton sendButton = new JButton("Send"); 
+		JButton resendButton = new JButton("Resend"); 
+		JButton discardButton = new JButton("Discard"); 
+		JButton closeButton = new JButton("Close"); 
 
 		sendButton.addActionListener(event ->
 		{
@@ -68,7 +68,7 @@ public class ApplicationResponseDialog extends AbstractApplicationResponseDialog
 				}
 				catch(Exception e)
 				{
-					owner.appendToConsole(new StringBuilder(Messages.getString("ApplicationResponseDialog.4")), Color.RED); 
+					owner.appendToConsole(new StringBuilder("Correspondence has been interrupted!"), Color.RED); 
 				}
 			}).start();
 			sendPressed = false;

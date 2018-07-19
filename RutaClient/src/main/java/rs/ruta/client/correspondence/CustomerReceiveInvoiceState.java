@@ -27,7 +27,7 @@ public class CustomerReceiveInvoiceState extends CustomerBillingProcessState
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped())
-				throw new StateActivityException(Messages.getString("CustomerReceiveInvoiceState.0")); 
+				throw new StateActivityException("Correspondence has been interrupted!"); 
 		}
 	}
 }

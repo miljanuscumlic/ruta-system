@@ -27,8 +27,8 @@ public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 	{
 		final BuyerOrderingProcess process = (BuyerOrderingProcess) correspondence.getState();
 		correspondence.getClient().getClientFrame().appendToConsole(
-				new StringBuilder(Messages.getString("BuyerAcceptOrderState.0") + process.getOrder(correspondence).getIDValue() + //$NON-NLS-1$
-						Messages.getString("BuyerAcceptOrderState.1") + correspondence.getCorrespondentPartyName() + Messages.getString("BuyerAcceptOrderState.2")), Color.BLACK); //$NON-NLS-1$ //$NON-NLS-2$
+				new StringBuilder("Order " + process.getOrder(correspondence).getIDValue() + 
+						" has been accepted by " + correspondence.getCorrespondentPartyName() + " party."), Color.BLACK);  
 		DocumentReference documentReference = correspondence.getLastDocumentReference();
 		ApplicationResponseType appResponse = null;
 		if(OrderResponseType.class.getName().equals(documentReference.getDocumentTypeValue()))
@@ -64,7 +64,7 @@ public class BuyerAcceptOrderState extends BuyerOrderingProcessState
 	private ApplicationResponseType prepareApplicationResponse(RutaProcess process, Object document)
 	{
 		process.getClient().getClientFrame().appendToConsole(
-				new StringBuilder(Messages.getString("BuyerAcceptOrderState.3")), Color.BLACK); //$NON-NLS-1$
+				new StringBuilder("Collecting data and preparing the Application Response..."), Color.BLACK); 
 		return InstanceFactory.produceApplicationResponse(document, InstanceFactory.APP_RESPONSE_POSITIVE, null);
 	}
 

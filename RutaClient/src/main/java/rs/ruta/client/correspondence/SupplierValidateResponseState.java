@@ -39,7 +39,7 @@ public class SupplierValidateResponseState extends SupplierBillingProcessState
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped())
-				throw new StateActivityException(Messages.getString("SupplierValidateResponseState.0")); 
+				throw new StateActivityException("Correspondence has been interrupted!"); 
 		}
 	}
 

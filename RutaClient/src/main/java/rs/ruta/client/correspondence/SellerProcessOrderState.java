@@ -29,16 +29,16 @@ public class SellerProcessOrderState extends SellerOrderingProcessState
 			if(OrderType.class.getName().equals(documentReference.getDocumentTypeValue()))
 			{
 				order = process.getOrder(correspondence);
-				dialogTitle = Messages.getString("SellerProcessOrderState.0"); 
+				dialogTitle = "Process Order"; 
 				if(order == null)
-					throw new StateActivityException(Messages.getString("SellerProcessOrderState.1")); 
+					throw new StateActivityException("Order could not be found in the correspondence."); 
 			}
 			else if(OrderChangeType.class.getName().equals(documentReference.getDocumentTypeValue()))
 			{
 				final OrderChangeType orderChange = process.getOrderChange(correspondence);
-				dialogTitle = Messages.getString("SellerProcessOrderState.2"); 
+				dialogTitle = "Process Order Change"; 
 				if(orderChange == null)
-					throw new StateActivityException(Messages.getString("SellerProcessOrderState.3")); 
+					throw new StateActivityException("Order Change could not be found in the correspondence."); 
 				else
 				{
 					order = process.getOrder(correspondence).clone();
@@ -67,7 +67,7 @@ public class SellerProcessOrderState extends SellerOrderingProcessState
 		catch(InterruptedException e)
 		{
 			if(!correspondence.isStopped()) //non-intentional interruption
-				throw new StateActivityException(Messages.getString("SellerProcessOrderState.4")); 
+				throw new StateActivityException("Correspondence has been interrupted!"); 
 		}
 	}
 

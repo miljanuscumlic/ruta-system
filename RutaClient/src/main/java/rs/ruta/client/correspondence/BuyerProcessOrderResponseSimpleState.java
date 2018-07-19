@@ -45,25 +45,25 @@ public class BuyerProcessOrderResponseSimpleState extends BuyerOrderingProcessSt
 						}
 						else
 						{
-							process.getClient().getClientFrame().showOrderResponseSimpleDialog(Messages.getString("BuyerProcessOrderResponseSimpleState.0"), 
+							process.getClient().getClientFrame().showOrderResponseSimpleDialog("View Order Response Simple", 
 									orderResponseSimple, false, false, null);
 							changeState(process, BuyerOrderRejectedState.getInstance());
 						}
 					}
 					else
-						throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseSimpleState.1")); 
+						throw new StateActivityException("Order Response Simple has no Accepted Indicator defined."); 
 				}
 				else
-					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseSimpleState.2")); 
+					throw new StateActivityException("Order Response Simple could not be found in the correspondence."); 
 			}
 			catch(InterruptedException e)
 			{
 				if(!correspondence.isStopped()) //non-intentional interruption
-					throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseSimpleState.3")); 
+					throw new StateActivityException("Correspondence has been interrupted!"); 
 			}
 		}
 		else
-			throw new StateActivityException(Messages.getString("BuyerProcessOrderResponseSimpleState.4")); 
+			throw new StateActivityException("Document could not be found in the correspondence."); 
 	}
 
 	/**

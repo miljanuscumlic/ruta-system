@@ -32,7 +32,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.0")); 
+						throw new StateActivityException("Correspondence has been interrupted!"); 
 				}
 			}
 			try
@@ -43,14 +43,14 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 				else if(process.isInvoiceRejected() && !process.isInvoiceAccepted())
 					changeState(process, CustomerReceiveInvoiceState.getInstance());
 				else
-					throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.1")); 
+					throw new StateActivityException("Unexpected state of the Order Response Simple processing."); 
 				process.setInvoiceAccepted(false);
 				process.setInvoiceRejected(false);
 			}
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("CustomerSendApplicationResponseState.2"))); 
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Application Response has failed!")); 
 //				changeState(process, CustomerSendApplicationResponseState.getInstance());
 			}
 		}
@@ -58,7 +58,7 @@ public class CustomerSendApplicationResponseState extends CustomerBillingProcess
 		{
 			//			correspondence.updateDocumentStatus(correspondence.getLastDocumentReference(OrderType.class),
 			//					DocumentReference.Status.CLIENT_FAILED);
-			throw new StateActivityException(Messages.getString("CustomerSendApplicationResponseState.3")); 
+			throw new StateActivityException("Application Response has not been sent to the CDR service! Application Response could not be found!"); 
 		}
 	}
 }

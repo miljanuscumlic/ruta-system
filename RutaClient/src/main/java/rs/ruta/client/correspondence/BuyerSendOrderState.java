@@ -32,7 +32,7 @@ public class BuyerSendOrderState extends BuyerOrderingProcessState
 				catch(InterruptedException e)
 				{
 					if(!correspondence.isStopped()) //non-intentional interruption
-						throw new StateActivityException(Messages.getString("BuyerSendOrderState.0")); 
+						throw new StateActivityException("Correspondence has been interrupted!"); 
 				}
 			}
 			try
@@ -43,7 +43,7 @@ public class BuyerSendOrderState extends BuyerOrderingProcessState
 			catch(Exception e)
 			{
 				process.getClient().getClientFrame().
-				processExceptionAndAppendToConsole(e, new StringBuilder(Messages.getString("BuyerSendOrderState.1"))); 
+				processExceptionAndAppendToConsole(e, new StringBuilder("Sending Order has failed!")); 
 //				changeState(process, BuyerSendOrderState.getInstance());
 			}
 		}
@@ -51,7 +51,7 @@ public class BuyerSendOrderState extends BuyerOrderingProcessState
 		{
 //			correspondence.updateDocumentStatus(correspondence.getLastDocumentReference(OrderType.class),
 //					DocumentReference.Status.CLIENT_FAILED);
-			throw new StateActivityException(Messages.getString("BuyerSendOrderState.2")); 
+			throw new StateActivityException("Order has not been sent to the CDR service! Order could not be found!"); 
 		}
 	}
 }

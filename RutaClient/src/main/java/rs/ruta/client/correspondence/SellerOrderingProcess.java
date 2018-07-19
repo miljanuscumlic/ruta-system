@@ -174,9 +174,9 @@ public class SellerOrderingProcess extends OrderingProcess
 			}
 			catch (InterruptedException e1)
 			{
-				throw new StateActivityException(Messages.getString("SellerOrderingProcess.0"), e1); 
+				throw new StateActivityException("Unable to stop the correspondence!", e1); 
 			}
-			throw new StateActivityException(Messages.getString("SellerOrderingProcess.1"), e); 
+			throw new StateActivityException("Interrupted execution of Seller Ordering Process!", e); 
 		}
 		finally
 		{

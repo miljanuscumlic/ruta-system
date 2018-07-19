@@ -18,7 +18,7 @@ public class PartnershipRequestListTableModel extends DefaultTableModel
 	private static final long serialVersionUID = -1366607627023019652L;
 	private static String[] columnNames =
 		{
-				Messages.getString("PartnershipRequestListTableModel.0"), Messages.getString("PartnershipRequestListTableModel.1"), Messages.getString("PartnershipRequestListTableModel.2"), Messages.getString("PartnershipRequestListTableModel.3"), Messages.getString("PartnershipRequestListTableModel.4"), Messages.getString("PartnershipRequestListTableModel.5")      
+				"No.", "Requester Party Нame", "Requested Party Name", "Issue time", "Responsed time", "Status"      
 		};
 
 	private  List<PartnershipRequest> requests = null;
@@ -86,12 +86,12 @@ public class PartnershipRequestListTableModel extends DefaultTableModel
 				return InstanceFactory.getLocalDateTimeAsString(request.getResponsedTime());
 			case 5:
 				if(!request.isResolved())
-					return Messages.getString("PartnershipRequestListTableModel.6"); 
+					return "UNRESOLVED"; 
 				else
 					if(request.isAccepted())
-						return Messages.getString("PartnershipRequestListTableModel.7"); 
+						return "ACCEPTED"; 
 					else
-						return Messages.getString("PartnershipRequestListTableModel.8"); 
+						return "REJECTED"; 
 			default:
 				return null;
 			}

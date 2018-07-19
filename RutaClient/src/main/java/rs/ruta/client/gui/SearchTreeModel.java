@@ -19,8 +19,8 @@ import rs.ruta.client.Search;
 public class SearchTreeModel extends RutaTreeModel
 {
 	private static final long serialVersionUID = -5486578776182215565L;
-	private static final String CATALOGUES = Messages.getString("SearchTreeModel.0"); 
-	private static final String PARTIES = Messages.getString("SearchTreeModel.1"); 
+	private static final String CATALOGUES = "Catalogues"; 
+	private static final String PARTIES = "Parties"; 
 	private MyParty myParty;
 	private List<Search<PartyType>> partySearches;
 	private List<Search<CatalogueType>> catalogueSearches;
@@ -176,7 +176,7 @@ public class SearchTreeModel extends RutaTreeModel
 		int partyIndex = partySearches.indexOf(search);
 		int catalogueIndex = catalogueSearches.indexOf(search);
 		if(partyIndex == -1 && catalogueIndex == -1)
-			throw new IllegalArgumentException(Messages.getString("SearchTreeModel.2")); 
+			throw new IllegalArgumentException("Object is not part of the model."); 
 		if(partyIndex == partySearches.size() - 1)
 			last = true;
 		else if (catalogueIndex == catalogueSearches.size() - 1)
