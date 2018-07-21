@@ -5,7 +5,7 @@
         <Property name="rollover.max.size">10MB</Property>
         <Property name="rollover.max">14</Property>
         <Property name="rollover.file.pattern">%d{yyyyMMddHHmmss}</Property>
-        <Property name="ruta.version">0.2.0-SNAPSHOT</Property>
+        <Property name="ruta.version">0.2.0</Property>
         <Property name="ruta.file.pattern">%d [%t] %-5p (%F [%M]:%L) - %m %n</Property>
     </Properties>
     
@@ -28,13 +28,13 @@
     <Loggers>
     
     	<!-- Ruta client loggers -->
-    	<Logger name="rs.ruta.server" additivity="false" level="error">
-            <AppenderRef ref="STDOUT"/>
+    	<Logger name="rs.ruta.server" additivity="false" level="warn">
+<!--              <AppenderRef ref="STDOUT"/> -->
             <AppenderRef ref="ruta.server"/>
         </Logger>
         
-        <Logger name="rs.ruta.common" additivity="false" level="error">
-            <AppenderRef ref="STDOUT"/>
+        <Logger name="rs.ruta.common" additivity="false" level="warn">
+<!--            <AppenderRef ref="STDOUT"/> -->
             <AppenderRef ref="ruta.server"/>
         </Logger>
         

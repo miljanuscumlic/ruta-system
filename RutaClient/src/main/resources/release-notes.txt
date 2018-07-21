@@ -3,20 +3,30 @@ This is a minor release of the Ruta Client Application.
 
 Features:
 
-- Implemented renaming of the search in the Searches 
+- Implemented view of received and sent requests for business partnership.
+- Implemented support for archiving all correspondences of an archived business partner.
+- Implemented resending of documents.
+- Implemented notification of correspondences between parties going out of the sync.
+- Implemented view of list of correspondences and a view of each correspondence with a business partners.
+- Implemented view of correspondence with the CDR exchanging Catalogue and Catalogue Deletion documents.
+- Implemented business processes for sourcing, ordering and billing.
+- Added features to request business partnership, to accept or reject business partnership and to broke business partnership.
+- Added support for moving the products from "in stock" to "out of stock" category.
+- Client Application GUI translated in Serbian.
+- Added "in stock" and "out of stock" categories for products and services.  
+- Implemented renaming of the search in the Searches.
 - Added Archived Parties section in Followings where are placed unfollowed parties.
-- Added Deregistered Parties section in Followings where are placed once followed now deregistered parties.
-- Implemented support for unfollowing the Party form Business Partners and Other Parties sections.
+- Implemented support for unfollowing the Party form Other Parties sections.
 - Implemented support for deleting archived Party from Archived Parties.
-- Implemented support for deleting deregistered Party from Deregistered Parties.
 - Implemented support for "getting new documents" from the service and their placement on the proper place within the domain model.
-- Added warning messages when is tried to import data from an external file or before are sent CDR requests for Catalogue deletion or Party deregistration.
+- Added warning messages when is tried to sent CDR requests for Catalogue deletion or Party deregistration.
 - Searches with no results from the CDR are now stored in the searches history.
 
 Improvements:
 
+- GUI has much more details and information in it with lots of additional context menus
 - When change has been made in the data model GUI is not completely redrawn but is partialy repainted in respect of that change.
-- Simplified My Party registration process, now consisted of only two calls to the CDR service. Updating My Party data is now superfluous during the registration of a party.
+- Simplified My Party registration process, now consisting of only two calls to the CDR service. Updating My Party data is now superfluous during the registration of a party.
 - Removed option for pulling of My Catalogue, which is now part of new "getting new documents" feature.
 - Added conformance of UBL documents to the UBL standard and validation of it before document is being sent to the CDR service. 
 - Where appropriate one button per dialog is set as default button. Those dialogs could be closed by pressing Enter key which is equivalent to pressing the default button.

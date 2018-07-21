@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.ruta</groupId>
 	<artifactId>ruta-server</artifactId>
-	<version>0.2.0-SNAPSHOT</version> <!-- -SNAPSHOT -->
+	<version>0.2.0</version> <!-- -SNAPSHOT -->
 	<name>Ruta</name>
 	<packaging>war</packaging>
 
