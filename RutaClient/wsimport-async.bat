@@ -1,1 +1,0 @@
-cmd /k wsimport -s "C:/temp/src" -d "C:/temp/classes" -keep http://localhost:8080/ruta-server-0.0.1/CDR?wsdl -extension -b "D:\Fakultet\_Diplomski\_diplomski rad\git\RutaClient\wsimport-async.xml"

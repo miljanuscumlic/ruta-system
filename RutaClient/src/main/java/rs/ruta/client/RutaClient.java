@@ -88,7 +88,7 @@ public class RutaClient
 	private MyParty myParty;
 	private Party CDRParty;
 	private RutaClientFrame clientFrame;
-	private static RutaVersion version = new RutaVersion("Client", "0.2.0-SNAPSHOT", "0.1.0", null);
+	private static RutaVersion version = new RutaVersion("Client", "0.2.0", "0.1.0", null);
 	private Properties properties;
 	private List<BugReport> bugReports;
 	public static Logger logger = LoggerFactory.getLogger("rs.ruta.client");

@@ -3,6 +3,7 @@ This is a minor release of the Ruta Client Application.
 
 Features:
 
+- 
 - Implemented renaming of the search in the Searches 
 - Added Archived Parties section in Followings where are placed unfollowed parties.
 - Added Deregistered Parties section in Followings where are placed once followed now deregistered parties.
